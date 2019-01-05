@@ -1,6 +1,3 @@
-#
-# Ref.: https://github.com/memononen/nanovg/blob/master/example/example_gl2.c
-#
 require 'opengl'
 require 'glfw'
 require_relative '../imgui_glfw_opengl2'
@@ -11,7 +8,6 @@ ImGui.load_lib('../imgui_glfw_opengl2.dylib')
 
 include OpenGL
 include GLFW
-include ImGui
 
 errorcb = GLFW::create_callback(:GLFWerrorfun) do |error, desc|
   printf("GLFW error %d: %s\n", error, desc)
@@ -21,12 +17,6 @@ end
 key = GLFW::create_callback(:GLFWkeyfun) do |window, key, scancode, action, mods|
   if key == GLFW_KEY_ESCAPE && action == GLFW_PRESS
     glfwSetWindowShouldClose(window, GL_TRUE)
-  end
-  if key == GLFW_KEY_SPACE && action == GLFW_PRESS
-    #
-  end
-  if key == GLFW_KEY_S && action == GLFW_PRESS
-    #
   end
 end
 
@@ -42,7 +32,7 @@ if __FILE__ == $0
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0)
 
-  window = glfwCreateWindow( 1280, 720, "Dear ImGui GLFW+OpenGL2 example", nil, nil )
+  window = glfwCreateWindow( 1280, 720, "Dear ImGui GLFW+OpenGL2/Ruby example", nil, nil )
   if window == 0
     glfwTerminate()
     exit
@@ -54,15 +44,12 @@ if __FILE__ == $0
   glfwMakeContextCurrent( window )
   glfwSwapInterval(1)
 
-  igCreateContext(nil)
-  io = igGetIO()
+  ImGui::CreateContext(nil)
+  io = ImGui::GetIO()
 
   window_ffi = FFI::Pointer.new(FFI::Pointer, window.to_i)
-  ImGui_ImplGlfw_InitForOpenGL(window_ffi, true)
-  ImGui_ImplOpenGL2_Init()
-
-  glfwSetTime(0)
-  prevt = glfwGetTime()
+  ImGui::ImplGlfw_InitForOpenGL(window_ffi, true)
+  ImGui::ImplOpenGL2_Init()
 
   mx_buf = ' ' * 8
   my_buf = ' ' * 8
@@ -73,18 +60,14 @@ if __FILE__ == $0
   while glfwWindowShouldClose( window ) == 0
     glfwPollEvents()
 
-    ImGui_ImplOpenGL2_NewFrame()
-    ImGui_ImplGlfw_NewFrame()
+    ImGui::ImplOpenGL2_NewFrame()
+    ImGui::ImplGlfw_NewFrame()
 
-    igNewFrame()
+    ImGui::NewFrame()
 
-    igShowDemoWindow(nil)
+    ImGui::ShowDemoWindow(nil)
 
-    t = glfwGetTime()
-    dt = t - prevt
-    prevt = t
-
-    igRender();
+    ImGui::Render();
 
     glfwGetCursorPos(window, mx_buf, my_buf)
     glfwGetWindowSize(window, winWidth_buf, winHeight_buf)
@@ -96,13 +79,11 @@ if __FILE__ == $0
     fbWidth = fbWidth_buf.unpack('L')[0]
     fbHeight = fbHeight_buf.unpack('L')[0]
 
-    pxRatio = fbWidth.to_f / winWidth.to_f
-
     glViewport(0, 0, fbWidth, fbHeight)
     glClearColor(0.45, 0.55, 0.60, 1.00)
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT)
 
-    ImGui_ImplOpenGL2_RenderDrawData(igGetDrawData())
+    ImGui::ImplOpenGL2_RenderDrawData(ImGui::GetDrawData())
 
     glfwMakeContextCurrent( window )
     glfwSwapBuffers( window )

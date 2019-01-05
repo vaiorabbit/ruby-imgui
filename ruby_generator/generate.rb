@@ -30,51 +30,73 @@ class SourceWriter
 
 end
 
-def generate_enum(out, enum)
-  out.write("# " + enum.name)
-  out.newline
-  enum.members.each do |m|
-    out.write("#{m.name} = #{m.value} # #{m.original}\n")
-  end
-  out.newline
-end
+module Generator
 
-def generate_struct(out, struct)
-  out.write("class #{struct.name} < FFI::Struct\n")
-  out.push_indent
-  out.write("layout(\n")
-  out.push_indent
-  struct.members.each do |m|
-    tail = if m.equal?(struct.members.last)
-             "\n"
-           else
-             ",\n"
-           end
-    if m.type.to_s.start_with?('Im')
-      out.write(":#{m.name}, #{m.type}.by_value#{tail}")
-    else
-      out.write(":#{m.name}, :#{m.type}#{tail}")
+  def self.write_enum(out, enum)
+    out.write("# " + enum.name)
+    out.newline
+    enum.members.each do |m|
+      out.write("#{m.name} = #{m.value} # #{m.original}\n")
     end
+    out.newline
   end
-  out.pop_indent
-  out.write(")\n")
-  out.pop_indent
-  out.write("end\n\n")
-end
 
-def generate_function(out, func)
-  func.args.map! {|arg| if arg.type.to_s.start_with?('Im') then arg.type.to_s + '.by_value' else ':' + arg.type.to_s end }
-  func.retval = if func.retval.to_s.start_with?('Im')
-                  func.retval.to_s + '.by_value'
-                else
-                  ':' + func.retval.to_s
-                end
-  out.write("attach_function :#{func.name}, :#{func.name}, [#{func.args.join(', ')}], #{func.retval}\n")
-  # out.write("attach_function :#{func.name}, :#{func.name}, [#{func.args.collect{|arg| ':' + arg.type.to_s}.join(', ')}], :#{func.retval}\n")
-end
+  def self.write_struct(out, struct)
+    out.write("class #{struct.name} < FFI::Struct\n")
+    out.push_indent
+    out.write("layout(\n")
+    out.push_indent
+    struct.members.each do |m|
+      tail = if m.equal?(struct.members.last)
+               "\n"
+             else
+               ",\n"
+             end
+      if m.type.to_s.start_with?('Im')
+        out.write(":#{m.name}, #{m.type}.by_value#{tail}")
+      else
+        out.write(":#{m.name}, :#{m.type}#{tail}")
+      end
+    end
+    out.pop_indent
+    out.write(")\n")
+    out.pop_indent
+    out.write("end\n\n")
+  end
+
+  def self.write_function(out, func)
+
+    func.args.map! do |arg|
+      if arg.type.to_s.start_with?('Im')
+        arg.type.to_s + '.by_value'
+      else
+        ':' + arg.type.to_s
+      end
+    end
+
+    func.retval = if func.retval.to_s.start_with?('Im')
+                    func.retval.to_s + '.by_value'
+                  else
+                    ':' + func.retval.to_s
+                  end
+
+    func_name_ruby = func.name
+    func_name_c = func.name
+    if func.name.start_with?('ig')
+      func_name_ruby = func_name_c.gsub(/^ig/, '')
+    elsif func.name.start_with?('ImGui_')
+      func_name_ruby = func_name_c.gsub(/^ImGui_/, '')
+    end
+    out.write("attach_function :#{func_name_ruby}, :#{func_name_c}, [#{func.args.join(', ')}], #{func.retval}\n")
+  end
+
+end # module Generator
+
 
 if __FILE__ == $0
+  #
   # Setup
+  #
   ImGuiToCTypeMap = ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json' )
   enums_map = ImGuiBindings.build_enum_map( '../cimgui/generator/output/structs_and_enums.json' )
   structs_map = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
@@ -112,43 +134,57 @@ if __FILE__ == $0
   funcs_impl_map.delete_if {|func| func.name.include?('OpenGL3')} # not supported yet
   funcs_impl_map.delete_if {|func| func.name.include?('SDL2')} # not supported yet
 
-  File.open('../imgui_glfw_opengl2.rb', 'wb') do |file|
-    # prologue
+  #
+  # Write to actual source code
+  #
+  output_path = '../'
+  output_filename = 'imgui_glfw_opengl2.rb'
+  File.open(output_path + output_filename, 'wb') do |file|
+    #
+    # Prologue
+    #
     out = SourceWriter.new(file)
     out.write(<<-EOS)
-# imgui-bindings
+# imgui-bindings : Yet another ImGui wrapper for Ruby
+#
+# * https://github.com/vaiorabbit/ruby-imgui
 #
 # [NOTICE] This is an automatically generated file.
 
 require 'ffi'
     EOS
     out.newline
+
+    #
+    # Enums
+    #
+    enums_map.each do |enum|
+      Generator.write_enum(out, enum)
+    end
+    out.newline
+
+    #
+    # Structs
+    #
+
+    ['ImVec2', 'ImVec4'].each do |name| # for forward declaration
+      Generator.write_struct(out, structs_map.find{|struct| struct.name == name})
+      structs_map.delete_if {|struct| struct.name == name}
+    end
+
+    structs_map.each do |struct|
+      Generator.write_struct(out, struct)
+    end
+
+    #
+    # Functions
+    #
     out.write("module ImGui\n")
     out.newline
     out.push_indent
     out.write("extend FFI::Library\n")
     out.newline
 
-    # enum
-    enums_map.each do |enum|
-      generate_enum(out, enum)
-    end
-    out.newline
-
-    # struct
-
-    # for forward declaration
-    generate_struct(out, structs_map.find{|struct| struct.name == 'ImVec2'})
-    structs_map.delete_if {|struct| struct.name == 'ImVec2'}
-    # for forward declaration
-    generate_struct(out, structs_map.find{|struct| struct.name == 'ImVec4'})
-    structs_map.delete_if {|struct| struct.name == 'ImVec4'}
-
-    structs_map.each do |struct|
-      generate_struct(out, struct)
-    end
-
-    # functions
     out.pop_indent
     out.write(<<-EOS)
   @@imgui_import_done = false
@@ -166,21 +202,21 @@ require 'ffi'
     out.newline
 
     out.push_indent
-    funcs_base_map.each do |func|
-      generate_function(out, func)
-    end
-    funcs_impl_map.each do |func|
-      generate_function(out, func)
+    [funcs_base_map, funcs_impl_map].each do |funcs_map|
+      funcs_map.each do |func|
+        Generator.write_function(out, func)
+      end
     end
     out.pop_indent
 
     out.write("end # self.import_symbols\n")
     out.newline
 
-    # epilogue
+    #
+    # Epilogue
+    #
     out.pop_indent
-    out.write("end # module ImGui")
-    out.newline
+    out.write("end # module ImGui\n")
   end
 
 end

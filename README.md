@@ -5,6 +5,8 @@
 *   Created : 2019-01-05
 *   Last modified : 2019-01-05
 
+[Notice] This project is experimental.
+
 ## License ##
 
 The zlib/libpng License ( http://opensource.org/licenses/Zlib ).

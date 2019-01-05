@@ -1,3 +1,4 @@
 2019-01-05  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* initial commmit
+	* Fixed API names (ex. igShowDemoWindow -> ImGui::ShowDemoWindow)

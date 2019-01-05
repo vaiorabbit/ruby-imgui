@@ -141,6 +141,9 @@ module ImGuiBindings
     if type_name.include?('ImVector')
       return :ImVector # stub
     end
+    if type_name.include?('Pair')
+      return :Pair # stub
+    end
     if defined?(ImGuiToCTypeMap) && ImGuiToCTypeMap.has_key?(type_name)
       return ImGuiToCTypeMap[type_name]
     end
@@ -185,7 +188,6 @@ module ImGuiBindings
           if func_info['argsT'].any?
             args = func_info['argsT']
             args.each do |arg_info|
-              arg = ImGuiFunctionMemberEntry.new
               is_array = false
               size = 0
               type = get_ffi_type(arg_info['type'])
@@ -194,6 +196,7 @@ module ImGuiBindings
                 size = /\[([\w\+])+\]/.match(arg_info['type'])[1].to_i
                 type = get_ffi_type(arg_info['type'].gsub(/\[[\w\+]+\]/,''))
               end
+              arg = ImGuiFunctionMemberEntry.new
               arg.name = arg_info['name']
               arg.is_array = is_array
               arg.size = size
@@ -222,7 +225,7 @@ module ImGuiBindings
 
 end
 
-if __FILE__ == $0
+if __FILE__ == $0 # test code snippets
   structs = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
   # pp structs
   # exit()
