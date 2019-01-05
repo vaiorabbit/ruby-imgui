@@ -368,6 +368,29 @@ class ImColor < FFI::Struct
   )
 end
 
+class ImFontConfig < FFI::Struct
+  layout(
+    :FontData, :pointer,
+    :FontDataSize, :int,
+    :FontDataOwnedByAtlas, :bool,
+    :FontNo, :int,
+    :SizePixels, :float,
+    :OversampleH, :int,
+    :OversampleV, :int,
+    :PixelSnapH, :bool,
+    :GlyphExtraSpacing, ImVec2.by_value,
+    :GlyphOffset, ImVec2.by_value,
+    :GlyphRanges, :pointer,
+    :GlyphMinAdvanceX, :float,
+    :GlyphMaxAdvanceX, :float,
+    :MergeMode, :bool,
+    :RasterizerFlags, :uint,
+    :RasterizerMultiply, :float,
+    :Name, [:char, 40],
+    :DstFont, :pointer
+  )
+end
+
 class ImGuiIO < FFI::Struct
   layout(
     :ConfigFlags, :int,
@@ -380,7 +403,7 @@ class ImGuiIO < FFI::Struct
     :MouseDoubleClickTime, :float,
     :MouseDoubleClickMaxDist, :float,
     :MouseDragThreshold, :float,
-    :KeyMap, :int,
+    :KeyMap, [:int, 21],
     :KeyRepeatDelay, :float,
     :KeyRepeatRate, :float,
     :UserData, :pointer,
@@ -404,16 +427,16 @@ class ImGuiIO < FFI::Struct
     :ImeWindowHandle, :pointer,
     :RenderDrawListsFnUnused, :pointer,
     :MousePos, ImVec2.by_value,
-    :MouseDown, :bool,
+    :MouseDown, [:bool, 5],
     :MouseWheel, :float,
     :MouseWheelH, :float,
     :KeyCtrl, :bool,
     :KeyShift, :bool,
     :KeyAlt, :bool,
     :KeySuper, :bool,
-    :KeysDown, :bool,
-    :InputCharacters, :ushort,
-    :NavInputs, :float,
+    :KeysDown, [:bool, 512],
+    :InputCharacters, [:ushort, 17],
+    :NavInputs, [:float, 21],
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
     :WantTextInput, :bool,
@@ -429,20 +452,20 @@ class ImGuiIO < FFI::Struct
     :MetricsActiveAllocations, :int,
     :MouseDelta, ImVec2.by_value,
     :MousePosPrev, ImVec2.by_value,
-    :MouseClickedPos, ImVec2.by_value,
-    :MouseClickedTime, :double,
-    :MouseClicked, :bool,
-    :MouseDoubleClicked, :bool,
-    :MouseReleased, :bool,
-    :MouseDownOwned, :bool,
-    :MouseDownDuration, :float,
-    :MouseDownDurationPrev, :float,
-    :MouseDragMaxDistanceAbs, ImVec2.by_value,
-    :MouseDragMaxDistanceSqr, :float,
-    :KeysDownDuration, :float,
-    :KeysDownDurationPrev, :float,
-    :NavInputsDownDuration, :float,
-    :NavInputsDownDurationPrev, :float
+    :MouseClickedPos, [ImVec2.by_value, 5],
+    :MouseClickedTime, [:double, 5],
+    :MouseClicked, [:bool, 5],
+    :MouseDoubleClicked, [:bool, 5],
+    :MouseReleased, [:bool, 5],
+    :MouseDownOwned, [:bool, 5],
+    :MouseDownDuration, [:float, 5],
+    :MouseDownDurationPrev, [:float, 5],
+    :MouseDragMaxDistanceAbs, [ImVec2.by_value, 5],
+    :MouseDragMaxDistanceSqr, [:float, 5],
+    :KeysDownDuration, [:float, 512],
+    :KeysDownDurationPrev, [:float, 512],
+    :NavInputsDownDuration, [:float, 21],
+    :NavInputsDownDurationPrev, [:float, 21]
   )
 end
 
@@ -477,7 +500,7 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedLines, :bool,
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
-    :Colors, ImVec4.by_value
+    :Colors, [ImVec4.by_value, 43]
   )
 end
 
@@ -494,6 +517,35 @@ module ImGui
   end
 
   def self.import_symbols()
+    attach_function :FontAtlas_AddCustomRectFontGlyph, :ImFontAtlas_AddCustomRectFontGlyph, [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value], :int
+    attach_function :FontAtlas_AddCustomRectRegular, :ImFontAtlas_AddCustomRectRegular, [:pointer, :uint, :int, :int], :int
+    attach_function :FontAtlas_AddFont, :ImFontAtlas_AddFont, [:pointer, :pointer], :pointer
+    attach_function :FontAtlas_AddFontDefault, :ImFontAtlas_AddFontDefault, [:pointer, :pointer], :pointer
+    attach_function :FontAtlas_AddFontFromFileTTF, :ImFontAtlas_AddFontFromFileTTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer
+    attach_function :FontAtlas_AddFontFromMemoryCompressedBase85TTF, :ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer
+    attach_function :FontAtlas_AddFontFromMemoryCompressedTTF, :ImFontAtlas_AddFontFromMemoryCompressedTTF, [:pointer, :pointer, :int, :float, :pointer, :pointer], :pointer
+    attach_function :FontAtlas_AddFontFromMemoryTTF, :ImFontAtlas_AddFontFromMemoryTTF, [:pointer, :pointer, :int, :float, :pointer, :pointer], :pointer
+    attach_function :FontAtlas_Build, :ImFontAtlas_Build, [:pointer], :bool
+    attach_function :FontAtlas_CalcCustomRectUV, :ImFontAtlas_CalcCustomRectUV, [:pointer, :pointer, :pointer, :pointer], :void
+    attach_function :FontAtlas_Clear, :ImFontAtlas_Clear, [:pointer], :void
+    attach_function :FontAtlas_ClearFonts, :ImFontAtlas_ClearFonts, [:pointer], :void
+    attach_function :FontAtlas_ClearInputData, :ImFontAtlas_ClearInputData, [:pointer], :void
+    attach_function :FontAtlas_ClearTexData, :ImFontAtlas_ClearTexData, [:pointer], :void
+    attach_function :FontAtlas_GetCustomRectByIndex, :ImFontAtlas_GetCustomRectByIndex, [:pointer, :int], :pointer
+    attach_function :FontAtlas_GetGlyphRangesChineseFull, :ImFontAtlas_GetGlyphRangesChineseFull, [:pointer], :pointer
+    attach_function :FontAtlas_GetGlyphRangesChineseSimplifiedCommon, :ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon, [:pointer], :pointer
+    attach_function :FontAtlas_GetGlyphRangesCyrillic, :ImFontAtlas_GetGlyphRangesCyrillic, [:pointer], :pointer
+    attach_function :FontAtlas_GetGlyphRangesDefault, :ImFontAtlas_GetGlyphRangesDefault, [:pointer], :pointer
+    attach_function :FontAtlas_GetGlyphRangesJapanese, :ImFontAtlas_GetGlyphRangesJapanese, [:pointer], :pointer
+    attach_function :FontAtlas_GetGlyphRangesKorean, :ImFontAtlas_GetGlyphRangesKorean, [:pointer], :pointer
+    attach_function :FontAtlas_GetGlyphRangesThai, :ImFontAtlas_GetGlyphRangesThai, [:pointer], :pointer
+    attach_function :FontAtlas_GetMouseCursorTexData, :ImFontAtlas_GetMouseCursorTexData, [:pointer, :int, :pointer, :pointer, ImVec2.by_value, ImVec2.by_value], :bool
+    attach_function :FontAtlas_GetTexDataAsAlpha8, :ImFontAtlas_GetTexDataAsAlpha8, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
+    attach_function :FontAtlas_GetTexDataAsRGBA32, :ImFontAtlas_GetTexDataAsRGBA32, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
+    attach_function :FontAtlas_ImFontAtlas, :ImFontAtlas_ImFontAtlas, [], :void
+    attach_function :FontAtlas_IsBuilt, :ImFontAtlas_IsBuilt, [:pointer], :bool
+    attach_function :FontAtlas_SetTexID, :ImFontAtlas_SetTexID, [:pointer, :pointer], :void
+    attach_function :FontAtlas_destroy, :ImFontAtlas_destroy, [:pointer], :void
     attach_function :AcceptDragDropPayload, :igAcceptDragDropPayload, [:pointer, :int], :pointer
     attach_function :AlignTextToFramePadding, :igAlignTextToFramePadding, [], :void
     attach_function :ArrowButton, :igArrowButton, [:pointer, :int], :bool

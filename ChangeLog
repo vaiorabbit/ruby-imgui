@@ -2,3 +2,5 @@
 
 	* initial commmit
 	* Fixed API names (ex. igShowDemoWindow -> ImGui::ShowDemoWindow)
+	* [Fixed] Failed to generate array type member of struct.
+	* Added Japanese font loading & rendering example (test.rb)

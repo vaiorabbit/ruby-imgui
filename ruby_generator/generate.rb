@@ -52,11 +52,21 @@ module Generator
              else
                ",\n"
              end
-      if m.type.to_s.start_with?('Im')
-        out.write(":#{m.name}, #{m.type}.by_value#{tail}")
+      args = ""
+      if m.is_array
+        args = if m.type.to_s.start_with?('Im')
+                 "[#{m.type}.by_value, #{m.size}]"
+               else
+                 "[:#{m.type}, #{m.size}]"
+               end
       else
-        out.write(":#{m.name}, :#{m.type}#{tail}")
+        args = if m.type.to_s.start_with?('Im')
+                 "#{m.type}.by_value"
+               else
+                 ":#{m.type}"
+               end
       end
+      out.write(":#{m.name}, #{args}#{tail}")
     end
     out.pop_indent
     out.write(")\n")
@@ -86,6 +96,8 @@ module Generator
       func_name_ruby = func_name_c.gsub(/^ig/, '')
     elsif func.name.start_with?('ImGui_')
       func_name_ruby = func_name_c.gsub(/^ImGui_/, '')
+    elsif func.name.start_with?('ImFontAtlas_')
+      func_name_ruby = func_name_c.gsub(/^Im/, '')
     end
     out.write("attach_function :#{func_name_ruby}, :#{func_name_c}, [#{func.args.join(', ')}], #{func.retval}\n")
   end
@@ -114,7 +126,7 @@ if __FILE__ == $0
     'ImDrawVert',
     'ImFont',
     'ImFontAtlas',
-    'ImFontConfig',
+  # 'ImFontConfig',
     'ImFontGlyph',
     'ImGuiInputTextCallbackData',
     'ImGuiListClipper',
@@ -130,7 +142,7 @@ if __FILE__ == $0
   ]
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
 
-  funcs_base_map.delete_if {|func| func.name.start_with?('ig') == false} # end-user API only
+  funcs_base_map.delete_if {|func| !(func.name.start_with?('ig') || func.name.start_with?('ImFontAtlas_'))} # end-user API only
   funcs_impl_map.delete_if {|func| func.name.include?('OpenGL3')} # not supported yet
   funcs_impl_map.delete_if {|func| func.name.include?('SDL2')} # not supported yet
 

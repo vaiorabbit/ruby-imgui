@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'opengl'
 require 'glfw'
 require_relative '../imgui_glfw_opengl2'
@@ -46,9 +47,14 @@ if __FILE__ == $0
   glfwMakeContextCurrent( window )
   glfwSwapInterval(1)
 
+  japanese_utf8_text = IO.readlines('./jpfont/jpfont.txt').join()
+
   ImGui::CreateContext(nil)
-  io = ImGui::GetIO()
-  style = ImGui::GetStyle()
+
+  io = ImGuiIO.new(ImGui::GetIO())
+  ImGui::FontAtlas_AddFontDefault(io[:Fonts], nil)
+  # japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts])) # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
+  japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
 
   window_ffi = FFI::Pointer.new(FFI::Pointer, window.to_i)
   ImGui::ImplGlfw_InitForOpenGL(window_ffi, true)
@@ -81,9 +87,12 @@ if __FILE__ == $0
 
     p_open = nil
     window_flags = ImGuiWindowFlags_AlwaysAutoResize
-    ImGui::Begin("Ruby-ImGui 1st Window", p_open, window_flags)
+    ImGui::PushFont(japanese_font)
+    ImGui::Begin("Ruby-ImGui : はじめてのウィンドウ＆日本語", p_open, window_flags)
     ImGui::Text("Loaded shared library '%s'", :string, $lib_path) # See https://github.com/ffi/ffi/wiki/Examples#using-varargs
+    ImGui::TextWrapped(japanese_utf8_text);
     ImGui::End()
+    ImGui::PopFont()
 
     ImGui::Render()
 
