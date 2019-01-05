@@ -7,6 +7,12 @@
 
 [Notice] This project is experimental.
 
+## TODO ##
+
+*   Font loading examples
+*   UTF-8 text examples
+*   More documents (building DLLs, etc.)
+
 ## License ##
 
 The zlib/libpng License ( http://opensource.org/licenses/Zlib ).
