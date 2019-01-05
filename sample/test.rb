@@ -2,9 +2,11 @@ require 'opengl'
 require 'glfw'
 require_relative '../imgui_glfw_opengl2'
 
+$lib_path = '../imgui_glfw_opengl2.dylib'
+
 OpenGL.load_lib()
 GLFW.load_lib()
-ImGui.load_lib('../imgui_glfw_opengl2.dylib')
+ImGui.load_lib($lib_path)
 
 include OpenGL
 include GLFW
@@ -46,6 +48,7 @@ if __FILE__ == $0
 
   ImGui::CreateContext(nil)
   io = ImGui::GetIO()
+  style = ImGui::GetStyle()
 
   window_ffi = FFI::Pointer.new(FFI::Pointer, window.to_i)
   ImGui::ImplGlfw_InitForOpenGL(window_ffi, true)
@@ -67,7 +70,22 @@ if __FILE__ == $0
 
     ImGui::ShowDemoWindow(nil)
 
-    ImGui::Render();
+    # See https://github.com/ffi/ffi/wiki/Structs
+    pos = ImVec2.new
+    pos[:x] = 50
+    pos[:y] = 20
+    pivot = ImVec2.new
+    pivot[:x] = 0
+    pivot[:y] = 0
+    ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver, pivot)
+
+    p_open = nil
+    window_flags = ImGuiWindowFlags_AlwaysAutoResize
+    ImGui::Begin("Ruby-ImGui 1st Window", p_open, window_flags)
+    ImGui::Text("Loaded shared library '%s'", :string, $lib_path) # See https://github.com/ffi/ffi/wiki/Examples#using-varargs
+    ImGui::End()
+
+    ImGui::Render()
 
     glfwGetCursorPos(window, mx_buf, my_buf)
     glfwGetWindowSize(window, winWidth_buf, winHeight_buf)
