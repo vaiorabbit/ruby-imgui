@@ -15,7 +15,13 @@
 
 ## License ##
 
-The zlib/libpng License ( http://opensource.org/licenses/Zlib ).
+'imgui_glfw_opengl2.dylib' is built on top of these products and is available under the terms of the MIT License.
+*   cimgui ( https://github.com/cimgui/cimgui )
+    *   https://github.com/cimgui/cimgui/blob/master/LICENSE
+*   Dear ImGui ( https://github.com/ocornut/imgui )
+    *   https://github.com/ocornut/imgui/blob/master/LICENSE.txt
+
+'imgui_glfw_opengl2.rb' is available under the terms of the zlib/libpng License ( http://opensource.org/licenses/Zlib ).
 
 Ruby-Imgui : Yet another ImGui wrapper for Ruby
 Copyright (c) 2019 vaiorabbit <http://twitter.com/vaiorabbit>

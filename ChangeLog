@@ -1,6 +1,7 @@
 2019-01-06  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* ImGuiBindings.build_ffi_typedef_map(common.rb): Changed usage
+	* imgui_glfw_opengl2.dylib: Specified the terms of use.
 
 2019-01-05  vaiorabbit  <http://twitter.com/vaiorabbit>
 
