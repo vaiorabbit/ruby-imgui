@@ -109,7 +109,7 @@ if __FILE__ == $0
   #
   # Setup
   #
-  ImGuiToCTypeMap = ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json' )
+  ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json' )
   enums_map = ImGuiBindings.build_enum_map( '../cimgui/generator/output/structs_and_enums.json' )
   structs_map = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
   funcs_base_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/definitions.json' )

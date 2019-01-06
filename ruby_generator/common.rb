@@ -10,34 +10,56 @@ ImGuiEnumMapEntry = Struct.new( :name, :members )
 ImGuiFunctionMemberEntry = Struct.new( :name, :type, :is_array, :size )
 ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval )
 
-CToFFITypeMap = {
-  'bool' => :bool,
-  'char' => :char,
-  'signed char' => :char,
-  'unsigned char' => :uchar,
-  'short' => :short,
-  'signed short' => :short,
-  'unsigned short' => :ushort,
-  'int' => :int,
-  'signed int' => :int,
-  'unsigned int' => :uint,
-  'int32_t' => :int32,
-  'uint32_t' => :uint32,
-  'int64_t' => :int64,
-  'uint64_t' => :uint64,
-  'float' => :float,
-  'double' => :double,
-  'ptrdiff_t' => :long,
-  'void' => :void,
-  'void*' => :pointer,
-  'void *' => :pointer,
-  'size_t' => :size_t,
-  '...' => :varargs,
-}
-
-# ImGuiToCTypeMap = {}
-
 module ImGuiBindings
+
+  CToFFITypeMap = {
+    'bool' => :bool,
+    'char' => :char,
+    'signed char' => :char,
+    'unsigned char' => :uchar,
+    'short' => :short,
+    'signed short' => :short,
+    'unsigned short' => :ushort,
+    'int' => :int,
+    'signed int' => :int,
+    'unsigned int' => :uint,
+    'int32_t' => :int32,
+    'uint32_t' => :uint32,
+    'int64_t' => :int64,
+    'uint64_t' => :uint64,
+    'float' => :float,
+    'double' => :double,
+    'ptrdiff_t' => :long,
+    'void' => :void,
+    'void*' => :pointer,
+    'void *' => :pointer,
+    'size_t' => :size_t,
+    '...' => :varargs,
+  }
+
+  @@imGuiToCTypeMap = nil
+
+  IgnoredTypedefs = [
+    'value_type',
+    'iterator',
+    'const_iterator'
+  ]
+  def self.build_ffi_typedef_map(json_filename)
+    return if @@imGuiToCTypeMap != nil
+    type_map = Hash.new
+    File.open(json_filename) do |file|
+      json = JSON.load(file)
+      json.keys.each do |imgui_type_name|
+        next if IgnoredTypedefs.include?(imgui_type_name)
+        type_map[imgui_type_name] = get_ffi_type(json[imgui_type_name])
+      end
+    end
+
+    @@imGuiToCTypeMap = type_map
+
+    return type_map
+  end
+
 
   def self.build_struct_map(json_filename)
     structs = []
@@ -125,11 +147,6 @@ module ImGuiBindings
     return enums
   end
 
-  @@ignore_typedefs = [
-    'value_type',
-    'iterator',
-    'const_iterator'
-  ]
   def self.get_ffi_type(type_name)
     if type_name.include?('*') || type_name.include?('&')
       return :pointer
@@ -144,22 +161,10 @@ module ImGuiBindings
     if type_name.include?('Pair')
       return :Pair # stub
     end
-    if defined?(ImGuiToCTypeMap) && ImGuiToCTypeMap.has_key?(type_name)
-      return ImGuiToCTypeMap[type_name]
+    if @@imGuiToCTypeMap != nil && @@imGuiToCTypeMap.has_key?(type_name)
+      return @@imGuiToCTypeMap[type_name]
     end
     return CToFFITypeMap[type_name]
-  end
-
-  def self.build_ffi_typedef_map(json_filename)
-    type_map = Hash.new
-    File.open(json_filename) do |file|
-      json = JSON.load(file)
-      json.keys.each do |imgui_type_name|
-        next if @@ignore_typedefs.include?(imgui_type_name)
-        type_map[imgui_type_name] = get_ffi_type(json[imgui_type_name])
-      end
-    end
-    return type_map
   end
 
   def self.build_function_map(json_filename)
@@ -226,13 +231,12 @@ module ImGuiBindings
 end
 
 if __FILE__ == $0 # test code snippets
-  structs = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
-  # pp structs
+
+  ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json' )
   # exit()
 
-  ImGuiToCTypeMap = ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json' )
-
-  # pp ImGuiToCTypeMap
+  structs = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
+  # pp structs
   # exit()
 
   enums = ImGuiBindings.build_enum_map( '../cimgui/generator/output/structs_and_enums.json' )

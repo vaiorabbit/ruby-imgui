@@ -3,21 +3,21 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2019-01-05
+*   Last modified : 2019-01-06
+
+<img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
 [Notice] This project is experimental.
 
 ## TODO ##
 
-*   Font loading examples
-*   UTF-8 text examples
 *   More documents (building DLLs, etc.)
 
 ## License ##
 
 The zlib/libpng License ( http://opensource.org/licenses/Zlib ).
 
-Ruby-Imgui : Yet another ImGui wrapper for Python
+Ruby-Imgui : Yet another ImGui wrapper for Ruby
 Copyright (c) 2019 vaiorabbit <http://twitter.com/vaiorabbit>
 
 This software is provided 'as-is', without any express or implied
