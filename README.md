@@ -9,7 +9,7 @@
 
 [Notice] This project is experimental.
 
-## Prerequisits ##
+## Prerequisites ##
 
 *   Ruby interpreter
     *   Tested on:
