@@ -1,6 +1,7 @@
 2019-01-13  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Tested on Windows.
+	* cimgui_build.sh, cimgui_build.bat: Added.
 
 2019-01-06  vaiorabbit  <http://twitter.com/vaiorabbit>
 
