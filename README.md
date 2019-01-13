@@ -39,7 +39,7 @@
 
 ## License ##
 
-'imgui_glfw_opengl2.dylib' is built on top of these products and is available under the terms of the MIT License.
+'imgui_glfw_opengl2.dylib' and 'imgui_glfw_opengl2.dll are built on top of these products and are available under the terms of the MIT License.
 *   cimgui ( https://github.com/cimgui/cimgui )
     *   https://github.com/cimgui/cimgui/blob/master/LICENSE
 *   Dear ImGui ( https://github.com/ocornut/imgui )
