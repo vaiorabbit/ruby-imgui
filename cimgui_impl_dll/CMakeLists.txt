@@ -42,7 +42,12 @@ else (IMGUI_STATIC)
     add_library(imgui_glfw_opengl2 SHARED ${IMGUI_IMPL_GLFW_SOURCES})
 endif (IMGUI_STATIC)
 
-target_link_libraries(imgui_glfw_opengl2 ${IMGUI_IMPL_GLFW_LIBRARIES}  ${OPENGL_LIBRARIES} glfw)
+if (WIN32)
+    target_link_libraries(imgui_glfw_opengl2 ${IMGUI_IMPL_GLFW_LIBRARIES}  ${OPENGL_LIBRARIES} glfw3dll)
+else(WIN32)
+    target_link_libraries(imgui_glfw_opengl2 ${IMGUI_IMPL_GLFW_LIBRARIES}  ${OPENGL_LIBRARIES} glfw)
+endif(WIN32)
+
 set_target_properties(imgui_glfw_opengl2 PROPERTIES PREFIX "")
 
 #install

@@ -3,7 +3,14 @@ require 'opengl'
 require 'glfw'
 require_relative '../imgui_glfw_opengl2'
 
-$lib_path = '../imgui_glfw_opengl2.dylib'
+$lib_path = case RbConfig::CONFIG['host_os']
+            when /mswin|msys|mingw|cygwin/
+              Dir.pwd + '/../' + 'imgui_glfw_opengl2.dll'
+            when /darwin/
+              '../imgui_glfw_opengl2.dylib'
+            else
+              raise RuntimeError, "OpenGL : Unknown OS: #{host_os.inspect}"
+            end
 
 OpenGL.load_lib()
 GLFW.load_lib()

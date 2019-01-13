@@ -3,15 +3,34 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2019-01-06
+*   Last modified : 2019-01-13
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
 [Notice] This project is experimental.
 
-## TODO ##
+## Prerequisits ##
 
-*   More documents (building DLLs, etc.)
+*   Ruby interpreter
+    *   Tested on:
+        *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit 2.6.0-1 (x64)
+            *   ruby 2.6.0p0 (2018-12-25 revision 66547) [x64-mingw32]
+*   Compiler
+    *   Tested on:
+        *   [Windows] gcc (Rev1, Built by MSYS2 project) 8.2.1 20181214
+*   CMake https://cmake.org/download/
+
+
+## Setting up and run sample ##
+
+1.  Update cimgui submodule
+    *   git submodule update --init --recursive
+2.  Get GLFW library
+    *   Use glfw_build.bat (Windows) or glfw_build.sh (macOS)
+3.  Build imgui_glfw_opengl2 library
+    *   Use cimgui_build.bat (Windows)
+4.  Run test.rb
+    *   ruby test.rb
 
 ## License ##
 
