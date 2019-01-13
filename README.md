@@ -15,6 +15,11 @@
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit 2.6.0-1 (x64)
             *   ruby 2.6.0p0 (2018-12-25 revision 66547) [x64-mingw32]
+*   Ruby Gems
+    *   opengl-bindings
+        *   gem install opengl-bindings
+    *   ffi
+        *   gem install ffi
 *   Compiler
     *   Tested on:
         *   [Windows] gcc (Rev1, Built by MSYS2 project) 8.2.1 20181214
