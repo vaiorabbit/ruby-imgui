@@ -346,6 +346,14 @@ ImGuiWindowFlags_Modal = 134217728 # 1 << 27
 ImGuiWindowFlags_ChildMenu = 268435456 # 1 << 28
 
 
+class ImVector < FFI::Struct
+  layout(
+    :Size, :int,
+    :Capture, :int,
+    :Data, :pointer
+  )
+end
+
 class ImVec2 < FFI::Struct
   layout(
     :x, :float,
@@ -365,6 +373,47 @@ end
 class ImColor < FFI::Struct
   layout(
     :Value, ImVec4.by_value
+  )
+end
+
+class ImFont < FFI::Struct
+  layout(
+    :FontSize, :float,
+    :Scale, :float,
+    :DisplayOffset, ImVec2.by_value,
+    :Glyphs, ImVector.by_value,
+    :IndexAdvanceX, ImVector.by_value,
+    :IndexLookup, ImVector.by_value,
+    :FallbackGlyph, :pointer,
+    :FallbackAdvanceX, :float,
+    :FallbackChar, :ushort,
+    :ConfigDataCount, :short,
+    :ConfigData, :pointer,
+    :ContainerAtlas, :pointer,
+    :Ascent, :float,
+    :Descent, :float,
+    :DirtyLookupTables, :bool,
+    :MetricsTotalSurface, :int
+  )
+end
+
+class ImFontAtlas < FFI::Struct
+  layout(
+    :Locked, :bool,
+    :Flags, :int,
+    :TexID, :pointer,
+    :TexDesiredWidth, :int,
+    :TexGlyphPadding, :int,
+    :TexPixelsAlpha8, :pointer,
+    :TexPixelsRGBA32, :pointer,
+    :TexWidth, :int,
+    :TexHeight, :int,
+    :TexUvScale, ImVec2.by_value,
+    :TexUvWhitePixel, ImVec2.by_value,
+    :Fonts, ImVector.by_value,
+    :CustomRects, ImVector.by_value,
+    :ConfigData, ImVector.by_value,
+    :CustomRectIds, [:int, 1]
   )
 end
 

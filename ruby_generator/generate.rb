@@ -124,8 +124,8 @@ if __FILE__ == $0
     'ImDrawData',
     'ImDrawList',
     'ImDrawVert',
-    'ImFont',
-    'ImFontAtlas',
+  # 'ImFont',
+  # 'ImFontAtlas',
   # 'ImFontConfig',
     'ImFontGlyph',
     'ImGuiInputTextCallbackData',
@@ -138,7 +138,7 @@ if __FILE__ == $0
     'ImGuiTextFilter',
     'TextRange',
     'Pair',
-    'ImVector',
+  # 'ImVector',
   ]
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
 
