@@ -67,17 +67,22 @@ ImGuiCol_SeparatorActive = 29 # 29
 ImGuiCol_ResizeGrip = 30 # 30
 ImGuiCol_ResizeGripHovered = 31 # 31
 ImGuiCol_ResizeGripActive = 32 # 32
-ImGuiCol_PlotLines = 33 # 33
-ImGuiCol_PlotLinesHovered = 34 # 34
-ImGuiCol_PlotHistogram = 35 # 35
-ImGuiCol_PlotHistogramHovered = 36 # 36
-ImGuiCol_TextSelectedBg = 37 # 37
-ImGuiCol_DragDropTarget = 38 # 38
-ImGuiCol_NavHighlight = 39 # 39
-ImGuiCol_NavWindowingHighlight = 40 # 40
-ImGuiCol_NavWindowingDimBg = 41 # 41
-ImGuiCol_ModalWindowDimBg = 42 # 42
-ImGuiCol_COUNT = 43 # 43
+ImGuiCol_Tab = 33 # 33
+ImGuiCol_TabHovered = 34 # 34
+ImGuiCol_TabActive = 35 # 35
+ImGuiCol_TabUnfocused = 36 # 36
+ImGuiCol_TabUnfocusedActive = 37 # 37
+ImGuiCol_PlotLines = 38 # 38
+ImGuiCol_PlotLinesHovered = 39 # 39
+ImGuiCol_PlotHistogram = 40 # 40
+ImGuiCol_PlotHistogramHovered = 41 # 41
+ImGuiCol_TextSelectedBg = 42 # 42
+ImGuiCol_DragDropTarget = 43 # 43
+ImGuiCol_NavHighlight = 44 # 44
+ImGuiCol_NavWindowingHighlight = 45 # 45
+ImGuiCol_NavWindowingDimBg = 46 # 46
+ImGuiCol_ModalWindowDimBg = 47 # 47
+ImGuiCol_COUNT = 48 # 48
 
 # ImGuiColorEditFlags_
 ImGuiColorEditFlags_None = 0 # 0
@@ -295,8 +300,29 @@ ImGuiStyleVar_ScrollbarSize = 16 # 16
 ImGuiStyleVar_ScrollbarRounding = 17 # 17
 ImGuiStyleVar_GrabMinSize = 18 # 18
 ImGuiStyleVar_GrabRounding = 19 # 19
-ImGuiStyleVar_ButtonTextAlign = 20 # 20
-ImGuiStyleVar_COUNT = 21 # 21
+ImGuiStyleVar_TabRounding = 20 # 20
+ImGuiStyleVar_ButtonTextAlign = 21 # 21
+ImGuiStyleVar_COUNT = 22 # 22
+
+# ImGuiTabBarFlags_
+ImGuiTabBarFlags_None = 0 # 0
+ImGuiTabBarFlags_Reorderable = 1 # 1 << 0
+ImGuiTabBarFlags_AutoSelectNewTabs = 2 # 1 << 1
+ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 4 # 1 << 2
+ImGuiTabBarFlags_NoTabListPopupButton = 8 # 1 << 3
+ImGuiTabBarFlags_NoTabListScrollingButtons = 16 # 1 << 4
+ImGuiTabBarFlags_NoTooltip = 32 # 1 << 5
+ImGuiTabBarFlags_FittingPolicyResizeDown = 64 # 1 << 6
+ImGuiTabBarFlags_FittingPolicyScroll = 128 # 1 << 7
+ImGuiTabBarFlags_FittingPolicyMask_ = 192 # ImGuiTabBarFlags_FittingPolicyResizeDown | ImGuiTabBarFlags_FittingPolicyScroll
+ImGuiTabBarFlags_FittingPolicyDefault_ = 64 # ImGuiTabBarFlags_FittingPolicyResizeDown
+
+# ImGuiTabItemFlags_
+ImGuiTabItemFlags_None = 0 # 0
+ImGuiTabItemFlags_UnsavedDocument = 1 # 1 << 0
+ImGuiTabItemFlags_SetSelected = 2 # 1 << 1
+ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4 # 1 << 2
+ImGuiTabItemFlags_NoPushId = 8 # 1 << 3
 
 # ImGuiTreeNodeFlags_
 ImGuiTreeNodeFlags_None = 0 # 0
@@ -335,6 +361,7 @@ ImGuiWindowFlags_AlwaysHorizontalScrollbar = 32768 # 1<< 15
 ImGuiWindowFlags_AlwaysUseWindowPadding = 65536 # 1 << 16
 ImGuiWindowFlags_NoNavInputs = 262144 # 1 << 18
 ImGuiWindowFlags_NoNavFocus = 524288 # 1 << 19
+ImGuiWindowFlags_UnsavedDocument = 1048576 # 1 << 20
 ImGuiWindowFlags_NoNav = 786432 # ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
 ImGuiWindowFlags_NoDecoration = 43 # ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse
 ImGuiWindowFlags_NoInputs = 786944 # ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
@@ -345,14 +372,6 @@ ImGuiWindowFlags_Popup = 67108864 # 1 << 26
 ImGuiWindowFlags_Modal = 134217728 # 1 << 27
 ImGuiWindowFlags_ChildMenu = 268435456 # 1 << 28
 
-
-class ImVector < FFI::Struct
-  layout(
-    :Size, :int,
-    :Capture, :int,
-    :Data, :pointer
-  )
-end
 
 class ImVec2 < FFI::Struct
   layout(
@@ -367,6 +386,14 @@ class ImVec4 < FFI::Struct
     :y, :float,
     :z, :float,
     :w, :float
+  )
+end
+
+class ImVector < FFI::Struct
+  layout(
+    :Size, :int,
+    :Capture, :int,
+    :Data, :pointer
   )
 end
 
@@ -440,6 +467,12 @@ class ImFontConfig < FFI::Struct
   )
 end
 
+class ImFontGlyphRangesBuilder < FFI::Struct
+  layout(
+    :UsedChars, ImVector.by_value
+  )
+end
+
 class ImGuiIO < FFI::Struct
   layout(
     :ConfigFlags, :int,
@@ -466,9 +499,13 @@ class ImGuiIO < FFI::Struct
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
     :ConfigInputTextCursorBlink, :bool,
-    :ConfigResizeWindowsFromEdges, :bool,
+    :ConfigWindowsResizeFromEdges, :bool,
+    :ConfigWindowsMoveFromTitleBarOnly, :bool,
     :BackendPlatformName, :pointer,
     :BackendRendererName, :pointer,
+    :BackendPlatformUserData, :pointer,
+    :BackendRendererUserData, :pointer,
+    :BackendLanguageUserData, :pointer,
     :GetClipboardTextFn, :pointer,
     :SetClipboardTextFn, :pointer,
     :ClipboardUserData, :pointer,
@@ -484,7 +521,6 @@ class ImGuiIO < FFI::Struct
     :KeyAlt, :bool,
     :KeySuper, :bool,
     :KeysDown, [:bool, 512],
-    :InputCharacters, [:ushort, 17],
     :NavInputs, [:float, 21],
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
@@ -514,7 +550,8 @@ class ImGuiIO < FFI::Struct
     :KeysDownDuration, [:float, 512],
     :KeysDownDurationPrev, [:float, 512],
     :NavInputsDownDuration, [:float, 21],
-    :NavInputsDownDurationPrev, [:float, 21]
+    :NavInputsDownDurationPrev, [:float, 21],
+    :InputQueueCharacters, ImVector.by_value
   )
 end
 
@@ -542,6 +579,8 @@ class ImGuiStyle < FFI::Struct
     :ScrollbarRounding, :float,
     :GrabMinSize, :float,
     :GrabRounding, :float,
+    :TabRounding, :float,
+    :TabBorderSize, :float,
     :ButtonTextAlign, ImVec2.by_value,
     :DisplayWindowPadding, ImVec2.by_value,
     :DisplaySafeAreaPadding, ImVec2.by_value,
@@ -549,7 +588,7 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedLines, :bool,
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
-    :Colors, [ImVec4.by_value, 43]
+    :Colors, [ImVec4.by_value, 48]
   )
 end
 
@@ -614,6 +653,8 @@ module ImGui
     attach_function :BeginPopupContextVoid, :igBeginPopupContextVoid, [:pointer, :int], :bool
     attach_function :BeginPopupContextWindow, :igBeginPopupContextWindow, [:pointer, :int, :bool], :bool
     attach_function :BeginPopupModal, :igBeginPopupModal, [:pointer, :pointer, :int], :bool
+    attach_function :BeginTabBar, :igBeginTabBar, [:pointer, :int], :bool
+    attach_function :BeginTabItem, :igBeginTabItem, [:pointer, :pointer, :int], :bool
     attach_function :BeginTooltip, :igBeginTooltip, [], :void
     attach_function :Bullet, :igBullet, [], :void
     attach_function :BulletText, :igBulletText, [:pointer, :varargs], :void
@@ -673,6 +714,8 @@ module ImGui
     attach_function :EndMenu, :igEndMenu, [], :void
     attach_function :EndMenuBar, :igEndMenuBar, [], :void
     attach_function :EndPopup, :igEndPopup, [], :void
+    attach_function :EndTabBar, :igEndTabBar, [], :void
+    attach_function :EndTabItem, :igEndTabItem, [], :void
     attach_function :EndTooltip, :igEndTooltip, [], :void
     attach_function :GetClipboardText, :igGetClipboardText, [], :pointer
     attach_function :GetColorU32, :igGetColorU32, [:int, :float], :uint
@@ -902,6 +945,7 @@ module ImGui
     attach_function :SetScrollX, :igSetScrollX, [:float], :void
     attach_function :SetScrollY, :igSetScrollY, [:float], :void
     attach_function :SetStateStorage, :igSetStateStorage, [:pointer], :void
+    attach_function :SetTabItemClosed, :igSetTabItemClosed, [:pointer], :void
     attach_function :SetTooltip, :igSetTooltip, [:pointer, :varargs], :void
     attach_function :SetWindowCollapsedBool, :igSetWindowCollapsedBool, [:bool, :int], :void
     attach_function :SetWindowCollapsedStr, :igSetWindowCollapsedStr, [:pointer, :bool, :int], :void

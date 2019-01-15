@@ -9,7 +9,7 @@ $lib_path = case RbConfig::CONFIG['host_os']
             when /darwin/
               '../imgui_glfw_opengl2.dylib'
             else
-              raise RuntimeError, "OpenGL : Unknown OS: #{host_os.inspect}"
+              raise RuntimeError, "test.rb : Unknown OS: #{host_os.inspect}"
             end
 
 OpenGL.load_lib()
@@ -103,6 +103,18 @@ if __FILE__ == $0
     ImGui::End()
     ImGui::PopFont()
 
+    tab_bar_flags = ImGuiTabBarFlags_None
+    ImGui::BeginTabBar("MyTabBar", tab_bar_flags)
+    ImGui::BeginTabItem("Avocado", nil, 0)
+    ImGui::Text("This is the Avocado tab!\nblah blah blah blah blah")
+    ImGui::EndTabItem()
+    ImGui::BeginTabItem("Broccoli", nil, 0)
+    ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah")
+    ImGui::EndTabItem()
+    ImGui::BeginTabItem("Cucumber", nil, 0)
+    ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah")
+    ImGui::EndTabItem()
+    ImGui::EndTabBar()
     ImGui::Render()
 
     glfwGetCursorPos(window, mx_buf, my_buf)
