@@ -302,14 +302,15 @@ ImGuiStyleVar_GrabMinSize = 18 # 18
 ImGuiStyleVar_GrabRounding = 19 # 19
 ImGuiStyleVar_TabRounding = 20 # 20
 ImGuiStyleVar_ButtonTextAlign = 21 # 21
-ImGuiStyleVar_COUNT = 22 # 22
+ImGuiStyleVar_SelectableTextAlign = 22 # 22
+ImGuiStyleVar_COUNT = 23 # 23
 
 # ImGuiTabBarFlags_
 ImGuiTabBarFlags_None = 0 # 0
 ImGuiTabBarFlags_Reorderable = 1 # 1 << 0
 ImGuiTabBarFlags_AutoSelectNewTabs = 2 # 1 << 1
-ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 4 # 1 << 2
-ImGuiTabBarFlags_NoTabListPopupButton = 8 # 1 << 3
+ImGuiTabBarFlags_TabListPopupButton = 4 # 1 << 2
+ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 8 # 1 << 3
 ImGuiTabBarFlags_NoTabListScrollingButtons = 16 # 1 << 4
 ImGuiTabBarFlags_NoTooltip = 32 # 1 << 5
 ImGuiTabBarFlags_FittingPolicyResizeDown = 64 # 1 << 6
@@ -405,22 +406,22 @@ end
 
 class ImFont < FFI::Struct
   layout(
-    :FontSize, :float,
-    :Scale, :float,
-    :DisplayOffset, ImVec2.by_value,
-    :Glyphs, ImVector.by_value,
     :IndexAdvanceX, ImVector.by_value,
-    :IndexLookup, ImVector.by_value,
-    :FallbackGlyph, :pointer,
     :FallbackAdvanceX, :float,
-    :FallbackChar, :ushort,
-    :ConfigDataCount, :short,
-    :ConfigData, :pointer,
+    :FontSize, :float,
+    :IndexLookup, ImVector.by_value,
+    :Glyphs, ImVector.by_value,
+    :FallbackGlyph, :pointer,
+    :DisplayOffset, ImVec2.by_value,
     :ContainerAtlas, :pointer,
+    :ConfigData, :pointer,
+    :ConfigDataCount, :short,
+    :FallbackChar, :ushort,
+    :Scale, :float,
     :Ascent, :float,
     :Descent, :float,
-    :DirtyLookupTables, :bool,
-    :MetricsTotalSurface, :int
+    :MetricsTotalSurface, :int,
+    :DirtyLookupTables, :bool
   )
 end
 
@@ -494,8 +495,6 @@ class ImGuiIO < FFI::Struct
     :FontAllowUserScaling, :bool,
     :FontDefault, :pointer,
     :DisplayFramebufferScale, ImVec2.by_value,
-    :DisplayVisibleMin, ImVec2.by_value,
-    :DisplayVisibleMax, ImVec2.by_value,
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
     :ConfigInputTextCursorBlink, :bool,
@@ -582,6 +581,7 @@ class ImGuiStyle < FFI::Struct
     :TabRounding, :float,
     :TabBorderSize, :float,
     :ButtonTextAlign, ImVec2.by_value,
+    :SelectableTextAlign, ImVec2.by_value,
     :DisplayWindowPadding, ImVec2.by_value,
     :DisplaySafeAreaPadding, ImVec2.by_value,
     :MouseCursorScale, :float,
@@ -831,6 +831,7 @@ module ImGui
     attach_function :IsAnyItemFocused, :igIsAnyItemFocused, [], :bool
     attach_function :IsAnyItemHovered, :igIsAnyItemHovered, [], :bool
     attach_function :IsAnyMouseDown, :igIsAnyMouseDown, [], :bool
+    attach_function :IsItemActivated, :igIsItemActivated, [], :bool
     attach_function :IsItemActive, :igIsItemActive, [], :bool
     attach_function :IsItemClicked, :igIsItemClicked, [:int], :bool
     attach_function :IsItemDeactivated, :igIsItemDeactivated, [], :bool

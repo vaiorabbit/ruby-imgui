@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2019-01-15
+*   Last modified : 2019-02-22
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -36,7 +36,7 @@
 2.  Get GLFW library
     *   Use glfw_build.bat (Windows) or glfw_build.sh (macOS)
 3.  Build imgui_glfw_opengl2 library
-    *   Use cimgui_build.bat (Windows) or cimgui_build.sh (macOS)
+    *   Use cimgui_build.bat (Windows)
 4.  Run test.rb
     *   ruby test.rb
 

@@ -179,6 +179,9 @@ module ImGuiBindings
           # Ignore functions with 'va_list' arguments.  Use ':varargs (...)' versions instead.
           next if func_info['args'].include?('va_list')
 
+          # Ignore ImVector methods.
+          next if func_info['cimguiname'].start_with?('ImVector_')
+
           func = ImGuiFunctionMapEntry.new
 
           # name
