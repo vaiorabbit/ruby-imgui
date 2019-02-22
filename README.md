@@ -36,7 +36,7 @@
 2.  Get GLFW library
     *   Use glfw_build.bat (Windows) or glfw_build.sh (macOS)
 3.  Build imgui_glfw_opengl2 library
-    *   Use cimgui_build.bat (Windows)
+    *   Use cimgui_build.bat (Windows) or cimgui_build.sh (macOS)
 4.  Run test.rb
     *   ruby test.rb
 
