@@ -99,17 +99,20 @@ ImGuiColorEditFlags_AlphaBar = 65536 # 1 << 16
 ImGuiColorEditFlags_AlphaPreview = 131072 # 1 << 17
 ImGuiColorEditFlags_AlphaPreviewHalf = 262144 # 1 << 18
 ImGuiColorEditFlags_HDR = 524288 # 1 << 19
-ImGuiColorEditFlags_RGB = 1048576 # 1 << 20
-ImGuiColorEditFlags_HSV = 2097152 # 1 << 21
-ImGuiColorEditFlags_HEX = 4194304 # 1 << 22
+ImGuiColorEditFlags_DisplayRGB = 1048576 # 1 << 20
+ImGuiColorEditFlags_DisplayHSV = 2097152 # 1 << 21
+ImGuiColorEditFlags_DisplayHex = 4194304 # 1 << 22
 ImGuiColorEditFlags_Uint8 = 8388608 # 1 << 23
 ImGuiColorEditFlags_Float = 16777216 # 1 << 24
 ImGuiColorEditFlags_PickerHueBar = 33554432 # 1 << 25
 ImGuiColorEditFlags_PickerHueWheel = 67108864 # 1 << 26
-ImGuiColorEditFlags__InputsMask = 7340032 # ImGuiColorEditFlags_RGB|ImGuiColorEditFlags_HSV|ImGuiColorEditFlags_HEX
+ImGuiColorEditFlags_InputRGB = 134217728 # 1 << 27
+ImGuiColorEditFlags_InputHSV = 268435456 # 1 << 28
+ImGuiColorEditFlags__OptionsDefault = 177209344 # ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_DisplayRGB|ImGuiColorEditFlags_InputRGB|ImGuiColorEditFlags_PickerHueBar
+ImGuiColorEditFlags__DisplayMask = 7340032 # ImGuiColorEditFlags_DisplayRGB|ImGuiColorEditFlags_DisplayHSV|ImGuiColorEditFlags_DisplayHex
 ImGuiColorEditFlags__DataTypeMask = 25165824 # ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_Float
 ImGuiColorEditFlags__PickerMask = 100663296 # ImGuiColorEditFlags_PickerHueWheel|ImGuiColorEditFlags_PickerHueBar
-ImGuiColorEditFlags__OptionsDefault = 42991616 # ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_RGB|ImGuiColorEditFlags_PickerHueBar
+ImGuiColorEditFlags__InputMask = 402653184 # ImGuiColorEditFlags_InputRGB|ImGuiColorEditFlags_InputHSV
 
 # ImGuiComboFlags_
 ImGuiComboFlags_None = 0 # 0
@@ -140,13 +143,17 @@ ImGuiConfigFlags_IsSRGB = 1048576 # 1 << 20
 ImGuiConfigFlags_IsTouchScreen = 2097152 # 1 << 21
 
 # ImGuiDataType_
-ImGuiDataType_S32 = 0 # 0
-ImGuiDataType_U32 = 1 # 1
-ImGuiDataType_S64 = 2 # 2
-ImGuiDataType_U64 = 3 # 3
-ImGuiDataType_Float = 4 # 4
-ImGuiDataType_Double = 5 # 5
-ImGuiDataType_COUNT = 6 # 6
+ImGuiDataType_S8 = 0 # 0
+ImGuiDataType_U8 = 1 # 1
+ImGuiDataType_S16 = 2 # 2
+ImGuiDataType_U16 = 3 # 3
+ImGuiDataType_S32 = 4 # 4
+ImGuiDataType_U32 = 5 # 5
+ImGuiDataType_S64 = 6 # 6
+ImGuiDataType_U64 = 7 # 7
+ImGuiDataType_Float = 8 # 8
+ImGuiDataType_Double = 9 # 9
+ImGuiDataType_COUNT = 10 # 10
 
 # ImGuiDir_
 ImGuiDir_None = -1 # -1
@@ -265,11 +272,12 @@ ImGuiNavInput_FocusNext = 13 # 13
 ImGuiNavInput_TweakSlow = 14 # 14
 ImGuiNavInput_TweakFast = 15 # 15
 ImGuiNavInput_KeyMenu_ = 16 # 16
-ImGuiNavInput_KeyLeft_ = 17 # 17
-ImGuiNavInput_KeyRight_ = 18 # 18
-ImGuiNavInput_KeyUp_ = 19 # 19
-ImGuiNavInput_KeyDown_ = 20 # 20
-ImGuiNavInput_COUNT = 21 # 21
+ImGuiNavInput_KeyTab_ = 17 # 17
+ImGuiNavInput_KeyLeft_ = 18 # 18
+ImGuiNavInput_KeyRight_ = 19 # 19
+ImGuiNavInput_KeyUp_ = 20 # 20
+ImGuiNavInput_KeyDown_ = 21 # 21
+ImGuiNavInput_COUNT = 22 # 22
 ImGuiNavInput_InternalStart_ = 16 # ImGuiNavInput_KeyMenu_
 
 # ImGuiSelectableFlags_
@@ -520,7 +528,7 @@ class ImGuiIO < FFI::Struct
     :KeyAlt, :bool,
     :KeySuper, :bool,
     :KeysDown, [:bool, 512],
-    :NavInputs, [:float, 21],
+    :NavInputs, [:float, 22],
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
     :WantTextInput, :bool,
@@ -548,8 +556,8 @@ class ImGuiIO < FFI::Struct
     :MouseDragMaxDistanceSqr, [:float, 5],
     :KeysDownDuration, [:float, 512],
     :KeysDownDurationPrev, [:float, 512],
-    :NavInputsDownDuration, [:float, 21],
-    :NavInputsDownDurationPrev, [:float, 21],
+    :NavInputsDownDuration, [:float, 22],
+    :NavInputsDownDurationPrev, [:float, 22],
     :InputQueueCharacters, ImVector.by_value
   )
 end
@@ -627,6 +635,7 @@ module ImGui
     attach_function :FontAtlas_GetGlyphRangesJapanese, :ImFontAtlas_GetGlyphRangesJapanese, [:pointer], :pointer
     attach_function :FontAtlas_GetGlyphRangesKorean, :ImFontAtlas_GetGlyphRangesKorean, [:pointer], :pointer
     attach_function :FontAtlas_GetGlyphRangesThai, :ImFontAtlas_GetGlyphRangesThai, [:pointer], :pointer
+    attach_function :FontAtlas_GetGlyphRangesVietnamese, :ImFontAtlas_GetGlyphRangesVietnamese, [:pointer], :pointer
     attach_function :FontAtlas_GetMouseCursorTexData, :ImFontAtlas_GetMouseCursorTexData, [:pointer, :int, :pointer, :pointer, ImVec2.by_value, ImVec2.by_value], :bool
     attach_function :FontAtlas_GetTexDataAsAlpha8, :ImFontAtlas_GetTexDataAsAlpha8, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
     attach_function :FontAtlas_GetTexDataAsRGBA32, :ImFontAtlas_GetTexDataAsRGBA32, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
@@ -717,6 +726,7 @@ module ImGui
     attach_function :EndTabBar, :igEndTabBar, [], :void
     attach_function :EndTabItem, :igEndTabItem, [], :void
     attach_function :EndTooltip, :igEndTooltip, [], :void
+    attach_function :GetBackgroundDrawList, :igGetBackgroundDrawList, [], :pointer
     attach_function :GetClipboardText, :igGetClipboardText, [], :pointer
     attach_function :GetColorU32, :igGetColorU32, [:int, :float], :uint
     attach_function :GetColorU32Vec4, :igGetColorU32Vec4, [ImVec4.by_value], :uint
@@ -752,6 +762,7 @@ module ImGui
     attach_function :GetFontTexUvWhitePixel, :igGetFontTexUvWhitePixel, [], ImVec2.by_value
     attach_function :GetFontTexUvWhitePixel_nonUDT, :igGetFontTexUvWhitePixel_nonUDT, [:pointer], :void
     attach_function :GetFontTexUvWhitePixel_nonUDT2, :igGetFontTexUvWhitePixel_nonUDT2, [], ImVec2.by_value
+    attach_function :GetForegroundDrawList, :igGetForegroundDrawList, [], :pointer
     attach_function :GetFrameCount, :igGetFrameCount, [], :int
     attach_function :GetFrameHeight, :igGetFrameHeight, [], :float
     attach_function :GetFrameHeightWithSpacing, :igGetFrameHeightWithSpacing, [], :float
@@ -780,7 +791,6 @@ module ImGui
     attach_function :GetMousePosOnOpeningCurrentPopup, :igGetMousePosOnOpeningCurrentPopup, [], ImVec2.by_value
     attach_function :GetMousePosOnOpeningCurrentPopup_nonUDT, :igGetMousePosOnOpeningCurrentPopup_nonUDT, [:pointer], :void
     attach_function :GetMousePosOnOpeningCurrentPopup_nonUDT2, :igGetMousePosOnOpeningCurrentPopup_nonUDT2, [], ImVec2.by_value
-    attach_function :GetOverlayDrawList, :igGetOverlayDrawList, [], :pointer
     attach_function :GetScrollMaxX, :igGetScrollMaxX, [], :float
     attach_function :GetScrollMaxY, :igGetScrollMaxY, [], :float
     attach_function :GetScrollX, :igGetScrollX, [], :float
@@ -826,6 +836,7 @@ module ImGui
     attach_function :InputScalarN, :igInputScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int], :bool
     attach_function :InputText, :igInputText, [:pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
     attach_function :InputTextMultiline, :igInputTextMultiline, [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :pointer, :pointer], :bool
+    attach_function :InputTextWithHint, :igInputTextWithHint, [:pointer, :pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
     attach_function :InvisibleButton, :igInvisibleButton, [:pointer, ImVec2.by_value], :bool
     attach_function :IsAnyItemActive, :igIsAnyItemActive, [], :bool
     attach_function :IsAnyItemFocused, :igIsAnyItemFocused, [], :bool
