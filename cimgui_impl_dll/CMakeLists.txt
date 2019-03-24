@@ -27,6 +27,11 @@ set(IMGUI_IMPL_GLFW_SOURCES
 
 set(IMGUI_IMPL_GLFW_LIBRARIES )
 
+# For " Policy CMP0042 is not set: MACOSX_RPATH is enabled by default."
+if (APPLE)
+    set(CMAKE_MACOSX_RPATH ON)
+endif (APPLE)
+
 if (WIN32)
     add_definitions("-DIMGUI_IMPL_API=extern \"C\" __declspec\(dllexport\)")
 else(WIN32)
