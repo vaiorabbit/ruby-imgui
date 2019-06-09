@@ -550,6 +550,7 @@ class ImGuiIO < FFI::Struct
     :MouseDoubleClicked, [:bool, 5],
     :MouseReleased, [:bool, 5],
     :MouseDownOwned, [:bool, 5],
+    :MouseDownWasDoubleClick, [:bool, 5],
     :MouseDownDuration, [:float, 5],
     :MouseDownDurationPrev, [:float, 5],
     :MouseDragMaxDistanceAbs, [ImVec2.by_value, 5],
@@ -696,7 +697,7 @@ module ImGui
     attach_function :ComboStr, :igComboStr, [:pointer, :pointer, :pointer, :int], :bool
     attach_function :ComboFnPtr, :igComboFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
     attach_function :CreateContext, :igCreateContext, [:pointer], :pointer
-    attach_function :DebugCheckVersionAndDataLayout, :igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t], :bool
+    attach_function :DebugCheckVersionAndDataLayout, :igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool
     attach_function :DestroyContext, :igDestroyContext, [:pointer], :void
     attach_function :DragFloat, :igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
     attach_function :DragFloat2, :igDragFloat2, [:pointer, :float, :float, :float, :float, :pointer, :float], :bool
@@ -738,7 +739,6 @@ module ImGui
     attach_function :GetContentRegionAvail, :igGetContentRegionAvail, [], ImVec2.by_value
     attach_function :GetContentRegionAvail_nonUDT, :igGetContentRegionAvail_nonUDT, [:pointer], :void
     attach_function :GetContentRegionAvail_nonUDT2, :igGetContentRegionAvail_nonUDT2, [], ImVec2.by_value
-    attach_function :GetContentRegionAvailWidth, :igGetContentRegionAvailWidth, [], :float
     attach_function :GetContentRegionMax, :igGetContentRegionMax, [], ImVec2.by_value
     attach_function :GetContentRegionMax_nonUDT, :igGetContentRegionMax_nonUDT, [:pointer], :void
     attach_function :GetContentRegionMax_nonUDT2, :igGetContentRegionMax_nonUDT2, [], ImVec2.by_value
@@ -944,6 +944,7 @@ module ImGui
     attach_function :SetItemDefaultFocus, :igSetItemDefaultFocus, [], :void
     attach_function :SetKeyboardFocusHere, :igSetKeyboardFocusHere, [:int], :void
     attach_function :SetMouseCursor, :igSetMouseCursor, [:int], :void
+    attach_function :SetNextItemWidth, :igSetNextItemWidth, [:float], :void
     attach_function :SetNextTreeNodeOpen, :igSetNextTreeNodeOpen, [:bool, :int], :void
     attach_function :SetNextWindowBgAlpha, :igSetNextWindowBgAlpha, [:float], :void
     attach_function :SetNextWindowCollapsed, :igSetNextWindowCollapsed, [:bool, :int], :void
