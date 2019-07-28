@@ -52,6 +52,9 @@ if (WIN32)
 else(WIN32)
     target_link_libraries(imgui_glfw_opengl2 ${IMGUI_IMPL_GLFW_LIBRARIES}  ${OPENGL_LIBRARIES} glfw)
 endif(WIN32)
+if (APPLE)
+    target_link_libraries(imgui_glfw_opengl2 ${IMGUI_IMPL_GLFW_LIBRARIES}  "-framework Foundation" "-framework ApplicationServices")
+endif (APPLE)
 
 set_target_properties(imgui_glfw_opengl2 PROPERTIES PREFIX "")
 

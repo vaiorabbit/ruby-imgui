@@ -21,6 +21,7 @@ ImDrawCornerFlags_All = 15 # 0xF
 ImDrawListFlags_None = 0 # 0
 ImDrawListFlags_AntiAliasedLines = 1 # 1 << 0
 ImDrawListFlags_AntiAliasedFill = 2 # 1 << 1
+ImDrawListFlags_AllowVtxOffset = 4 # 1 << 2
 
 # ImFontAtlasFlags_
 ImFontAtlasFlags_None = 0 # 0
@@ -32,6 +33,7 @@ ImGuiBackendFlags_None = 0 # 0
 ImGuiBackendFlags_HasGamepad = 1 # 1 << 0
 ImGuiBackendFlags_HasMouseCursors = 2 # 1 << 1
 ImGuiBackendFlags_HasSetMousePos = 4 # 1 << 2
+ImGuiBackendFlags_RendererHasVtxOffset = 8 # 1 << 3
 
 # ImGuiCol_
 ImGuiCol_Text = 0 # 0
@@ -217,6 +219,7 @@ ImGuiInputTextFlags_NoUndoRedo = 65536 # 1 << 16
 ImGuiInputTextFlags_CharsScientific = 131072 # 1 << 17
 ImGuiInputTextFlags_CallbackResize = 262144 # 1 << 18
 ImGuiInputTextFlags_Multiline = 1048576 # 1 << 20
+ImGuiInputTextFlags_NoMarkEdited = 2097152 # 1 << 21
 
 # ImGuiKey_
 ImGuiKey_Tab = 0 # 0
@@ -412,6 +415,14 @@ class ImColor < FFI::Struct
   )
 end
 
+class ImDrawListSplitter < FFI::Struct
+  layout(
+    :_Current, :int,
+    :_Count, :int,
+    :_Channels, ImVector.by_value
+  )
+end
+
 class ImFont < FFI::Struct
   layout(
     :IndexAdvanceX, ImVector.by_value,
@@ -571,6 +582,7 @@ class ImGuiStyle < FFI::Struct
     :WindowBorderSize, :float,
     :WindowMinSize, ImVec2.by_value,
     :WindowTitleAlign, ImVec2.by_value,
+    :WindowMenuButtonPosition, :int,
     :ChildRounding, :float,
     :ChildBorderSize, :float,
     :PopupRounding, :float,
@@ -944,8 +956,8 @@ module ImGui
     attach_function :SetItemDefaultFocus, :igSetItemDefaultFocus, [], :void
     attach_function :SetKeyboardFocusHere, :igSetKeyboardFocusHere, [:int], :void
     attach_function :SetMouseCursor, :igSetMouseCursor, [:int], :void
+    attach_function :SetNextItemOpen, :igSetNextItemOpen, [:bool, :int], :void
     attach_function :SetNextItemWidth, :igSetNextItemWidth, [:float], :void
-    attach_function :SetNextTreeNodeOpen, :igSetNextTreeNodeOpen, [:bool, :int], :void
     attach_function :SetNextWindowBgAlpha, :igSetNextWindowBgAlpha, [:float], :void
     attach_function :SetNextWindowCollapsed, :igSetNextWindowCollapsed, [:bool, :int], :void
     attach_function :SetNextWindowContentSize, :igSetNextWindowContentSize, [ImVec2.by_value], :void
