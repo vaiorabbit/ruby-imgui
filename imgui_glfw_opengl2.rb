@@ -7,6 +7,7 @@
 require 'ffi'
 
 # ImDrawCornerFlags_
+ImDrawCornerFlags_None = 0 # 0
 ImDrawCornerFlags_TopLeft = 1 # 1 << 0
 ImDrawCornerFlags_TopRight = 2 # 1 << 1
 ImDrawCornerFlags_BotLeft = 4 # 1 << 2
@@ -237,13 +238,14 @@ ImGuiKey_Backspace = 11 # 11
 ImGuiKey_Space = 12 # 12
 ImGuiKey_Enter = 13 # 13
 ImGuiKey_Escape = 14 # 14
-ImGuiKey_A = 15 # 15
-ImGuiKey_C = 16 # 16
-ImGuiKey_V = 17 # 17
-ImGuiKey_X = 18 # 18
-ImGuiKey_Y = 19 # 19
-ImGuiKey_Z = 20 # 20
-ImGuiKey_COUNT = 21 # 21
+ImGuiKey_KeyPadEnter = 15 # 15
+ImGuiKey_A = 16 # 16
+ImGuiKey_C = 17 # 17
+ImGuiKey_V = 18 # 18
+ImGuiKey_X = 19 # 19
+ImGuiKey_Y = 20 # 20
+ImGuiKey_Z = 21 # 21
+ImGuiKey_COUNT = 22 # 22
 
 # ImGuiMouseCursor_
 ImGuiMouseCursor_None = -1 # -1
@@ -464,6 +466,19 @@ class ImFontAtlas < FFI::Struct
   )
 end
 
+class ImFontAtlasCustomRect < FFI::Struct
+  layout(
+    :ID, :uint,
+    :Width, :ushort,
+    :Height, :ushort,
+    :X, :ushort,
+    :Y, :ushort,
+    :GlyphAdvanceX, :float,
+    :GlyphOffset, ImVec2.by_value,
+    :Font, :pointer
+  )
+end
+
 class ImFontConfig < FFI::Struct
   layout(
     :FontData, :pointer,
@@ -505,7 +520,7 @@ class ImGuiIO < FFI::Struct
     :MouseDoubleClickTime, :float,
     :MouseDoubleClickMaxDist, :float,
     :MouseDragThreshold, :float,
-    :KeyMap, [:int, 21],
+    :KeyMap, [:int, 22],
     :KeyRepeatDelay, :float,
     :KeyRepeatRate, :float,
     :UserData, :pointer,
@@ -601,6 +616,7 @@ class ImGuiStyle < FFI::Struct
     :GrabRounding, :float,
     :TabRounding, :float,
     :TabBorderSize, :float,
+    :ColorButtonPosition, :int,
     :ButtonTextAlign, ImVec2.by_value,
     :SelectableTextAlign, ImVec2.by_value,
     :DisplayWindowPadding, ImVec2.by_value,
@@ -610,6 +626,20 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
     :Colors, [ImVec4.by_value, 48]
+  )
+end
+
+class ImGuiTextRange < FFI::Struct
+  layout(
+    :b, :pointer,
+    :e, :pointer
+  )
+end
+
+class ImGuiStoragePair < FFI::Struct
+  layout(
+    :key, :uint,
+    :val_p, :pointer
   )
 end
 
@@ -965,7 +995,9 @@ module ImGui
     attach_function :SetNextWindowPos, :igSetNextWindowPos, [ImVec2.by_value, :int, ImVec2.by_value], :void
     attach_function :SetNextWindowSize, :igSetNextWindowSize, [ImVec2.by_value, :int], :void
     attach_function :SetNextWindowSizeConstraints, :igSetNextWindowSizeConstraints, [ImVec2.by_value, ImVec2.by_value, :pointer, :pointer], :void
+    attach_function :SetScrollFromPosX, :igSetScrollFromPosX, [:float, :float], :void
     attach_function :SetScrollFromPosY, :igSetScrollFromPosY, [:float, :float], :void
+    attach_function :SetScrollHereX, :igSetScrollHereX, [:float], :void
     attach_function :SetScrollHereY, :igSetScrollHereY, [:float], :void
     attach_function :SetScrollX, :igSetScrollX, [:float], :void
     attach_function :SetScrollY, :igSetScrollY, [:float], :void
@@ -1009,7 +1041,6 @@ module ImGui
     attach_function :TextDisabled, :igTextDisabled, [:pointer, :varargs], :void
     attach_function :TextUnformatted, :igTextUnformatted, [:pointer, :pointer], :void
     attach_function :TextWrapped, :igTextWrapped, [:pointer, :varargs], :void
-    attach_function :TreeAdvanceToLabelPos, :igTreeAdvanceToLabelPos, [], :void
     attach_function :TreeNodeStr, :igTreeNodeStr, [:pointer], :bool
     attach_function :TreeNodeStrStr, :igTreeNodeStrStr, [:pointer, :pointer, :varargs], :bool
     attach_function :TreeNodePtr, :igTreeNodePtr, [:pointer, :pointer, :varargs], :bool

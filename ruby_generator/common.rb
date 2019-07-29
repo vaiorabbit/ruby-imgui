@@ -100,20 +100,20 @@ module ImGuiBindings
     ]
     structs << struct_imvector_stub
 
-    # substutite Pair with stub : currnet description found in 'structs_and_enums.json' seems broken.
-    # "Pair": [
+    # substutite ImGuiStoragePair (a structure with unnamed union member) with stub
+    # "ImGuiStoragePair": [
     #   {
     #     "name": "key",
     #     "type": "ImGuiID"
     #   },
     #   {
-    #     "name": "}", <- ?
-    #     "type": "union { int val_i; float val_f; void* val_p;" <- ?
+    #     "name": "",
+    #     "type": "union { int val_i; float val_f; void* val_p;}"
     #   }
     # ],
-    structs.delete_if {|struct| struct.name == "Pair"}
+    structs.delete_if {|struct| struct.name == "ImGuiStoragePair"}
     struct_pair_stub = ImGuiStructMapEntry.new
-    struct_pair_stub.name = 'Pair'
+    struct_pair_stub.name = 'ImGuiStoragePair'
     struct_pair_stub.members = [
       ImGuiStructMemberEntry.new('key', :uint, false, 0),
       ImGuiStructMemberEntry.new('val_p', :pointer, false, 0),
