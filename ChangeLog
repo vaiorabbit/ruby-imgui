@@ -1,3 +1,8 @@
+2019-08-03    vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* (Windows) Catching up with ImGui 1.72
+	* `imgui_glfw_opengl2.dll` was built against ruby 2.6.0p0 (2018-12-25 revision 66547) [x64-mingw32].
+
 2019-07-29  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (macOS) Catching up with ImGui 1.72
