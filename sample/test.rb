@@ -3,17 +3,23 @@ require 'opengl'
 require 'glfw'
 require_relative '../imgui_glfw_opengl2'
 
-$lib_path = case RbConfig::CONFIG['host_os']
+$lib_path = case RUBY_PLATFORM
             when /mswin|msys|mingw|cygwin/
               Dir.pwd + '/../' + 'imgui_glfw_opengl2.dll'
             when /darwin/
               '../imgui_glfw_opengl2.dylib'
+            when /linux/
+              '../cimgui_impl_dll/build/imgui_glfw_opengl2.so'
             else
-              raise RuntimeError, "test.rb : Unknown OS: #{host_os.inspect}"
+              raise RuntimeError, "test.rb : Unknown OS: #{RUBY_PLATFORM}"
             end
 
 OpenGL.load_lib()
-GLFW.load_lib()
+if RUBY_PLATFORM =~ /linux/
+  GLFW.load_lib('libglfw.so', '.')
+else
+  GLFW.load_lib
+end
 ImGui.load_lib($lib_path)
 
 include OpenGL
