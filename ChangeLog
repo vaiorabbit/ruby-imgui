@@ -1,3 +1,7 @@
+2019-08-20  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* linux build tweak https://github.com/vaiorabbit/ruby-imgui/pull/1 (Thanks: Jake Vandereay https://github.com/lunarfyre7)
+
 2019-08-03    vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (Windows) Catching up with ImGui 1.72
