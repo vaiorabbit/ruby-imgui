@@ -1,7 +1,7 @@
 #
 # For Mac OS X + Xcode + CMake users.
 #
-cd cimgui_impl_dll
+cd imgui_glfw_opengl2
 mkdir build
 cd build
 export MACOSX_DEPLOYMENT_TARGET=10.14
