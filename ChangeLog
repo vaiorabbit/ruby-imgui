@@ -1,3 +1,8 @@
+2019-09-01  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Design change: Libraries are separated into imgui.rb, imgui_impl_glfw.rb and imgui_impl_opengl2.rb
+	* See sample/test_glfw_opengl2.rb for new usage
+
 2019-08-25  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Revised folder names
