@@ -1,6 +1,4 @@
 # coding: utf-8
-require 'opengl'
-require 'glfw'
 require_relative '../imgui'
 require_relative '../imgui_impl_opengl2'
 require_relative '../imgui_impl_glfw'
@@ -50,7 +48,7 @@ if __FILE__ == $0
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0)
 
-  window = glfwCreateWindow( 1280, 720, "Dear ImGui GLFW+OpenGL2/Ruby example", nil, nil )
+  window = glfwCreateWindow(1280, 720, "Ruby-ImGui (GLFW+OpenGL)", nil, nil)
   if window == 0
     glfwTerminate()
     exit
