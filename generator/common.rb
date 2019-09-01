@@ -95,7 +95,7 @@ module ImGuiBindings
     struct_imvector_stub.name = 'ImVector'
     struct_imvector_stub.members = [
       ImGuiStructMemberEntry.new('Size', :int, false, 0),
-      ImGuiStructMemberEntry.new('Capture', :int, false, 0),
+      ImGuiStructMemberEntry.new('Capacity', :int, false, 0),
       ImGuiStructMemberEntry.new('Data', :pointer, false, 0),
     ]
     structs << struct_imvector_stub

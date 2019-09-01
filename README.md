@@ -33,22 +33,24 @@
 
 1.  Update cimgui submodule
     *   git submodule update --init --recursive
-2.  Get GLFW library
-    *   Use glfw_build.bat (Windows) or glfw_build.sh (macOS)
-3.  Build imgui_glfw_opengl2 library
-    *   Use cimgui_build.bat (Windows) or cimgui_build.sh (macOS)
+2.  Get GLFW or SDL2
+    *   GLFW : Use glfw_build.bat (Windows) or glfw_build.sh (macOS)
+3.  Build imgui library
+    *   Use imgui_dll_build.sh (macOS)
 4.  Run test.rb
-    *   ruby test.rb
+    *   cd sample/
+    *   ruby test_glfw_opengl2.rb (GLFW)
+    *   ruby test_sld2_opengl2.rb (SDL2)
 
 ## License ##
 
-'imgui_glfw_opengl2.dylib' and 'imgui_glfw_opengl2.dll' are built on top of these products and are available under the terms of the MIT License.
+'imgui.dylib' and 'imgui.dll' are built on top of these products and are available under the terms of the MIT License.
 *   cimgui ( https://github.com/cimgui/cimgui )
     *   https://github.com/cimgui/cimgui/blob/master/LICENSE
 *   Dear ImGui ( https://github.com/ocornut/imgui )
     *   https://github.com/ocornut/imgui/blob/master/LICENSE.txt
 
-'imgui_glfw_opengl2.rb' is available under the terms of the zlib/libpng License ( http://opensource.org/licenses/Zlib ).
+All ruby codes here are available under the terms of the zlib/libpng License ( http://opensource.org/licenses/Zlib ).
 
 Ruby-Imgui : Yet another ImGui wrapper for Ruby
 Copyright (c) 2019 vaiorabbit <http://twitter.com/vaiorabbit>

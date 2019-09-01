@@ -2,6 +2,8 @@
 
 	* Design change: Libraries are separated into imgui.rb, imgui_impl_glfw.rb and imgui_impl_opengl2.rb
 	* See sample/test_glfw_opengl2.rb for new usage
+	* imgui_impl_sdl2.rb, sample/test_sdl2_opengl2.rb: Added.
+	* Note that imgui_glfw_opengl2.rb will not be supported any more.
 
 2019-08-25  vaiorabbit  <http://twitter.com/vaiorabbit>
 

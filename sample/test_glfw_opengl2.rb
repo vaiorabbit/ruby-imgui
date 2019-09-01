@@ -88,7 +88,6 @@ if __FILE__ == $0
 
     ImGui::ImplOpenGL2_NewFrame()
     ImGui::ImplGlfw_NewFrame()
-
     ImGui::NewFrame()
 
     ImGui::ShowDemoWindow(nil)
@@ -107,7 +106,7 @@ if __FILE__ == $0
     ImGui::PushFont(japanese_font)
     ImGui::Begin("Ruby-ImGui : はじめてのウィンドウ＆日本語", p_open, window_flags)
     ImGui::Text("Loaded shared library '%s'", :string, $lib_path) # See https://github.com/ffi/ffi/wiki/Examples#using-varargs
-    ImGui::TextWrapped(japanese_utf8_text);
+    ImGui::TextWrapped(japanese_utf8_text)
     ImGui::End()
     ImGui::PopFont()
 
