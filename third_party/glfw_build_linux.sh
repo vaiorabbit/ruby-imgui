@@ -9,4 +9,4 @@ mkdir build
 cd build
 cmake -D CMAKE_BUILD_TYPE=Release -D GLFW_NATIVE_API=1 -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=clang ../
 make
-cp -R src/libglfw* ../../sample
+cp -R src/libglfw* ../../../sample

@@ -8,4 +8,4 @@ mkdir build
 cd build
 "%PROGRAMFILES%"\CMake\bin\cmake -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Release -D GLFW_NATIVE_API=1 -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=gcc ../
 make
-cp -R src/glfw3.dll ../../sample
+cp -R src/glfw3.dll ../../../sample
