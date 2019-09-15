@@ -124,13 +124,18 @@ end
 if __FILE__ == $0
 
   # Initialize SDL2
-  SDL2.load_lib('/usr/local/lib/libSDL2.dylib')
+  case RUBY_PLATFORM
+  when /mswin|msys|mingw|cygwin/
+    SDL2.load_lib(Dir.pwd + '/' + 'SDL2.dll')
+  when /darwin/
+    SDL2.load_lib('/usr/local/lib/libSDL2.dylib')
+  end
   success = SDL_Init(SDL_INIT_EVERYTHING)
   exit if success < 0
 
   WINDOW_W = 400
   WINDOW_H = 320
-  window = SDL_CreateWindow("Ruby OpenGL + SDL2 + ImGUI bindings", 0, 0, WINDOW_W, WINDOW_H, SDL_WINDOW_OPENGL)
+  window = SDL_CreateWindow("Ruby OpenGL + SDL2 + ImGUI bindings", 32, 32, WINDOW_W, WINDOW_H, SDL_WINDOW_OPENGL)
 
   ratio = WINDOW_W.to_f / WINDOW_H
 
