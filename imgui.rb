@@ -291,6 +291,7 @@ ImGuiSelectableFlags_DontClosePopups = 1 # 1 << 0
 ImGuiSelectableFlags_SpanAllColumns = 2 # 1 << 1
 ImGuiSelectableFlags_AllowDoubleClick = 4 # 1 << 2
 ImGuiSelectableFlags_Disabled = 8 # 1 << 3
+ImGuiSelectableFlags_AllowItemOverlap = 16 # 1 << 4
 
 # ImGuiStyleVar_
 ImGuiStyleVar_Alpha = 0 # 0
@@ -351,6 +352,8 @@ ImGuiTreeNodeFlags_OpenOnArrow = 128 # 1 << 7
 ImGuiTreeNodeFlags_Leaf = 256 # 1 << 8
 ImGuiTreeNodeFlags_Bullet = 512 # 1 << 9
 ImGuiTreeNodeFlags_FramePadding = 1024 # 1 << 10
+ImGuiTreeNodeFlags_SpanAvailWidth = 2048 # 1 << 11
+ImGuiTreeNodeFlags_SpanFullWidth = 4096 # 1 << 12
 ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 8192 # 1 << 13
 ImGuiTreeNodeFlags_CollapsingHeader = 26 # ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_NoAutoOpenOnLog
 
@@ -490,6 +493,7 @@ class ImFont < FFI::Struct
     :ConfigData, :pointer,
     :ConfigDataCount, :short,
     :FallbackChar, :ushort,
+    :EllipsisChar, :ushort,
     :Scale, :float,
     :Ascent, :float,
     :Descent, :float,
@@ -549,6 +553,7 @@ class ImFontConfig < FFI::Struct
     :MergeMode, :bool,
     :RasterizerFlags, :uint,
     :RasterizerMultiply, :float,
+    :EllipsisChar, :ushort,
     :Name, [:char, 40],
     :DstFont, :pointer
   )
@@ -586,6 +591,7 @@ class ImGuiIO < FFI::Struct
     :ConfigInputTextCursorBlink, :bool,
     :ConfigWindowsResizeFromEdges, :bool,
     :ConfigWindowsMoveFromTitleBarOnly, :bool,
+    :ConfigWindowsMemoryCompactTimer, :float,
     :BackendPlatformName, :pointer,
     :BackendRendererName, :pointer,
     :BackendPlatformUserData, :pointer,
