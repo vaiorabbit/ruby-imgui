@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2019-10-25
+*   Last modified : 2019-11-02
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -32,11 +32,20 @@
 ## Setting up and run sample ##
 
 1.  Update cimgui submodule
-    *   git submodule update --init --recursive
+    *   For the first time:
+        *   git submodule update --init --recursive
+    *   Update:
+        *   cd cimgui
+        *   git pull origin master <- to get latest cimgui
+        *   git submodule update <- to get specific revision of imgui required by cimgui
 2.  Get GLFW or SDL2
     *   GLFW : Use glfw_build.bat (Windows) or glfw_build.sh (macOS)
 3.  Build imgui library
     *   Use imgui_dll_build.sh (macOS)
+    *   Use imgui_dll_build.bat (Windows)
+        *   e.g.)
+            *   > ridk enable <- Activates msys2 GCC
+            *   > imgui_dll_build.bat "D:\Program Files\CMake\bin\cmake.exe" <- You can give absolute path to cmake.exe as the 1st argument
 4.  Run test.rb
     *   cd sample/
     *   ruby test_glfw_opengl2.rb (GLFW)
