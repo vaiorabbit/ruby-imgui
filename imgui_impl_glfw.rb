@@ -85,7 +85,7 @@ module ImGui
     focused = glfwGetWindowAttrib(@@g_Window, GLFW_FOCUSED) != 0
     if focused
       if io[:WantSetMousePos]
-        glfwSetCursorPos(@@g_Window, mouse_pos_backup.x.to_f, mouse_pos_backup.y.to_f)
+        glfwSetCursorPos(@@g_Window, mouse_pos_backup[:x].to_f, mouse_pos_backup[:y].to_f)
       else
         mouse_x = ' ' * 8
         mouse_y = ' ' * 8

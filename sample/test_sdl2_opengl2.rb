@@ -9,15 +9,16 @@ WINDOW_H = 720
 
 if __FILE__ == $0
 
-  SDL2::load_lib('/usr/local/lib/libSDL2.dylib')
-
   case OpenGL.get_platform
   when :OPENGL_PLATFORM_WINDOWS
     OpenGL.load_lib('opengl32.dll', 'C:/Windows/System32')
+    SDL2::load_lib(File.expand_path('./SDL2.dll'))
   when :OPENGL_PLATFORM_MACOSX
     OpenGL.load_lib('libGL.dylib', '/System/Library/Frameworks/OpenGL.framework/Libraries')
+    SDL2::load_lib('/usr/local/lib/libSDL2.dylib')
   when :OPENGL_PLATFORM_LINUX
     OpenGL.load_lib()
+    SDL2::load_lib()
   else
     raise RuntimeError, "Unsupported platform."
   end
