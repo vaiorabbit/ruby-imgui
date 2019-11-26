@@ -277,12 +277,11 @@ ImGuiNavInput_FocusNext = 13 # 13
 ImGuiNavInput_TweakSlow = 14 # 14
 ImGuiNavInput_TweakFast = 15 # 15
 ImGuiNavInput_KeyMenu_ = 16 # 16
-ImGuiNavInput_KeyTab_ = 17 # 17
-ImGuiNavInput_KeyLeft_ = 18 # 18
-ImGuiNavInput_KeyRight_ = 19 # 19
-ImGuiNavInput_KeyUp_ = 20 # 20
-ImGuiNavInput_KeyDown_ = 21 # 21
-ImGuiNavInput_COUNT = 22 # 22
+ImGuiNavInput_KeyLeft_ = 17 # 17
+ImGuiNavInput_KeyRight_ = 18 # 18
+ImGuiNavInput_KeyUp_ = 19 # 19
+ImGuiNavInput_KeyDown_ = 20 # 20
+ImGuiNavInput_COUNT = 21 # 21
 ImGuiNavInput_InternalStart_ = 16 # ImGuiNavInput_KeyMenu_
 
 # ImGuiSelectableFlags_
@@ -612,7 +611,7 @@ class ImGuiIO < FFI::Struct
     :KeyAlt, :bool,
     :KeySuper, :bool,
     :KeysDown, [:bool, 512],
-    :NavInputs, [:float, 22],
+    :NavInputs, [:float, 21],
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
     :WantTextInput, :bool,
@@ -641,8 +640,8 @@ class ImGuiIO < FFI::Struct
     :MouseDragMaxDistanceSqr, [:float, 5],
     :KeysDownDuration, [:float, 512],
     :KeysDownDurationPrev, [:float, 512],
-    :NavInputsDownDuration, [:float, 22],
-    :NavInputsDownDurationPrev, [:float, 22],
+    :NavInputsDownDuration, [:float, 21],
+    :NavInputsDownDurationPrev, [:float, 21],
     :InputQueueCharacters, ImVector.by_value
   )
 end
@@ -990,6 +989,7 @@ module ImGui
     attach_function :IsItemEdited, :igIsItemEdited, [], :bool
     attach_function :IsItemFocused, :igIsItemFocused, [], :bool
     attach_function :IsItemHovered, :igIsItemHovered, [:int], :bool
+    attach_function :IsItemToggledOpen, :igIsItemToggledOpen, [], :bool
     attach_function :IsItemVisible, :igIsItemVisible, [], :bool
     attach_function :IsKeyDown, :igIsKeyDown, [:int], :bool
     attach_function :IsKeyPressed, :igIsKeyPressed, [:int, :bool], :bool
