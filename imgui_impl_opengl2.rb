@@ -40,6 +40,8 @@ module ImGui
     last_scissor_box = ' ' * 16
     glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box)
     glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT)
+    last_tex_env_mode = ' ' * 4
+    glGetTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, last_tex_env_mode)
 
     #  Setup desired GL state
     ImplOpenGL2_SetupRenderState(draw_data, fb_width, fb_height)
@@ -108,6 +110,7 @@ module ImGui
     glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3])
     last_scissor_box = last_scissor_box.unpack('L4')
     glScissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3])
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, last_tex_env_mode.unpack1('L'))
   end
 
   # private
@@ -126,6 +129,7 @@ module ImGui
     glEnableClientState(GL_COLOR_ARRAY)
     glEnable(GL_TEXTURE_2D)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
 
     #  If you are using this code with non-legacy OpenGL header/contexts (which you should not, prefer using imgui_impl_opengl3.cpp!!),
     #  you may need to backup/reset/restore current shader using the lines below. DO NOT MODIFY THIS FILE! Add the code in your calling function:

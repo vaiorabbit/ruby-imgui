@@ -1,3 +1,8 @@
+2020-01-26  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Applied changes made in https://github.com/ocornut/imgui/commit/f6da5000bfaf3a035e8d8a7db9b5150644f4630b
+	"Backends: OpenGL2: Explicitly backup, setup and restore GL_TEXTURE_ENV to increase compatibility with legacy OpenGL applications."
+
 2019-11-27  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (macOS) Catching up with ImGui 1.74
