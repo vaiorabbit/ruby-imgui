@@ -2,6 +2,7 @@
 
 	* (macOS) Catching up with ImGui 1.75
 	* Fixed wrong array argument generation (e.g. arguments like 'float[3]' are now converted into :pointer.)
+	* Added OpenGL3 render backend (Note that this feature is only tested only on macOS)
 
 2020-01-26  vaiorabbit  <http://twitter.com/vaiorabbit>
 
