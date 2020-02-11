@@ -148,7 +148,7 @@ module ImGuiBindings
   end
 
   def self.get_ffi_type(type_name)
-    if type_name.include?('*') || type_name.include?('&')
+    if type_name.include?('*') || type_name.include?('&') || type_name.include?(']')
       return :pointer
     end
     type_name.gsub!(/const[ ]+/, '')

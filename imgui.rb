@@ -247,6 +247,12 @@ ImGuiKey_Y = 20 # 20
 ImGuiKey_Z = 21 # 21
 ImGuiKey_COUNT = 22 # 22
 
+# ImGuiMouseButton_
+ImGuiMouseButton_Left = 0 # 0
+ImGuiMouseButton_Right = 1 # 1
+ImGuiMouseButton_Middle = 2 # 2
+ImGuiMouseButton_COUNT = 5 # 5
+
 # ImGuiMouseCursor_
 ImGuiMouseCursor_None = -1 # -1
 ImGuiMouseCursor_Arrow = 0 # 0
@@ -257,7 +263,8 @@ ImGuiMouseCursor_ResizeEW = 4 # 4
 ImGuiMouseCursor_ResizeNESW = 5 # 5
 ImGuiMouseCursor_ResizeNWSE = 6 # 6
 ImGuiMouseCursor_Hand = 7 # 7
-ImGuiMouseCursor_COUNT = 8 # 8
+ImGuiMouseCursor_NotAllowed = 8 # 8
+ImGuiMouseCursor_COUNT = 9 # 9
 
 # ImGuiNavInput_
 ImGuiNavInput_Activate = 0 # 0
@@ -493,11 +500,11 @@ class ImFont < FFI::Struct
     :ConfigDataCount, :short,
     :FallbackChar, :ushort,
     :EllipsisChar, :ushort,
+    :DirtyLookupTables, :bool,
     :Scale, :float,
     :Ascent, :float,
     :Descent, :float,
-    :MetricsTotalSurface, :int,
-    :DirtyLookupTables, :bool
+    :MetricsTotalSurface, :int
   )
 end
 
@@ -682,6 +689,7 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedLines, :bool,
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
+    :CircleSegmentMaxError, :float,
     :Colors, [ImVec4.by_value, 48]
   )
 end
@@ -724,6 +732,7 @@ module ImGui
   typedef :pointer, :ImGuiInputTextCallback
   typedef :int, :ImGuiInputTextFlags
   typedef :int, :ImGuiKey
+  typedef :int, :ImGuiMouseButton
   typedef :int, :ImGuiMouseCursor
   typedef :int, :ImGuiNavInput
   typedef :int, :ImGuiSelectableFlags
@@ -776,7 +785,7 @@ module ImGui
     attach_function :FontAtlas_GetGlyphRangesKorean, :ImFontAtlas_GetGlyphRangesKorean, [:pointer], :pointer
     attach_function :FontAtlas_GetGlyphRangesThai, :ImFontAtlas_GetGlyphRangesThai, [:pointer], :pointer
     attach_function :FontAtlas_GetGlyphRangesVietnamese, :ImFontAtlas_GetGlyphRangesVietnamese, [:pointer], :pointer
-    attach_function :FontAtlas_GetMouseCursorTexData, :ImFontAtlas_GetMouseCursorTexData, [:pointer, :int, :pointer, :pointer, ImVec2.by_value, ImVec2.by_value], :bool
+    attach_function :FontAtlas_GetMouseCursorTexData, :ImFontAtlas_GetMouseCursorTexData, [:pointer, :int, :pointer, :pointer, :pointer, :pointer], :bool
     attach_function :FontAtlas_GetTexDataAsAlpha8, :ImFontAtlas_GetTexDataAsAlpha8, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
     attach_function :FontAtlas_GetTexDataAsRGBA32, :ImFontAtlas_GetTexDataAsRGBA32, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
     attach_function :FontAtlas_ImFontAtlas, :ImFontAtlas_ImFontAtlas, [], :void
@@ -827,10 +836,10 @@ module ImGui
     attach_function :ColorConvertU32ToFloat4, :igColorConvertU32ToFloat4, [:uint], ImVec4.by_value
     attach_function :ColorConvertU32ToFloat4_nonUDT, :igColorConvertU32ToFloat4_nonUDT, [:pointer, :uint], :void
     attach_function :ColorConvertU32ToFloat4_nonUDT2, :igColorConvertU32ToFloat4_nonUDT2, [:uint], ImVec4.by_value
-    attach_function :ColorEdit3, :igColorEdit3, [:pointer, :float, :int], :bool
-    attach_function :ColorEdit4, :igColorEdit4, [:pointer, :float, :int], :bool
-    attach_function :ColorPicker3, :igColorPicker3, [:pointer, :float, :int], :bool
-    attach_function :ColorPicker4, :igColorPicker4, [:pointer, :float, :int, :pointer], :bool
+    attach_function :ColorEdit3, :igColorEdit3, [:pointer, :pointer, :int], :bool
+    attach_function :ColorEdit4, :igColorEdit4, [:pointer, :pointer, :int], :bool
+    attach_function :ColorPicker3, :igColorPicker3, [:pointer, :pointer, :int], :bool
+    attach_function :ColorPicker4, :igColorPicker4, [:pointer, :pointer, :int, :pointer], :bool
     attach_function :Columns, :igColumns, [:int, :pointer, :bool], :void
     attach_function :Combo, :igCombo, [:pointer, :pointer, :pointer, :int, :int], :bool
     attach_function :ComboStr, :igComboStr, [:pointer, :pointer, :pointer, :int], :bool
@@ -839,14 +848,14 @@ module ImGui
     attach_function :DebugCheckVersionAndDataLayout, :igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool
     attach_function :DestroyContext, :igDestroyContext, [:pointer], :void
     attach_function :DragFloat, :igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :DragFloat2, :igDragFloat2, [:pointer, :float, :float, :float, :float, :pointer, :float], :bool
-    attach_function :DragFloat3, :igDragFloat3, [:pointer, :float, :float, :float, :float, :pointer, :float], :bool
-    attach_function :DragFloat4, :igDragFloat4, [:pointer, :float, :float, :float, :float, :pointer, :float], :bool
+    attach_function :DragFloat2, :igDragFloat2, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
+    attach_function :DragFloat3, :igDragFloat3, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
+    attach_function :DragFloat4, :igDragFloat4, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
     attach_function :DragFloatRange2, :igDragFloatRange2, [:pointer, :pointer, :pointer, :float, :float, :float, :pointer, :pointer, :float], :bool
     attach_function :DragInt, :igDragInt, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :DragInt2, :igDragInt2, [:pointer, :int, :float, :int, :int, :pointer], :bool
-    attach_function :DragInt3, :igDragInt3, [:pointer, :int, :float, :int, :int, :pointer], :bool
-    attach_function :DragInt4, :igDragInt4, [:pointer, :int, :float, :int, :int, :pointer], :bool
+    attach_function :DragInt2, :igDragInt2, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
+    attach_function :DragInt3, :igDragInt3, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
+    attach_function :DragInt4, :igDragInt4, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
     attach_function :DragIntRange2, :igDragIntRange2, [:pointer, :pointer, :pointer, :float, :int, :int, :pointer, :pointer], :bool
     attach_function :DragScalar, :igDragScalar, [:pointer, :int, :pointer, :float, :pointer, :pointer, :pointer, :float], :bool
     attach_function :DragScalarN, :igDragScalarN, [:pointer, :int, :pointer, :int, :float, :pointer, :pointer, :pointer, :float], :bool
@@ -964,13 +973,13 @@ module ImGui
     attach_function :Indent, :igIndent, [:float], :void
     attach_function :InputDouble, :igInputDouble, [:pointer, :pointer, :double, :double, :pointer, :int], :bool
     attach_function :InputFloat, :igInputFloat, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
-    attach_function :InputFloat2, :igInputFloat2, [:pointer, :float, :pointer, :int], :bool
-    attach_function :InputFloat3, :igInputFloat3, [:pointer, :float, :pointer, :int], :bool
-    attach_function :InputFloat4, :igInputFloat4, [:pointer, :float, :pointer, :int], :bool
+    attach_function :InputFloat2, :igInputFloat2, [:pointer, :pointer, :pointer, :int], :bool
+    attach_function :InputFloat3, :igInputFloat3, [:pointer, :pointer, :pointer, :int], :bool
+    attach_function :InputFloat4, :igInputFloat4, [:pointer, :pointer, :pointer, :int], :bool
     attach_function :InputInt, :igInputInt, [:pointer, :pointer, :int, :int, :int], :bool
-    attach_function :InputInt2, :igInputInt2, [:pointer, :int, :int], :bool
-    attach_function :InputInt3, :igInputInt3, [:pointer, :int, :int], :bool
-    attach_function :InputInt4, :igInputInt4, [:pointer, :int, :int], :bool
+    attach_function :InputInt2, :igInputInt2, [:pointer, :pointer, :int], :bool
+    attach_function :InputInt3, :igInputInt3, [:pointer, :pointer, :int], :bool
+    attach_function :InputInt4, :igInputInt4, [:pointer, :pointer, :int], :bool
     attach_function :InputScalar, :igInputScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :int], :bool
     attach_function :InputScalarN, :igInputScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int], :bool
     attach_function :InputText, :igInputText, [:pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
@@ -1120,13 +1129,13 @@ module ImGui
     attach_function :ShowUserGuide, :igShowUserGuide, [], :void
     attach_function :SliderAngle, :igSliderAngle, [:pointer, :pointer, :float, :float, :pointer], :bool
     attach_function :SliderFloat, :igSliderFloat, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :SliderFloat2, :igSliderFloat2, [:pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :SliderFloat3, :igSliderFloat3, [:pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :SliderFloat4, :igSliderFloat4, [:pointer, :float, :float, :float, :pointer, :float], :bool
+    attach_function :SliderFloat2, :igSliderFloat2, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
+    attach_function :SliderFloat3, :igSliderFloat3, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
+    attach_function :SliderFloat4, :igSliderFloat4, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
     attach_function :SliderInt, :igSliderInt, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :SliderInt2, :igSliderInt2, [:pointer, :int, :int, :int, :pointer], :bool
-    attach_function :SliderInt3, :igSliderInt3, [:pointer, :int, :int, :int, :pointer], :bool
-    attach_function :SliderInt4, :igSliderInt4, [:pointer, :int, :int, :int, :pointer], :bool
+    attach_function :SliderInt2, :igSliderInt2, [:pointer, :pointer, :int, :int, :pointer], :bool
+    attach_function :SliderInt3, :igSliderInt3, [:pointer, :pointer, :int, :int, :pointer], :bool
+    attach_function :SliderInt4, :igSliderInt4, [:pointer, :pointer, :int, :int, :pointer], :bool
     attach_function :SliderScalar, :igSliderScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :float], :bool
     attach_function :SliderScalarN, :igSliderScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :float], :bool
     attach_function :SmallButton, :igSmallButton, [:pointer], :bool
