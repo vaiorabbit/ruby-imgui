@@ -96,39 +96,24 @@ module ImGui
     return if fb_width == 0 || fb_height == 0
 
     #  Backup GL state
-    last_active_texture = ' ' * 4
-    glGetIntegerv(GL_ACTIVE_TEXTURE, last_active_texture)
-    last_program = ' ' * 4
-    glGetIntegerv(GL_CURRENT_PROGRAM, last_program)
-    last_texture = ' ' * 4
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
+    last_active_texture = ' ' * 4;  glGetIntegerv(GL_ACTIVE_TEXTURE, last_active_texture)
+    last_program = ' ' * 4;  glGetIntegerv(GL_CURRENT_PROGRAM, last_program)
+    last_texture = ' ' * 4;  glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
 
-    last_sampler = ' ' * 4
-    glGetIntegerv(GL_SAMPLER_BINDING, last_sampler)
-    last_array_buffer = ' ' * 4
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, last_array_buffer)
-    last_vertex_array_object = ' ' * 4
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, last_vertex_array_object)
+    last_sampler = ' ' * 4;  glGetIntegerv(GL_SAMPLER_BINDING, last_sampler)
+    last_array_buffer = ' ' * 4;  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, last_array_buffer)
+    last_vertex_array_object = ' ' * 4;  glGetIntegerv(GL_VERTEX_ARRAY_BINDING, last_vertex_array_object)
 
-    last_polygon_mode = ' ' * 8
-    glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode)
-    last_viewport = ' ' * 16
-    glGetIntegerv(GL_VIEWPORT, last_viewport)
-    last_scissor_box = ' ' * 16
-    glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box)
+    last_polygon_mode = ' ' * 8;  glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode)
+    last_viewport = ' ' * 16;  glGetIntegerv(GL_VIEWPORT, last_viewport)
+    last_scissor_box = ' ' * 16;  glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box)
 
-    last_blend_src_rgb = ' ' * 4
-    glGetIntegerv(GL_BLEND_SRC_RGB, last_blend_src_rgb)
-    last_blend_dst_rgb = ' ' * 4
-    glGetIntegerv(GL_BLEND_DST_RGB, last_blend_dst_rgb)
-    last_blend_src_alpha = ' ' * 4
-    glGetIntegerv(GL_BLEND_SRC_ALPHA, last_blend_src_alpha)
-    last_blend_dst_alpha = ' ' * 4
-    glGetIntegerv(GL_BLEND_DST_ALPHA, last_blend_dst_alpha)
-    last_blend_equation_rgb = ' ' * 4
-    glGetIntegerv(GL_BLEND_EQUATION_RGB, last_blend_equation_rgb)
-    last_blend_equation_alpha = ' ' * 4
-    glGetIntegerv(GL_BLEND_EQUATION_ALPHA, last_blend_equation_alpha)
+    last_blend_src_rgb = ' ' * 4;  glGetIntegerv(GL_BLEND_SRC_RGB, last_blend_src_rgb)
+    last_blend_dst_rgb = ' ' * 4;  glGetIntegerv(GL_BLEND_DST_RGB, last_blend_dst_rgb)
+    last_blend_src_alpha = ' ' * 4;  glGetIntegerv(GL_BLEND_SRC_ALPHA, last_blend_src_alpha)
+    last_blend_dst_alpha = ' ' * 4;  glGetIntegerv(GL_BLEND_DST_ALPHA, last_blend_dst_alpha)
+    last_blend_equation_rgb = ' ' * 4;  glGetIntegerv(GL_BLEND_EQUATION_RGB, last_blend_equation_rgb)
+    last_blend_equation_alpha = ' ' * 4;  glGetIntegerv(GL_BLEND_EQUATION_ALPHA, last_blend_equation_alpha)
 
     last_enable_blend = glIsEnabled(GL_BLEND)
     last_enable_cull_face = glIsEnabled(GL_CULL_FACE)
@@ -317,7 +302,6 @@ module ImGui
   end
 
   def self.ImplOpenGL3_CreateDeviceObjects()
-
     # Backup GL state
     last_texture, last_array_buffer = ' ' * 4, ' ' * 4
     glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
@@ -439,20 +423,15 @@ module ImGui
     }
     SRC
 
-    vertex_shader, fragment_shader = nil, nil
-    if glsl_version < 130
-      vertex_shader = vertex_shader_glsl_120
-      fragment_shader = fragment_shader_glsl_120
-    elsif glsl_version >= 410
-      vertex_shader = vertex_shader_glsl_410_core
-      fragment_shader = fragment_shader_glsl_410_core
-    elsif glsl_version == 300
-      vertex_shader = vertex_shader_glsl_300_es
-      fragment_shader = fragment_shader_glsl_300_es
-    else
-      vertex_shader = vertex_shader_glsl_130
-      fragment_shader = fragment_shader_glsl_130
-    end
+    vertex_shader, fragment_shader = if glsl_version < 130
+                                       [vertex_shader_glsl_120, fragment_shader_glsl_120]
+                                     elsif glsl_version >= 410
+                                       [vertex_shader_glsl_410_core, fragment_shader_glsl_410_core]
+                                     elsif glsl_version == 300
+                                       [vertex_shader_glsl_300_es, fragment_shader_glsl_300_es]
+                                     else
+                                       [vertex_shader_glsl_130, fragment_shader_glsl_130]
+                                     end
 
     vertex_shader.prepend(@@g_GlslVersionString + "\n")
     @@g_VertHandle = glCreateShader(GL_VERTEX_SHADER)
@@ -474,6 +453,7 @@ module ImGui
 
     @@g_AttribLocationTex = glGetUniformLocation(@@g_ShaderHandle, "Texture")
     @@g_AttribLocationProjMtx = glGetUniformLocation(@@g_ShaderHandle, "ProjMtx")
+
     @@g_AttribLocationVtxPos = glGetAttribLocation(@@g_ShaderHandle, "Position")
     @@g_AttribLocationVtxUV = glGetAttribLocation(@@g_ShaderHandle, "UV")
     @@g_AttribLocationVtxColor = glGetAttribLocation(@@g_ShaderHandle, "Color")

@@ -51,6 +51,13 @@ module ImGuiBindings
       json = JSON.load(file)
       json.keys.each do |imgui_type_name|
         next if IgnoredTypedefs.include?(imgui_type_name)
+        # Resolve ImWchar : Now ImWchar is a typedef of ImWchar16 or ImWchar32 (v1.76 ~)
+        # https://github.com/cimgui/cimgui/commit/f84d9c43015742dc5ad4434da92c5e1a99254d27#diff-2e9752529db931d99aade39734631cd0L70
+        if imgui_type_name == "ImWchar"
+          imwchar_type = json[imgui_type_name] # "ImWchar16" or "ImWchar32"
+          type_map[imgui_type_name] = get_ffi_type(json[imwchar_type])
+          next
+        end
         type_map[imgui_type_name] = get_ffi_type(json[imgui_type_name])
       end
     end

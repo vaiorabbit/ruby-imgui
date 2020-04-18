@@ -98,6 +98,7 @@ ImGuiColorEditFlags_NoTooltip = 64 # 1 << 6
 ImGuiColorEditFlags_NoLabel = 128 # 1 << 7
 ImGuiColorEditFlags_NoSidePreview = 256 # 1 << 8
 ImGuiColorEditFlags_NoDragDrop = 512 # 1 << 9
+ImGuiColorEditFlags_NoBorder = 1024 # 1 << 10
 ImGuiColorEditFlags_AlphaBar = 65536 # 1 << 16
 ImGuiColorEditFlags_AlphaPreview = 131072 # 1 << 17
 ImGuiColorEditFlags_AlphaPreviewHalf = 262144 # 1 << 18
@@ -221,6 +222,13 @@ ImGuiInputTextFlags_CharsScientific = 131072 # 1 << 17
 ImGuiInputTextFlags_CallbackResize = 262144 # 1 << 18
 ImGuiInputTextFlags_Multiline = 1048576 # 1 << 20
 ImGuiInputTextFlags_NoMarkEdited = 2097152 # 1 << 21
+
+# ImGuiKeyModFlags_
+ImGuiKeyModFlags_None = 0 # 0
+ImGuiKeyModFlags_Ctrl = 1 # 1 << 0
+ImGuiKeyModFlags_Shift = 2 # 1 << 1
+ImGuiKeyModFlags_Alt = 4 # 1 << 2
+ImGuiKeyModFlags_Super = 8 # 1 << 3
 
 # ImGuiKey_
 ImGuiKey_Tab = 0 # 0
@@ -504,7 +512,8 @@ class ImFont < FFI::Struct
     :Scale, :float,
     :Ascent, :float,
     :Descent, :float,
-    :MetricsTotalSurface, :int
+    :MetricsTotalSurface, :int,
+    :Used4kPagesMap[(0xFFFF+1)/4096/8], [:uchar, 2]
   )
 end
 
@@ -633,6 +642,7 @@ class ImGuiIO < FFI::Struct
     :MetricsActiveWindows, :int,
     :MetricsActiveAllocations, :int,
     :MouseDelta, ImVec2.by_value,
+    :KeyMods, :int,
     :MousePosPrev, ImVec2.by_value,
     :MouseClickedPos, [ImVec2.by_value, 5],
     :MouseClickedTime, [:double, 5],
@@ -649,6 +659,7 @@ class ImGuiIO < FFI::Struct
     :KeysDownDurationPrev, [:float, 512],
     :NavInputsDownDuration, [:float, 21],
     :NavInputsDownDurationPrev, [:float, 21],
+    :InputQueueSurrogate, :ushort,
     :InputQueueCharacters, ImVector.by_value
   )
 end
@@ -732,6 +743,7 @@ module ImGui
   typedef :pointer, :ImGuiInputTextCallback
   typedef :int, :ImGuiInputTextFlags
   typedef :int, :ImGuiKey
+  typedef :int, :ImGuiKeyModFlags
   typedef :int, :ImGuiMouseButton
   typedef :int, :ImGuiMouseCursor
   typedef :int, :ImGuiNavInput
@@ -752,6 +764,8 @@ module ImGui
   typedef :uint64, :ImU64
   typedef :uchar, :ImU8
   typedef :ushort, :ImWchar
+  typedef :ushort, :ImWchar16
+  typedef :uint, :ImWchar32
 
   @@imgui_import_done = false
 
@@ -796,7 +810,7 @@ module ImGui
     attach_function :AlignTextToFramePadding, :igAlignTextToFramePadding, [], :void
     attach_function :ArrowButton, :igArrowButton, [:pointer, :int], :bool
     attach_function :Begin, :igBegin, [:pointer, :pointer, :int], :bool
-    attach_function :BeginChild, :igBeginChild, [:pointer, ImVec2.by_value, :bool, :int], :bool
+    attach_function :BeginChildStr, :igBeginChildStr, [:pointer, ImVec2.by_value, :bool, :int], :bool
     attach_function :BeginChildID, :igBeginChildID, [:uint, ImVec2.by_value, :bool, :int], :bool
     attach_function :BeginChildFrame, :igBeginChildFrame, [:uint, ImVec2.by_value, :int], :bool
     attach_function :BeginCombo, :igBeginCombo, [:pointer, :pointer, :int], :bool
@@ -819,29 +833,25 @@ module ImGui
     attach_function :Button, :igButton, [:pointer, ImVec2.by_value], :bool
     attach_function :CalcItemWidth, :igCalcItemWidth, [], :float
     attach_function :CalcListClipping, :igCalcListClipping, [:int, :float, :pointer, :pointer], :void
-    attach_function :CalcTextSize, :igCalcTextSize, [:pointer, :pointer, :bool, :float], ImVec2.by_value
-    attach_function :CalcTextSize_nonUDT, :igCalcTextSize_nonUDT, [:pointer, :pointer, :pointer, :bool, :float], :void
-    attach_function :CalcTextSize_nonUDT2, :igCalcTextSize_nonUDT2, [:pointer, :pointer, :bool, :float], ImVec2.by_value
+    attach_function :CalcTextSize, :igCalcTextSize, [:pointer, :pointer, :pointer, :bool, :float], :void
     attach_function :CaptureKeyboardFromApp, :igCaptureKeyboardFromApp, [:bool], :void
     attach_function :CaptureMouseFromApp, :igCaptureMouseFromApp, [:bool], :void
     attach_function :Checkbox, :igCheckbox, [:pointer, :pointer], :bool
     attach_function :CheckboxFlags, :igCheckboxFlags, [:pointer, :pointer, :uint], :bool
     attach_function :CloseCurrentPopup, :igCloseCurrentPopup, [], :void
-    attach_function :CollapsingHeader, :igCollapsingHeader, [:pointer, :int], :bool
+    attach_function :CollapsingHeaderTreeNodeFlags, :igCollapsingHeaderTreeNodeFlags, [:pointer, :int], :bool
     attach_function :CollapsingHeaderBoolPtr, :igCollapsingHeaderBoolPtr, [:pointer, :pointer, :int], :bool
     attach_function :ColorButton, :igColorButton, [:pointer, ImVec4.by_value, :int, ImVec2.by_value], :bool
     attach_function :ColorConvertFloat4ToU32, :igColorConvertFloat4ToU32, [ImVec4.by_value], :uint
     attach_function :ColorConvertHSVtoRGB, :igColorConvertHSVtoRGB, [:float, :float, :float, :pointer, :pointer, :pointer], :void
     attach_function :ColorConvertRGBtoHSV, :igColorConvertRGBtoHSV, [:float, :float, :float, :pointer, :pointer, :pointer], :void
-    attach_function :ColorConvertU32ToFloat4, :igColorConvertU32ToFloat4, [:uint], ImVec4.by_value
-    attach_function :ColorConvertU32ToFloat4_nonUDT, :igColorConvertU32ToFloat4_nonUDT, [:pointer, :uint], :void
-    attach_function :ColorConvertU32ToFloat4_nonUDT2, :igColorConvertU32ToFloat4_nonUDT2, [:uint], ImVec4.by_value
+    attach_function :ColorConvertU32ToFloat4, :igColorConvertU32ToFloat4, [:pointer, :uint], :void
     attach_function :ColorEdit3, :igColorEdit3, [:pointer, :pointer, :int], :bool
     attach_function :ColorEdit4, :igColorEdit4, [:pointer, :pointer, :int], :bool
     attach_function :ColorPicker3, :igColorPicker3, [:pointer, :pointer, :int], :bool
     attach_function :ColorPicker4, :igColorPicker4, [:pointer, :pointer, :int, :pointer], :bool
     attach_function :Columns, :igColumns, [:int, :pointer, :bool], :void
-    attach_function :Combo, :igCombo, [:pointer, :pointer, :pointer, :int, :int], :bool
+    attach_function :ComboStr_arr, :igComboStr_arr, [:pointer, :pointer, :pointer, :int, :int], :bool
     attach_function :ComboStr, :igComboStr, [:pointer, :pointer, :pointer, :int], :bool
     attach_function :ComboFnPtr, :igComboFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
     attach_function :CreateContext, :igCreateContext, [:pointer], :pointer
@@ -877,68 +887,44 @@ module ImGui
     attach_function :EndTooltip, :igEndTooltip, [], :void
     attach_function :GetBackgroundDrawList, :igGetBackgroundDrawList, [], :pointer
     attach_function :GetClipboardText, :igGetClipboardText, [], :pointer
-    attach_function :GetColorU32, :igGetColorU32, [:int, :float], :uint
+    attach_function :GetColorU32Col, :igGetColorU32Col, [:int, :float], :uint
     attach_function :GetColorU32Vec4, :igGetColorU32Vec4, [ImVec4.by_value], :uint
     attach_function :GetColorU32U32, :igGetColorU32U32, [:uint], :uint
     attach_function :GetColumnIndex, :igGetColumnIndex, [], :int
     attach_function :GetColumnOffset, :igGetColumnOffset, [:int], :float
     attach_function :GetColumnWidth, :igGetColumnWidth, [:int], :float
     attach_function :GetColumnsCount, :igGetColumnsCount, [], :int
-    attach_function :GetContentRegionAvail, :igGetContentRegionAvail, [], ImVec2.by_value
-    attach_function :GetContentRegionAvail_nonUDT, :igGetContentRegionAvail_nonUDT, [:pointer], :void
-    attach_function :GetContentRegionAvail_nonUDT2, :igGetContentRegionAvail_nonUDT2, [], ImVec2.by_value
-    attach_function :GetContentRegionMax, :igGetContentRegionMax, [], ImVec2.by_value
-    attach_function :GetContentRegionMax_nonUDT, :igGetContentRegionMax_nonUDT, [:pointer], :void
-    attach_function :GetContentRegionMax_nonUDT2, :igGetContentRegionMax_nonUDT2, [], ImVec2.by_value
+    attach_function :GetContentRegionAvail, :igGetContentRegionAvail, [:pointer], :void
+    attach_function :GetContentRegionMax, :igGetContentRegionMax, [:pointer], :void
     attach_function :GetCurrentContext, :igGetCurrentContext, [], :pointer
-    attach_function :GetCursorPos, :igGetCursorPos, [], ImVec2.by_value
-    attach_function :GetCursorPos_nonUDT, :igGetCursorPos_nonUDT, [:pointer], :void
-    attach_function :GetCursorPos_nonUDT2, :igGetCursorPos_nonUDT2, [], ImVec2.by_value
+    attach_function :GetCursorPos, :igGetCursorPos, [:pointer], :void
     attach_function :GetCursorPosX, :igGetCursorPosX, [], :float
     attach_function :GetCursorPosY, :igGetCursorPosY, [], :float
-    attach_function :GetCursorScreenPos, :igGetCursorScreenPos, [], ImVec2.by_value
-    attach_function :GetCursorScreenPos_nonUDT, :igGetCursorScreenPos_nonUDT, [:pointer], :void
-    attach_function :GetCursorScreenPos_nonUDT2, :igGetCursorScreenPos_nonUDT2, [], ImVec2.by_value
-    attach_function :GetCursorStartPos, :igGetCursorStartPos, [], ImVec2.by_value
-    attach_function :GetCursorStartPos_nonUDT, :igGetCursorStartPos_nonUDT, [:pointer], :void
-    attach_function :GetCursorStartPos_nonUDT2, :igGetCursorStartPos_nonUDT2, [], ImVec2.by_value
+    attach_function :GetCursorScreenPos, :igGetCursorScreenPos, [:pointer], :void
+    attach_function :GetCursorStartPos, :igGetCursorStartPos, [:pointer], :void
     attach_function :GetDragDropPayload, :igGetDragDropPayload, [], :pointer
     attach_function :GetDrawData, :igGetDrawData, [], :pointer
     attach_function :GetDrawListSharedData, :igGetDrawListSharedData, [], :pointer
     attach_function :GetFont, :igGetFont, [], :pointer
     attach_function :GetFontSize, :igGetFontSize, [], :float
-    attach_function :GetFontTexUvWhitePixel, :igGetFontTexUvWhitePixel, [], ImVec2.by_value
-    attach_function :GetFontTexUvWhitePixel_nonUDT, :igGetFontTexUvWhitePixel_nonUDT, [:pointer], :void
-    attach_function :GetFontTexUvWhitePixel_nonUDT2, :igGetFontTexUvWhitePixel_nonUDT2, [], ImVec2.by_value
+    attach_function :GetFontTexUvWhitePixel, :igGetFontTexUvWhitePixel, [:pointer], :void
     attach_function :GetForegroundDrawList, :igGetForegroundDrawList, [], :pointer
     attach_function :GetFrameCount, :igGetFrameCount, [], :int
     attach_function :GetFrameHeight, :igGetFrameHeight, [], :float
     attach_function :GetFrameHeightWithSpacing, :igGetFrameHeightWithSpacing, [], :float
     attach_function :GetIDStr, :igGetIDStr, [:pointer], :uint
-    attach_function :GetIDRange, :igGetIDRange, [:pointer, :pointer], :uint
+    attach_function :GetIDStrStr, :igGetIDStrStr, [:pointer, :pointer], :uint
     attach_function :GetIDPtr, :igGetIDPtr, [:pointer], :uint
     attach_function :GetIO, :igGetIO, [], :pointer
-    attach_function :GetItemRectMax, :igGetItemRectMax, [], ImVec2.by_value
-    attach_function :GetItemRectMax_nonUDT, :igGetItemRectMax_nonUDT, [:pointer], :void
-    attach_function :GetItemRectMax_nonUDT2, :igGetItemRectMax_nonUDT2, [], ImVec2.by_value
-    attach_function :GetItemRectMin, :igGetItemRectMin, [], ImVec2.by_value
-    attach_function :GetItemRectMin_nonUDT, :igGetItemRectMin_nonUDT, [:pointer], :void
-    attach_function :GetItemRectMin_nonUDT2, :igGetItemRectMin_nonUDT2, [], ImVec2.by_value
-    attach_function :GetItemRectSize, :igGetItemRectSize, [], ImVec2.by_value
-    attach_function :GetItemRectSize_nonUDT, :igGetItemRectSize_nonUDT, [:pointer], :void
-    attach_function :GetItemRectSize_nonUDT2, :igGetItemRectSize_nonUDT2, [], ImVec2.by_value
+    attach_function :GetItemRectMax, :igGetItemRectMax, [:pointer], :void
+    attach_function :GetItemRectMin, :igGetItemRectMin, [:pointer], :void
+    attach_function :GetItemRectSize, :igGetItemRectSize, [:pointer], :void
     attach_function :GetKeyIndex, :igGetKeyIndex, [:int], :int
     attach_function :GetKeyPressedAmount, :igGetKeyPressedAmount, [:int, :float, :float], :int
     attach_function :GetMouseCursor, :igGetMouseCursor, [], :int
-    attach_function :GetMouseDragDelta, :igGetMouseDragDelta, [:int, :float], ImVec2.by_value
-    attach_function :GetMouseDragDelta_nonUDT, :igGetMouseDragDelta_nonUDT, [:pointer, :int, :float], :void
-    attach_function :GetMouseDragDelta_nonUDT2, :igGetMouseDragDelta_nonUDT2, [:int, :float], ImVec2.by_value
-    attach_function :GetMousePos, :igGetMousePos, [], ImVec2.by_value
-    attach_function :GetMousePos_nonUDT, :igGetMousePos_nonUDT, [:pointer], :void
-    attach_function :GetMousePos_nonUDT2, :igGetMousePos_nonUDT2, [], ImVec2.by_value
-    attach_function :GetMousePosOnOpeningCurrentPopup, :igGetMousePosOnOpeningCurrentPopup, [], ImVec2.by_value
-    attach_function :GetMousePosOnOpeningCurrentPopup_nonUDT, :igGetMousePosOnOpeningCurrentPopup_nonUDT, [:pointer], :void
-    attach_function :GetMousePosOnOpeningCurrentPopup_nonUDT2, :igGetMousePosOnOpeningCurrentPopup_nonUDT2, [], ImVec2.by_value
+    attach_function :GetMouseDragDelta, :igGetMouseDragDelta, [:pointer, :int, :float], :void
+    attach_function :GetMousePos, :igGetMousePos, [:pointer], :void
+    attach_function :GetMousePosOnOpeningCurrentPopup, :igGetMousePosOnOpeningCurrentPopup, [:pointer], :void
     attach_function :GetScrollMaxX, :igGetScrollMaxX, [], :float
     attach_function :GetScrollMaxY, :igGetScrollMaxY, [], :float
     attach_function :GetScrollX, :igGetScrollX, [], :float
@@ -952,21 +938,13 @@ module ImGui
     attach_function :GetTime, :igGetTime, [], :double
     attach_function :GetTreeNodeToLabelSpacing, :igGetTreeNodeToLabelSpacing, [], :float
     attach_function :GetVersion, :igGetVersion, [], :pointer
-    attach_function :GetWindowContentRegionMax, :igGetWindowContentRegionMax, [], ImVec2.by_value
-    attach_function :GetWindowContentRegionMax_nonUDT, :igGetWindowContentRegionMax_nonUDT, [:pointer], :void
-    attach_function :GetWindowContentRegionMax_nonUDT2, :igGetWindowContentRegionMax_nonUDT2, [], ImVec2.by_value
-    attach_function :GetWindowContentRegionMin, :igGetWindowContentRegionMin, [], ImVec2.by_value
-    attach_function :GetWindowContentRegionMin_nonUDT, :igGetWindowContentRegionMin_nonUDT, [:pointer], :void
-    attach_function :GetWindowContentRegionMin_nonUDT2, :igGetWindowContentRegionMin_nonUDT2, [], ImVec2.by_value
+    attach_function :GetWindowContentRegionMax, :igGetWindowContentRegionMax, [:pointer], :void
+    attach_function :GetWindowContentRegionMin, :igGetWindowContentRegionMin, [:pointer], :void
     attach_function :GetWindowContentRegionWidth, :igGetWindowContentRegionWidth, [], :float
     attach_function :GetWindowDrawList, :igGetWindowDrawList, [], :pointer
     attach_function :GetWindowHeight, :igGetWindowHeight, [], :float
-    attach_function :GetWindowPos, :igGetWindowPos, [], ImVec2.by_value
-    attach_function :GetWindowPos_nonUDT, :igGetWindowPos_nonUDT, [:pointer], :void
-    attach_function :GetWindowPos_nonUDT2, :igGetWindowPos_nonUDT2, [], ImVec2.by_value
-    attach_function :GetWindowSize, :igGetWindowSize, [], ImVec2.by_value
-    attach_function :GetWindowSize_nonUDT, :igGetWindowSize_nonUDT, [:pointer], :void
-    attach_function :GetWindowSize_nonUDT2, :igGetWindowSize_nonUDT2, [], ImVec2.by_value
+    attach_function :GetWindowPos, :igGetWindowPos, [:pointer], :void
+    attach_function :GetWindowSize, :igGetWindowSize, [:pointer], :void
     attach_function :GetWindowWidth, :igGetWindowWidth, [], :float
     attach_function :Image, :igImage, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value], :void
     attach_function :ImageButton, :igImageButton, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int, ImVec4.by_value, ImVec4.by_value], :bool
@@ -1011,7 +989,7 @@ module ImGui
     attach_function :IsMousePosValid, :igIsMousePosValid, [:pointer], :bool
     attach_function :IsMouseReleased, :igIsMouseReleased, [:int], :bool
     attach_function :IsPopupOpen, :igIsPopupOpen, [:pointer], :bool
-    attach_function :IsRectVisible, :igIsRectVisible, [ImVec2.by_value], :bool
+    attach_function :IsRectVisibleNil, :igIsRectVisibleNil, [ImVec2.by_value], :bool
     attach_function :IsRectVisibleVec2, :igIsRectVisibleVec2, [ImVec2.by_value, ImVec2.by_value], :bool
     attach_function :IsWindowAppearing, :igIsWindowAppearing, [], :bool
     attach_function :IsWindowCollapsed, :igIsWindowCollapsed, [], :bool
@@ -1042,7 +1020,7 @@ module ImGui
     attach_function :OpenPopupOnItemClick, :igOpenPopupOnItemClick, [:pointer, :int], :bool
     attach_function :PlotHistogramFloatPtr, :igPlotHistogramFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
     attach_function :PlotHistogramFnPtr, :igPlotHistogramFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
-    attach_function :PlotLines, :igPlotLines, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
+    attach_function :PlotLinesFloatPtr, :igPlotLinesFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
     attach_function :PlotLinesFnPtr, :igPlotLinesFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
     attach_function :PopAllowKeyboardFocus, :igPopAllowKeyboardFocus, [], :void
     attach_function :PopButtonRepeat, :igPopButtonRepeat, [], :void
@@ -1059,12 +1037,12 @@ module ImGui
     attach_function :PushClipRect, :igPushClipRect, [ImVec2.by_value, ImVec2.by_value, :bool], :void
     attach_function :PushFont, :igPushFont, [:pointer], :void
     attach_function :PushIDStr, :igPushIDStr, [:pointer], :void
-    attach_function :PushIDRange, :igPushIDRange, [:pointer, :pointer], :void
+    attach_function :PushIDStrStr, :igPushIDStrStr, [:pointer, :pointer], :void
     attach_function :PushIDPtr, :igPushIDPtr, [:pointer], :void
     attach_function :PushIDInt, :igPushIDInt, [:int], :void
     attach_function :PushItemWidth, :igPushItemWidth, [:float], :void
     attach_function :PushStyleColorU32, :igPushStyleColorU32, [:int, :uint], :void
-    attach_function :PushStyleColor, :igPushStyleColor, [:int, ImVec4.by_value], :void
+    attach_function :PushStyleColorVec4, :igPushStyleColorVec4, [:int, ImVec4.by_value], :void
     attach_function :PushStyleVarFloat, :igPushStyleVarFloat, [:int, :float], :void
     attach_function :PushStyleVarVec2, :igPushStyleVarVec2, [:int, ImVec2.by_value], :void
     attach_function :PushTextWrapPos, :igPushTextWrapPos, [:float], :void
@@ -1075,7 +1053,7 @@ module ImGui
     attach_function :SameLine, :igSameLine, [:float, :float], :void
     attach_function :SaveIniSettingsToDisk, :igSaveIniSettingsToDisk, [:pointer], :void
     attach_function :SaveIniSettingsToMemory, :igSaveIniSettingsToMemory, [:pointer], :pointer
-    attach_function :Selectable, :igSelectable, [:pointer, :bool, :int, ImVec2.by_value], :bool
+    attach_function :SelectableBool, :igSelectableBool, [:pointer, :bool, :int, ImVec2.by_value], :bool
     attach_function :SelectableBoolPtr, :igSelectableBoolPtr, [:pointer, :pointer, :int, ImVec2.by_value], :bool
     attach_function :Separator, :igSeparator, [], :void
     attach_function :SetAllocatorFunctions, :igSetAllocatorFunctions, [:pointer, :pointer, :pointer], :void
@@ -1113,7 +1091,7 @@ module ImGui
     attach_function :SetTooltip, :igSetTooltip, [:pointer, :varargs], :void
     attach_function :SetWindowCollapsedBool, :igSetWindowCollapsedBool, [:bool, :int], :void
     attach_function :SetWindowCollapsedStr, :igSetWindowCollapsedStr, [:pointer, :bool, :int], :void
-    attach_function :SetWindowFocus, :igSetWindowFocus, [], :void
+    attach_function :SetWindowFocusNil, :igSetWindowFocusNil, [], :void
     attach_function :SetWindowFocusStr, :igSetWindowFocusStr, [:pointer], :void
     attach_function :SetWindowFontScale, :igSetWindowFontScale, [:float], :void
     attach_function :SetWindowPosVec2, :igSetWindowPosVec2, [ImVec2.by_value, :int], :void

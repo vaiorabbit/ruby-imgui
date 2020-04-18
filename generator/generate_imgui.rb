@@ -117,7 +117,7 @@ if __FILE__ == $0
   enums_map = ImGuiBindings.build_enum_map( '../cimgui/generator/output/structs_and_enums.json' )
   structs_map = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
   funcs_base_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/definitions.json' )
-  funcs_impl_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/impl_definitions.json' )
+  # funcs_impl_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/impl_definitions.json' )
 
   # Omit needless/unusable data
   omit_structs = [
@@ -147,10 +147,10 @@ if __FILE__ == $0
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
 
   funcs_base_map.delete_if {|func| !(func.name.start_with?('ig') || func.name.start_with?('ImFontAtlas_'))} # end-user API only
-  funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}
-  funcs_impl_map.delete_if {|func| func.name.include?('OpenGL3')} # not supported yet
-  funcs_impl_map.delete_if {|func| func.name.include?('Glfw')}
-  funcs_impl_map.delete_if {|func| func.name.include?('SDL2')} # not supported yet
+  # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}
+  # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL3')} # not supported yet
+  # funcs_impl_map.delete_if {|func| func.name.include?('Glfw')}
+  # funcs_impl_map.delete_if {|func| func.name.include?('SDL2')} # not supported yet
 
   #
   # Write to actual source code
@@ -230,7 +230,8 @@ require 'ffi'
     out.newline
 
     out.push_indent
-    [funcs_base_map, funcs_impl_map].each do |funcs_map|
+    # [funcs_base_map, funcs_impl_map].each do |funcs_map|
+    [funcs_base_map].each do |funcs_map|
       funcs_map.each do |func|
         Generator.write_function(out, func)
       end
