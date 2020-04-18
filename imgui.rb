@@ -776,373 +776,1841 @@ module ImGui
   end
 
   def self.import_symbols()
-    attach_function :FontAtlas_AddCustomRectFontGlyph, :ImFontAtlas_AddCustomRectFontGlyph, [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value], :int
-    attach_function :FontAtlas_AddCustomRectRegular, :ImFontAtlas_AddCustomRectRegular, [:pointer, :uint, :int, :int], :int
-    attach_function :FontAtlas_AddFont, :ImFontAtlas_AddFont, [:pointer, :pointer], :pointer
-    attach_function :FontAtlas_AddFontDefault, :ImFontAtlas_AddFontDefault, [:pointer, :pointer], :pointer
-    attach_function :FontAtlas_AddFontFromFileTTF, :ImFontAtlas_AddFontFromFileTTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer
-    attach_function :FontAtlas_AddFontFromMemoryCompressedBase85TTF, :ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer
-    attach_function :FontAtlas_AddFontFromMemoryCompressedTTF, :ImFontAtlas_AddFontFromMemoryCompressedTTF, [:pointer, :pointer, :int, :float, :pointer, :pointer], :pointer
-    attach_function :FontAtlas_AddFontFromMemoryTTF, :ImFontAtlas_AddFontFromMemoryTTF, [:pointer, :pointer, :int, :float, :pointer, :pointer], :pointer
-    attach_function :FontAtlas_Build, :ImFontAtlas_Build, [:pointer], :bool
-    attach_function :FontAtlas_CalcCustomRectUV, :ImFontAtlas_CalcCustomRectUV, [:pointer, :pointer, :pointer, :pointer], :void
-    attach_function :FontAtlas_Clear, :ImFontAtlas_Clear, [:pointer], :void
-    attach_function :FontAtlas_ClearFonts, :ImFontAtlas_ClearFonts, [:pointer], :void
-    attach_function :FontAtlas_ClearInputData, :ImFontAtlas_ClearInputData, [:pointer], :void
-    attach_function :FontAtlas_ClearTexData, :ImFontAtlas_ClearTexData, [:pointer], :void
-    attach_function :FontAtlas_GetCustomRectByIndex, :ImFontAtlas_GetCustomRectByIndex, [:pointer, :int], :pointer
-    attach_function :FontAtlas_GetGlyphRangesChineseFull, :ImFontAtlas_GetGlyphRangesChineseFull, [:pointer], :pointer
-    attach_function :FontAtlas_GetGlyphRangesChineseSimplifiedCommon, :ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon, [:pointer], :pointer
-    attach_function :FontAtlas_GetGlyphRangesCyrillic, :ImFontAtlas_GetGlyphRangesCyrillic, [:pointer], :pointer
-    attach_function :FontAtlas_GetGlyphRangesDefault, :ImFontAtlas_GetGlyphRangesDefault, [:pointer], :pointer
-    attach_function :FontAtlas_GetGlyphRangesJapanese, :ImFontAtlas_GetGlyphRangesJapanese, [:pointer], :pointer
-    attach_function :FontAtlas_GetGlyphRangesKorean, :ImFontAtlas_GetGlyphRangesKorean, [:pointer], :pointer
-    attach_function :FontAtlas_GetGlyphRangesThai, :ImFontAtlas_GetGlyphRangesThai, [:pointer], :pointer
-    attach_function :FontAtlas_GetGlyphRangesVietnamese, :ImFontAtlas_GetGlyphRangesVietnamese, [:pointer], :pointer
-    attach_function :FontAtlas_GetMouseCursorTexData, :ImFontAtlas_GetMouseCursorTexData, [:pointer, :int, :pointer, :pointer, :pointer, :pointer], :bool
-    attach_function :FontAtlas_GetTexDataAsAlpha8, :ImFontAtlas_GetTexDataAsAlpha8, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
-    attach_function :FontAtlas_GetTexDataAsRGBA32, :ImFontAtlas_GetTexDataAsRGBA32, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
-    attach_function :FontAtlas_ImFontAtlas, :ImFontAtlas_ImFontAtlas, [], :void
-    attach_function :FontAtlas_IsBuilt, :ImFontAtlas_IsBuilt, [:pointer], :bool
-    attach_function :FontAtlas_SetTexID, :ImFontAtlas_SetTexID, [:pointer, :pointer], :void
-    attach_function :FontAtlas_destroy, :ImFontAtlas_destroy, [:pointer], :void
-    attach_function :AcceptDragDropPayload, :igAcceptDragDropPayload, [:pointer, :int], :pointer
-    attach_function :AlignTextToFramePadding, :igAlignTextToFramePadding, [], :void
-    attach_function :ArrowButton, :igArrowButton, [:pointer, :int], :bool
-    attach_function :Begin, :igBegin, [:pointer, :pointer, :int], :bool
-    attach_function :BeginChildStr, :igBeginChildStr, [:pointer, ImVec2.by_value, :bool, :int], :bool
-    attach_function :BeginChildID, :igBeginChildID, [:uint, ImVec2.by_value, :bool, :int], :bool
-    attach_function :BeginChildFrame, :igBeginChildFrame, [:uint, ImVec2.by_value, :int], :bool
-    attach_function :BeginCombo, :igBeginCombo, [:pointer, :pointer, :int], :bool
-    attach_function :BeginDragDropSource, :igBeginDragDropSource, [:int], :bool
-    attach_function :BeginDragDropTarget, :igBeginDragDropTarget, [], :bool
-    attach_function :BeginGroup, :igBeginGroup, [], :void
-    attach_function :BeginMainMenuBar, :igBeginMainMenuBar, [], :bool
-    attach_function :BeginMenu, :igBeginMenu, [:pointer, :bool], :bool
-    attach_function :BeginMenuBar, :igBeginMenuBar, [], :bool
-    attach_function :BeginPopup, :igBeginPopup, [:pointer, :int], :bool
-    attach_function :BeginPopupContextItem, :igBeginPopupContextItem, [:pointer, :int], :bool
-    attach_function :BeginPopupContextVoid, :igBeginPopupContextVoid, [:pointer, :int], :bool
-    attach_function :BeginPopupContextWindow, :igBeginPopupContextWindow, [:pointer, :int, :bool], :bool
-    attach_function :BeginPopupModal, :igBeginPopupModal, [:pointer, :pointer, :int], :bool
-    attach_function :BeginTabBar, :igBeginTabBar, [:pointer, :int], :bool
-    attach_function :BeginTabItem, :igBeginTabItem, [:pointer, :pointer, :int], :bool
-    attach_function :BeginTooltip, :igBeginTooltip, [], :void
-    attach_function :Bullet, :igBullet, [], :void
-    attach_function :BulletText, :igBulletText, [:pointer, :varargs], :void
-    attach_function :Button, :igButton, [:pointer, ImVec2.by_value], :bool
-    attach_function :CalcItemWidth, :igCalcItemWidth, [], :float
-    attach_function :CalcListClipping, :igCalcListClipping, [:int, :float, :pointer, :pointer], :void
-    attach_function :CalcTextSize, :igCalcTextSize, [:pointer, :pointer, :pointer, :bool, :float], :void
-    attach_function :CaptureKeyboardFromApp, :igCaptureKeyboardFromApp, [:bool], :void
-    attach_function :CaptureMouseFromApp, :igCaptureMouseFromApp, [:bool], :void
-    attach_function :Checkbox, :igCheckbox, [:pointer, :pointer], :bool
-    attach_function :CheckboxFlags, :igCheckboxFlags, [:pointer, :pointer, :uint], :bool
-    attach_function :CloseCurrentPopup, :igCloseCurrentPopup, [], :void
-    attach_function :CollapsingHeaderTreeNodeFlags, :igCollapsingHeaderTreeNodeFlags, [:pointer, :int], :bool
-    attach_function :CollapsingHeaderBoolPtr, :igCollapsingHeaderBoolPtr, [:pointer, :pointer, :int], :bool
-    attach_function :ColorButton, :igColorButton, [:pointer, ImVec4.by_value, :int, ImVec2.by_value], :bool
-    attach_function :ColorConvertFloat4ToU32, :igColorConvertFloat4ToU32, [ImVec4.by_value], :uint
-    attach_function :ColorConvertHSVtoRGB, :igColorConvertHSVtoRGB, [:float, :float, :float, :pointer, :pointer, :pointer], :void
-    attach_function :ColorConvertRGBtoHSV, :igColorConvertRGBtoHSV, [:float, :float, :float, :pointer, :pointer, :pointer], :void
-    attach_function :ColorConvertU32ToFloat4, :igColorConvertU32ToFloat4, [:pointer, :uint], :void
-    attach_function :ColorEdit3, :igColorEdit3, [:pointer, :pointer, :int], :bool
-    attach_function :ColorEdit4, :igColorEdit4, [:pointer, :pointer, :int], :bool
-    attach_function :ColorPicker3, :igColorPicker3, [:pointer, :pointer, :int], :bool
-    attach_function :ColorPicker4, :igColorPicker4, [:pointer, :pointer, :int, :pointer], :bool
-    attach_function :Columns, :igColumns, [:int, :pointer, :bool], :void
-    attach_function :ComboStr_arr, :igComboStr_arr, [:pointer, :pointer, :pointer, :int, :int], :bool
-    attach_function :ComboStr, :igComboStr, [:pointer, :pointer, :pointer, :int], :bool
-    attach_function :ComboFnPtr, :igComboFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
-    attach_function :CreateContext, :igCreateContext, [:pointer], :pointer
-    attach_function :DebugCheckVersionAndDataLayout, :igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool
-    attach_function :DestroyContext, :igDestroyContext, [:pointer], :void
-    attach_function :DragFloat, :igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :DragFloat2, :igDragFloat2, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :DragFloat3, :igDragFloat3, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :DragFloat4, :igDragFloat4, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :DragFloatRange2, :igDragFloatRange2, [:pointer, :pointer, :pointer, :float, :float, :float, :pointer, :pointer, :float], :bool
-    attach_function :DragInt, :igDragInt, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :DragInt2, :igDragInt2, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :DragInt3, :igDragInt3, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :DragInt4, :igDragInt4, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :DragIntRange2, :igDragIntRange2, [:pointer, :pointer, :pointer, :float, :int, :int, :pointer, :pointer], :bool
-    attach_function :DragScalar, :igDragScalar, [:pointer, :int, :pointer, :float, :pointer, :pointer, :pointer, :float], :bool
-    attach_function :DragScalarN, :igDragScalarN, [:pointer, :int, :pointer, :int, :float, :pointer, :pointer, :pointer, :float], :bool
-    attach_function :Dummy, :igDummy, [ImVec2.by_value], :void
-    attach_function :End, :igEnd, [], :void
-    attach_function :EndChild, :igEndChild, [], :void
-    attach_function :EndChildFrame, :igEndChildFrame, [], :void
-    attach_function :EndCombo, :igEndCombo, [], :void
-    attach_function :EndDragDropSource, :igEndDragDropSource, [], :void
-    attach_function :EndDragDropTarget, :igEndDragDropTarget, [], :void
-    attach_function :EndFrame, :igEndFrame, [], :void
-    attach_function :EndGroup, :igEndGroup, [], :void
-    attach_function :EndMainMenuBar, :igEndMainMenuBar, [], :void
-    attach_function :EndMenu, :igEndMenu, [], :void
-    attach_function :EndMenuBar, :igEndMenuBar, [], :void
-    attach_function :EndPopup, :igEndPopup, [], :void
-    attach_function :EndTabBar, :igEndTabBar, [], :void
-    attach_function :EndTabItem, :igEndTabItem, [], :void
-    attach_function :EndTooltip, :igEndTooltip, [], :void
-    attach_function :GetBackgroundDrawList, :igGetBackgroundDrawList, [], :pointer
-    attach_function :GetClipboardText, :igGetClipboardText, [], :pointer
-    attach_function :GetColorU32Col, :igGetColorU32Col, [:int, :float], :uint
-    attach_function :GetColorU32Vec4, :igGetColorU32Vec4, [ImVec4.by_value], :uint
-    attach_function :GetColorU32U32, :igGetColorU32U32, [:uint], :uint
-    attach_function :GetColumnIndex, :igGetColumnIndex, [], :int
-    attach_function :GetColumnOffset, :igGetColumnOffset, [:int], :float
-    attach_function :GetColumnWidth, :igGetColumnWidth, [:int], :float
-    attach_function :GetColumnsCount, :igGetColumnsCount, [], :int
-    attach_function :GetContentRegionAvail, :igGetContentRegionAvail, [:pointer], :void
-    attach_function :GetContentRegionMax, :igGetContentRegionMax, [:pointer], :void
-    attach_function :GetCurrentContext, :igGetCurrentContext, [], :pointer
-    attach_function :GetCursorPos, :igGetCursorPos, [:pointer], :void
-    attach_function :GetCursorPosX, :igGetCursorPosX, [], :float
-    attach_function :GetCursorPosY, :igGetCursorPosY, [], :float
-    attach_function :GetCursorScreenPos, :igGetCursorScreenPos, [:pointer], :void
-    attach_function :GetCursorStartPos, :igGetCursorStartPos, [:pointer], :void
-    attach_function :GetDragDropPayload, :igGetDragDropPayload, [], :pointer
-    attach_function :GetDrawData, :igGetDrawData, [], :pointer
-    attach_function :GetDrawListSharedData, :igGetDrawListSharedData, [], :pointer
-    attach_function :GetFont, :igGetFont, [], :pointer
-    attach_function :GetFontSize, :igGetFontSize, [], :float
-    attach_function :GetFontTexUvWhitePixel, :igGetFontTexUvWhitePixel, [:pointer], :void
-    attach_function :GetForegroundDrawList, :igGetForegroundDrawList, [], :pointer
-    attach_function :GetFrameCount, :igGetFrameCount, [], :int
-    attach_function :GetFrameHeight, :igGetFrameHeight, [], :float
-    attach_function :GetFrameHeightWithSpacing, :igGetFrameHeightWithSpacing, [], :float
-    attach_function :GetIDStr, :igGetIDStr, [:pointer], :uint
-    attach_function :GetIDStrStr, :igGetIDStrStr, [:pointer, :pointer], :uint
-    attach_function :GetIDPtr, :igGetIDPtr, [:pointer], :uint
-    attach_function :GetIO, :igGetIO, [], :pointer
-    attach_function :GetItemRectMax, :igGetItemRectMax, [:pointer], :void
-    attach_function :GetItemRectMin, :igGetItemRectMin, [:pointer], :void
-    attach_function :GetItemRectSize, :igGetItemRectSize, [:pointer], :void
-    attach_function :GetKeyIndex, :igGetKeyIndex, [:int], :int
-    attach_function :GetKeyPressedAmount, :igGetKeyPressedAmount, [:int, :float, :float], :int
-    attach_function :GetMouseCursor, :igGetMouseCursor, [], :int
-    attach_function :GetMouseDragDelta, :igGetMouseDragDelta, [:pointer, :int, :float], :void
-    attach_function :GetMousePos, :igGetMousePos, [:pointer], :void
-    attach_function :GetMousePosOnOpeningCurrentPopup, :igGetMousePosOnOpeningCurrentPopup, [:pointer], :void
-    attach_function :GetScrollMaxX, :igGetScrollMaxX, [], :float
-    attach_function :GetScrollMaxY, :igGetScrollMaxY, [], :float
-    attach_function :GetScrollX, :igGetScrollX, [], :float
-    attach_function :GetScrollY, :igGetScrollY, [], :float
-    attach_function :GetStateStorage, :igGetStateStorage, [], :pointer
-    attach_function :GetStyle, :igGetStyle, [], :pointer
-    attach_function :GetStyleColorName, :igGetStyleColorName, [:int], :pointer
-    attach_function :GetStyleColorVec4, :igGetStyleColorVec4, [:int], :pointer
-    attach_function :GetTextLineHeight, :igGetTextLineHeight, [], :float
-    attach_function :GetTextLineHeightWithSpacing, :igGetTextLineHeightWithSpacing, [], :float
-    attach_function :GetTime, :igGetTime, [], :double
-    attach_function :GetTreeNodeToLabelSpacing, :igGetTreeNodeToLabelSpacing, [], :float
-    attach_function :GetVersion, :igGetVersion, [], :pointer
-    attach_function :GetWindowContentRegionMax, :igGetWindowContentRegionMax, [:pointer], :void
-    attach_function :GetWindowContentRegionMin, :igGetWindowContentRegionMin, [:pointer], :void
-    attach_function :GetWindowContentRegionWidth, :igGetWindowContentRegionWidth, [], :float
-    attach_function :GetWindowDrawList, :igGetWindowDrawList, [], :pointer
-    attach_function :GetWindowHeight, :igGetWindowHeight, [], :float
-    attach_function :GetWindowPos, :igGetWindowPos, [:pointer], :void
-    attach_function :GetWindowSize, :igGetWindowSize, [:pointer], :void
-    attach_function :GetWindowWidth, :igGetWindowWidth, [], :float
-    attach_function :Image, :igImage, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value], :void
-    attach_function :ImageButton, :igImageButton, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int, ImVec4.by_value, ImVec4.by_value], :bool
-    attach_function :Indent, :igIndent, [:float], :void
-    attach_function :InputDouble, :igInputDouble, [:pointer, :pointer, :double, :double, :pointer, :int], :bool
-    attach_function :InputFloat, :igInputFloat, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
-    attach_function :InputFloat2, :igInputFloat2, [:pointer, :pointer, :pointer, :int], :bool
-    attach_function :InputFloat3, :igInputFloat3, [:pointer, :pointer, :pointer, :int], :bool
-    attach_function :InputFloat4, :igInputFloat4, [:pointer, :pointer, :pointer, :int], :bool
-    attach_function :InputInt, :igInputInt, [:pointer, :pointer, :int, :int, :int], :bool
-    attach_function :InputInt2, :igInputInt2, [:pointer, :pointer, :int], :bool
-    attach_function :InputInt3, :igInputInt3, [:pointer, :pointer, :int], :bool
-    attach_function :InputInt4, :igInputInt4, [:pointer, :pointer, :int], :bool
-    attach_function :InputScalar, :igInputScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :int], :bool
-    attach_function :InputScalarN, :igInputScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int], :bool
-    attach_function :InputText, :igInputText, [:pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
-    attach_function :InputTextMultiline, :igInputTextMultiline, [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :pointer, :pointer], :bool
-    attach_function :InputTextWithHint, :igInputTextWithHint, [:pointer, :pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
-    attach_function :InvisibleButton, :igInvisibleButton, [:pointer, ImVec2.by_value], :bool
-    attach_function :IsAnyItemActive, :igIsAnyItemActive, [], :bool
-    attach_function :IsAnyItemFocused, :igIsAnyItemFocused, [], :bool
-    attach_function :IsAnyItemHovered, :igIsAnyItemHovered, [], :bool
-    attach_function :IsAnyMouseDown, :igIsAnyMouseDown, [], :bool
-    attach_function :IsItemActivated, :igIsItemActivated, [], :bool
-    attach_function :IsItemActive, :igIsItemActive, [], :bool
-    attach_function :IsItemClicked, :igIsItemClicked, [:int], :bool
-    attach_function :IsItemDeactivated, :igIsItemDeactivated, [], :bool
-    attach_function :IsItemDeactivatedAfterEdit, :igIsItemDeactivatedAfterEdit, [], :bool
-    attach_function :IsItemEdited, :igIsItemEdited, [], :bool
-    attach_function :IsItemFocused, :igIsItemFocused, [], :bool
-    attach_function :IsItemHovered, :igIsItemHovered, [:int], :bool
-    attach_function :IsItemToggledOpen, :igIsItemToggledOpen, [], :bool
-    attach_function :IsItemVisible, :igIsItemVisible, [], :bool
-    attach_function :IsKeyDown, :igIsKeyDown, [:int], :bool
-    attach_function :IsKeyPressed, :igIsKeyPressed, [:int, :bool], :bool
-    attach_function :IsKeyReleased, :igIsKeyReleased, [:int], :bool
-    attach_function :IsMouseClicked, :igIsMouseClicked, [:int, :bool], :bool
-    attach_function :IsMouseDoubleClicked, :igIsMouseDoubleClicked, [:int], :bool
-    attach_function :IsMouseDown, :igIsMouseDown, [:int], :bool
-    attach_function :IsMouseDragging, :igIsMouseDragging, [:int, :float], :bool
-    attach_function :IsMouseHoveringRect, :igIsMouseHoveringRect, [ImVec2.by_value, ImVec2.by_value, :bool], :bool
-    attach_function :IsMousePosValid, :igIsMousePosValid, [:pointer], :bool
-    attach_function :IsMouseReleased, :igIsMouseReleased, [:int], :bool
-    attach_function :IsPopupOpen, :igIsPopupOpen, [:pointer], :bool
-    attach_function :IsRectVisibleNil, :igIsRectVisibleNil, [ImVec2.by_value], :bool
-    attach_function :IsRectVisibleVec2, :igIsRectVisibleVec2, [ImVec2.by_value, ImVec2.by_value], :bool
-    attach_function :IsWindowAppearing, :igIsWindowAppearing, [], :bool
-    attach_function :IsWindowCollapsed, :igIsWindowCollapsed, [], :bool
-    attach_function :IsWindowFocused, :igIsWindowFocused, [:int], :bool
-    attach_function :IsWindowHovered, :igIsWindowHovered, [:int], :bool
-    attach_function :LabelText, :igLabelText, [:pointer, :pointer, :varargs], :void
-    attach_function :ListBoxStr_arr, :igListBoxStr_arr, [:pointer, :pointer, :pointer, :int, :int], :bool
-    attach_function :ListBoxFnPtr, :igListBoxFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
-    attach_function :ListBoxFooter, :igListBoxFooter, [], :void
-    attach_function :ListBoxHeaderVec2, :igListBoxHeaderVec2, [:pointer, ImVec2.by_value], :bool
-    attach_function :ListBoxHeaderInt, :igListBoxHeaderInt, [:pointer, :int, :int], :bool
-    attach_function :LoadIniSettingsFromDisk, :igLoadIniSettingsFromDisk, [:pointer], :void
-    attach_function :LoadIniSettingsFromMemory, :igLoadIniSettingsFromMemory, [:pointer, :size_t], :void
-    attach_function :LogButtons, :igLogButtons, [], :void
-    attach_function :LogFinish, :igLogFinish, [], :void
-    attach_function :LogText, :igLogText, [:pointer, :varargs], :void
-    attach_function :LogToClipboard, :igLogToClipboard, [:int], :void
-    attach_function :LogToFile, :igLogToFile, [:int, :pointer], :void
-    attach_function :LogToTTY, :igLogToTTY, [:int], :void
-    attach_function :MemAlloc, :igMemAlloc, [:size_t], :pointer
-    attach_function :MemFree, :igMemFree, [:pointer], :void
-    attach_function :MenuItemBool, :igMenuItemBool, [:pointer, :pointer, :bool, :bool], :bool
-    attach_function :MenuItemBoolPtr, :igMenuItemBoolPtr, [:pointer, :pointer, :pointer, :bool], :bool
-    attach_function :NewFrame, :igNewFrame, [], :void
-    attach_function :NewLine, :igNewLine, [], :void
-    attach_function :NextColumn, :igNextColumn, [], :void
-    attach_function :OpenPopup, :igOpenPopup, [:pointer], :void
-    attach_function :OpenPopupOnItemClick, :igOpenPopupOnItemClick, [:pointer, :int], :bool
-    attach_function :PlotHistogramFloatPtr, :igPlotHistogramFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
-    attach_function :PlotHistogramFnPtr, :igPlotHistogramFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
-    attach_function :PlotLinesFloatPtr, :igPlotLinesFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
-    attach_function :PlotLinesFnPtr, :igPlotLinesFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
-    attach_function :PopAllowKeyboardFocus, :igPopAllowKeyboardFocus, [], :void
-    attach_function :PopButtonRepeat, :igPopButtonRepeat, [], :void
-    attach_function :PopClipRect, :igPopClipRect, [], :void
-    attach_function :PopFont, :igPopFont, [], :void
-    attach_function :PopID, :igPopID, [], :void
-    attach_function :PopItemWidth, :igPopItemWidth, [], :void
-    attach_function :PopStyleColor, :igPopStyleColor, [:int], :void
-    attach_function :PopStyleVar, :igPopStyleVar, [:int], :void
-    attach_function :PopTextWrapPos, :igPopTextWrapPos, [], :void
-    attach_function :ProgressBar, :igProgressBar, [:float, ImVec2.by_value, :pointer], :void
-    attach_function :PushAllowKeyboardFocus, :igPushAllowKeyboardFocus, [:bool], :void
-    attach_function :PushButtonRepeat, :igPushButtonRepeat, [:bool], :void
-    attach_function :PushClipRect, :igPushClipRect, [ImVec2.by_value, ImVec2.by_value, :bool], :void
-    attach_function :PushFont, :igPushFont, [:pointer], :void
-    attach_function :PushIDStr, :igPushIDStr, [:pointer], :void
-    attach_function :PushIDStrStr, :igPushIDStrStr, [:pointer, :pointer], :void
-    attach_function :PushIDPtr, :igPushIDPtr, [:pointer], :void
-    attach_function :PushIDInt, :igPushIDInt, [:int], :void
-    attach_function :PushItemWidth, :igPushItemWidth, [:float], :void
-    attach_function :PushStyleColorU32, :igPushStyleColorU32, [:int, :uint], :void
-    attach_function :PushStyleColorVec4, :igPushStyleColorVec4, [:int, ImVec4.by_value], :void
-    attach_function :PushStyleVarFloat, :igPushStyleVarFloat, [:int, :float], :void
-    attach_function :PushStyleVarVec2, :igPushStyleVarVec2, [:int, ImVec2.by_value], :void
-    attach_function :PushTextWrapPos, :igPushTextWrapPos, [:float], :void
-    attach_function :RadioButtonBool, :igRadioButtonBool, [:pointer, :bool], :bool
-    attach_function :RadioButtonIntPtr, :igRadioButtonIntPtr, [:pointer, :pointer, :int], :bool
-    attach_function :Render, :igRender, [], :void
-    attach_function :ResetMouseDragDelta, :igResetMouseDragDelta, [:int], :void
-    attach_function :SameLine, :igSameLine, [:float, :float], :void
-    attach_function :SaveIniSettingsToDisk, :igSaveIniSettingsToDisk, [:pointer], :void
-    attach_function :SaveIniSettingsToMemory, :igSaveIniSettingsToMemory, [:pointer], :pointer
-    attach_function :SelectableBool, :igSelectableBool, [:pointer, :bool, :int, ImVec2.by_value], :bool
-    attach_function :SelectableBoolPtr, :igSelectableBoolPtr, [:pointer, :pointer, :int, ImVec2.by_value], :bool
-    attach_function :Separator, :igSeparator, [], :void
-    attach_function :SetAllocatorFunctions, :igSetAllocatorFunctions, [:pointer, :pointer, :pointer], :void
-    attach_function :SetClipboardText, :igSetClipboardText, [:pointer], :void
-    attach_function :SetColorEditOptions, :igSetColorEditOptions, [:int], :void
-    attach_function :SetColumnOffset, :igSetColumnOffset, [:int, :float], :void
-    attach_function :SetColumnWidth, :igSetColumnWidth, [:int, :float], :void
-    attach_function :SetCurrentContext, :igSetCurrentContext, [:pointer], :void
-    attach_function :SetCursorPos, :igSetCursorPos, [ImVec2.by_value], :void
-    attach_function :SetCursorPosX, :igSetCursorPosX, [:float], :void
-    attach_function :SetCursorPosY, :igSetCursorPosY, [:float], :void
-    attach_function :SetCursorScreenPos, :igSetCursorScreenPos, [ImVec2.by_value], :void
-    attach_function :SetDragDropPayload, :igSetDragDropPayload, [:pointer, :pointer, :size_t, :int], :bool
-    attach_function :SetItemAllowOverlap, :igSetItemAllowOverlap, [], :void
-    attach_function :SetItemDefaultFocus, :igSetItemDefaultFocus, [], :void
-    attach_function :SetKeyboardFocusHere, :igSetKeyboardFocusHere, [:int], :void
-    attach_function :SetMouseCursor, :igSetMouseCursor, [:int], :void
-    attach_function :SetNextItemOpen, :igSetNextItemOpen, [:bool, :int], :void
-    attach_function :SetNextItemWidth, :igSetNextItemWidth, [:float], :void
-    attach_function :SetNextWindowBgAlpha, :igSetNextWindowBgAlpha, [:float], :void
-    attach_function :SetNextWindowCollapsed, :igSetNextWindowCollapsed, [:bool, :int], :void
-    attach_function :SetNextWindowContentSize, :igSetNextWindowContentSize, [ImVec2.by_value], :void
-    attach_function :SetNextWindowFocus, :igSetNextWindowFocus, [], :void
-    attach_function :SetNextWindowPos, :igSetNextWindowPos, [ImVec2.by_value, :int, ImVec2.by_value], :void
-    attach_function :SetNextWindowSize, :igSetNextWindowSize, [ImVec2.by_value, :int], :void
-    attach_function :SetNextWindowSizeConstraints, :igSetNextWindowSizeConstraints, [ImVec2.by_value, ImVec2.by_value, :pointer, :pointer], :void
-    attach_function :SetScrollFromPosX, :igSetScrollFromPosX, [:float, :float], :void
-    attach_function :SetScrollFromPosY, :igSetScrollFromPosY, [:float, :float], :void
-    attach_function :SetScrollHereX, :igSetScrollHereX, [:float], :void
-    attach_function :SetScrollHereY, :igSetScrollHereY, [:float], :void
-    attach_function :SetScrollX, :igSetScrollX, [:float], :void
-    attach_function :SetScrollY, :igSetScrollY, [:float], :void
-    attach_function :SetStateStorage, :igSetStateStorage, [:pointer], :void
-    attach_function :SetTabItemClosed, :igSetTabItemClosed, [:pointer], :void
-    attach_function :SetTooltip, :igSetTooltip, [:pointer, :varargs], :void
-    attach_function :SetWindowCollapsedBool, :igSetWindowCollapsedBool, [:bool, :int], :void
-    attach_function :SetWindowCollapsedStr, :igSetWindowCollapsedStr, [:pointer, :bool, :int], :void
-    attach_function :SetWindowFocusNil, :igSetWindowFocusNil, [], :void
-    attach_function :SetWindowFocusStr, :igSetWindowFocusStr, [:pointer], :void
-    attach_function :SetWindowFontScale, :igSetWindowFontScale, [:float], :void
-    attach_function :SetWindowPosVec2, :igSetWindowPosVec2, [ImVec2.by_value, :int], :void
-    attach_function :SetWindowPosStr, :igSetWindowPosStr, [:pointer, ImVec2.by_value, :int], :void
-    attach_function :SetWindowSizeVec2, :igSetWindowSizeVec2, [ImVec2.by_value, :int], :void
-    attach_function :SetWindowSizeStr, :igSetWindowSizeStr, [:pointer, ImVec2.by_value, :int], :void
-    attach_function :ShowAboutWindow, :igShowAboutWindow, [:pointer], :void
-    attach_function :ShowDemoWindow, :igShowDemoWindow, [:pointer], :void
-    attach_function :ShowFontSelector, :igShowFontSelector, [:pointer], :void
-    attach_function :ShowMetricsWindow, :igShowMetricsWindow, [:pointer], :void
-    attach_function :ShowStyleEditor, :igShowStyleEditor, [:pointer], :void
-    attach_function :ShowStyleSelector, :igShowStyleSelector, [:pointer], :bool
-    attach_function :ShowUserGuide, :igShowUserGuide, [], :void
-    attach_function :SliderAngle, :igSliderAngle, [:pointer, :pointer, :float, :float, :pointer], :bool
-    attach_function :SliderFloat, :igSliderFloat, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :SliderFloat2, :igSliderFloat2, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :SliderFloat3, :igSliderFloat3, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :SliderFloat4, :igSliderFloat4, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :SliderInt, :igSliderInt, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :SliderInt2, :igSliderInt2, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :SliderInt3, :igSliderInt3, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :SliderInt4, :igSliderInt4, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :SliderScalar, :igSliderScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :float], :bool
-    attach_function :SliderScalarN, :igSliderScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :float], :bool
-    attach_function :SmallButton, :igSmallButton, [:pointer], :bool
-    attach_function :Spacing, :igSpacing, [], :void
-    attach_function :StyleColorsClassic, :igStyleColorsClassic, [:pointer], :void
-    attach_function :StyleColorsDark, :igStyleColorsDark, [:pointer], :void
-    attach_function :StyleColorsLight, :igStyleColorsLight, [:pointer], :void
-    attach_function :Text, :igText, [:pointer, :varargs], :void
-    attach_function :TextColored, :igTextColored, [ImVec4.by_value, :pointer, :varargs], :void
-    attach_function :TextDisabled, :igTextDisabled, [:pointer, :varargs], :void
-    attach_function :TextUnformatted, :igTextUnformatted, [:pointer, :pointer], :void
-    attach_function :TextWrapped, :igTextWrapped, [:pointer, :varargs], :void
-    attach_function :TreeNodeStr, :igTreeNodeStr, [:pointer], :bool
-    attach_function :TreeNodeStrStr, :igTreeNodeStrStr, [:pointer, :pointer, :varargs], :bool
-    attach_function :TreeNodePtr, :igTreeNodePtr, [:pointer, :pointer, :varargs], :bool
-    attach_function :TreeNodeExStr, :igTreeNodeExStr, [:pointer, :int], :bool
-    attach_function :TreeNodeExStrStr, :igTreeNodeExStrStr, [:pointer, :int, :pointer, :varargs], :bool
-    attach_function :TreeNodeExPtr, :igTreeNodeExPtr, [:pointer, :int, :pointer, :varargs], :bool
-    attach_function :TreePop, :igTreePop, [], :void
-    attach_function :TreePushStr, :igTreePushStr, [:pointer], :void
-    attach_function :TreePushPtr, :igTreePushPtr, [:pointer], :void
-    attach_function :Unindent, :igUnindent, [:float], :void
-    attach_function :VSliderFloat, :igVSliderFloat, [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :VSliderInt, :igVSliderInt, [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer], :bool
-    attach_function :VSliderScalar, :igVSliderScalar, [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :float], :bool
-    attach_function :ValueBool, :igValueBool, [:pointer, :bool], :void
-    attach_function :ValueInt, :igValueInt, [:pointer, :int], :void
-    attach_function :ValueUint, :igValueUint, [:pointer, :uint], :void
-    attach_function :ValueFloat, :igValueFloat, [:pointer, :float, :pointer], :void
+    attach_function :ImFontAtlas_AddCustomRectFontGlyph, :ImFontAtlas_AddCustomRectFontGlyph, [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value], :int
+    attach_function :ImFontAtlas_AddCustomRectRegular, :ImFontAtlas_AddCustomRectRegular, [:pointer, :uint, :int, :int], :int
+    attach_function :ImFontAtlas_AddFont, :ImFontAtlas_AddFont, [:pointer, :pointer], :pointer
+    attach_function :ImFontAtlas_AddFontDefault, :ImFontAtlas_AddFontDefault, [:pointer, :pointer], :pointer
+    attach_function :ImFontAtlas_AddFontFromFileTTF, :ImFontAtlas_AddFontFromFileTTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer
+    attach_function :ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, :ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer
+    attach_function :ImFontAtlas_AddFontFromMemoryCompressedTTF, :ImFontAtlas_AddFontFromMemoryCompressedTTF, [:pointer, :pointer, :int, :float, :pointer, :pointer], :pointer
+    attach_function :ImFontAtlas_AddFontFromMemoryTTF, :ImFontAtlas_AddFontFromMemoryTTF, [:pointer, :pointer, :int, :float, :pointer, :pointer], :pointer
+    attach_function :ImFontAtlas_Build, :ImFontAtlas_Build, [:pointer], :bool
+    attach_function :ImFontAtlas_CalcCustomRectUV, :ImFontAtlas_CalcCustomRectUV, [:pointer, :pointer, :pointer, :pointer], :void
+    attach_function :ImFontAtlas_Clear, :ImFontAtlas_Clear, [:pointer], :void
+    attach_function :ImFontAtlas_ClearFonts, :ImFontAtlas_ClearFonts, [:pointer], :void
+    attach_function :ImFontAtlas_ClearInputData, :ImFontAtlas_ClearInputData, [:pointer], :void
+    attach_function :ImFontAtlas_ClearTexData, :ImFontAtlas_ClearTexData, [:pointer], :void
+    attach_function :ImFontAtlas_GetCustomRectByIndex, :ImFontAtlas_GetCustomRectByIndex, [:pointer, :int], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesChineseFull, :ImFontAtlas_GetGlyphRangesChineseFull, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon, :ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesCyrillic, :ImFontAtlas_GetGlyphRangesCyrillic, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesDefault, :ImFontAtlas_GetGlyphRangesDefault, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesJapanese, :ImFontAtlas_GetGlyphRangesJapanese, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesKorean, :ImFontAtlas_GetGlyphRangesKorean, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesThai, :ImFontAtlas_GetGlyphRangesThai, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetGlyphRangesVietnamese, :ImFontAtlas_GetGlyphRangesVietnamese, [:pointer], :pointer
+    attach_function :ImFontAtlas_GetMouseCursorTexData, :ImFontAtlas_GetMouseCursorTexData, [:pointer, :int, :pointer, :pointer, :pointer, :pointer], :bool
+    attach_function :ImFontAtlas_GetTexDataAsAlpha8, :ImFontAtlas_GetTexDataAsAlpha8, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
+    attach_function :ImFontAtlas_GetTexDataAsRGBA32, :ImFontAtlas_GetTexDataAsRGBA32, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
+    attach_function :ImFontAtlas_ImFontAtlas, :ImFontAtlas_ImFontAtlas, [], :void
+    attach_function :ImFontAtlas_IsBuilt, :ImFontAtlas_IsBuilt, [:pointer], :bool
+    attach_function :ImFontAtlas_SetTexID, :ImFontAtlas_SetTexID, [:pointer, :pointer], :void
+    attach_function :ImFontAtlas_destroy, :ImFontAtlas_destroy, [:pointer], :void
+    attach_function :igAcceptDragDropPayload, :igAcceptDragDropPayload, [:pointer, :int], :pointer
+    attach_function :igAlignTextToFramePadding, :igAlignTextToFramePadding, [], :void
+    attach_function :igArrowButton, :igArrowButton, [:pointer, :int], :bool
+    attach_function :igBegin, :igBegin, [:pointer, :pointer, :int], :bool
+    attach_function :igBeginChildStr, :igBeginChildStr, [:pointer, ImVec2.by_value, :bool, :int], :bool
+    attach_function :igBeginChildID, :igBeginChildID, [:uint, ImVec2.by_value, :bool, :int], :bool
+    attach_function :igBeginChildFrame, :igBeginChildFrame, [:uint, ImVec2.by_value, :int], :bool
+    attach_function :igBeginCombo, :igBeginCombo, [:pointer, :pointer, :int], :bool
+    attach_function :igBeginDragDropSource, :igBeginDragDropSource, [:int], :bool
+    attach_function :igBeginDragDropTarget, :igBeginDragDropTarget, [], :bool
+    attach_function :igBeginGroup, :igBeginGroup, [], :void
+    attach_function :igBeginMainMenuBar, :igBeginMainMenuBar, [], :bool
+    attach_function :igBeginMenu, :igBeginMenu, [:pointer, :bool], :bool
+    attach_function :igBeginMenuBar, :igBeginMenuBar, [], :bool
+    attach_function :igBeginPopup, :igBeginPopup, [:pointer, :int], :bool
+    attach_function :igBeginPopupContextItem, :igBeginPopupContextItem, [:pointer, :int], :bool
+    attach_function :igBeginPopupContextVoid, :igBeginPopupContextVoid, [:pointer, :int], :bool
+    attach_function :igBeginPopupContextWindow, :igBeginPopupContextWindow, [:pointer, :int, :bool], :bool
+    attach_function :igBeginPopupModal, :igBeginPopupModal, [:pointer, :pointer, :int], :bool
+    attach_function :igBeginTabBar, :igBeginTabBar, [:pointer, :int], :bool
+    attach_function :igBeginTabItem, :igBeginTabItem, [:pointer, :pointer, :int], :bool
+    attach_function :igBeginTooltip, :igBeginTooltip, [], :void
+    attach_function :igBullet, :igBullet, [], :void
+    attach_function :igBulletText, :igBulletText, [:pointer, :varargs], :void
+    attach_function :igButton, :igButton, [:pointer, ImVec2.by_value], :bool
+    attach_function :igCalcItemWidth, :igCalcItemWidth, [], :float
+    attach_function :igCalcListClipping, :igCalcListClipping, [:int, :float, :pointer, :pointer], :void
+    attach_function :igCalcTextSize, :igCalcTextSize, [:pointer, :pointer, :pointer, :bool, :float], :void
+    attach_function :igCaptureKeyboardFromApp, :igCaptureKeyboardFromApp, [:bool], :void
+    attach_function :igCaptureMouseFromApp, :igCaptureMouseFromApp, [:bool], :void
+    attach_function :igCheckbox, :igCheckbox, [:pointer, :pointer], :bool
+    attach_function :igCheckboxFlags, :igCheckboxFlags, [:pointer, :pointer, :uint], :bool
+    attach_function :igCloseCurrentPopup, :igCloseCurrentPopup, [], :void
+    attach_function :igCollapsingHeaderTreeNodeFlags, :igCollapsingHeaderTreeNodeFlags, [:pointer, :int], :bool
+    attach_function :igCollapsingHeaderBoolPtr, :igCollapsingHeaderBoolPtr, [:pointer, :pointer, :int], :bool
+    attach_function :igColorButton, :igColorButton, [:pointer, ImVec4.by_value, :int, ImVec2.by_value], :bool
+    attach_function :igColorConvertFloat4ToU32, :igColorConvertFloat4ToU32, [ImVec4.by_value], :uint
+    attach_function :igColorConvertHSVtoRGB, :igColorConvertHSVtoRGB, [:float, :float, :float, :pointer, :pointer, :pointer], :void
+    attach_function :igColorConvertRGBtoHSV, :igColorConvertRGBtoHSV, [:float, :float, :float, :pointer, :pointer, :pointer], :void
+    attach_function :igColorConvertU32ToFloat4, :igColorConvertU32ToFloat4, [:pointer, :uint], :void
+    attach_function :igColorEdit3, :igColorEdit3, [:pointer, :pointer, :int], :bool
+    attach_function :igColorEdit4, :igColorEdit4, [:pointer, :pointer, :int], :bool
+    attach_function :igColorPicker3, :igColorPicker3, [:pointer, :pointer, :int], :bool
+    attach_function :igColorPicker4, :igColorPicker4, [:pointer, :pointer, :int, :pointer], :bool
+    attach_function :igColumns, :igColumns, [:int, :pointer, :bool], :void
+    attach_function :igComboStr_arr, :igComboStr_arr, [:pointer, :pointer, :pointer, :int, :int], :bool
+    attach_function :igComboStr, :igComboStr, [:pointer, :pointer, :pointer, :int], :bool
+    attach_function :igComboFnPtr, :igComboFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
+    attach_function :igCreateContext, :igCreateContext, [:pointer], :pointer
+    attach_function :igDebugCheckVersionAndDataLayout, :igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool
+    attach_function :igDestroyContext, :igDestroyContext, [:pointer], :void
+    attach_function :igDragFloat, :igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
+    attach_function :igDragFloat2, :igDragFloat2, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
+    attach_function :igDragFloat3, :igDragFloat3, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
+    attach_function :igDragFloat4, :igDragFloat4, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
+    attach_function :igDragFloatRange2, :igDragFloatRange2, [:pointer, :pointer, :pointer, :float, :float, :float, :pointer, :pointer, :float], :bool
+    attach_function :igDragInt, :igDragInt, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
+    attach_function :igDragInt2, :igDragInt2, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
+    attach_function :igDragInt3, :igDragInt3, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
+    attach_function :igDragInt4, :igDragInt4, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
+    attach_function :igDragIntRange2, :igDragIntRange2, [:pointer, :pointer, :pointer, :float, :int, :int, :pointer, :pointer], :bool
+    attach_function :igDragScalar, :igDragScalar, [:pointer, :int, :pointer, :float, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igDragScalarN, :igDragScalarN, [:pointer, :int, :pointer, :int, :float, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igDummy, :igDummy, [ImVec2.by_value], :void
+    attach_function :igEnd, :igEnd, [], :void
+    attach_function :igEndChild, :igEndChild, [], :void
+    attach_function :igEndChildFrame, :igEndChildFrame, [], :void
+    attach_function :igEndCombo, :igEndCombo, [], :void
+    attach_function :igEndDragDropSource, :igEndDragDropSource, [], :void
+    attach_function :igEndDragDropTarget, :igEndDragDropTarget, [], :void
+    attach_function :igEndFrame, :igEndFrame, [], :void
+    attach_function :igEndGroup, :igEndGroup, [], :void
+    attach_function :igEndMainMenuBar, :igEndMainMenuBar, [], :void
+    attach_function :igEndMenu, :igEndMenu, [], :void
+    attach_function :igEndMenuBar, :igEndMenuBar, [], :void
+    attach_function :igEndPopup, :igEndPopup, [], :void
+    attach_function :igEndTabBar, :igEndTabBar, [], :void
+    attach_function :igEndTabItem, :igEndTabItem, [], :void
+    attach_function :igEndTooltip, :igEndTooltip, [], :void
+    attach_function :igGetBackgroundDrawList, :igGetBackgroundDrawList, [], :pointer
+    attach_function :igGetClipboardText, :igGetClipboardText, [], :pointer
+    attach_function :igGetColorU32Col, :igGetColorU32Col, [:int, :float], :uint
+    attach_function :igGetColorU32Vec4, :igGetColorU32Vec4, [ImVec4.by_value], :uint
+    attach_function :igGetColorU32U32, :igGetColorU32U32, [:uint], :uint
+    attach_function :igGetColumnIndex, :igGetColumnIndex, [], :int
+    attach_function :igGetColumnOffset, :igGetColumnOffset, [:int], :float
+    attach_function :igGetColumnWidth, :igGetColumnWidth, [:int], :float
+    attach_function :igGetColumnsCount, :igGetColumnsCount, [], :int
+    attach_function :igGetContentRegionAvail, :igGetContentRegionAvail, [:pointer], :void
+    attach_function :igGetContentRegionMax, :igGetContentRegionMax, [:pointer], :void
+    attach_function :igGetCurrentContext, :igGetCurrentContext, [], :pointer
+    attach_function :igGetCursorPos, :igGetCursorPos, [:pointer], :void
+    attach_function :igGetCursorPosX, :igGetCursorPosX, [], :float
+    attach_function :igGetCursorPosY, :igGetCursorPosY, [], :float
+    attach_function :igGetCursorScreenPos, :igGetCursorScreenPos, [:pointer], :void
+    attach_function :igGetCursorStartPos, :igGetCursorStartPos, [:pointer], :void
+    attach_function :igGetDragDropPayload, :igGetDragDropPayload, [], :pointer
+    attach_function :igGetDrawData, :igGetDrawData, [], :pointer
+    attach_function :igGetDrawListSharedData, :igGetDrawListSharedData, [], :pointer
+    attach_function :igGetFont, :igGetFont, [], :pointer
+    attach_function :igGetFontSize, :igGetFontSize, [], :float
+    attach_function :igGetFontTexUvWhitePixel, :igGetFontTexUvWhitePixel, [:pointer], :void
+    attach_function :igGetForegroundDrawList, :igGetForegroundDrawList, [], :pointer
+    attach_function :igGetFrameCount, :igGetFrameCount, [], :int
+    attach_function :igGetFrameHeight, :igGetFrameHeight, [], :float
+    attach_function :igGetFrameHeightWithSpacing, :igGetFrameHeightWithSpacing, [], :float
+    attach_function :igGetIDStr, :igGetIDStr, [:pointer], :uint
+    attach_function :igGetIDStrStr, :igGetIDStrStr, [:pointer, :pointer], :uint
+    attach_function :igGetIDPtr, :igGetIDPtr, [:pointer], :uint
+    attach_function :igGetIO, :igGetIO, [], :pointer
+    attach_function :igGetItemRectMax, :igGetItemRectMax, [:pointer], :void
+    attach_function :igGetItemRectMin, :igGetItemRectMin, [:pointer], :void
+    attach_function :igGetItemRectSize, :igGetItemRectSize, [:pointer], :void
+    attach_function :igGetKeyIndex, :igGetKeyIndex, [:int], :int
+    attach_function :igGetKeyPressedAmount, :igGetKeyPressedAmount, [:int, :float, :float], :int
+    attach_function :igGetMouseCursor, :igGetMouseCursor, [], :int
+    attach_function :igGetMouseDragDelta, :igGetMouseDragDelta, [:pointer, :int, :float], :void
+    attach_function :igGetMousePos, :igGetMousePos, [:pointer], :void
+    attach_function :igGetMousePosOnOpeningCurrentPopup, :igGetMousePosOnOpeningCurrentPopup, [:pointer], :void
+    attach_function :igGetScrollMaxX, :igGetScrollMaxX, [], :float
+    attach_function :igGetScrollMaxY, :igGetScrollMaxY, [], :float
+    attach_function :igGetScrollX, :igGetScrollX, [], :float
+    attach_function :igGetScrollY, :igGetScrollY, [], :float
+    attach_function :igGetStateStorage, :igGetStateStorage, [], :pointer
+    attach_function :igGetStyle, :igGetStyle, [], :pointer
+    attach_function :igGetStyleColorName, :igGetStyleColorName, [:int], :pointer
+    attach_function :igGetStyleColorVec4, :igGetStyleColorVec4, [:int], :pointer
+    attach_function :igGetTextLineHeight, :igGetTextLineHeight, [], :float
+    attach_function :igGetTextLineHeightWithSpacing, :igGetTextLineHeightWithSpacing, [], :float
+    attach_function :igGetTime, :igGetTime, [], :double
+    attach_function :igGetTreeNodeToLabelSpacing, :igGetTreeNodeToLabelSpacing, [], :float
+    attach_function :igGetVersion, :igGetVersion, [], :pointer
+    attach_function :igGetWindowContentRegionMax, :igGetWindowContentRegionMax, [:pointer], :void
+    attach_function :igGetWindowContentRegionMin, :igGetWindowContentRegionMin, [:pointer], :void
+    attach_function :igGetWindowContentRegionWidth, :igGetWindowContentRegionWidth, [], :float
+    attach_function :igGetWindowDrawList, :igGetWindowDrawList, [], :pointer
+    attach_function :igGetWindowHeight, :igGetWindowHeight, [], :float
+    attach_function :igGetWindowPos, :igGetWindowPos, [:pointer], :void
+    attach_function :igGetWindowSize, :igGetWindowSize, [:pointer], :void
+    attach_function :igGetWindowWidth, :igGetWindowWidth, [], :float
+    attach_function :igImage, :igImage, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value], :void
+    attach_function :igImageButton, :igImageButton, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int, ImVec4.by_value, ImVec4.by_value], :bool
+    attach_function :igIndent, :igIndent, [:float], :void
+    attach_function :igInputDouble, :igInputDouble, [:pointer, :pointer, :double, :double, :pointer, :int], :bool
+    attach_function :igInputFloat, :igInputFloat, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
+    attach_function :igInputFloat2, :igInputFloat2, [:pointer, :pointer, :pointer, :int], :bool
+    attach_function :igInputFloat3, :igInputFloat3, [:pointer, :pointer, :pointer, :int], :bool
+    attach_function :igInputFloat4, :igInputFloat4, [:pointer, :pointer, :pointer, :int], :bool
+    attach_function :igInputInt, :igInputInt, [:pointer, :pointer, :int, :int, :int], :bool
+    attach_function :igInputInt2, :igInputInt2, [:pointer, :pointer, :int], :bool
+    attach_function :igInputInt3, :igInputInt3, [:pointer, :pointer, :int], :bool
+    attach_function :igInputInt4, :igInputInt4, [:pointer, :pointer, :int], :bool
+    attach_function :igInputScalar, :igInputScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :int], :bool
+    attach_function :igInputScalarN, :igInputScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int], :bool
+    attach_function :igInputText, :igInputText, [:pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
+    attach_function :igInputTextMultiline, :igInputTextMultiline, [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :pointer, :pointer], :bool
+    attach_function :igInputTextWithHint, :igInputTextWithHint, [:pointer, :pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
+    attach_function :igInvisibleButton, :igInvisibleButton, [:pointer, ImVec2.by_value], :bool
+    attach_function :igIsAnyItemActive, :igIsAnyItemActive, [], :bool
+    attach_function :igIsAnyItemFocused, :igIsAnyItemFocused, [], :bool
+    attach_function :igIsAnyItemHovered, :igIsAnyItemHovered, [], :bool
+    attach_function :igIsAnyMouseDown, :igIsAnyMouseDown, [], :bool
+    attach_function :igIsItemActivated, :igIsItemActivated, [], :bool
+    attach_function :igIsItemActive, :igIsItemActive, [], :bool
+    attach_function :igIsItemClicked, :igIsItemClicked, [:int], :bool
+    attach_function :igIsItemDeactivated, :igIsItemDeactivated, [], :bool
+    attach_function :igIsItemDeactivatedAfterEdit, :igIsItemDeactivatedAfterEdit, [], :bool
+    attach_function :igIsItemEdited, :igIsItemEdited, [], :bool
+    attach_function :igIsItemFocused, :igIsItemFocused, [], :bool
+    attach_function :igIsItemHovered, :igIsItemHovered, [:int], :bool
+    attach_function :igIsItemToggledOpen, :igIsItemToggledOpen, [], :bool
+    attach_function :igIsItemVisible, :igIsItemVisible, [], :bool
+    attach_function :igIsKeyDown, :igIsKeyDown, [:int], :bool
+    attach_function :igIsKeyPressed, :igIsKeyPressed, [:int, :bool], :bool
+    attach_function :igIsKeyReleased, :igIsKeyReleased, [:int], :bool
+    attach_function :igIsMouseClicked, :igIsMouseClicked, [:int, :bool], :bool
+    attach_function :igIsMouseDoubleClicked, :igIsMouseDoubleClicked, [:int], :bool
+    attach_function :igIsMouseDown, :igIsMouseDown, [:int], :bool
+    attach_function :igIsMouseDragging, :igIsMouseDragging, [:int, :float], :bool
+    attach_function :igIsMouseHoveringRect, :igIsMouseHoveringRect, [ImVec2.by_value, ImVec2.by_value, :bool], :bool
+    attach_function :igIsMousePosValid, :igIsMousePosValid, [:pointer], :bool
+    attach_function :igIsMouseReleased, :igIsMouseReleased, [:int], :bool
+    attach_function :igIsPopupOpen, :igIsPopupOpen, [:pointer], :bool
+    attach_function :igIsRectVisibleNil, :igIsRectVisibleNil, [ImVec2.by_value], :bool
+    attach_function :igIsRectVisibleVec2, :igIsRectVisibleVec2, [ImVec2.by_value, ImVec2.by_value], :bool
+    attach_function :igIsWindowAppearing, :igIsWindowAppearing, [], :bool
+    attach_function :igIsWindowCollapsed, :igIsWindowCollapsed, [], :bool
+    attach_function :igIsWindowFocused, :igIsWindowFocused, [:int], :bool
+    attach_function :igIsWindowHovered, :igIsWindowHovered, [:int], :bool
+    attach_function :igLabelText, :igLabelText, [:pointer, :pointer, :varargs], :void
+    attach_function :igListBoxStr_arr, :igListBoxStr_arr, [:pointer, :pointer, :pointer, :int, :int], :bool
+    attach_function :igListBoxFnPtr, :igListBoxFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
+    attach_function :igListBoxFooter, :igListBoxFooter, [], :void
+    attach_function :igListBoxHeaderVec2, :igListBoxHeaderVec2, [:pointer, ImVec2.by_value], :bool
+    attach_function :igListBoxHeaderInt, :igListBoxHeaderInt, [:pointer, :int, :int], :bool
+    attach_function :igLoadIniSettingsFromDisk, :igLoadIniSettingsFromDisk, [:pointer], :void
+    attach_function :igLoadIniSettingsFromMemory, :igLoadIniSettingsFromMemory, [:pointer, :size_t], :void
+    attach_function :igLogButtons, :igLogButtons, [], :void
+    attach_function :igLogFinish, :igLogFinish, [], :void
+    attach_function :igLogText, :igLogText, [:pointer, :varargs], :void
+    attach_function :igLogToClipboard, :igLogToClipboard, [:int], :void
+    attach_function :igLogToFile, :igLogToFile, [:int, :pointer], :void
+    attach_function :igLogToTTY, :igLogToTTY, [:int], :void
+    attach_function :igMemAlloc, :igMemAlloc, [:size_t], :pointer
+    attach_function :igMemFree, :igMemFree, [:pointer], :void
+    attach_function :igMenuItemBool, :igMenuItemBool, [:pointer, :pointer, :bool, :bool], :bool
+    attach_function :igMenuItemBoolPtr, :igMenuItemBoolPtr, [:pointer, :pointer, :pointer, :bool], :bool
+    attach_function :igNewFrame, :igNewFrame, [], :void
+    attach_function :igNewLine, :igNewLine, [], :void
+    attach_function :igNextColumn, :igNextColumn, [], :void
+    attach_function :igOpenPopup, :igOpenPopup, [:pointer], :void
+    attach_function :igOpenPopupOnItemClick, :igOpenPopupOnItemClick, [:pointer, :int], :bool
+    attach_function :igPlotHistogramFloatPtr, :igPlotHistogramFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
+    attach_function :igPlotHistogramFnPtr, :igPlotHistogramFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
+    attach_function :igPlotLinesFloatPtr, :igPlotLinesFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
+    attach_function :igPlotLinesFnPtr, :igPlotLinesFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
+    attach_function :igPopAllowKeyboardFocus, :igPopAllowKeyboardFocus, [], :void
+    attach_function :igPopButtonRepeat, :igPopButtonRepeat, [], :void
+    attach_function :igPopClipRect, :igPopClipRect, [], :void
+    attach_function :igPopFont, :igPopFont, [], :void
+    attach_function :igPopID, :igPopID, [], :void
+    attach_function :igPopItemWidth, :igPopItemWidth, [], :void
+    attach_function :igPopStyleColor, :igPopStyleColor, [:int], :void
+    attach_function :igPopStyleVar, :igPopStyleVar, [:int], :void
+    attach_function :igPopTextWrapPos, :igPopTextWrapPos, [], :void
+    attach_function :igProgressBar, :igProgressBar, [:float, ImVec2.by_value, :pointer], :void
+    attach_function :igPushAllowKeyboardFocus, :igPushAllowKeyboardFocus, [:bool], :void
+    attach_function :igPushButtonRepeat, :igPushButtonRepeat, [:bool], :void
+    attach_function :igPushClipRect, :igPushClipRect, [ImVec2.by_value, ImVec2.by_value, :bool], :void
+    attach_function :igPushFont, :igPushFont, [:pointer], :void
+    attach_function :igPushIDStr, :igPushIDStr, [:pointer], :void
+    attach_function :igPushIDStrStr, :igPushIDStrStr, [:pointer, :pointer], :void
+    attach_function :igPushIDPtr, :igPushIDPtr, [:pointer], :void
+    attach_function :igPushIDInt, :igPushIDInt, [:int], :void
+    attach_function :igPushItemWidth, :igPushItemWidth, [:float], :void
+    attach_function :igPushStyleColorU32, :igPushStyleColorU32, [:int, :uint], :void
+    attach_function :igPushStyleColorVec4, :igPushStyleColorVec4, [:int, ImVec4.by_value], :void
+    attach_function :igPushStyleVarFloat, :igPushStyleVarFloat, [:int, :float], :void
+    attach_function :igPushStyleVarVec2, :igPushStyleVarVec2, [:int, ImVec2.by_value], :void
+    attach_function :igPushTextWrapPos, :igPushTextWrapPos, [:float], :void
+    attach_function :igRadioButtonBool, :igRadioButtonBool, [:pointer, :bool], :bool
+    attach_function :igRadioButtonIntPtr, :igRadioButtonIntPtr, [:pointer, :pointer, :int], :bool
+    attach_function :igRender, :igRender, [], :void
+    attach_function :igResetMouseDragDelta, :igResetMouseDragDelta, [:int], :void
+    attach_function :igSameLine, :igSameLine, [:float, :float], :void
+    attach_function :igSaveIniSettingsToDisk, :igSaveIniSettingsToDisk, [:pointer], :void
+    attach_function :igSaveIniSettingsToMemory, :igSaveIniSettingsToMemory, [:pointer], :pointer
+    attach_function :igSelectableBool, :igSelectableBool, [:pointer, :bool, :int, ImVec2.by_value], :bool
+    attach_function :igSelectableBoolPtr, :igSelectableBoolPtr, [:pointer, :pointer, :int, ImVec2.by_value], :bool
+    attach_function :igSeparator, :igSeparator, [], :void
+    attach_function :igSetAllocatorFunctions, :igSetAllocatorFunctions, [:pointer, :pointer, :pointer], :void
+    attach_function :igSetClipboardText, :igSetClipboardText, [:pointer], :void
+    attach_function :igSetColorEditOptions, :igSetColorEditOptions, [:int], :void
+    attach_function :igSetColumnOffset, :igSetColumnOffset, [:int, :float], :void
+    attach_function :igSetColumnWidth, :igSetColumnWidth, [:int, :float], :void
+    attach_function :igSetCurrentContext, :igSetCurrentContext, [:pointer], :void
+    attach_function :igSetCursorPos, :igSetCursorPos, [ImVec2.by_value], :void
+    attach_function :igSetCursorPosX, :igSetCursorPosX, [:float], :void
+    attach_function :igSetCursorPosY, :igSetCursorPosY, [:float], :void
+    attach_function :igSetCursorScreenPos, :igSetCursorScreenPos, [ImVec2.by_value], :void
+    attach_function :igSetDragDropPayload, :igSetDragDropPayload, [:pointer, :pointer, :size_t, :int], :bool
+    attach_function :igSetItemAllowOverlap, :igSetItemAllowOverlap, [], :void
+    attach_function :igSetItemDefaultFocus, :igSetItemDefaultFocus, [], :void
+    attach_function :igSetKeyboardFocusHere, :igSetKeyboardFocusHere, [:int], :void
+    attach_function :igSetMouseCursor, :igSetMouseCursor, [:int], :void
+    attach_function :igSetNextItemOpen, :igSetNextItemOpen, [:bool, :int], :void
+    attach_function :igSetNextItemWidth, :igSetNextItemWidth, [:float], :void
+    attach_function :igSetNextWindowBgAlpha, :igSetNextWindowBgAlpha, [:float], :void
+    attach_function :igSetNextWindowCollapsed, :igSetNextWindowCollapsed, [:bool, :int], :void
+    attach_function :igSetNextWindowContentSize, :igSetNextWindowContentSize, [ImVec2.by_value], :void
+    attach_function :igSetNextWindowFocus, :igSetNextWindowFocus, [], :void
+    attach_function :igSetNextWindowPos, :igSetNextWindowPos, [ImVec2.by_value, :int, ImVec2.by_value], :void
+    attach_function :igSetNextWindowSize, :igSetNextWindowSize, [ImVec2.by_value, :int], :void
+    attach_function :igSetNextWindowSizeConstraints, :igSetNextWindowSizeConstraints, [ImVec2.by_value, ImVec2.by_value, :pointer, :pointer], :void
+    attach_function :igSetScrollFromPosX, :igSetScrollFromPosX, [:float, :float], :void
+    attach_function :igSetScrollFromPosY, :igSetScrollFromPosY, [:float, :float], :void
+    attach_function :igSetScrollHereX, :igSetScrollHereX, [:float], :void
+    attach_function :igSetScrollHereY, :igSetScrollHereY, [:float], :void
+    attach_function :igSetScrollX, :igSetScrollX, [:float], :void
+    attach_function :igSetScrollY, :igSetScrollY, [:float], :void
+    attach_function :igSetStateStorage, :igSetStateStorage, [:pointer], :void
+    attach_function :igSetTabItemClosed, :igSetTabItemClosed, [:pointer], :void
+    attach_function :igSetTooltip, :igSetTooltip, [:pointer, :varargs], :void
+    attach_function :igSetWindowCollapsedBool, :igSetWindowCollapsedBool, [:bool, :int], :void
+    attach_function :igSetWindowCollapsedStr, :igSetWindowCollapsedStr, [:pointer, :bool, :int], :void
+    attach_function :igSetWindowFocusNil, :igSetWindowFocusNil, [], :void
+    attach_function :igSetWindowFocusStr, :igSetWindowFocusStr, [:pointer], :void
+    attach_function :igSetWindowFontScale, :igSetWindowFontScale, [:float], :void
+    attach_function :igSetWindowPosVec2, :igSetWindowPosVec2, [ImVec2.by_value, :int], :void
+    attach_function :igSetWindowPosStr, :igSetWindowPosStr, [:pointer, ImVec2.by_value, :int], :void
+    attach_function :igSetWindowSizeVec2, :igSetWindowSizeVec2, [ImVec2.by_value, :int], :void
+    attach_function :igSetWindowSizeStr, :igSetWindowSizeStr, [:pointer, ImVec2.by_value, :int], :void
+    attach_function :igShowAboutWindow, :igShowAboutWindow, [:pointer], :void
+    attach_function :igShowDemoWindow, :igShowDemoWindow, [:pointer], :void
+    attach_function :igShowFontSelector, :igShowFontSelector, [:pointer], :void
+    attach_function :igShowMetricsWindow, :igShowMetricsWindow, [:pointer], :void
+    attach_function :igShowStyleEditor, :igShowStyleEditor, [:pointer], :void
+    attach_function :igShowStyleSelector, :igShowStyleSelector, [:pointer], :bool
+    attach_function :igShowUserGuide, :igShowUserGuide, [], :void
+    attach_function :igSliderAngle, :igSliderAngle, [:pointer, :pointer, :float, :float, :pointer], :bool
+    attach_function :igSliderFloat, :igSliderFloat, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
+    attach_function :igSliderFloat2, :igSliderFloat2, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
+    attach_function :igSliderFloat3, :igSliderFloat3, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
+    attach_function :igSliderFloat4, :igSliderFloat4, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
+    attach_function :igSliderInt, :igSliderInt, [:pointer, :pointer, :int, :int, :pointer], :bool
+    attach_function :igSliderInt2, :igSliderInt2, [:pointer, :pointer, :int, :int, :pointer], :bool
+    attach_function :igSliderInt3, :igSliderInt3, [:pointer, :pointer, :int, :int, :pointer], :bool
+    attach_function :igSliderInt4, :igSliderInt4, [:pointer, :pointer, :int, :int, :pointer], :bool
+    attach_function :igSliderScalar, :igSliderScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igSliderScalarN, :igSliderScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igSmallButton, :igSmallButton, [:pointer], :bool
+    attach_function :igSpacing, :igSpacing, [], :void
+    attach_function :igStyleColorsClassic, :igStyleColorsClassic, [:pointer], :void
+    attach_function :igStyleColorsDark, :igStyleColorsDark, [:pointer], :void
+    attach_function :igStyleColorsLight, :igStyleColorsLight, [:pointer], :void
+    attach_function :igText, :igText, [:pointer, :varargs], :void
+    attach_function :igTextColored, :igTextColored, [ImVec4.by_value, :pointer, :varargs], :void
+    attach_function :igTextDisabled, :igTextDisabled, [:pointer, :varargs], :void
+    attach_function :igTextUnformatted, :igTextUnformatted, [:pointer, :pointer], :void
+    attach_function :igTextWrapped, :igTextWrapped, [:pointer, :varargs], :void
+    attach_function :igTreeNodeStr, :igTreeNodeStr, [:pointer], :bool
+    attach_function :igTreeNodeStrStr, :igTreeNodeStrStr, [:pointer, :pointer, :varargs], :bool
+    attach_function :igTreeNodePtr, :igTreeNodePtr, [:pointer, :pointer, :varargs], :bool
+    attach_function :igTreeNodeExStr, :igTreeNodeExStr, [:pointer, :int], :bool
+    attach_function :igTreeNodeExStrStr, :igTreeNodeExStrStr, [:pointer, :int, :pointer, :varargs], :bool
+    attach_function :igTreeNodeExPtr, :igTreeNodeExPtr, [:pointer, :int, :pointer, :varargs], :bool
+    attach_function :igTreePop, :igTreePop, [], :void
+    attach_function :igTreePushStr, :igTreePushStr, [:pointer], :void
+    attach_function :igTreePushPtr, :igTreePushPtr, [:pointer], :void
+    attach_function :igUnindent, :igUnindent, [:float], :void
+    attach_function :igVSliderFloat, :igVSliderFloat, [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :float], :bool
+    attach_function :igVSliderInt, :igVSliderInt, [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer], :bool
+    attach_function :igVSliderScalar, :igVSliderScalar, [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igValueBool, :igValueBool, [:pointer, :bool], :void
+    attach_function :igValueInt, :igValueInt, [:pointer, :int], :void
+    attach_function :igValueUint, :igValueUint, [:pointer, :uint], :void
+    attach_function :igValueFloat, :igValueFloat, [:pointer, :float, :pointer], :void
   end # self.import_symbols
+
+  def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset)
+    ImFontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset)
+  end
+
+  def self.FontAtlas_AddCustomRectRegular(_self_, id, width, height)
+    ImFontAtlas_AddCustomRectRegular(_self_, id, width, height)
+  end
+
+  def self.FontAtlas_AddFont(_self_, font_cfg)
+    ImFontAtlas_AddFont(_self_, font_cfg)
+  end
+
+  def self.FontAtlas_AddFontDefault(_self_, font_cfg)
+    ImFontAtlas_AddFontDefault(_self_, font_cfg)
+  end
+
+  def self.FontAtlas_AddFontFromFileTTF(_self_, filename, size_pixels, font_cfg, glyph_ranges)
+    ImFontAtlas_AddFontFromFileTTF(_self_, filename, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def self.FontAtlas_AddFontFromMemoryCompressedBase85TTF(_self_, compressed_font_data_base85, size_pixels, font_cfg, glyph_ranges)
+    ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(_self_, compressed_font_data_base85, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def self.FontAtlas_AddFontFromMemoryCompressedTTF(_self_, compressed_font_data, compressed_font_size, size_pixels, font_cfg, glyph_ranges)
+    ImFontAtlas_AddFontFromMemoryCompressedTTF(_self_, compressed_font_data, compressed_font_size, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def self.FontAtlas_AddFontFromMemoryTTF(_self_, font_data, font_size, size_pixels, font_cfg, glyph_ranges)
+    ImFontAtlas_AddFontFromMemoryTTF(_self_, font_data, font_size, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def self.FontAtlas_Build(_self_)
+    ImFontAtlas_Build(_self_)
+  end
+
+  def self.FontAtlas_CalcCustomRectUV(_self_, rect, out_uv_min, out_uv_max)
+    ImFontAtlas_CalcCustomRectUV(_self_, rect, out_uv_min, out_uv_max)
+  end
+
+  def self.FontAtlas_Clear(_self_)
+    ImFontAtlas_Clear(_self_)
+  end
+
+  def self.FontAtlas_ClearFonts(_self_)
+    ImFontAtlas_ClearFonts(_self_)
+  end
+
+  def self.FontAtlas_ClearInputData(_self_)
+    ImFontAtlas_ClearInputData(_self_)
+  end
+
+  def self.FontAtlas_ClearTexData(_self_)
+    ImFontAtlas_ClearTexData(_self_)
+  end
+
+  def self.FontAtlas_GetCustomRectByIndex(_self_, index)
+    ImFontAtlas_GetCustomRectByIndex(_self_, index)
+  end
+
+  def self.FontAtlas_GetGlyphRangesChineseFull(_self_)
+    ImFontAtlas_GetGlyphRangesChineseFull(_self_)
+  end
+
+  def self.FontAtlas_GetGlyphRangesChineseSimplifiedCommon(_self_)
+    ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(_self_)
+  end
+
+  def self.FontAtlas_GetGlyphRangesCyrillic(_self_)
+    ImFontAtlas_GetGlyphRangesCyrillic(_self_)
+  end
+
+  def self.FontAtlas_GetGlyphRangesDefault(_self_)
+    ImFontAtlas_GetGlyphRangesDefault(_self_)
+  end
+
+  def self.FontAtlas_GetGlyphRangesJapanese(_self_)
+    ImFontAtlas_GetGlyphRangesJapanese(_self_)
+  end
+
+  def self.FontAtlas_GetGlyphRangesKorean(_self_)
+    ImFontAtlas_GetGlyphRangesKorean(_self_)
+  end
+
+  def self.FontAtlas_GetGlyphRangesThai(_self_)
+    ImFontAtlas_GetGlyphRangesThai(_self_)
+  end
+
+  def self.FontAtlas_GetGlyphRangesVietnamese(_self_)
+    ImFontAtlas_GetGlyphRangesVietnamese(_self_)
+  end
+
+  def self.FontAtlas_GetMouseCursorTexData(_self_, cursor, out_offset, out_size, out_uv_border, out_uv_fill)
+    ImFontAtlas_GetMouseCursorTexData(_self_, cursor, out_offset, out_size, out_uv_border, out_uv_fill)
+  end
+
+  def self.FontAtlas_GetTexDataAsAlpha8(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
+    ImFontAtlas_GetTexDataAsAlpha8(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
+  end
+
+  def self.FontAtlas_GetTexDataAsRGBA32(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
+    ImFontAtlas_GetTexDataAsRGBA32(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
+  end
+
+  def self.FontAtlas_ImFontAtlas()
+    ImFontAtlas_ImFontAtlas()
+  end
+
+  def self.FontAtlas_IsBuilt(_self_)
+    ImFontAtlas_IsBuilt(_self_)
+  end
+
+  def self.FontAtlas_SetTexID(_self_, id)
+    ImFontAtlas_SetTexID(_self_, id)
+  end
+
+  def self.FontAtlas_destroy(_self_)
+    ImFontAtlas_destroy(_self_)
+  end
+
+  def self.AcceptDragDropPayload(type, flags)
+    igAcceptDragDropPayload(type, flags)
+  end
+
+  def self.AlignTextToFramePadding()
+    igAlignTextToFramePadding()
+  end
+
+  def self.ArrowButton(str_id, dir)
+    igArrowButton(str_id, dir)
+  end
+
+  def self.Begin(name, p_open, flags)
+    igBegin(name, p_open, flags)
+  end
+
+  def self.BeginChildStr(str_id, size, border, flags)
+    igBeginChildStr(str_id, size, border, flags)
+  end
+
+  def self.BeginChildID(id, size, border, flags)
+    igBeginChildID(id, size, border, flags)
+  end
+
+  def self.BeginChildFrame(id, size, flags)
+    igBeginChildFrame(id, size, flags)
+  end
+
+  def self.BeginCombo(label, preview_value, flags)
+    igBeginCombo(label, preview_value, flags)
+  end
+
+  def self.BeginDragDropSource(flags)
+    igBeginDragDropSource(flags)
+  end
+
+  def self.BeginDragDropTarget()
+    igBeginDragDropTarget()
+  end
+
+  def self.BeginGroup()
+    igBeginGroup()
+  end
+
+  def self.BeginMainMenuBar()
+    igBeginMainMenuBar()
+  end
+
+  def self.BeginMenu(label, enabled)
+    igBeginMenu(label, enabled)
+  end
+
+  def self.BeginMenuBar()
+    igBeginMenuBar()
+  end
+
+  def self.BeginPopup(str_id, flags)
+    igBeginPopup(str_id, flags)
+  end
+
+  def self.BeginPopupContextItem(str_id, mouse_button)
+    igBeginPopupContextItem(str_id, mouse_button)
+  end
+
+  def self.BeginPopupContextVoid(str_id, mouse_button)
+    igBeginPopupContextVoid(str_id, mouse_button)
+  end
+
+  def self.BeginPopupContextWindow(str_id, mouse_button, also_over_items)
+    igBeginPopupContextWindow(str_id, mouse_button, also_over_items)
+  end
+
+  def self.BeginPopupModal(name, p_open, flags)
+    igBeginPopupModal(name, p_open, flags)
+  end
+
+  def self.BeginTabBar(str_id, flags)
+    igBeginTabBar(str_id, flags)
+  end
+
+  def self.BeginTabItem(label, p_open, flags)
+    igBeginTabItem(label, p_open, flags)
+  end
+
+  def self.BeginTooltip()
+    igBeginTooltip()
+  end
+
+  def self.Bullet()
+    igBullet()
+  end
+
+  def self.BulletText(fmt, *varargs)
+    igBulletText(fmt, *varargs)
+  end
+
+  def self.Button(label, size)
+    igButton(label, size)
+  end
+
+  def self.CalcItemWidth()
+    igCalcItemWidth()
+  end
+
+  def self.CalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
+    igCalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
+  end
+
+  def self.CalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
+    igCalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
+  end
+
+  def self.CaptureKeyboardFromApp(want_capture_keyboard_value)
+    igCaptureKeyboardFromApp(want_capture_keyboard_value)
+  end
+
+  def self.CaptureMouseFromApp(want_capture_mouse_value)
+    igCaptureMouseFromApp(want_capture_mouse_value)
+  end
+
+  def self.Checkbox(label, v)
+    igCheckbox(label, v)
+  end
+
+  def self.CheckboxFlags(label, flags, flags_value)
+    igCheckboxFlags(label, flags, flags_value)
+  end
+
+  def self.CloseCurrentPopup()
+    igCloseCurrentPopup()
+  end
+
+  def self.CollapsingHeaderTreeNodeFlags(label, flags)
+    igCollapsingHeaderTreeNodeFlags(label, flags)
+  end
+
+  def self.CollapsingHeaderBoolPtr(label, p_open, flags)
+    igCollapsingHeaderBoolPtr(label, p_open, flags)
+  end
+
+  def self.ColorButton(desc_id, col, flags, size)
+    igColorButton(desc_id, col, flags, size)
+  end
+
+  def self.ColorConvertFloat4ToU32(_in_)
+    igColorConvertFloat4ToU32(_in_)
+  end
+
+  def self.ColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b)
+    igColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b)
+  end
+
+  def self.ColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v)
+    igColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v)
+  end
+
+  def self.ColorConvertU32ToFloat4(pOut, _in_)
+    igColorConvertU32ToFloat4(pOut, _in_)
+  end
+
+  def self.ColorEdit3(label, col, flags)
+    igColorEdit3(label, col, flags)
+  end
+
+  def self.ColorEdit4(label, col, flags)
+    igColorEdit4(label, col, flags)
+  end
+
+  def self.ColorPicker3(label, col, flags)
+    igColorPicker3(label, col, flags)
+  end
+
+  def self.ColorPicker4(label, col, flags, ref_col)
+    igColorPicker4(label, col, flags, ref_col)
+  end
+
+  def self.Columns(count, id, border)
+    igColumns(count, id, border)
+  end
+
+  def self.ComboStr_arr(label, current_item, items, items_count, popup_max_height_in_items)
+    igComboStr_arr(label, current_item, items, items_count, popup_max_height_in_items)
+  end
+
+  def self.ComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
+    igComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
+  end
+
+  def self.ComboFnPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
+    igComboFnPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
+  end
+
+  def self.CreateContext(shared_font_atlas)
+    igCreateContext(shared_font_atlas)
+  end
+
+  def self.DebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
+    igDebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
+  end
+
+  def self.DestroyContext(ctx)
+    igDestroyContext(ctx)
+  end
+
+  def self.DragFloat(label, v, v_speed, v_min, v_max, format, power)
+    igDragFloat(label, v, v_speed, v_min, v_max, format, power)
+  end
+
+  def self.DragFloat2(label, v, v_speed, v_min, v_max, format, power)
+    igDragFloat2(label, v, v_speed, v_min, v_max, format, power)
+  end
+
+  def self.DragFloat3(label, v, v_speed, v_min, v_max, format, power)
+    igDragFloat3(label, v, v_speed, v_min, v_max, format, power)
+  end
+
+  def self.DragFloat4(label, v, v_speed, v_min, v_max, format, power)
+    igDragFloat4(label, v, v_speed, v_min, v_max, format, power)
+  end
+
+  def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, power)
+    igDragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, power)
+  end
+
+  def self.DragInt(label, v, v_speed, v_min, v_max, format)
+    igDragInt(label, v, v_speed, v_min, v_max, format)
+  end
+
+  def self.DragInt2(label, v, v_speed, v_min, v_max, format)
+    igDragInt2(label, v, v_speed, v_min, v_max, format)
+  end
+
+  def self.DragInt3(label, v, v_speed, v_min, v_max, format)
+    igDragInt3(label, v, v_speed, v_min, v_max, format)
+  end
+
+  def self.DragInt4(label, v, v_speed, v_min, v_max, format)
+    igDragInt4(label, v, v_speed, v_min, v_max, format)
+  end
+
+  def self.DragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max)
+    igDragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max)
+  end
+
+  def self.DragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, power)
+    igDragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, power)
+  end
+
+  def self.DragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, power)
+    igDragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, power)
+  end
+
+  def self.Dummy(size)
+    igDummy(size)
+  end
+
+  def self.End()
+    igEnd()
+  end
+
+  def self.EndChild()
+    igEndChild()
+  end
+
+  def self.EndChildFrame()
+    igEndChildFrame()
+  end
+
+  def self.EndCombo()
+    igEndCombo()
+  end
+
+  def self.EndDragDropSource()
+    igEndDragDropSource()
+  end
+
+  def self.EndDragDropTarget()
+    igEndDragDropTarget()
+  end
+
+  def self.EndFrame()
+    igEndFrame()
+  end
+
+  def self.EndGroup()
+    igEndGroup()
+  end
+
+  def self.EndMainMenuBar()
+    igEndMainMenuBar()
+  end
+
+  def self.EndMenu()
+    igEndMenu()
+  end
+
+  def self.EndMenuBar()
+    igEndMenuBar()
+  end
+
+  def self.EndPopup()
+    igEndPopup()
+  end
+
+  def self.EndTabBar()
+    igEndTabBar()
+  end
+
+  def self.EndTabItem()
+    igEndTabItem()
+  end
+
+  def self.EndTooltip()
+    igEndTooltip()
+  end
+
+  def self.GetBackgroundDrawList()
+    igGetBackgroundDrawList()
+  end
+
+  def self.GetClipboardText()
+    igGetClipboardText()
+  end
+
+  def self.GetColorU32Col(idx, alpha_mul)
+    igGetColorU32Col(idx, alpha_mul)
+  end
+
+  def self.GetColorU32Vec4(col)
+    igGetColorU32Vec4(col)
+  end
+
+  def self.GetColorU32U32(col)
+    igGetColorU32U32(col)
+  end
+
+  def self.GetColumnIndex()
+    igGetColumnIndex()
+  end
+
+  def self.GetColumnOffset(column_index)
+    igGetColumnOffset(column_index)
+  end
+
+  def self.GetColumnWidth(column_index)
+    igGetColumnWidth(column_index)
+  end
+
+  def self.GetColumnsCount()
+    igGetColumnsCount()
+  end
+
+  def self.GetContentRegionAvail(pOut)
+    igGetContentRegionAvail(pOut)
+  end
+
+  def self.GetContentRegionMax(pOut)
+    igGetContentRegionMax(pOut)
+  end
+
+  def self.GetCurrentContext()
+    igGetCurrentContext()
+  end
+
+  def self.GetCursorPos(pOut)
+    igGetCursorPos(pOut)
+  end
+
+  def self.GetCursorPosX()
+    igGetCursorPosX()
+  end
+
+  def self.GetCursorPosY()
+    igGetCursorPosY()
+  end
+
+  def self.GetCursorScreenPos(pOut)
+    igGetCursorScreenPos(pOut)
+  end
+
+  def self.GetCursorStartPos(pOut)
+    igGetCursorStartPos(pOut)
+  end
+
+  def self.GetDragDropPayload()
+    igGetDragDropPayload()
+  end
+
+  def self.GetDrawData()
+    igGetDrawData()
+  end
+
+  def self.GetDrawListSharedData()
+    igGetDrawListSharedData()
+  end
+
+  def self.GetFont()
+    igGetFont()
+  end
+
+  def self.GetFontSize()
+    igGetFontSize()
+  end
+
+  def self.GetFontTexUvWhitePixel(pOut)
+    igGetFontTexUvWhitePixel(pOut)
+  end
+
+  def self.GetForegroundDrawList()
+    igGetForegroundDrawList()
+  end
+
+  def self.GetFrameCount()
+    igGetFrameCount()
+  end
+
+  def self.GetFrameHeight()
+    igGetFrameHeight()
+  end
+
+  def self.GetFrameHeightWithSpacing()
+    igGetFrameHeightWithSpacing()
+  end
+
+  def self.GetIDStr(str_id)
+    igGetIDStr(str_id)
+  end
+
+  def self.GetIDStrStr(str_id_begin, str_id_end)
+    igGetIDStrStr(str_id_begin, str_id_end)
+  end
+
+  def self.GetIDPtr(ptr_id)
+    igGetIDPtr(ptr_id)
+  end
+
+  def self.GetIO()
+    igGetIO()
+  end
+
+  def self.GetItemRectMax(pOut)
+    igGetItemRectMax(pOut)
+  end
+
+  def self.GetItemRectMin(pOut)
+    igGetItemRectMin(pOut)
+  end
+
+  def self.GetItemRectSize(pOut)
+    igGetItemRectSize(pOut)
+  end
+
+  def self.GetKeyIndex(imgui_key)
+    igGetKeyIndex(imgui_key)
+  end
+
+  def self.GetKeyPressedAmount(key_index, repeat_delay, rate)
+    igGetKeyPressedAmount(key_index, repeat_delay, rate)
+  end
+
+  def self.GetMouseCursor()
+    igGetMouseCursor()
+  end
+
+  def self.GetMouseDragDelta(pOut, button, lock_threshold)
+    igGetMouseDragDelta(pOut, button, lock_threshold)
+  end
+
+  def self.GetMousePos(pOut)
+    igGetMousePos(pOut)
+  end
+
+  def self.GetMousePosOnOpeningCurrentPopup(pOut)
+    igGetMousePosOnOpeningCurrentPopup(pOut)
+  end
+
+  def self.GetScrollMaxX()
+    igGetScrollMaxX()
+  end
+
+  def self.GetScrollMaxY()
+    igGetScrollMaxY()
+  end
+
+  def self.GetScrollX()
+    igGetScrollX()
+  end
+
+  def self.GetScrollY()
+    igGetScrollY()
+  end
+
+  def self.GetStateStorage()
+    igGetStateStorage()
+  end
+
+  def self.GetStyle()
+    igGetStyle()
+  end
+
+  def self.GetStyleColorName(idx)
+    igGetStyleColorName(idx)
+  end
+
+  def self.GetStyleColorVec4(idx)
+    igGetStyleColorVec4(idx)
+  end
+
+  def self.GetTextLineHeight()
+    igGetTextLineHeight()
+  end
+
+  def self.GetTextLineHeightWithSpacing()
+    igGetTextLineHeightWithSpacing()
+  end
+
+  def self.GetTime()
+    igGetTime()
+  end
+
+  def self.GetTreeNodeToLabelSpacing()
+    igGetTreeNodeToLabelSpacing()
+  end
+
+  def self.GetVersion()
+    igGetVersion()
+  end
+
+  def self.GetWindowContentRegionMax(pOut)
+    igGetWindowContentRegionMax(pOut)
+  end
+
+  def self.GetWindowContentRegionMin(pOut)
+    igGetWindowContentRegionMin(pOut)
+  end
+
+  def self.GetWindowContentRegionWidth()
+    igGetWindowContentRegionWidth()
+  end
+
+  def self.GetWindowDrawList()
+    igGetWindowDrawList()
+  end
+
+  def self.GetWindowHeight()
+    igGetWindowHeight()
+  end
+
+  def self.GetWindowPos(pOut)
+    igGetWindowPos(pOut)
+  end
+
+  def self.GetWindowSize(pOut)
+    igGetWindowSize(pOut)
+  end
+
+  def self.GetWindowWidth()
+    igGetWindowWidth()
+  end
+
+  def self.Image(user_texture_id, size, uv0, uv1, tint_col, border_col)
+    igImage(user_texture_id, size, uv0, uv1, tint_col, border_col)
+  end
+
+  def self.ImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col)
+    igImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col)
+  end
+
+  def self.Indent(indent_w)
+    igIndent(indent_w)
+  end
+
+  def self.InputDouble(label, v, step, step_fast, format, flags)
+    igInputDouble(label, v, step, step_fast, format, flags)
+  end
+
+  def self.InputFloat(label, v, step, step_fast, format, flags)
+    igInputFloat(label, v, step, step_fast, format, flags)
+  end
+
+  def self.InputFloat2(label, v, format, flags)
+    igInputFloat2(label, v, format, flags)
+  end
+
+  def self.InputFloat3(label, v, format, flags)
+    igInputFloat3(label, v, format, flags)
+  end
+
+  def self.InputFloat4(label, v, format, flags)
+    igInputFloat4(label, v, format, flags)
+  end
+
+  def self.InputInt(label, v, step, step_fast, flags)
+    igInputInt(label, v, step, step_fast, flags)
+  end
+
+  def self.InputInt2(label, v, flags)
+    igInputInt2(label, v, flags)
+  end
+
+  def self.InputInt3(label, v, flags)
+    igInputInt3(label, v, flags)
+  end
+
+  def self.InputInt4(label, v, flags)
+    igInputInt4(label, v, flags)
+  end
+
+  def self.InputScalar(label, data_type, p_data, p_step, p_step_fast, format, flags)
+    igInputScalar(label, data_type, p_data, p_step, p_step_fast, format, flags)
+  end
+
+  def self.InputScalarN(label, data_type, p_data, components, p_step, p_step_fast, format, flags)
+    igInputScalarN(label, data_type, p_data, components, p_step, p_step_fast, format, flags)
+  end
+
+  def self.InputText(label, buf, buf_size, flags, callback, user_data)
+    igInputText(label, buf, buf_size, flags, callback, user_data)
+  end
+
+  def self.InputTextMultiline(label, buf, buf_size, size, flags, callback, user_data)
+    igInputTextMultiline(label, buf, buf_size, size, flags, callback, user_data)
+  end
+
+  def self.InputTextWithHint(label, hint, buf, buf_size, flags, callback, user_data)
+    igInputTextWithHint(label, hint, buf, buf_size, flags, callback, user_data)
+  end
+
+  def self.InvisibleButton(str_id, size)
+    igInvisibleButton(str_id, size)
+  end
+
+  def self.IsAnyItemActive()
+    igIsAnyItemActive()
+  end
+
+  def self.IsAnyItemFocused()
+    igIsAnyItemFocused()
+  end
+
+  def self.IsAnyItemHovered()
+    igIsAnyItemHovered()
+  end
+
+  def self.IsAnyMouseDown()
+    igIsAnyMouseDown()
+  end
+
+  def self.IsItemActivated()
+    igIsItemActivated()
+  end
+
+  def self.IsItemActive()
+    igIsItemActive()
+  end
+
+  def self.IsItemClicked(mouse_button)
+    igIsItemClicked(mouse_button)
+  end
+
+  def self.IsItemDeactivated()
+    igIsItemDeactivated()
+  end
+
+  def self.IsItemDeactivatedAfterEdit()
+    igIsItemDeactivatedAfterEdit()
+  end
+
+  def self.IsItemEdited()
+    igIsItemEdited()
+  end
+
+  def self.IsItemFocused()
+    igIsItemFocused()
+  end
+
+  def self.IsItemHovered(flags)
+    igIsItemHovered(flags)
+  end
+
+  def self.IsItemToggledOpen()
+    igIsItemToggledOpen()
+  end
+
+  def self.IsItemVisible()
+    igIsItemVisible()
+  end
+
+  def self.IsKeyDown(user_key_index)
+    igIsKeyDown(user_key_index)
+  end
+
+  def self.IsKeyPressed(user_key_index, repeat)
+    igIsKeyPressed(user_key_index, repeat)
+  end
+
+  def self.IsKeyReleased(user_key_index)
+    igIsKeyReleased(user_key_index)
+  end
+
+  def self.IsMouseClicked(button, repeat)
+    igIsMouseClicked(button, repeat)
+  end
+
+  def self.IsMouseDoubleClicked(button)
+    igIsMouseDoubleClicked(button)
+  end
+
+  def self.IsMouseDown(button)
+    igIsMouseDown(button)
+  end
+
+  def self.IsMouseDragging(button, lock_threshold)
+    igIsMouseDragging(button, lock_threshold)
+  end
+
+  def self.IsMouseHoveringRect(r_min, r_max, clip)
+    igIsMouseHoveringRect(r_min, r_max, clip)
+  end
+
+  def self.IsMousePosValid(mouse_pos)
+    igIsMousePosValid(mouse_pos)
+  end
+
+  def self.IsMouseReleased(button)
+    igIsMouseReleased(button)
+  end
+
+  def self.IsPopupOpen(str_id)
+    igIsPopupOpen(str_id)
+  end
+
+  def self.IsRectVisibleNil(size)
+    igIsRectVisibleNil(size)
+  end
+
+  def self.IsRectVisibleVec2(rect_min, rect_max)
+    igIsRectVisibleVec2(rect_min, rect_max)
+  end
+
+  def self.IsWindowAppearing()
+    igIsWindowAppearing()
+  end
+
+  def self.IsWindowCollapsed()
+    igIsWindowCollapsed()
+  end
+
+  def self.IsWindowFocused(flags)
+    igIsWindowFocused(flags)
+  end
+
+  def self.IsWindowHovered(flags)
+    igIsWindowHovered(flags)
+  end
+
+  def self.LabelText(label, fmt, *varargs)
+    igLabelText(label, fmt, *varargs)
+  end
+
+  def self.ListBoxStr_arr(label, current_item, items, items_count, height_in_items)
+    igListBoxStr_arr(label, current_item, items, items_count, height_in_items)
+  end
+
+  def self.ListBoxFnPtr(label, current_item, items_getter, data, items_count, height_in_items)
+    igListBoxFnPtr(label, current_item, items_getter, data, items_count, height_in_items)
+  end
+
+  def self.ListBoxFooter()
+    igListBoxFooter()
+  end
+
+  def self.ListBoxHeaderVec2(label, size)
+    igListBoxHeaderVec2(label, size)
+  end
+
+  def self.ListBoxHeaderInt(label, items_count, height_in_items)
+    igListBoxHeaderInt(label, items_count, height_in_items)
+  end
+
+  def self.LoadIniSettingsFromDisk(ini_filename)
+    igLoadIniSettingsFromDisk(ini_filename)
+  end
+
+  def self.LoadIniSettingsFromMemory(ini_data, ini_size)
+    igLoadIniSettingsFromMemory(ini_data, ini_size)
+  end
+
+  def self.LogButtons()
+    igLogButtons()
+  end
+
+  def self.LogFinish()
+    igLogFinish()
+  end
+
+  def self.LogText(fmt, *varargs)
+    igLogText(fmt, *varargs)
+  end
+
+  def self.LogToClipboard(auto_open_depth)
+    igLogToClipboard(auto_open_depth)
+  end
+
+  def self.LogToFile(auto_open_depth, filename)
+    igLogToFile(auto_open_depth, filename)
+  end
+
+  def self.LogToTTY(auto_open_depth)
+    igLogToTTY(auto_open_depth)
+  end
+
+  def self.MemAlloc(size)
+    igMemAlloc(size)
+  end
+
+  def self.MemFree(ptr)
+    igMemFree(ptr)
+  end
+
+  def self.MenuItemBool(label, shortcut, selected, enabled)
+    igMenuItemBool(label, shortcut, selected, enabled)
+  end
+
+  def self.MenuItemBoolPtr(label, shortcut, p_selected, enabled)
+    igMenuItemBoolPtr(label, shortcut, p_selected, enabled)
+  end
+
+  def self.NewFrame()
+    igNewFrame()
+  end
+
+  def self.NewLine()
+    igNewLine()
+  end
+
+  def self.NextColumn()
+    igNextColumn()
+  end
+
+  def self.OpenPopup(str_id)
+    igOpenPopup(str_id)
+  end
+
+  def self.OpenPopupOnItemClick(str_id, mouse_button)
+    igOpenPopupOnItemClick(str_id, mouse_button)
+  end
+
+  def self.PlotHistogramFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+    igPlotHistogramFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+  end
+
+  def self.PlotHistogramFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+    igPlotHistogramFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  end
+
+  def self.PlotLinesFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+    igPlotLinesFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+  end
+
+  def self.PlotLinesFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+    igPlotLinesFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  end
+
+  def self.PopAllowKeyboardFocus()
+    igPopAllowKeyboardFocus()
+  end
+
+  def self.PopButtonRepeat()
+    igPopButtonRepeat()
+  end
+
+  def self.PopClipRect()
+    igPopClipRect()
+  end
+
+  def self.PopFont()
+    igPopFont()
+  end
+
+  def self.PopID()
+    igPopID()
+  end
+
+  def self.PopItemWidth()
+    igPopItemWidth()
+  end
+
+  def self.PopStyleColor(count)
+    igPopStyleColor(count)
+  end
+
+  def self.PopStyleVar(count)
+    igPopStyleVar(count)
+  end
+
+  def self.PopTextWrapPos()
+    igPopTextWrapPos()
+  end
+
+  def self.ProgressBar(fraction, size_arg, overlay)
+    igProgressBar(fraction, size_arg, overlay)
+  end
+
+  def self.PushAllowKeyboardFocus(allow_keyboard_focus)
+    igPushAllowKeyboardFocus(allow_keyboard_focus)
+  end
+
+  def self.PushButtonRepeat(repeat)
+    igPushButtonRepeat(repeat)
+  end
+
+  def self.PushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
+    igPushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
+  end
+
+  def self.PushFont(font)
+    igPushFont(font)
+  end
+
+  def self.PushIDStr(str_id)
+    igPushIDStr(str_id)
+  end
+
+  def self.PushIDStrStr(str_id_begin, str_id_end)
+    igPushIDStrStr(str_id_begin, str_id_end)
+  end
+
+  def self.PushIDPtr(ptr_id)
+    igPushIDPtr(ptr_id)
+  end
+
+  def self.PushIDInt(int_id)
+    igPushIDInt(int_id)
+  end
+
+  def self.PushItemWidth(item_width)
+    igPushItemWidth(item_width)
+  end
+
+  def self.PushStyleColorU32(idx, col)
+    igPushStyleColorU32(idx, col)
+  end
+
+  def self.PushStyleColorVec4(idx, col)
+    igPushStyleColorVec4(idx, col)
+  end
+
+  def self.PushStyleVarFloat(idx, val)
+    igPushStyleVarFloat(idx, val)
+  end
+
+  def self.PushStyleVarVec2(idx, val)
+    igPushStyleVarVec2(idx, val)
+  end
+
+  def self.PushTextWrapPos(wrap_local_pos_x)
+    igPushTextWrapPos(wrap_local_pos_x)
+  end
+
+  def self.RadioButtonBool(label, active)
+    igRadioButtonBool(label, active)
+  end
+
+  def self.RadioButtonIntPtr(label, v, v_button)
+    igRadioButtonIntPtr(label, v, v_button)
+  end
+
+  def self.Render()
+    igRender()
+  end
+
+  def self.ResetMouseDragDelta(button)
+    igResetMouseDragDelta(button)
+  end
+
+  def self.SameLine(offset_from_start_x, spacing)
+    igSameLine(offset_from_start_x, spacing)
+  end
+
+  def self.SaveIniSettingsToDisk(ini_filename)
+    igSaveIniSettingsToDisk(ini_filename)
+  end
+
+  def self.SaveIniSettingsToMemory(out_ini_size)
+    igSaveIniSettingsToMemory(out_ini_size)
+  end
+
+  def self.SelectableBool(label, selected, flags, size)
+    igSelectableBool(label, selected, flags, size)
+  end
+
+  def self.SelectableBoolPtr(label, p_selected, flags, size)
+    igSelectableBoolPtr(label, p_selected, flags, size)
+  end
+
+  def self.Separator()
+    igSeparator()
+  end
+
+  def self.SetAllocatorFunctions(alloc_func, free_func, user_data)
+    igSetAllocatorFunctions(alloc_func, free_func, user_data)
+  end
+
+  def self.SetClipboardText(text)
+    igSetClipboardText(text)
+  end
+
+  def self.SetColorEditOptions(flags)
+    igSetColorEditOptions(flags)
+  end
+
+  def self.SetColumnOffset(column_index, offset_x)
+    igSetColumnOffset(column_index, offset_x)
+  end
+
+  def self.SetColumnWidth(column_index, width)
+    igSetColumnWidth(column_index, width)
+  end
+
+  def self.SetCurrentContext(ctx)
+    igSetCurrentContext(ctx)
+  end
+
+  def self.SetCursorPos(local_pos)
+    igSetCursorPos(local_pos)
+  end
+
+  def self.SetCursorPosX(local_x)
+    igSetCursorPosX(local_x)
+  end
+
+  def self.SetCursorPosY(local_y)
+    igSetCursorPosY(local_y)
+  end
+
+  def self.SetCursorScreenPos(pos)
+    igSetCursorScreenPos(pos)
+  end
+
+  def self.SetDragDropPayload(type, data, sz, cond)
+    igSetDragDropPayload(type, data, sz, cond)
+  end
+
+  def self.SetItemAllowOverlap()
+    igSetItemAllowOverlap()
+  end
+
+  def self.SetItemDefaultFocus()
+    igSetItemDefaultFocus()
+  end
+
+  def self.SetKeyboardFocusHere(offset)
+    igSetKeyboardFocusHere(offset)
+  end
+
+  def self.SetMouseCursor(cursor_type)
+    igSetMouseCursor(cursor_type)
+  end
+
+  def self.SetNextItemOpen(is_open, cond)
+    igSetNextItemOpen(is_open, cond)
+  end
+
+  def self.SetNextItemWidth(item_width)
+    igSetNextItemWidth(item_width)
+  end
+
+  def self.SetNextWindowBgAlpha(alpha)
+    igSetNextWindowBgAlpha(alpha)
+  end
+
+  def self.SetNextWindowCollapsed(collapsed, cond)
+    igSetNextWindowCollapsed(collapsed, cond)
+  end
+
+  def self.SetNextWindowContentSize(size)
+    igSetNextWindowContentSize(size)
+  end
+
+  def self.SetNextWindowFocus()
+    igSetNextWindowFocus()
+  end
+
+  def self.SetNextWindowPos(pos, cond, pivot)
+    igSetNextWindowPos(pos, cond, pivot)
+  end
+
+  def self.SetNextWindowSize(size, cond)
+    igSetNextWindowSize(size, cond)
+  end
+
+  def self.SetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
+    igSetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
+  end
+
+  def self.SetScrollFromPosX(local_x, center_x_ratio)
+    igSetScrollFromPosX(local_x, center_x_ratio)
+  end
+
+  def self.SetScrollFromPosY(local_y, center_y_ratio)
+    igSetScrollFromPosY(local_y, center_y_ratio)
+  end
+
+  def self.SetScrollHereX(center_x_ratio)
+    igSetScrollHereX(center_x_ratio)
+  end
+
+  def self.SetScrollHereY(center_y_ratio)
+    igSetScrollHereY(center_y_ratio)
+  end
+
+  def self.SetScrollX(scroll_x)
+    igSetScrollX(scroll_x)
+  end
+
+  def self.SetScrollY(scroll_y)
+    igSetScrollY(scroll_y)
+  end
+
+  def self.SetStateStorage(storage)
+    igSetStateStorage(storage)
+  end
+
+  def self.SetTabItemClosed(tab_or_docked_window_label)
+    igSetTabItemClosed(tab_or_docked_window_label)
+  end
+
+  def self.SetTooltip(fmt, *varargs)
+    igSetTooltip(fmt, *varargs)
+  end
+
+  def self.SetWindowCollapsedBool(collapsed, cond)
+    igSetWindowCollapsedBool(collapsed, cond)
+  end
+
+  def self.SetWindowCollapsedStr(name, collapsed, cond)
+    igSetWindowCollapsedStr(name, collapsed, cond)
+  end
+
+  def self.SetWindowFocusNil()
+    igSetWindowFocusNil()
+  end
+
+  def self.SetWindowFocusStr(name)
+    igSetWindowFocusStr(name)
+  end
+
+  def self.SetWindowFontScale(scale)
+    igSetWindowFontScale(scale)
+  end
+
+  def self.SetWindowPosVec2(pos, cond)
+    igSetWindowPosVec2(pos, cond)
+  end
+
+  def self.SetWindowPosStr(name, pos, cond)
+    igSetWindowPosStr(name, pos, cond)
+  end
+
+  def self.SetWindowSizeVec2(size, cond)
+    igSetWindowSizeVec2(size, cond)
+  end
+
+  def self.SetWindowSizeStr(name, size, cond)
+    igSetWindowSizeStr(name, size, cond)
+  end
+
+  def self.ShowAboutWindow(p_open)
+    igShowAboutWindow(p_open)
+  end
+
+  def self.ShowDemoWindow(p_open)
+    igShowDemoWindow(p_open)
+  end
+
+  def self.ShowFontSelector(label)
+    igShowFontSelector(label)
+  end
+
+  def self.ShowMetricsWindow(p_open)
+    igShowMetricsWindow(p_open)
+  end
+
+  def self.ShowStyleEditor(ref)
+    igShowStyleEditor(ref)
+  end
+
+  def self.ShowStyleSelector(label)
+    igShowStyleSelector(label)
+  end
+
+  def self.ShowUserGuide()
+    igShowUserGuide()
+  end
+
+  def self.SliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format)
+    igSliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format)
+  end
+
+  def self.SliderFloat(label, v, v_min, v_max, format, power)
+    igSliderFloat(label, v, v_min, v_max, format, power)
+  end
+
+  def self.SliderFloat2(label, v, v_min, v_max, format, power)
+    igSliderFloat2(label, v, v_min, v_max, format, power)
+  end
+
+  def self.SliderFloat3(label, v, v_min, v_max, format, power)
+    igSliderFloat3(label, v, v_min, v_max, format, power)
+  end
+
+  def self.SliderFloat4(label, v, v_min, v_max, format, power)
+    igSliderFloat4(label, v, v_min, v_max, format, power)
+  end
+
+  def self.SliderInt(label, v, v_min, v_max, format)
+    igSliderInt(label, v, v_min, v_max, format)
+  end
+
+  def self.SliderInt2(label, v, v_min, v_max, format)
+    igSliderInt2(label, v, v_min, v_max, format)
+  end
+
+  def self.SliderInt3(label, v, v_min, v_max, format)
+    igSliderInt3(label, v, v_min, v_max, format)
+  end
+
+  def self.SliderInt4(label, v, v_min, v_max, format)
+    igSliderInt4(label, v, v_min, v_max, format)
+  end
+
+  def self.SliderScalar(label, data_type, p_data, p_min, p_max, format, power)
+    igSliderScalar(label, data_type, p_data, p_min, p_max, format, power)
+  end
+
+  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format, power)
+    igSliderScalarN(label, data_type, p_data, components, p_min, p_max, format, power)
+  end
+
+  def self.SmallButton(label)
+    igSmallButton(label)
+  end
+
+  def self.Spacing()
+    igSpacing()
+  end
+
+  def self.StyleColorsClassic(dst)
+    igStyleColorsClassic(dst)
+  end
+
+  def self.StyleColorsDark(dst)
+    igStyleColorsDark(dst)
+  end
+
+  def self.StyleColorsLight(dst)
+    igStyleColorsLight(dst)
+  end
+
+  def self.Text(fmt, *varargs)
+    igText(fmt, *varargs)
+  end
+
+  def self.TextColored(col, fmt, *varargs)
+    igTextColored(col, fmt, *varargs)
+  end
+
+  def self.TextDisabled(fmt, *varargs)
+    igTextDisabled(fmt, *varargs)
+  end
+
+  def self.TextUnformatted(text, text_end)
+    igTextUnformatted(text, text_end)
+  end
+
+  def self.TextWrapped(fmt, *varargs)
+    igTextWrapped(fmt, *varargs)
+  end
+
+  def self.TreeNodeStr(label)
+    igTreeNodeStr(label)
+  end
+
+  def self.TreeNodeStrStr(str_id, fmt, *varargs)
+    igTreeNodeStrStr(str_id, fmt, *varargs)
+  end
+
+  def self.TreeNodePtr(ptr_id, fmt, *varargs)
+    igTreeNodePtr(ptr_id, fmt, *varargs)
+  end
+
+  def self.TreeNodeExStr(label, flags)
+    igTreeNodeExStr(label, flags)
+  end
+
+  def self.TreeNodeExStrStr(str_id, flags, fmt, *varargs)
+    igTreeNodeExStrStr(str_id, flags, fmt, *varargs)
+  end
+
+  def self.TreeNodeExPtr(ptr_id, flags, fmt, *varargs)
+    igTreeNodeExPtr(ptr_id, flags, fmt, *varargs)
+  end
+
+  def self.TreePop()
+    igTreePop()
+  end
+
+  def self.TreePushStr(str_id)
+    igTreePushStr(str_id)
+  end
+
+  def self.TreePushPtr(ptr_id)
+    igTreePushPtr(ptr_id)
+  end
+
+  def self.Unindent(indent_w)
+    igUnindent(indent_w)
+  end
+
+  def self.VSliderFloat(label, size, v, v_min, v_max, format, power)
+    igVSliderFloat(label, size, v, v_min, v_max, format, power)
+  end
+
+  def self.VSliderInt(label, size, v, v_min, v_max, format)
+    igVSliderInt(label, size, v, v_min, v_max, format)
+  end
+
+  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format, power)
+    igVSliderScalar(label, size, data_type, p_data, p_min, p_max, format, power)
+  end
+
+  def self.ValueBool(prefix, b)
+    igValueBool(prefix, b)
+  end
+
+  def self.ValueInt(prefix, v)
+    igValueInt(prefix, v)
+  end
+
+  def self.ValueUint(prefix, v)
+    igValueUint(prefix, v)
+  end
+
+  def self.ValueFloat(prefix, v, float_format)
+    igValueFloat(prefix, v, float_format)
+  end
 
 end # module ImGui

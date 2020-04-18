@@ -78,9 +78,9 @@ module Generator
     out.write("end\n\n")
   end
 
-  def self.write_function(out, func)
+  def self.write_import_function(out, func)
 
-    func.args.map! do |arg|
+    func_args = func.args.map do |arg|
       if arg.type.to_s.start_with?('Im')
         arg.type.to_s + '.by_value'
       else
@@ -96,6 +96,26 @@ module Generator
 
     func_name_ruby = func.name
     func_name_c = func.name
+    out.write("attach_function :#{func_name_ruby}, :#{func_name_c}, [#{func_args.join(', ')}], #{func.retval}\n")
+  end
+
+  def self.write_method(out, func)
+
+    arg_names = func.args.map do |arg|
+      case arg.name
+      # va_arg -> keyword argument
+      when "..."
+        "*varargs"
+      # avoid conflict with ruby keywords by adding '_'s
+      when "in", "self"
+        "_#{arg.name}_"
+      else
+        arg.name
+      end
+    end
+
+    func_name_ruby = func.name
+    func_name_c = func.name
     if func.name.start_with?('ig')
       func_name_ruby = func_name_c.gsub(/^ig/, '')
     elsif func.name.start_with?('ImGui_')
@@ -103,7 +123,11 @@ module Generator
     elsif func.name.start_with?('ImFontAtlas_')
       func_name_ruby = func_name_c.gsub(/^Im/, '')
     end
-    out.write("attach_function :#{func_name_ruby}, :#{func_name_c}, [#{func.args.join(', ')}], #{func.retval}\n")
+    out.write("def self.#{func_name_ruby}(#{arg_names.join(', ')})\n")
+    out.push_indent
+    out.write("#{func.name}(#{arg_names.join(', ')})\n")
+    out.pop_indent
+    out.write("end\n\n")
   end
 
 end # module Generator
@@ -118,6 +142,7 @@ if __FILE__ == $0
   structs_map = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
   funcs_base_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/definitions.json' )
   # funcs_impl_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/impl_definitions.json' )
+  funcs_impl_map = []
 
   # Omit needless/unusable data
   omit_structs = [
@@ -195,7 +220,7 @@ require 'ffi'
     end
 
     #
-    # Functions/Typedefs
+    # Import Symbols/Typedefs
     #
     out.write("module ImGui\n")
     out.newline
@@ -203,9 +228,7 @@ require 'ffi'
     out.write("extend FFI::Library\n")
     out.newline
 
-    #
     # Typedefs
-    #
     typedefs_map.each do |typedef|
       if typedef[0] != typedef[1].to_s
         Generator.write_typedef(out, typedef)
@@ -225,21 +248,30 @@ require 'ffi'
 
     EOS
 
+    # Import Symbols
     out.push_indent
     out.write("def self.import_symbols()")
     out.newline
 
     out.push_indent
-    # [funcs_base_map, funcs_impl_map].each do |funcs_map|
-    [funcs_base_map].each do |funcs_map|
+    [funcs_base_map, funcs_impl_map].each do |funcs_map|
       funcs_map.each do |func|
-        Generator.write_function(out, func)
+        Generator.write_import_function(out, func)
       end
     end
     out.pop_indent
 
     out.write("end # self.import_symbols\n")
     out.newline
+
+    #
+    # Methods
+    #
+    [funcs_base_map, funcs_impl_map].each do |funcs_map|
+      funcs_map.each do |func|
+        Generator.write_method(out, func)
+      end
+    end
 
     #
     # Epilogue

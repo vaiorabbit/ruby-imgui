@@ -1,6 +1,7 @@
 2020-04-18  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (macOS) Catching up with ImGui 1.76
+	* Generate APIs as wrapper methods (to support default arguments/method overloading in the future)
 
 2020-02-11  vaiorabbit  <http://twitter.com/vaiorabbit>
 
