@@ -4,6 +4,8 @@ require_relative '../imgui'
 require_relative '../imgui_impl_opengl3'
 require_relative '../imgui_impl_sdl2'
 
+require_relative './imgui_demo'
+
 WINDOW_W = 1280
 WINDOW_H = 720
 
@@ -107,7 +109,9 @@ if __FILE__ == $0
     ImGui::ImplSDL2_NewFrame(window)
     ImGui::NewFrame()
 
-    ImGui::ShowDemoWindow(nil)
+    ImGui::ShowDemoWindow()
+
+    ImGuiDemo::ShowAboutWindow(nil)
 
     # See https://github.com/ffi/ffi/wiki/Structs
     pos = ImVec2.create(50, 20)

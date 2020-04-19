@@ -1,5 +1,5 @@
-# Ref.: imgui_demo.cpp (v1.66b)
-# https://github.com/ocornut/imgui/blob/801645d35092c8da0eeabe71d7c1997c47aa3648/imgui_demo.cpp
+# Ref.: imgui_demo.cpp (v1.76)
+# https://github.com/ocornut/imgui/blob/v1.76/imgui_demo.cpp
 
 module ImGuiDemo
 
@@ -18,15 +18,13 @@ module ImGuiDemo
       io = ImGuiIO.new(ImGui::GetIO())
       style = ImGuiStyle.new(ImGui::GetStyle())
 
-      cfginfos_frame = ImVec2.new
-      cfginfos_frame[:x] = 0
-      cfginfos_frame[:y] = ImGui::GetTextLineHeightWithSpacing() * 18
-      copy_to_clipboard = ImGui::Button("Copy to clipboard", ImVec2.new)
+      cfginfos_frame = ImVec2.create(0, ImGui::GetTextLineHeightWithSpacing() * 18)
+      copy_to_clipboard = ImGui::Button("Copy to clipboard")
       ImGui::BeginChildFrame(ImGui::GetIDStr("cfginfos"), cfginfos_frame, ImGuiWindowFlags_NoMove)
       max_depth = -1
       ImGui::LogToClipboard(max_depth) if copy_to_clipboard
 
-      ImGui::Text("Dear ImGui %s (%d)", :pointer, "1.66b", :int, 16602)
+      ImGui::Text("Dear ImGui %s (%d)", :pointer, "1.76", :int, 17600)
       ImGui::Separator();
 
       ImGui::Text("io.ConfigFlags: 0x%08X", :uint, io[:ConfigFlags])
@@ -41,13 +39,14 @@ module ImGuiDemo
       ImGui::Text(" MouseDrawCursor")              if io[:MouseDrawCursor]
       ImGui::Text(" ConfigMacOSXBehaviors")        if io[:ConfigMacOSXBehaviors]
       ImGui::Text(" ConfigInputTextCursorBlink")   if io[:ConfigInputTextCursorBlink]
-      ImGui::Text(" ConfigResizeWindowsFromEdges") if io[:ConfigResizeWindowsFromEdges]
+      ImGui::Text(" ConfigResizeWindowsFromEdges") if io[:ConfigWindowsResizeFromEdges]
       ImGui::Text("io.BackendFlags: 0x%08X", :uint, io[:BackendFlags])
       ImGui::Text(" HasGamepad")      if (io[:BackendFlags] & ImGuiBackendFlags_HasGamepad) != 0
       ImGui::Text(" HasMouseCursors") if (io[:BackendFlags] & ImGuiBackendFlags_HasMouseCursors) != 0
       ImGui::Text(" HasSetMousePos")  if (io[:BackendFlags] & ImGuiBackendFlags_HasSetMousePos) != 0
-      ImGui::Text("io.BackendPlatformName: %s", :pointer, io[:BackendPlatformName] != nil ? io[:BackendPlatformName] : "NULL")
-      ImGui::Text("io.BackendRendererName: %s", :pointer, io[:BackendRendererName] != nil ? io[:BackendRendererName] : "NULL")
+      ImGui::Text("io.BackendPlatformName: %s", :pointer, io[:BackendPlatformName] != nil ? io[:BackendPlatformName].read_string_to_null : "NULL")
+      ImGui::Text("io.BackendRendererName: %s", :pointer, io[:BackendRendererName] != nil ? io[:BackendRendererName].read_string_to_null : "NULL")
+
       ImGui::Separator()
       font_atlas = ImFontAtlas.new(io[:Fonts])
       ImGui::Text("io.Fonts: %d fonts, Flags: 0x%08X, TexSize: %d,%d", :int, font_atlas[:Fonts][:Size], :uint, font_atlas[:Flags], :int, font_atlas[:TexWidth], :int, font_atlas[:TexHeight])

@@ -3,6 +3,8 @@ require_relative '../imgui'
 require_relative '../imgui_impl_opengl2'
 require_relative '../imgui_impl_glfw'
 
+require_relative './imgui_demo'
+
 $lib_path = case RUBY_PLATFORM
             when /mswin|msys|mingw|cygwin/
               Dir.pwd + '/../' + 'imgui.dll'
@@ -89,6 +91,8 @@ if __FILE__ == $0
     ImGui::NewFrame()
 
     ImGui::ShowDemoWindow()
+
+    ImGuiDemo::ShowAboutWindow(nil)
 
     pos = ImVec2.create(50, 20)
     ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver)

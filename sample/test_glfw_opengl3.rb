@@ -3,6 +3,8 @@ require_relative '../imgui'
 require_relative '../imgui_impl_opengl3'
 require_relative '../imgui_impl_glfw'
 
+require_relative './imgui_demo'
+
 def check_error( desc )
   e = glGetError()
   if e != GL_NO_ERROR
@@ -124,6 +126,8 @@ if __FILE__ == $0
     ImGui::NewFrame()
 
     ImGui::ShowDemoWindow()
+
+    ImGuiDemo::ShowAboutWindow(nil)
 
     # See https://github.com/ffi/ffi/wiki/Structs
     pos = ImVec2.create(50, 20)

@@ -24,6 +24,8 @@ module ImGui
   @@g_VboHandle = 0
   @@g_ElementsHandle = 0
 
+  @@g_BackendRendererName = FFI::MemoryPointer.from_string("imgui_impl_opengl3")
+
   def self.PrintShaderCompileStatus(handle)
     rvalue = ' ' * 4
     glGetShaderiv(handle, GL_COMPILE_STATUS, rvalue)
@@ -69,7 +71,7 @@ module ImGui
     @@g_GlVersion = major * 1000 + minor
 
     io = ImGuiIO.new(ImGui::GetIO())
-    io[:BackendRendererName] =  FFI::MemoryPointer.from_string("imgui_impl_opengl3")
+    io[:BackendRendererName] = @@g_BackendRendererName
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasVtxOffset if @@g_GlVersion >= 3200
 
     glsl_version = "#version 130" if glsl_version == nil

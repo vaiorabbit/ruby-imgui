@@ -7,10 +7,12 @@ require_relative 'imgui'
 module ImGui
 
   @@g_FontTexture = nil
+  @@g_BackendRendererName = FFI::MemoryPointer.from_string("imgui_impl_opengl2")
 
   def self.ImplOpenGL2_Init()
     io = ImGuiIO.new(ImGui::GetIO())
-    io[:BackendRendererName] =  FFI::MemoryPointer.from_string("imgui_impl_opengl2")
+    io[:BackendRendererName] = @@g_BackendRendererName
+
     return true
   end
 

@@ -10,6 +10,7 @@ module ImGui
   @@g_Time = 0.0 # UInt64
   @@g_MousePressed = [false, false, false]
   @@g_MouseCursors = Array.new(ImGuiMouseCursor_COUNT) { nil } # SDL_Cursor*
+  @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_sdl")
 
   # [TODO] Support ClipboardText
   # g_ClipboardTextData
@@ -193,7 +194,7 @@ module ImGui
     io = ImGuiIO.new(ImGui::GetIO())
     io[:BackendFlags] |= ImGuiBackendFlags_HasMouseCursors # We can honor GetMouseCursor() values (optional)
     io[:BackendFlags] |= ImGuiBackendFlags_HasSetMousePos  # We can honor io.WantSetMousePos requests (optional, rarely used)
-    io[:BackendPlatformName] = FFI::MemoryPointer.from_string("imgui_impl_sdl")
+    io[:BackendPlatformName] = @@g_BackendPlatformName
 
     # Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
     io[:KeyMap][ImGuiKey_Tab] = SDL_SCANCODE_TAB

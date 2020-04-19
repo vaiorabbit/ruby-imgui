@@ -11,6 +11,8 @@ module ImGui
   @@g_MouseJustPressed = [false, false, false, false, false]
   @@g_MouseCursors = Array.new(ImGuiMouseCursor_COUNT) { 0 }
 
+  @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_glfw")
+
   # Chain GLFW callbacks: our callbacks will call the user's previously installed callbacks, if any.
   @@g_PrevUserCallbackMousebutton = nil
   @@g_PrevUserCallbackScroll = nil
@@ -170,7 +172,7 @@ module ImGui
     io = ImGuiIO.new(ImGui::GetIO())
     io[:BackendFlags] |= ImGuiBackendFlags_HasMouseCursors # We can honor GetMouseCursor() values (optional)
     io[:BackendFlags] |= ImGuiBackendFlags_HasSetMousePos  # We can honor io.WantSetMousePos requests (optional, rarely used)
-    io[:BackendPlatformName] = FFI::MemoryPointer.from_string("imgui_impl_glfw")
+    io[:BackendPlatformName] = @@g_BackendPlatformName
 
     # Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
     io[:KeyMap][ImGuiKey_Tab] = GLFW_KEY_TAB
