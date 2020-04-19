@@ -719,6 +719,23 @@ class ImGuiStoragePair < FFI::Struct
   )
 end
 
+# shorthand initializer for ImVec2 and ImVec4
+def ImVec2.create(x, y)
+  instance = ImVec2.new
+  instance[:x] = x
+  instance[:y] = y
+  return instance
+end
+
+def ImVec4.create(x, y)
+  instance = ImVec4.new
+  instance[:x] = x
+  instance[:y] = y
+  instance[:z] = z
+  instance[:w] = w
+  return instance
+end
+
 module ImGui
 
   extend FFI::Library
@@ -1145,7 +1162,7 @@ module ImGui
     attach_function :igValueFloat, :igValueFloat, [:pointer, :float, :pointer], :void
   end # self.import_symbols
 
-  def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset)
+  def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset = ImVec2.create(0,0))
     ImFontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset)
   end
 
@@ -1157,23 +1174,23 @@ module ImGui
     ImFontAtlas_AddFont(_self_, font_cfg)
   end
 
-  def self.FontAtlas_AddFontDefault(_self_, font_cfg)
+  def self.FontAtlas_AddFontDefault(_self_, font_cfg = nil)
     ImFontAtlas_AddFontDefault(_self_, font_cfg)
   end
 
-  def self.FontAtlas_AddFontFromFileTTF(_self_, filename, size_pixels, font_cfg, glyph_ranges)
+  def self.FontAtlas_AddFontFromFileTTF(_self_, filename, size_pixels, font_cfg = nil, glyph_ranges = nil)
     ImFontAtlas_AddFontFromFileTTF(_self_, filename, size_pixels, font_cfg, glyph_ranges)
   end
 
-  def self.FontAtlas_AddFontFromMemoryCompressedBase85TTF(_self_, compressed_font_data_base85, size_pixels, font_cfg, glyph_ranges)
+  def self.FontAtlas_AddFontFromMemoryCompressedBase85TTF(_self_, compressed_font_data_base85, size_pixels, font_cfg = nil, glyph_ranges = nil)
     ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(_self_, compressed_font_data_base85, size_pixels, font_cfg, glyph_ranges)
   end
 
-  def self.FontAtlas_AddFontFromMemoryCompressedTTF(_self_, compressed_font_data, compressed_font_size, size_pixels, font_cfg, glyph_ranges)
+  def self.FontAtlas_AddFontFromMemoryCompressedTTF(_self_, compressed_font_data, compressed_font_size, size_pixels, font_cfg = nil, glyph_ranges = nil)
     ImFontAtlas_AddFontFromMemoryCompressedTTF(_self_, compressed_font_data, compressed_font_size, size_pixels, font_cfg, glyph_ranges)
   end
 
-  def self.FontAtlas_AddFontFromMemoryTTF(_self_, font_data, font_size, size_pixels, font_cfg, glyph_ranges)
+  def self.FontAtlas_AddFontFromMemoryTTF(_self_, font_data, font_size, size_pixels, font_cfg = nil, glyph_ranges = nil)
     ImFontAtlas_AddFontFromMemoryTTF(_self_, font_data, font_size, size_pixels, font_cfg, glyph_ranges)
   end
 
@@ -1241,11 +1258,11 @@ module ImGui
     ImFontAtlas_GetMouseCursorTexData(_self_, cursor, out_offset, out_size, out_uv_border, out_uv_fill)
   end
 
-  def self.FontAtlas_GetTexDataAsAlpha8(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
+  def self.FontAtlas_GetTexDataAsAlpha8(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel = nil)
     ImFontAtlas_GetTexDataAsAlpha8(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
   end
 
-  def self.FontAtlas_GetTexDataAsRGBA32(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
+  def self.FontAtlas_GetTexDataAsRGBA32(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel = nil)
     ImFontAtlas_GetTexDataAsRGBA32(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
   end
 
@@ -1265,7 +1282,7 @@ module ImGui
     ImFontAtlas_destroy(_self_)
   end
 
-  def self.AcceptDragDropPayload(type, flags)
+  def self.AcceptDragDropPayload(type, flags = 0)
     igAcceptDragDropPayload(type, flags)
   end
 
@@ -1277,27 +1294,27 @@ module ImGui
     igArrowButton(str_id, dir)
   end
 
-  def self.Begin(name, p_open, flags)
+  def self.Begin(name, p_open = nil, flags = 0)
     igBegin(name, p_open, flags)
   end
 
-  def self.BeginChildStr(str_id, size, border, flags)
+  def self.BeginChildStr(str_id, size = ImVec2.create(0,0), border = false, flags = 0)
     igBeginChildStr(str_id, size, border, flags)
   end
 
-  def self.BeginChildID(id, size, border, flags)
+  def self.BeginChildID(id, size = ImVec2.create(0,0), border = false, flags = 0)
     igBeginChildID(id, size, border, flags)
   end
 
-  def self.BeginChildFrame(id, size, flags)
+  def self.BeginChildFrame(id, size, flags = 0)
     igBeginChildFrame(id, size, flags)
   end
 
-  def self.BeginCombo(label, preview_value, flags)
+  def self.BeginCombo(label, preview_value, flags = 0)
     igBeginCombo(label, preview_value, flags)
   end
 
-  def self.BeginDragDropSource(flags)
+  def self.BeginDragDropSource(flags = 0)
     igBeginDragDropSource(flags)
   end
 
@@ -1313,7 +1330,7 @@ module ImGui
     igBeginMainMenuBar()
   end
 
-  def self.BeginMenu(label, enabled)
+  def self.BeginMenu(label, enabled = true)
     igBeginMenu(label, enabled)
   end
 
@@ -1321,31 +1338,31 @@ module ImGui
     igBeginMenuBar()
   end
 
-  def self.BeginPopup(str_id, flags)
+  def self.BeginPopup(str_id, flags = 0)
     igBeginPopup(str_id, flags)
   end
 
-  def self.BeginPopupContextItem(str_id, mouse_button)
+  def self.BeginPopupContextItem(str_id = nil, mouse_button = 1)
     igBeginPopupContextItem(str_id, mouse_button)
   end
 
-  def self.BeginPopupContextVoid(str_id, mouse_button)
+  def self.BeginPopupContextVoid(str_id = nil, mouse_button = 1)
     igBeginPopupContextVoid(str_id, mouse_button)
   end
 
-  def self.BeginPopupContextWindow(str_id, mouse_button, also_over_items)
+  def self.BeginPopupContextWindow(str_id = nil, mouse_button = 1, also_over_items = true)
     igBeginPopupContextWindow(str_id, mouse_button, also_over_items)
   end
 
-  def self.BeginPopupModal(name, p_open, flags)
+  def self.BeginPopupModal(name, p_open = nil, flags = 0)
     igBeginPopupModal(name, p_open, flags)
   end
 
-  def self.BeginTabBar(str_id, flags)
+  def self.BeginTabBar(str_id, flags = 0)
     igBeginTabBar(str_id, flags)
   end
 
-  def self.BeginTabItem(label, p_open, flags)
+  def self.BeginTabItem(label, p_open = nil, flags = 0)
     igBeginTabItem(label, p_open, flags)
   end
 
@@ -1361,7 +1378,7 @@ module ImGui
     igBulletText(fmt, *varargs)
   end
 
-  def self.Button(label, size)
+  def self.Button(label, size = ImVec2.create(0,0))
     igButton(label, size)
   end
 
@@ -1373,15 +1390,15 @@ module ImGui
     igCalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
   end
 
-  def self.CalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
+  def self.CalcTextSize(pOut, text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)
     igCalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
   end
 
-  def self.CaptureKeyboardFromApp(want_capture_keyboard_value)
+  def self.CaptureKeyboardFromApp(want_capture_keyboard_value = true)
     igCaptureKeyboardFromApp(want_capture_keyboard_value)
   end
 
-  def self.CaptureMouseFromApp(want_capture_mouse_value)
+  def self.CaptureMouseFromApp(want_capture_mouse_value = true)
     igCaptureMouseFromApp(want_capture_mouse_value)
   end
 
@@ -1397,15 +1414,15 @@ module ImGui
     igCloseCurrentPopup()
   end
 
-  def self.CollapsingHeaderTreeNodeFlags(label, flags)
+  def self.CollapsingHeaderTreeNodeFlags(label, flags = 0)
     igCollapsingHeaderTreeNodeFlags(label, flags)
   end
 
-  def self.CollapsingHeaderBoolPtr(label, p_open, flags)
+  def self.CollapsingHeaderBoolPtr(label, p_open, flags = 0)
     igCollapsingHeaderBoolPtr(label, p_open, flags)
   end
 
-  def self.ColorButton(desc_id, col, flags, size)
+  def self.ColorButton(desc_id, col, flags = 0, size = ImVec2.create(0,0))
     igColorButton(desc_id, col, flags, size)
   end
 
@@ -1425,39 +1442,39 @@ module ImGui
     igColorConvertU32ToFloat4(pOut, _in_)
   end
 
-  def self.ColorEdit3(label, col, flags)
+  def self.ColorEdit3(label, col, flags = 0)
     igColorEdit3(label, col, flags)
   end
 
-  def self.ColorEdit4(label, col, flags)
+  def self.ColorEdit4(label, col, flags = 0)
     igColorEdit4(label, col, flags)
   end
 
-  def self.ColorPicker3(label, col, flags)
+  def self.ColorPicker3(label, col, flags = 0)
     igColorPicker3(label, col, flags)
   end
 
-  def self.ColorPicker4(label, col, flags, ref_col)
+  def self.ColorPicker4(label, col, flags = 0, ref_col = nil)
     igColorPicker4(label, col, flags, ref_col)
   end
 
-  def self.Columns(count, id, border)
+  def self.Columns(count = 1, id = nil, border = true)
     igColumns(count, id, border)
   end
 
-  def self.ComboStr_arr(label, current_item, items, items_count, popup_max_height_in_items)
+  def self.ComboStr_arr(label, current_item, items, items_count, popup_max_height_in_items = -1)
     igComboStr_arr(label, current_item, items, items_count, popup_max_height_in_items)
   end
 
-  def self.ComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
+  def self.ComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items = -1)
     igComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
   end
 
-  def self.ComboFnPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
+  def self.ComboFnPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items = -1)
     igComboFnPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
   end
 
-  def self.CreateContext(shared_font_atlas)
+  def self.CreateContext(shared_font_atlas = nil)
     igCreateContext(shared_font_atlas)
   end
 
@@ -1465,55 +1482,55 @@ module ImGui
     igDebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
   end
 
-  def self.DestroyContext(ctx)
+  def self.DestroyContext(ctx = nil)
     igDestroyContext(ctx)
   end
 
-  def self.DragFloat(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
     igDragFloat(label, v, v_speed, v_min, v_max, format, power)
   end
 
-  def self.DragFloat2(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat2(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
     igDragFloat2(label, v, v_speed, v_min, v_max, format, power)
   end
 
-  def self.DragFloat3(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat3(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
     igDragFloat3(label, v, v_speed, v_min, v_max, format, power)
   end
 
-  def self.DragFloat4(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat4(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
     igDragFloat4(label, v, v_speed, v_min, v_max, format, power)
   end
 
-  def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, power)
+  def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = nil, power = 1.0)
     igDragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, power)
   end
 
-  def self.DragInt(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
     igDragInt(label, v, v_speed, v_min, v_max, format)
   end
 
-  def self.DragInt2(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt2(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
     igDragInt2(label, v, v_speed, v_min, v_max, format)
   end
 
-  def self.DragInt3(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt3(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
     igDragInt3(label, v, v_speed, v_min, v_max, format)
   end
 
-  def self.DragInt4(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt4(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
     igDragInt4(label, v, v_speed, v_min, v_max, format)
   end
 
-  def self.DragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max)
+  def self.DragIntRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = nil)
     igDragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max)
   end
 
-  def self.DragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, power)
+  def self.DragScalar(label, data_type, p_data, v_speed, p_min = nil, p_max = nil, format = nil, power = 1.0)
     igDragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, power)
   end
 
-  def self.DragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, power)
+  def self.DragScalarN(label, data_type, p_data, components, v_speed, p_min = nil, p_max = nil, format = nil, power = 1.0)
     igDragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, power)
   end
 
@@ -1589,7 +1606,7 @@ module ImGui
     igGetClipboardText()
   end
 
-  def self.GetColorU32Col(idx, alpha_mul)
+  def self.GetColorU32Col(idx, alpha_mul = 1.0)
     igGetColorU32Col(idx, alpha_mul)
   end
 
@@ -1605,11 +1622,11 @@ module ImGui
     igGetColumnIndex()
   end
 
-  def self.GetColumnOffset(column_index)
+  def self.GetColumnOffset(column_index = -1)
     igGetColumnOffset(column_index)
   end
 
-  def self.GetColumnWidth(column_index)
+  def self.GetColumnWidth(column_index = -1)
     igGetColumnWidth(column_index)
   end
 
@@ -1729,7 +1746,7 @@ module ImGui
     igGetMouseCursor()
   end
 
-  def self.GetMouseDragDelta(pOut, button, lock_threshold)
+  def self.GetMouseDragDelta(pOut, button = 0, lock_threshold = -1.0)
     igGetMouseDragDelta(pOut, button, lock_threshold)
   end
 
@@ -1825,71 +1842,71 @@ module ImGui
     igGetWindowWidth()
   end
 
-  def self.Image(user_texture_id, size, uv0, uv1, tint_col, border_col)
+  def self.Image(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), tint_col = ImVec4.create(1,1,1,1), border_col = ImVec4.create(0,0,0,0))
     igImage(user_texture_id, size, uv0, uv1, tint_col, border_col)
   end
 
-  def self.ImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col)
+  def self.ImageButton(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), frame_padding = -1, bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))
     igImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col)
   end
 
-  def self.Indent(indent_w)
+  def self.Indent(indent_w = 0.0)
     igIndent(indent_w)
   end
 
-  def self.InputDouble(label, v, step, step_fast, format, flags)
+  def self.InputDouble(label, v, step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0)
     igInputDouble(label, v, step, step_fast, format, flags)
   end
 
-  def self.InputFloat(label, v, step, step_fast, format, flags)
+  def self.InputFloat(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0)
     igInputFloat(label, v, step, step_fast, format, flags)
   end
 
-  def self.InputFloat2(label, v, format, flags)
+  def self.InputFloat2(label, v, format = "%.3f", flags = 0)
     igInputFloat2(label, v, format, flags)
   end
 
-  def self.InputFloat3(label, v, format, flags)
+  def self.InputFloat3(label, v, format = "%.3f", flags = 0)
     igInputFloat3(label, v, format, flags)
   end
 
-  def self.InputFloat4(label, v, format, flags)
+  def self.InputFloat4(label, v, format = "%.3f", flags = 0)
     igInputFloat4(label, v, format, flags)
   end
 
-  def self.InputInt(label, v, step, step_fast, flags)
+  def self.InputInt(label, v, step = 1, step_fast = 100, flags = 0)
     igInputInt(label, v, step, step_fast, flags)
   end
 
-  def self.InputInt2(label, v, flags)
+  def self.InputInt2(label, v, flags = 0)
     igInputInt2(label, v, flags)
   end
 
-  def self.InputInt3(label, v, flags)
+  def self.InputInt3(label, v, flags = 0)
     igInputInt3(label, v, flags)
   end
 
-  def self.InputInt4(label, v, flags)
+  def self.InputInt4(label, v, flags = 0)
     igInputInt4(label, v, flags)
   end
 
-  def self.InputScalar(label, data_type, p_data, p_step, p_step_fast, format, flags)
+  def self.InputScalar(label, data_type, p_data, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
     igInputScalar(label, data_type, p_data, p_step, p_step_fast, format, flags)
   end
 
-  def self.InputScalarN(label, data_type, p_data, components, p_step, p_step_fast, format, flags)
+  def self.InputScalarN(label, data_type, p_data, components, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
     igInputScalarN(label, data_type, p_data, components, p_step, p_step_fast, format, flags)
   end
 
-  def self.InputText(label, buf, buf_size, flags, callback, user_data)
+  def self.InputText(label, buf, buf_size, flags = 0, callback = nil, user_data = nil)
     igInputText(label, buf, buf_size, flags, callback, user_data)
   end
 
-  def self.InputTextMultiline(label, buf, buf_size, size, flags, callback, user_data)
+  def self.InputTextMultiline(label, buf, buf_size, size = ImVec2.create(0,0), flags = 0, callback = nil, user_data = nil)
     igInputTextMultiline(label, buf, buf_size, size, flags, callback, user_data)
   end
 
-  def self.InputTextWithHint(label, hint, buf, buf_size, flags, callback, user_data)
+  def self.InputTextWithHint(label, hint, buf, buf_size, flags = 0, callback = nil, user_data = nil)
     igInputTextWithHint(label, hint, buf, buf_size, flags, callback, user_data)
   end
 
@@ -1921,7 +1938,7 @@ module ImGui
     igIsItemActive()
   end
 
-  def self.IsItemClicked(mouse_button)
+  def self.IsItemClicked(mouse_button = 0)
     igIsItemClicked(mouse_button)
   end
 
@@ -1941,7 +1958,7 @@ module ImGui
     igIsItemFocused()
   end
 
-  def self.IsItemHovered(flags)
+  def self.IsItemHovered(flags = 0)
     igIsItemHovered(flags)
   end
 
@@ -1957,7 +1974,7 @@ module ImGui
     igIsKeyDown(user_key_index)
   end
 
-  def self.IsKeyPressed(user_key_index, repeat)
+  def self.IsKeyPressed(user_key_index, repeat = true)
     igIsKeyPressed(user_key_index, repeat)
   end
 
@@ -1965,7 +1982,7 @@ module ImGui
     igIsKeyReleased(user_key_index)
   end
 
-  def self.IsMouseClicked(button, repeat)
+  def self.IsMouseClicked(button, repeat = false)
     igIsMouseClicked(button, repeat)
   end
 
@@ -1977,15 +1994,15 @@ module ImGui
     igIsMouseDown(button)
   end
 
-  def self.IsMouseDragging(button, lock_threshold)
+  def self.IsMouseDragging(button, lock_threshold = -1.0)
     igIsMouseDragging(button, lock_threshold)
   end
 
-  def self.IsMouseHoveringRect(r_min, r_max, clip)
+  def self.IsMouseHoveringRect(r_min, r_max, clip = true)
     igIsMouseHoveringRect(r_min, r_max, clip)
   end
 
-  def self.IsMousePosValid(mouse_pos)
+  def self.IsMousePosValid(mouse_pos = nil)
     igIsMousePosValid(mouse_pos)
   end
 
@@ -2013,11 +2030,11 @@ module ImGui
     igIsWindowCollapsed()
   end
 
-  def self.IsWindowFocused(flags)
+  def self.IsWindowFocused(flags = 0)
     igIsWindowFocused(flags)
   end
 
-  def self.IsWindowHovered(flags)
+  def self.IsWindowHovered(flags = 0)
     igIsWindowHovered(flags)
   end
 
@@ -2025,11 +2042,11 @@ module ImGui
     igLabelText(label, fmt, *varargs)
   end
 
-  def self.ListBoxStr_arr(label, current_item, items, items_count, height_in_items)
+  def self.ListBoxStr_arr(label, current_item, items, items_count, height_in_items = -1)
     igListBoxStr_arr(label, current_item, items, items_count, height_in_items)
   end
 
-  def self.ListBoxFnPtr(label, current_item, items_getter, data, items_count, height_in_items)
+  def self.ListBoxFnPtr(label, current_item, items_getter, data, items_count, height_in_items = -1)
     igListBoxFnPtr(label, current_item, items_getter, data, items_count, height_in_items)
   end
 
@@ -2037,11 +2054,11 @@ module ImGui
     igListBoxFooter()
   end
 
-  def self.ListBoxHeaderVec2(label, size)
+  def self.ListBoxHeaderVec2(label, size = ImVec2.create(0,0))
     igListBoxHeaderVec2(label, size)
   end
 
-  def self.ListBoxHeaderInt(label, items_count, height_in_items)
+  def self.ListBoxHeaderInt(label, items_count, height_in_items = -1)
     igListBoxHeaderInt(label, items_count, height_in_items)
   end
 
@@ -2049,7 +2066,7 @@ module ImGui
     igLoadIniSettingsFromDisk(ini_filename)
   end
 
-  def self.LoadIniSettingsFromMemory(ini_data, ini_size)
+  def self.LoadIniSettingsFromMemory(ini_data, ini_size = 0)
     igLoadIniSettingsFromMemory(ini_data, ini_size)
   end
 
@@ -2065,15 +2082,15 @@ module ImGui
     igLogText(fmt, *varargs)
   end
 
-  def self.LogToClipboard(auto_open_depth)
+  def self.LogToClipboard(auto_open_depth = -1)
     igLogToClipboard(auto_open_depth)
   end
 
-  def self.LogToFile(auto_open_depth, filename)
+  def self.LogToFile(auto_open_depth = -1, filename = nil)
     igLogToFile(auto_open_depth, filename)
   end
 
-  def self.LogToTTY(auto_open_depth)
+  def self.LogToTTY(auto_open_depth = -1)
     igLogToTTY(auto_open_depth)
   end
 
@@ -2085,11 +2102,11 @@ module ImGui
     igMemFree(ptr)
   end
 
-  def self.MenuItemBool(label, shortcut, selected, enabled)
+  def self.MenuItemBool(label, shortcut = nil, selected = false, enabled = true)
     igMenuItemBool(label, shortcut, selected, enabled)
   end
 
-  def self.MenuItemBoolPtr(label, shortcut, p_selected, enabled)
+  def self.MenuItemBoolPtr(label, shortcut, p_selected, enabled = true)
     igMenuItemBoolPtr(label, shortcut, p_selected, enabled)
   end
 
@@ -2109,23 +2126,23 @@ module ImGui
     igOpenPopup(str_id)
   end
 
-  def self.OpenPopupOnItemClick(str_id, mouse_button)
+  def self.OpenPopupOnItemClick(str_id = nil, mouse_button = 1)
     igOpenPopupOnItemClick(str_id, mouse_button)
   end
 
-  def self.PlotHistogramFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+  def self.PlotHistogramFloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = sizeof(float))
     igPlotHistogramFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
   end
 
-  def self.PlotHistogramFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  def self.PlotHistogramFnPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
     igPlotHistogramFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
   end
 
-  def self.PlotLinesFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+  def self.PlotLinesFloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = sizeof(float))
     igPlotLinesFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
   end
 
-  def self.PlotLinesFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  def self.PlotLinesFnPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
     igPlotLinesFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
   end
 
@@ -2153,11 +2170,11 @@ module ImGui
     igPopItemWidth()
   end
 
-  def self.PopStyleColor(count)
+  def self.PopStyleColor(count = 1)
     igPopStyleColor(count)
   end
 
-  def self.PopStyleVar(count)
+  def self.PopStyleVar(count = 1)
     igPopStyleVar(count)
   end
 
@@ -2165,7 +2182,7 @@ module ImGui
     igPopTextWrapPos()
   end
 
-  def self.ProgressBar(fraction, size_arg, overlay)
+  def self.ProgressBar(fraction, size_arg = ImVec2.create(-1,0), overlay = nil)
     igProgressBar(fraction, size_arg, overlay)
   end
 
@@ -2221,7 +2238,7 @@ module ImGui
     igPushStyleVarVec2(idx, val)
   end
 
-  def self.PushTextWrapPos(wrap_local_pos_x)
+  def self.PushTextWrapPos(wrap_local_pos_x = 0.0)
     igPushTextWrapPos(wrap_local_pos_x)
   end
 
@@ -2237,11 +2254,11 @@ module ImGui
     igRender()
   end
 
-  def self.ResetMouseDragDelta(button)
+  def self.ResetMouseDragDelta(button = 0)
     igResetMouseDragDelta(button)
   end
 
-  def self.SameLine(offset_from_start_x, spacing)
+  def self.SameLine(offset_from_start_x = 0.0, spacing = -1.0)
     igSameLine(offset_from_start_x, spacing)
   end
 
@@ -2249,15 +2266,15 @@ module ImGui
     igSaveIniSettingsToDisk(ini_filename)
   end
 
-  def self.SaveIniSettingsToMemory(out_ini_size)
+  def self.SaveIniSettingsToMemory(out_ini_size = nil)
     igSaveIniSettingsToMemory(out_ini_size)
   end
 
-  def self.SelectableBool(label, selected, flags, size)
+  def self.SelectableBool(label, selected = false, flags = 0, size = ImVec2.create(0,0))
     igSelectableBool(label, selected, flags, size)
   end
 
-  def self.SelectableBoolPtr(label, p_selected, flags, size)
+  def self.SelectableBoolPtr(label, p_selected, flags = 0, size = ImVec2.create(0,0))
     igSelectableBoolPtr(label, p_selected, flags, size)
   end
 
@@ -2265,7 +2282,7 @@ module ImGui
     igSeparator()
   end
 
-  def self.SetAllocatorFunctions(alloc_func, free_func, user_data)
+  def self.SetAllocatorFunctions(alloc_func, free_func, user_data = nil)
     igSetAllocatorFunctions(alloc_func, free_func, user_data)
   end
 
@@ -2305,7 +2322,7 @@ module ImGui
     igSetCursorScreenPos(pos)
   end
 
-  def self.SetDragDropPayload(type, data, sz, cond)
+  def self.SetDragDropPayload(type, data, sz, cond = 0)
     igSetDragDropPayload(type, data, sz, cond)
   end
 
@@ -2317,7 +2334,7 @@ module ImGui
     igSetItemDefaultFocus()
   end
 
-  def self.SetKeyboardFocusHere(offset)
+  def self.SetKeyboardFocusHere(offset = 0)
     igSetKeyboardFocusHere(offset)
   end
 
@@ -2325,7 +2342,7 @@ module ImGui
     igSetMouseCursor(cursor_type)
   end
 
-  def self.SetNextItemOpen(is_open, cond)
+  def self.SetNextItemOpen(is_open, cond = 0)
     igSetNextItemOpen(is_open, cond)
   end
 
@@ -2337,7 +2354,7 @@ module ImGui
     igSetNextWindowBgAlpha(alpha)
   end
 
-  def self.SetNextWindowCollapsed(collapsed, cond)
+  def self.SetNextWindowCollapsed(collapsed, cond = 0)
     igSetNextWindowCollapsed(collapsed, cond)
   end
 
@@ -2349,31 +2366,31 @@ module ImGui
     igSetNextWindowFocus()
   end
 
-  def self.SetNextWindowPos(pos, cond, pivot)
+  def self.SetNextWindowPos(pos, cond = 0, pivot = ImVec2.create(0,0))
     igSetNextWindowPos(pos, cond, pivot)
   end
 
-  def self.SetNextWindowSize(size, cond)
+  def self.SetNextWindowSize(size, cond = 0)
     igSetNextWindowSize(size, cond)
   end
 
-  def self.SetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
+  def self.SetNextWindowSizeConstraints(size_min, size_max, custom_callback = nil, custom_callback_data = nil)
     igSetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
   end
 
-  def self.SetScrollFromPosX(local_x, center_x_ratio)
+  def self.SetScrollFromPosX(local_x, center_x_ratio = 0.5)
     igSetScrollFromPosX(local_x, center_x_ratio)
   end
 
-  def self.SetScrollFromPosY(local_y, center_y_ratio)
+  def self.SetScrollFromPosY(local_y, center_y_ratio = 0.5)
     igSetScrollFromPosY(local_y, center_y_ratio)
   end
 
-  def self.SetScrollHereX(center_x_ratio)
+  def self.SetScrollHereX(center_x_ratio = 0.5)
     igSetScrollHereX(center_x_ratio)
   end
 
-  def self.SetScrollHereY(center_y_ratio)
+  def self.SetScrollHereY(center_y_ratio = 0.5)
     igSetScrollHereY(center_y_ratio)
   end
 
@@ -2397,11 +2414,11 @@ module ImGui
     igSetTooltip(fmt, *varargs)
   end
 
-  def self.SetWindowCollapsedBool(collapsed, cond)
+  def self.SetWindowCollapsedBool(collapsed, cond = 0)
     igSetWindowCollapsedBool(collapsed, cond)
   end
 
-  def self.SetWindowCollapsedStr(name, collapsed, cond)
+  def self.SetWindowCollapsedStr(name, collapsed, cond = 0)
     igSetWindowCollapsedStr(name, collapsed, cond)
   end
 
@@ -2417,27 +2434,27 @@ module ImGui
     igSetWindowFontScale(scale)
   end
 
-  def self.SetWindowPosVec2(pos, cond)
+  def self.SetWindowPosVec2(pos, cond = 0)
     igSetWindowPosVec2(pos, cond)
   end
 
-  def self.SetWindowPosStr(name, pos, cond)
+  def self.SetWindowPosStr(name, pos, cond = 0)
     igSetWindowPosStr(name, pos, cond)
   end
 
-  def self.SetWindowSizeVec2(size, cond)
+  def self.SetWindowSizeVec2(size, cond = 0)
     igSetWindowSizeVec2(size, cond)
   end
 
-  def self.SetWindowSizeStr(name, size, cond)
+  def self.SetWindowSizeStr(name, size, cond = 0)
     igSetWindowSizeStr(name, size, cond)
   end
 
-  def self.ShowAboutWindow(p_open)
+  def self.ShowAboutWindow(p_open = nil)
     igShowAboutWindow(p_open)
   end
 
-  def self.ShowDemoWindow(p_open)
+  def self.ShowDemoWindow(p_open = nil)
     igShowDemoWindow(p_open)
   end
 
@@ -2445,11 +2462,11 @@ module ImGui
     igShowFontSelector(label)
   end
 
-  def self.ShowMetricsWindow(p_open)
+  def self.ShowMetricsWindow(p_open = nil)
     igShowMetricsWindow(p_open)
   end
 
-  def self.ShowStyleEditor(ref)
+  def self.ShowStyleEditor(ref = nil)
     igShowStyleEditor(ref)
   end
 
@@ -2461,47 +2478,47 @@ module ImGui
     igShowUserGuide()
   end
 
-  def self.SliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format)
+  def self.SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg")
     igSliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format)
   end
 
-  def self.SliderFloat(label, v, v_min, v_max, format, power)
+  def self.SliderFloat(label, v, v_min, v_max, format = "%.3f", power = 1.0)
     igSliderFloat(label, v, v_min, v_max, format, power)
   end
 
-  def self.SliderFloat2(label, v, v_min, v_max, format, power)
+  def self.SliderFloat2(label, v, v_min, v_max, format = "%.3f", power = 1.0)
     igSliderFloat2(label, v, v_min, v_max, format, power)
   end
 
-  def self.SliderFloat3(label, v, v_min, v_max, format, power)
+  def self.SliderFloat3(label, v, v_min, v_max, format = "%.3f", power = 1.0)
     igSliderFloat3(label, v, v_min, v_max, format, power)
   end
 
-  def self.SliderFloat4(label, v, v_min, v_max, format, power)
+  def self.SliderFloat4(label, v, v_min, v_max, format = "%.3f", power = 1.0)
     igSliderFloat4(label, v, v_min, v_max, format, power)
   end
 
-  def self.SliderInt(label, v, v_min, v_max, format)
+  def self.SliderInt(label, v, v_min, v_max, format = "%d")
     igSliderInt(label, v, v_min, v_max, format)
   end
 
-  def self.SliderInt2(label, v, v_min, v_max, format)
+  def self.SliderInt2(label, v, v_min, v_max, format = "%d")
     igSliderInt2(label, v, v_min, v_max, format)
   end
 
-  def self.SliderInt3(label, v, v_min, v_max, format)
+  def self.SliderInt3(label, v, v_min, v_max, format = "%d")
     igSliderInt3(label, v, v_min, v_max, format)
   end
 
-  def self.SliderInt4(label, v, v_min, v_max, format)
+  def self.SliderInt4(label, v, v_min, v_max, format = "%d")
     igSliderInt4(label, v, v_min, v_max, format)
   end
 
-  def self.SliderScalar(label, data_type, p_data, p_min, p_max, format, power)
+  def self.SliderScalar(label, data_type, p_data, p_min, p_max, format = nil, power = 1.0)
     igSliderScalar(label, data_type, p_data, p_min, p_max, format, power)
   end
 
-  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format, power)
+  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format = nil, power = 1.0)
     igSliderScalarN(label, data_type, p_data, components, p_min, p_max, format, power)
   end
 
@@ -2513,15 +2530,15 @@ module ImGui
     igSpacing()
   end
 
-  def self.StyleColorsClassic(dst)
+  def self.StyleColorsClassic(dst = nil)
     igStyleColorsClassic(dst)
   end
 
-  def self.StyleColorsDark(dst)
+  def self.StyleColorsDark(dst = nil)
     igStyleColorsDark(dst)
   end
 
-  def self.StyleColorsLight(dst)
+  def self.StyleColorsLight(dst = nil)
     igStyleColorsLight(dst)
   end
 
@@ -2537,7 +2554,7 @@ module ImGui
     igTextDisabled(fmt, *varargs)
   end
 
-  def self.TextUnformatted(text, text_end)
+  def self.TextUnformatted(text, text_end = nil)
     igTextUnformatted(text, text_end)
   end
 
@@ -2557,7 +2574,7 @@ module ImGui
     igTreeNodePtr(ptr_id, fmt, *varargs)
   end
 
-  def self.TreeNodeExStr(label, flags)
+  def self.TreeNodeExStr(label, flags = 0)
     igTreeNodeExStr(label, flags)
   end
 
@@ -2577,23 +2594,23 @@ module ImGui
     igTreePushStr(str_id)
   end
 
-  def self.TreePushPtr(ptr_id)
+  def self.TreePushPtr(ptr_id = nil)
     igTreePushPtr(ptr_id)
   end
 
-  def self.Unindent(indent_w)
+  def self.Unindent(indent_w = 0.0)
     igUnindent(indent_w)
   end
 
-  def self.VSliderFloat(label, size, v, v_min, v_max, format, power)
+  def self.VSliderFloat(label, size, v, v_min, v_max, format = "%.3f", power = 1.0)
     igVSliderFloat(label, size, v, v_min, v_max, format, power)
   end
 
-  def self.VSliderInt(label, size, v, v_min, v_max, format)
+  def self.VSliderInt(label, size, v, v_min, v_max, format = "%d")
     igVSliderInt(label, size, v, v_min, v_max, format)
   end
 
-  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format, power)
+  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format = nil, power = 1.0)
     igVSliderScalar(label, size, data_type, p_data, p_min, p_max, format, power)
   end
 
@@ -2609,7 +2626,7 @@ module ImGui
     igValueUint(prefix, v)
   end
 
-  def self.ValueFloat(prefix, v, float_format)
+  def self.ValueFloat(prefix, v, float_format = nil)
     igValueFloat(prefix, v, float_format)
   end
 

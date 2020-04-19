@@ -68,17 +68,17 @@ if __FILE__ == $0
   japanese_utf8_text = IO.readlines('./jpfont/jpfont.txt').join()
 
   # Setup Dear ImGui context
-  ImGui::CreateContext(nil)
+  ImGui::CreateContext()
   io = ImGuiIO.new(ImGui::GetIO())
 
   # Setup Dear ImGui style
-  ImGui::StyleColorsDark(nil)
+  ImGui::StyleColorsDark()
 
   # Setup Platform/Renderer bindings
   ImGui::ImplSDL2_InitForOpenGL(window, gl_context)
   ImGui::ImplOpenGL3_Init(glsl_version)
 
-  ImGui::FontAtlas_AddFontDefault(io[:Fonts], nil)
+  ImGui::FontAtlas_AddFontDefault(io[:Fonts])
   # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
   # japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
   japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
@@ -110,13 +110,8 @@ if __FILE__ == $0
     ImGui::ShowDemoWindow(nil)
 
     # See https://github.com/ffi/ffi/wiki/Structs
-    pos = ImVec2.new
-    pos[:x] = 50
-    pos[:y] = 20
-    pivot = ImVec2.new
-    pivot[:x] = 0
-    pivot[:y] = 0
-    ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver, pivot)
+    pos = ImVec2.create(50, 20)
+    ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver)
 
     p_open = nil
     window_flags = ImGuiWindowFlags_AlwaysAutoResize
@@ -129,15 +124,15 @@ if __FILE__ == $0
 
     tab_bar_flags = ImGuiTabBarFlags_None
     if ImGui::BeginTabBar("MyTabBar", tab_bar_flags)
-      if ImGui::BeginTabItem("Avocado", nil, 0)
+      if ImGui::BeginTabItem("Avocado")
         ImGui::Text("This is the Avocado tab!\nblah blah blah blah blah")
         ImGui::EndTabItem()
       end
-      if ImGui::BeginTabItem("Broccoli", nil, 0)
+      if ImGui::BeginTabItem("Broccoli")
         ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah")
         ImGui::EndTabItem()
       end
-      if ImGui::BeginTabItem("Cucumber", nil, 0)
+      if ImGui::BeginTabItem("Cucumber")
         ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah")
         ImGui::EndTabItem()
       end

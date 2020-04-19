@@ -78,7 +78,7 @@ module Generator
     out.write("end\n\n")
   end
 
-  def self.write_import_function(out, func)
+  def self.write_attach_function(out, func)
 
     func_args = func.args.map do |arg|
       if arg.type.to_s.start_with?('Im')
@@ -114,6 +114,29 @@ module Generator
       end
     end
 
+    # Make default values list
+    # [TODO] write value sanitizing somewhere else
+    arg_defaults = func.args.map do |arg|
+      arg.default
+    end
+    arg_defaults.map! do |arg_default|
+      case arg_default
+      when /.*void\*.*/ # ((void*)0) -> nil
+        "nil"
+      when /^([-+]?[0-9]*\.[0-9]+)[f]*$/ # omit 'f' suffix of floating point number
+        $1
+      when /^ImVec2\((.+),(.+)\)$/ # use our own shorthand initializer
+        "ImVec2.create(#{$1},#{$2})"
+      when /^ImVec4\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
+        "ImVec4.create(#{$1},#{$2},#{$3},#{$4})"
+      when /^FLT_MAX$/ # C's FLT_MAX -> Ruby's Float::MAX
+        "Float::MAX"
+      else
+        arg_default
+      end
+    end
+
+    # Fix raw names into public API names by omitting some prefixes
     func_name_ruby = func.name
     func_name_c = func.name
     if func.name.start_with?('ig')
@@ -123,7 +146,19 @@ module Generator
     elsif func.name.start_with?('ImFontAtlas_')
       func_name_ruby = func_name_c.gsub(/^Im/, '')
     end
-    out.write("def self.#{func_name_ruby}(#{arg_names.join(', ')})\n")
+
+    # Make list of argument with default value
+    arg_names_with_defaults = []
+    arg_names.each_with_index do |arg_name, i|
+      arg_names_with_defaults <<
+        if arg_defaults[i]
+          "#{arg_name} = #{arg_defaults[i]}"
+        else
+          arg_name
+        end
+    end
+
+    out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
     out.push_indent
     out.write("#{func.name}(#{arg_names.join(', ')})\n")
     out.pop_indent
@@ -219,6 +254,28 @@ require 'ffi'
       Generator.write_struct(out, struct)
     end
 
+    # define shorthand initializer for ImVec2 and ImVec4
+    # - See https://github.com/ffi/ffi/wiki/Structs
+    out.write(<<-EOS)
+# shorthand initializer for ImVec2 and ImVec4
+def ImVec2.create(x, y)
+  instance = ImVec2.new
+  instance[:x] = x
+  instance[:y] = y
+  return instance
+end
+
+def ImVec4.create(x, y)
+  instance = ImVec4.new
+  instance[:x] = x
+  instance[:y] = y
+  instance[:z] = z
+  instance[:w] = w
+  return instance
+end
+
+    EOS
+
     #
     # Import Symbols/Typedefs
     #
@@ -256,7 +313,7 @@ require 'ffi'
     out.push_indent
     [funcs_base_map, funcs_impl_map].each do |funcs_map|
       funcs_map.each do |func|
-        Generator.write_import_function(out, func)
+        Generator.write_attach_function(out, func)
       end
     end
     out.pop_indent
