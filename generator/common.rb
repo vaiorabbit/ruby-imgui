@@ -1,14 +1,14 @@
 require 'ffi'
 require 'json'
 
-ImGuiStructMemberEntry = Struct.new( :name, :type, :is_array, :size )
-ImGuiStructMapEntry = Struct.new( :name, :members )
+ImGuiStructMemberEntry = Struct.new( :name, :type, :is_array, :size, keyword_init: true )
+ImGuiStructMapEntry = Struct.new( :name, :members, keyword_init: true )
 
-ImGuiEnumValEntry = Struct.new( :name, :value, :original )
-ImGuiEnumMapEntry = Struct.new( :name, :members )
+ImGuiEnumValEntry = Struct.new( :name, :value, :original, keyword_init: true )
+ImGuiEnumMapEntry = Struct.new( :name, :members, keyword_init: true )
 
-ImGuiFunctionMemberEntry = Struct.new( :name, :type, :is_array, :size )
-ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval )
+ImGuiFunctionMemberEntry = Struct.new( :name, :type, :default, :is_array, :size, keyword_init: true )
+ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, keyword_init: true )
 
 module ImGuiBindings
 
@@ -75,15 +75,10 @@ module ImGuiBindings
       json_structs = json['structs']
       struct_names = json_structs.keys
       struct_names.each do |struct_name|
-        struct = ImGuiStructMapEntry.new
-        struct.name = struct_name
-        struct.members = []
+        struct = ImGuiStructMapEntry.new(name: struct_name, members: [])
         members = json_structs[struct_name]
         members.each do |m|
-          member = ImGuiStructMemberEntry.new
-          member.name = m['name']
-          member.type = get_ffi_type(m['type'])
-          member.is_array = m.has_key?('size')
+          member = ImGuiStructMemberEntry.new(name: m['name'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
           if member.is_array
             member.size = m['size'].to_i
             member.name.gsub!(/\[[\w\+]+\]/,'')
@@ -101,9 +96,9 @@ module ImGuiBindings
     struct_imvector_stub = ImGuiStructMapEntry.new
     struct_imvector_stub.name = 'ImVector'
     struct_imvector_stub.members = [
-      ImGuiStructMemberEntry.new('Size', :int, false, 0),
-      ImGuiStructMemberEntry.new('Capacity', :int, false, 0),
-      ImGuiStructMemberEntry.new('Data', :pointer, false, 0),
+      ImGuiStructMemberEntry.new(name: 'Size', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Capacity', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Data', type: :pointer, is_array: false, size: 0),
     ]
     structs << struct_imvector_stub
 
@@ -122,8 +117,8 @@ module ImGuiBindings
     struct_pair_stub = ImGuiStructMapEntry.new
     struct_pair_stub.name = 'ImGuiStoragePair'
     struct_pair_stub.members = [
-      ImGuiStructMemberEntry.new('key', :uint, false, 0),
-      ImGuiStructMemberEntry.new('val_p', :pointer, false, 0),
+      ImGuiStructMemberEntry.new(name: 'key', type: :uint, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'val_p', type: :pointer, is_array: false, size: 0),
     ]
     structs << struct_pair_stub
 
@@ -137,15 +132,10 @@ module ImGuiBindings
       json_enums = json['enums']
       enum_names = json_enums.keys
       enum_names.each do |enum_name|
-        enum = ImGuiEnumMapEntry.new
-        enum.name = enum_name
-        enum.members = []
+        enum = ImGuiEnumMapEntry.new(name: enum_name, members: [])
         members = json_enums[enum_name]
         members.each do |m|
-          member = ImGuiEnumValEntry.new
-          member.name = m['name']
-          member.value = m['calc_value']
-          member.original = m['value']
+          member = ImGuiEnumValEntry.new(name: m['name'], value: m['calc_value'], original: m['value'])
           enum.members << member
         end
         enums << enum
@@ -193,16 +183,17 @@ module ImGuiBindings
 
           # name
           func.name = if func_info.has_key?('ov_cimguiname')
-            func_info['ov_cimguiname']
-          else
-            func_info['cimguiname']
-          end
+                        func_info['ov_cimguiname']
+                      else
+                        func_info['cimguiname']
+                      end
 
           # arguments
           func.args = []
           if func_info['argsT'].any?
             args = func_info['argsT']
             args.each do |arg_info|
+              # basic info
               is_array = false
               size = 0
               type = get_ffi_type(arg_info['type'])
@@ -211,11 +202,14 @@ module ImGuiBindings
                 size = /\[([\w\+])+\]/.match(arg_info['type'])[1].to_i
                 type = get_ffi_type(arg_info['type'].gsub(/\[[\w\+]+\]/,''))
               end
-              arg = ImGuiFunctionMemberEntry.new
-              arg.name = arg_info['name']
-              arg.is_array = is_array
-              arg.size = size
-              arg.type = type
+              # check if default argument exists
+              default_arg = nil
+              unless func_info['defaults'].empty?
+                if func_info['defaults'].has_key?( arg_info['name'] )
+                  default_arg = func_info['defaults'][arg_info['name']]
+                end
+              end
+              arg = ImGuiFunctionMemberEntry.new(name: arg_info['name'], type: type, default: default_arg, is_array: is_array, size: size)
               func.args << arg
             end
           end
