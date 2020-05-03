@@ -3,7 +3,7 @@ require_relative '../imgui'
 require_relative '../imgui_impl_opengl3'
 require_relative '../imgui_impl_glfw'
 
-require_relative './imgui_demo'
+require_relative './about_window'
 
 def check_error( desc )
   e = glGetError()

@@ -3,7 +3,7 @@ require_relative '../imgui'
 require_relative '../imgui_impl_opengl2'
 require_relative '../imgui_impl_glfw'
 
-require_relative './imgui_demo'
+require_relative './about_window'
 
 $lib_path = case RUBY_PLATFORM
             when /mswin|msys|mingw|cygwin/

@@ -4,7 +4,7 @@ require_relative '../imgui'
 require_relative '../imgui_impl_opengl2'
 require_relative '../imgui_impl_sdl2'
 
-require_relative './imgui_demo'
+require_relative './about_window'
 
 WINDOW_W = 1280
 WINDOW_H = 720
