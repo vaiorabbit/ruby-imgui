@@ -1,6 +1,7 @@
 2020-05-03  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Added provisional ImGuiStyle_ methods
+	* Added provisional ImGuiIO_ methods
 	* Added sample/basic_usage_sdl2_opengl2.rb
 	* (Windows) Catching up with ImGui 1.76
 
