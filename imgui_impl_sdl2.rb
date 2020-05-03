@@ -169,8 +169,7 @@ module ImGui
       return true
 
     when SDL_TEXTINPUT
-      # [TODO]
-      # io.AddInputCharactersUTF8(event->text.text)
+      ImGui::ImGuiIO_AddInputCharactersUTF8(io, event[:text][:text])
       return true
 
     when SDL_KEYDOWN, SDL_KEYUP

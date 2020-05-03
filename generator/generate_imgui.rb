@@ -210,7 +210,8 @@ if __FILE__ == $0
   funcs_base_map.delete_if {|func|
     !(func.name.start_with?('ig') ||
       func.name.start_with?('ImFontAtlas_') ||
-      func.name.start_with?('ImGuiStyle_'))
+      func.name.start_with?('ImGuiStyle_') ||
+      func.name.start_with?('ImGuiIO_'))
   }
 
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}
