@@ -265,7 +265,7 @@ def ImVec2.create(x, y)
   return instance
 end
 
-def ImVec4.create(x, y)
+def ImVec4.create(x, y, z, w)
   instance = ImVec4.new
   instance[:x] = x
   instance[:y] = y
