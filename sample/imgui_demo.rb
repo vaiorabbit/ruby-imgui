@@ -24,7 +24,7 @@ module ImGuiDemo
       max_depth = -1
       ImGui::LogToClipboard(max_depth) if copy_to_clipboard
 
-      ImGui::Text("Dear ImGui %s (%d)", :pointer, "1.76", :int, 17600)
+      ImGui::Text("Dear ImGui %s", :pointer, ImGui::GetVersion().read_string())
       ImGui::Separator();
 
       ImGui::Text("io.ConfigFlags: 0x%08X", :uint, io[:ConfigFlags])
