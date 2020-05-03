@@ -109,6 +109,7 @@ if __FILE__ == $0
     ImGuiDemo::DropdownListAndInputWindow::Show()
     ImGuiDemo::SlidersWindow1::Show()
     ImGuiDemo::SlidersWindow2::Show()
+    ImGuiDemo::SlidersWindow3::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)

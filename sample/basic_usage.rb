@@ -255,3 +255,27 @@ end
 
 ####################################################################################################
 
+module ImGuiDemo::SlidersWindow3
+  @@values = [0.0, 0.60, 0.35, 0.9, 0.70, 0.20, 0.0].map! {|f| FFI::MemoryPointer.new(:float, 1).put_float32(0, f) }
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("スライダー(3)")
+    7.times do |i|
+      ImGui::SameLine() if i > 0
+      ImGui::PushIDInt(i)
+
+      # 垂直スライダーを幅18,高さ160,最小値0,最大値1で作成します。
+      ImGui::VSliderFloat("##v", ImVec2.create(18,160), @@values[i], 0.0, 1.0, "")
+
+      # スライダー上をマウスオーバーした時に現在の値がポップアップで表示されます。
+      ImGui::SetTooltip("%.3f", :float, @@values[i].get_float32(0)) if ImGui::IsItemActive() || ImGui::IsItemHovered()
+
+      ImGui::PopID()
+    end
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
