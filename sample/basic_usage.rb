@@ -2,9 +2,10 @@
 # Ref.: Dear ImGuiの使い方まとめ
 # https://qiita.com/mizuma/items/73218dab2f6b022b0227
 
+####################################################################################################
+
 module ImGuiDemo
 
-  # ShowAboutWindow
   @@font = nil
 
   def self.AddFont(ttf_filepath = './jpfont/GenShinGothic-Normal.ttf')
@@ -26,8 +27,13 @@ module ImGuiDemo
     ImGui::ImGuiStyle_ScaleAllSizes(style, scale) # UIの大きさを一括で変更できます。
   end
 
-  def self.ShowBasicWindow(is_open = nil)
-    ImGui::PushFont(@@font)
+end # module ImGuiDemo
+
+####################################################################################################
+
+module ImGuiDemo::BasicWindow
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("ウィンドウタイトル")
 
     ImGui::Text("通常の文章")
@@ -53,59 +59,107 @@ module ImGuiDemo
     ImGui::End()
     ImGui::PopFont()
   end
+end
 
-  @@button_and_checkbox_is_open = FFI::MemoryPointer.new(:bool, 1) # static bool is_open = true;
-  def self.ShowButtonAndCheckboxWindow(is_open = nil)
-    ImGui::PushFont(@@font)
+####################################################################################################
+
+module ImGuiDemo::ButtonAndCheckboxWindow
+  @@is_open = FFI::MemoryPointer.new(:bool, 1) # static bool is_open = true;
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("ボタンとチェックボックス")
     if ImGui::Button("Open/Close")
       # ボタンがクリックされるとここにきます。
-      @@button_and_checkbox_is_open.write(:bool, !@@button_and_checkbox_is_open.read(:bool))
+      @@is_open.write(:bool, !@@is_open.read(:bool))
     end
 
     ImGui::SameLine() # 次に書くUIパーツを現在と同じ行に配置します。
 
     # チェックボックスがクリックされるとis_openが反転し、trueならチェックマークが表示されます。
-    ImGui::Checkbox("Open/Close", @@button_and_checkbox_is_open)
+    ImGui::Checkbox("Open/Close", @@is_open)
 
-    if @@button_and_checkbox_is_open.read(:bool) == true
+    if @@is_open.read(:bool) == true
       # is_openがtrueなら"別のウィンドウ"が表示されます。
-      ImGui::Begin("別のウィンドウ@ボタンとチェックボックス", @@button_and_checkbox_is_open)
+      ImGui::Begin("別のウィンドウ@ボタンとチェックボックス", @@is_open)
       ImGui::Text("Hello")
       ImGui::End()
     end
     ImGui::End()
     ImGui::PopFont()
   end
+end
 
-  @@radio_button_value = FFI::MemoryPointer.new(:int, 1) # static int radio = 0;
-  def self.ShowRadioButtonWindow(is_open = nil)
-    ImGui::PushFont(@@font)
+####################################################################################################
+
+module ImGuiDemo::RadioButtonWindow
+  @@radio = FFI::MemoryPointer.new(:int, 1) # static int radio = 0;
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("ラジオボタン")
     # ラジオボタンがクリックされると第3引数の整数が第2引数のradioに格納されます。
-    ImGui::RadioButtonIntPtr("ラジオボタン 0", @@radio_button_value, 0); ImGui::SameLine() # TODO define overload to hide RadioButtonIntPtr
-    ImGui::RadioButtonIntPtr("ラジオボタン 1", @@radio_button_value, 1); ImGui::SameLine()
-    ImGui::RadioButtonIntPtr("ラジオボタン 2", @@radio_button_value, 2);
+    ImGui::RadioButtonIntPtr("ラジオボタン 0", @@radio, 0); ImGui::SameLine() # TODO define overload to hide RadioButtonIntPtr
+    ImGui::RadioButtonIntPtr("ラジオボタン 1", @@radio, 1); ImGui::SameLine()
+    ImGui::RadioButtonIntPtr("ラジオボタン 2", @@radio, 2);
 
-    ImGui::Text("ラジオボタンは%dを選択しています", :int, @@radio_button_value.read(:int))
+    ImGui::Text("ラジオボタンは%dを選択しています", :int, @@radio.read(:int))
   end
+end
 
-  @@arrow_button_count = FFI::MemoryPointer.new(:int, 1) # static int counter = 0;
-  def self.ShowArrowButtonWindow(is_open = nil)
-    ImGui::PushFont(@@font)
+####################################################################################################
+
+module ImGuiDemo::ArrowButtonWindow
+  @@counter = FFI::MemoryPointer.new(:int, 1) # static int counter = 0;
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("長押しで急増/急減する三角矢印ボタン")
     ImGui::PushButtonRepeat(true)
     if ImGui::ArrowButton("##left", ImGuiDir_Left)
-      @@arrow_button_count.write(:int, @@arrow_button_count.read(:int) - 1) # == counter--;
+      @@counter.write(:int, @@counter.read(:int) - 1) # == counter--;
     end
     ImGui::SameLine();
     if ImGui::ArrowButton("##right", ImGuiDir_Right)
-      @@arrow_button_count.write(:int, @@arrow_button_count.read(:int) + 1) # == counter++;
+      @@counter.write(:int, @@counter.read(:int) + 1) # == counter++;
     end
     ImGui::PopButtonRepeat()
     ImGui::SameLine()
-    ImGui::Text("%d", :int, @@arrow_button_count.read(:int))
+    ImGui::Text("%d", :int, @@counter.read(:int))
+    ImGui::End()
+    ImGui::PopFont()
   end
+end
 
-end # module ImGuiDemo
+####################################################################################################
+
+module ImGuiDemo::DropdownListAndInputWindow
+  @@items = FFI::MemoryPointer.new(:pointer, 3)
+  @@items_string = ["AAA", "BBB", "CCC"].map! {|s| FFI::MemoryPointer.from_string(s)}
+  @@items.write_array_of_pointer(@@items_string)
+
+  @@item_current = FFI::MemoryPointer.new(:int, 1) # static int item_current = 0; // 0なら"AAA", 1なら"BBB", 2なら"CCC"
+  @@str0 = FFI::MemoryPointer.new(:char, 128) # static char str0[128] = "";
+  @@str1 = FFI::MemoryPointer.new(:char, 128) # static char str1[128] = "";
+  @@i0 = FFI::MemoryPointer.new(:int, 1) # static int i0 = 123;
+  @@f0 = FFI::MemoryPointer.new(:float, 1) # static float f0 = 0.001f;
+  @@vec3 = FFI::MemoryPointer.new(:float, 3) # static float vec3[3] = { 0.10f, 0.20f, 0.30f};
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("ドロップダウンリストと文章入力欄/数字入力欄")
+    ImGui::LabelText("ラベル", "値")
+
+    ImGui::ComboStr_arr("ドロップダウンリスト##1", @@item_current, @@items, 3)
+    # 別の書き方として \0 で項目を区切って書く方法があります。
+    ImGui::ComboStr("ドロップダウンリスト##2", @@item_current, "AAA\0BBB\0CCC\0")
+
+    item_current = @@item_current.read(:int)
+    items = @@items.get_array_of_pointer(0, 3)
+    ImGui::Text("現在選択されているのは %d で、%s です", :int, item_current, :string, items[item_current].read_string)
+
+    #ImGui::InputText("文章入力欄##1", @@str0, @@str0.length)
+    #ImmGui::InputTextWithHint("文章入力欄##2", "空欄時に表示される文章を指定できます", @@str1, @@str1.length)
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
 

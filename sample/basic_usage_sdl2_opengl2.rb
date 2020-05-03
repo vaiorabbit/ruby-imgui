@@ -102,10 +102,12 @@ if __FILE__ == $0
 
     p_open = nil
 
-    ImGuiDemo::ShowBasicWindow()
-    ImGuiDemo::ShowButtonAndCheckboxWindow()
-    ImGuiDemo::ShowRadioButtonWindow()
-    ImGuiDemo::ShowArrowButtonWindow()
+    #ImGuiDemo::ShowBasicWindow()
+    ImGuiDemo::BasicWindow::Show()
+    ImGuiDemo::ButtonAndCheckboxWindow::Show()
+    ImGuiDemo::RadioButtonWindow::Show()
+    ImGuiDemo::ArrowButtonWindow::Show()
+    ImGuiDemo::DropdownListAndInputWindow::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)
