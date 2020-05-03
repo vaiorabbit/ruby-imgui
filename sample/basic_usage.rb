@@ -138,24 +138,116 @@ module ImGuiDemo::DropdownListAndInputWindow
   @@item_current = FFI::MemoryPointer.new(:int, 1) # static int item_current = 0; // 0なら"AAA", 1なら"BBB", 2なら"CCC"
   @@str0 = FFI::MemoryPointer.new(:char, 128) # static char str0[128] = "";
   @@str1 = FFI::MemoryPointer.new(:char, 128) # static char str1[128] = "";
-  @@i0 = FFI::MemoryPointer.new(:int, 1) # static int i0 = 123;
-  @@f0 = FFI::MemoryPointer.new(:float, 1) # static float f0 = 0.001f;
-  @@vec3 = FFI::MemoryPointer.new(:float, 3) # static float vec3[3] = { 0.10f, 0.20f, 0.30f};
+  @@i0 = FFI::MemoryPointer.new(:int, 1); @@i0.put_int32(0, 123) # static int i0 = 123;
+  @@f0 = FFI::MemoryPointer.new(:float, 1); @@f0.put_float32(0, 0.001) # static float f0 = 0.001f;
+  @@vec3 = FFI::MemoryPointer.new(:float, 3); @@vec3.put_array_of_float32(0, [0.10, 0.20, 0.30]) # static float vec3[3] = { 0.10f, 0.20f, 0.30f};
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("ドロップダウンリストと文章入力欄/数字入力欄")
     ImGui::LabelText("ラベル", "値")
 
-    ImGui::ComboStr_arr("ドロップダウンリスト##1", @@item_current, @@items, 3)
+    ImGui::ComboStr_arr("ドロップダウンリスト##1", @@item_current, @@items, @@items_string.length)
     # 別の書き方として \0 で項目を区切って書く方法があります。
     ImGui::ComboStr("ドロップダウンリスト##2", @@item_current, "AAA\0BBB\0CCC\0")
 
     item_current = @@item_current.read(:int)
-    items = @@items.get_array_of_pointer(0, 3)
+    items = @@items.get_array_of_pointer(0, @@items_string.length)
     ImGui::Text("現在選択されているのは %d で、%s です", :int, item_current, :string, items[item_current].read_string)
 
     ImGui::InputText("文章入力欄##1", @@str0, @@str0.size)
     ImGui::InputTextWithHint("文章入力欄##2", "空欄時に表示される文章を指定できます", @@str1, @@str1.size)
+
+    ImGui::InputInt("整数入力欄", @@i0)
+    ImGui::InputFloat("小数入力欄", @@f0, 0.01, 1.0, "%.3f")
+
+    ImGui::InputFloat3("３つの値", @@vec3, "%.2f")
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::SlidersWindow1
+  @@i1 = FFI::MemoryPointer.new(:int, 1); @@i1.put_int32(0, 50)  # static int i1 = 50, i2 = 42;
+  @@i2 = FFI::MemoryPointer.new(:int, 1); @@i2.put_int32(0, 42)  # static int i1 = 50, i2 = 42;
+  @@f1 = FFI::MemoryPointer.new(:float, 1); @@f1.put_float32(0, 1.0)  # static float f1 = 1.00f;
+  @@i3 = FFI::MemoryPointer.new(:int, 1); @@i3.put_int32(0, 0)  # static int i3 = 0;
+  @@f2 = FFI::MemoryPointer.new(:float, 1); @@f2.put_float32(0, 0.123)  # static float f2 = 0.123f, f3 = 0.0f;
+  @@f3 = FFI::MemoryPointer.new(:float, 1); @@f3.put_float32(0, 0.0)  # static float f2 = 0.123f, f3 = 0.0f;
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("スライダー(1)")
+    ImGui::DragInt("ドラッグして整数変更", @@i1, 1)
+    ImGui::DragInt("％表示", @@i2, 1, 0, 100, "%d%%") # 最後の引数で値の表示の仕方を指定できます。
+
+    ImGui::SetNextItemWidth(100) # 次のUIパーツの幅を100にします。
+
+    ImGui::DragFloat("ドラッグして小数変更", @@f1, 0.005)
+
+    # 次のUIパーツの幅をウィンドウ幅の半分にします。
+    ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5)
+
+    # -1から3までドラッグして変化させることができます。
+    ImGui::SliderInt("スライダーで整数変更", @@i3, -1, 3)
+
+    # 次のUIパーツの幅をウィンドウの左端から、右端から100の位置までにします。
+    ImGui::SetNextItemWidth(-100)
+
+    # 0から1まで変化します。"ratio = %.3f"の部分で値の表示の仕方を指定できます。
+    ImGui::SliderFloat("スライダーで小数変更##1", @@f2, 0.0, 1.0, "ratio = %.3f")
+
+    # 最後の引数を5.0fとしていることでスライダーを左右の端に近づくほど値が大きく増減するようになります。
+    # 逆にスライダーが中央付近にある場合は小さな値でしか増減しないようになります。
+    # -10 から 10 までドラッグして変化させることができます。
+    ImGui::SliderFloat("スライダーで小数変更##2", @@f3, -10.0, 10.0, "%.4f", 5.0)
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::SlidersWindow2
+  @@angle = FFI::MemoryPointer.new(:float, 1); @@angle.put_float32(0, 0.0) # static float angle = 0.0f;
+  @@begin = FFI::MemoryPointer.new(:float, 1); @@begin.put_float32(0, 10) # static float begin = 10, end = 90;
+  @@end = FFI::MemoryPointer.new(:float, 1); @@end.put_float32(0, 90) # static float begin = 10, end = 90;
+  @@vec3f = FFI::MemoryPointer.new(:float, 3); @@vec3f.put_array_of_float32(0, [0.10, 0.20, 0.30]) # static float vec3f[4] = { 0.10f, 0.20f, 0.30f };
+  @@x = FFI::MemoryPointer.new(:float, 1); @@x.put_float32(0, 1.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
+  @@y = FFI::MemoryPointer.new(:float, 1); @@y.put_float32(0, 2.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
+  @@z = FFI::MemoryPointer.new(:float, 1); @@z.put_float32(0, 3.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
+
+  @@items = FFI::MemoryPointer.new(:pointer, 4) # const char* items[] = { "AAA", "BBB", "CCC", "DDD" };
+  @@items_string = ["AAA", "BBB", "CCC", "DDD"].map! {|s| FFI::MemoryPointer.from_string(s)}
+  @@items.write_array_of_pointer(@@items_string)
+  @@item = FFI::MemoryPointer.new(:int, 1); @@item.put_int32(0, -1) # static int item = -1;
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("スライダー(2)")
+
+    ImGui::SliderAngle("角度", @@angle) # -360から360までドラッグして変化させることができます。
+
+    # 最小値0,最大値100のスライダーを2つ作成します。
+    # "Min:"のスライダーは、"Max:"のスライダーの値を超えないようにスライダーで動かすことができます。
+    # 0.2fはドラッグする時に値が変化する量です。2.0fにした場合は2ずつ値が変化するようになります。
+    ImGui::DragFloatRange2("range", @@begin, @@end, 0.2, 0.0, 100.0, "Min: %.1f %%", "Max: %.1f %%")
+
+    # 各項目を 0 から 1 までドラッグして変化させることができます。
+    ImGui::SliderFloat3("3つの値をスライダー操作", @@vec3f, 0.0, 1.0)
+
+    ImGui::PushItemWidth(70) # これから先のUIパーツの幅を70で固定します。
+
+    ImGui::ComboStr_arr("##XYZ", @@item, @@items, @@items_string.length)
+
+    ImGui::SameLine(0, 10) # 次のUIパーツを同じ行に配置し、その際、右に10だけスペースを空けます。
+
+    ImGui::SliderFloat("X", @@x, 0.0, 5.0); ImGui::SameLine()
+    ImGui::SliderFloat("Y", @@y, 0.0, 5.0); ImGui::SameLine()
+    ImGui::SliderFloat("Z", @@z, 0.0, 5.0);
+
+    ImGui::PopItemWidth()
     ImGui::End()
     ImGui::PopFont()
   end

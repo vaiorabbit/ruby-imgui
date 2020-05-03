@@ -6,8 +6,8 @@ require_relative '../imgui_impl_sdl2'
 
 require_relative './basic_usage'
 
-WINDOW_W = 1280
-WINDOW_H = 720
+WINDOW_W = 1920
+WINDOW_H = 1080
 
 if __FILE__ == $0
 
@@ -102,12 +102,13 @@ if __FILE__ == $0
 
     p_open = nil
 
-    #ImGuiDemo::ShowBasicWindow()
     ImGuiDemo::BasicWindow::Show()
     ImGuiDemo::ButtonAndCheckboxWindow::Show()
     ImGuiDemo::RadioButtonWindow::Show()
     ImGuiDemo::ArrowButtonWindow::Show()
     ImGuiDemo::DropdownListAndInputWindow::Show()
+    ImGuiDemo::SlidersWindow1::Show()
+    ImGuiDemo::SlidersWindow2::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)
