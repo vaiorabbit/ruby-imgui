@@ -823,6 +823,9 @@ module ImGui
     attach_function :ImFontAtlas_IsBuilt, :ImFontAtlas_IsBuilt, [:pointer], :bool
     attach_function :ImFontAtlas_SetTexID, :ImFontAtlas_SetTexID, [:pointer, :pointer], :void
     attach_function :ImFontAtlas_destroy, :ImFontAtlas_destroy, [:pointer], :void
+    attach_function :ImGuiStyle_ImGuiStyle, :ImGuiStyle_ImGuiStyle, [], :void
+    attach_function :ImGuiStyle_ScaleAllSizes, :ImGuiStyle_ScaleAllSizes, [:pointer, :float], :void
+    attach_function :ImGuiStyle_destroy, :ImGuiStyle_destroy, [:pointer], :void
     attach_function :igAcceptDragDropPayload, :igAcceptDragDropPayload, [:pointer, :int], :pointer
     attach_function :igAlignTextToFramePadding, :igAlignTextToFramePadding, [], :void
     attach_function :igArrowButton, :igArrowButton, [:pointer, :int], :bool
@@ -1280,6 +1283,18 @@ module ImGui
 
   def self.FontAtlas_destroy(_self_)
     ImFontAtlas_destroy(_self_)
+  end
+
+  def self.ImGuiStyle_ImGuiStyle()
+    ImGuiStyle_ImGuiStyle()
+  end
+
+  def self.ImGuiStyle_ScaleAllSizes(_self_, scale_factor)
+    ImGuiStyle_ScaleAllSizes(_self_, scale_factor)
+  end
+
+  def self.ImGuiStyle_destroy(_self_)
+    ImGuiStyle_destroy(_self_)
   end
 
   def self.AcceptDragDropPayload(type, flags = 0)

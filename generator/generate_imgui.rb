@@ -206,7 +206,13 @@ if __FILE__ == $0
   ]
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
 
-  funcs_base_map.delete_if {|func| !(func.name.start_with?('ig') || func.name.start_with?('ImFontAtlas_'))} # end-user API only
+  # end-user API only
+  funcs_base_map.delete_if {|func|
+    !(func.name.start_with?('ig') ||
+      func.name.start_with?('ImFontAtlas_') ||
+      func.name.start_with?('ImGuiStyle_'))
+  }
+
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL3')} # not supported yet
   # funcs_impl_map.delete_if {|func| func.name.include?('Glfw')}

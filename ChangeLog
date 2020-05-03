@@ -1,3 +1,8 @@
+2020-05-03  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Added provisional ImGuiStyle_ methods
+	* Added sample/basic_usage_sdl2_opengl2.rb
+
 2020-04-19  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Supported default value of public API arguments
