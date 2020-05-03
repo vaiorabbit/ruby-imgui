@@ -2,6 +2,7 @@
 
 	* Added provisional ImGuiStyle_ methods
 	* Added sample/basic_usage_sdl2_opengl2.rb
+	* (Windows) Catching up with ImGui 1.76
 
 2020-04-19  vaiorabbit  <http://twitter.com/vaiorabbit>
 
