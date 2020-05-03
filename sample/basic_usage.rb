@@ -90,5 +90,22 @@ module ImGuiDemo
     ImGui::Text("ラジオボタンは%dを選択しています", :int, @@radio_button_value.read(:int))
   end
 
+  @@arrow_button_count = FFI::MemoryPointer.new(:int, 1) # static int counter = 0;
+  def self.ShowArrowButtonWindow(is_open = nil)
+    ImGui::PushFont(@@font)
+    ImGui::Begin("長押しで急増/急減する三角矢印ボタン")
+    ImGui::PushButtonRepeat(true)
+    if ImGui::ArrowButton("##left", ImGuiDir_Left)
+      @@arrow_button_count.write(:int, @@arrow_button_count.read(:int) - 1) # == counter--;
+    end
+    ImGui::SameLine();
+    if ImGui::ArrowButton("##right", ImGuiDir_Right)
+      @@arrow_button_count.write(:int, @@arrow_button_count.read(:int) + 1) # == counter++;
+    end
+    ImGui::PopButtonRepeat()
+    ImGui::SameLine()
+    ImGui::Text("%d", :int, @@arrow_button_count.read(:int))
+  end
+
 end # module ImGuiDemo
 
