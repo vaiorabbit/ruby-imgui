@@ -124,18 +124,13 @@ end
 if __FILE__ == $0
 
   # Initialize SDL2
-  case RUBY_PLATFORM
-  when /mswin|msys|mingw|cygwin/
-    SDL2.load_lib(Dir.pwd + '/' + 'SDL2.dll')
-  when /darwin/
-    SDL2.load_lib('/usr/local/lib/libSDL2.dylib')
-  end
+  SDL2.load_lib('/usr/local/lib/libSDL2.dylib')
   success = SDL_Init(SDL_INIT_EVERYTHING)
   exit if success < 0
 
   WINDOW_W = 400
   WINDOW_H = 320
-  window = SDL_CreateWindow("Ruby OpenGL + SDL2 + ImGUI bindings", 32, 32, WINDOW_W, WINDOW_H, SDL_WINDOW_OPENGL)
+  window = SDL_CreateWindow("Ruby OpenGL + SDL2 + ImGUI bindings", 0, 0, WINDOW_W, WINDOW_H, SDL_WINDOW_OPENGL)
 
   ratio = WINDOW_W.to_f / WINDOW_H
 
@@ -188,15 +183,9 @@ if __FILE__ == $0
 
     # ImGui::ShowDemoWindow(nil)
 
-    pos = ImVec2.new
-    pos[:x] = 50
-    pos[:y] = 20
-    pivot = ImVec2.new
-    pivot[:x] = 0
-    pivot[:y] = 0
-    size = ImVec2.new
-    size[:x] = 150
-    size[:y] = 70
+    pos = ImVec2.create(50, 20)
+    pivot = ImVec2.create(0, 0)
+    size = ImVec2.create(150, 70)
     ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver, pivot)
     ImGui::SetNextWindowSize(size, 0)
     ImGui::SetNextWindowBgAlpha(0.35)
