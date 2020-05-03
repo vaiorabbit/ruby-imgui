@@ -823,6 +823,12 @@ module ImGui
     attach_function :ImFontAtlas_IsBuilt, :ImFontAtlas_IsBuilt, [:pointer], :bool
     attach_function :ImFontAtlas_SetTexID, :ImFontAtlas_SetTexID, [:pointer, :pointer], :void
     attach_function :ImFontAtlas_destroy, :ImFontAtlas_destroy, [:pointer], :void
+    attach_function :ImGuiIO_AddInputCharacter, :ImGuiIO_AddInputCharacter, [:pointer, :uint], :void
+    attach_function :ImGuiIO_AddInputCharacterUTF16, :ImGuiIO_AddInputCharacterUTF16, [:pointer, :ushort], :void
+    attach_function :ImGuiIO_AddInputCharactersUTF8, :ImGuiIO_AddInputCharactersUTF8, [:pointer, :pointer], :void
+    attach_function :ImGuiIO_ClearInputCharacters, :ImGuiIO_ClearInputCharacters, [:pointer], :void
+    attach_function :ImGuiIO_ImGuiIO, :ImGuiIO_ImGuiIO, [], :void
+    attach_function :ImGuiIO_destroy, :ImGuiIO_destroy, [:pointer], :void
     attach_function :ImGuiStyle_ImGuiStyle, :ImGuiStyle_ImGuiStyle, [], :void
     attach_function :ImGuiStyle_ScaleAllSizes, :ImGuiStyle_ScaleAllSizes, [:pointer, :float], :void
     attach_function :ImGuiStyle_destroy, :ImGuiStyle_destroy, [:pointer], :void
@@ -1283,6 +1289,30 @@ module ImGui
 
   def self.FontAtlas_destroy(_self_)
     ImFontAtlas_destroy(_self_)
+  end
+
+  def self.ImGuiIO_AddInputCharacter(_self_, c)
+    ImGuiIO_AddInputCharacter(_self_, c)
+  end
+
+  def self.ImGuiIO_AddInputCharacterUTF16(_self_, c)
+    ImGuiIO_AddInputCharacterUTF16(_self_, c)
+  end
+
+  def self.ImGuiIO_AddInputCharactersUTF8(_self_, str)
+    ImGuiIO_AddInputCharactersUTF8(_self_, str)
+  end
+
+  def self.ImGuiIO_ClearInputCharacters(_self_)
+    ImGuiIO_ClearInputCharacters(_self_)
+  end
+
+  def self.ImGuiIO_ImGuiIO()
+    ImGuiIO_ImGuiIO()
+  end
+
+  def self.ImGuiIO_destroy(_self_)
+    ImGuiIO_destroy(_self_)
   end
 
   def self.ImGuiStyle_ImGuiStyle()

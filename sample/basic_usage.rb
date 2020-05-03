@@ -154,8 +154,8 @@ module ImGuiDemo::DropdownListAndInputWindow
     items = @@items.get_array_of_pointer(0, 3)
     ImGui::Text("現在選択されているのは %d で、%s です", :int, item_current, :string, items[item_current].read_string)
 
-    #ImGui::InputText("文章入力欄##1", @@str0, @@str0.length)
-    #ImmGui::InputTextWithHint("文章入力欄##2", "空欄時に表示される文章を指定できます", @@str1, @@str1.length)
+    ImGui::InputText("文章入力欄##1", @@str0, @@str0.size)
+    ImGui::InputTextWithHint("文章入力欄##2", "空欄時に表示される文章を指定できます", @@str1, @@str1.size)
     ImGui::End()
     ImGui::PopFont()
   end
