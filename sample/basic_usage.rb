@@ -26,7 +26,7 @@ module ImGuiDemo
     ImGui::ImGuiStyle_ScaleAllSizes(style, scale) # UIの大きさを一括で変更できます。
   end
 
-  def self.ShowBasicWindow(is_open)
+  def self.ShowBasicWindow(is_open = nil)
     ImGui::PushFont(@@font)
     ImGui::Begin("ウィンドウタイトル")
 
@@ -52,6 +52,42 @@ module ImGuiDemo
 
     ImGui::End()
     ImGui::PopFont()
+  end
+
+  @@button_and_checkbox_is_open = FFI::MemoryPointer.new(:bool, 1) # static bool is_open = true;
+  def self.ShowButtonAndCheckboxWindow(is_open = nil)
+    ImGui::PushFont(@@font)
+    ImGui::Begin("ボタンとチェックボックス")
+    if ImGui::Button("Open/Close")
+      # ボタンがクリックされるとここにきます。
+      @@button_and_checkbox_is_open.write(:bool, !@@button_and_checkbox_is_open.read(:bool))
+    end
+
+    ImGui::SameLine() # 次に書くUIパーツを現在と同じ行に配置します。
+
+    # チェックボックスがクリックされるとis_openが反転し、trueならチェックマークが表示されます。
+    ImGui::Checkbox("Open/Close", @@button_and_checkbox_is_open)
+
+    if @@button_and_checkbox_is_open.read(:bool) == true
+      # is_openがtrueなら"別のウィンドウ"が表示されます。
+      ImGui::Begin("別のウィンドウ@ボタンとチェックボックス", @@button_and_checkbox_is_open)
+      ImGui::Text("Hello")
+      ImGui::End()
+    end
+    ImGui::End()
+    ImGui::PopFont()
+  end
+
+  @@radio_button_value = FFI::MemoryPointer.new(:int, 1) # static int radio = 0;
+  def self.ShowRadioButtonWindow(is_open = nil)
+    ImGui::PushFont(@@font)
+    ImGui::Begin("ラジオボタン")
+    # ラジオボタンがクリックされると第3引数の整数が第2引数のradioに格納されます。
+    ImGui::RadioButtonIntPtr("ラジオボタン 0", @@radio_button_value, 0); ImGui::SameLine() # TODO define overload to hide RadioButtonIntPtr
+    ImGui::RadioButtonIntPtr("ラジオボタン 1", @@radio_button_value, 1); ImGui::SameLine()
+    ImGui::RadioButtonIntPtr("ラジオボタン 2", @@radio_button_value, 2);
+
+    ImGui::Text("ラジオボタンは%dを選択しています", :int, @@radio_button_value.read(:int))
   end
 
 end # module ImGuiDemo
