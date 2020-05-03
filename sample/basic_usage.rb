@@ -132,15 +132,15 @@ end
 
 module ImGuiDemo::DropdownListAndInputWindow
   @@items = FFI::MemoryPointer.new(:pointer, 3)
-  @@items_string = ["AAA", "BBB", "CCC"].map! {|s| FFI::MemoryPointer.from_string(s)}
+  @@items_string = %w{AAA BBB CCC}.map! {|s| FFI::MemoryPointer.from_string(s)}
   @@items.write_array_of_pointer(@@items_string)
 
   @@item_current = FFI::MemoryPointer.new(:int, 1) # static int item_current = 0; // 0なら"AAA", 1なら"BBB", 2なら"CCC"
   @@str0 = FFI::MemoryPointer.new(:char, 128) # static char str0[128] = "";
   @@str1 = FFI::MemoryPointer.new(:char, 128) # static char str1[128] = "";
-  @@i0 = FFI::MemoryPointer.new(:int, 1); @@i0.put_int32(0, 123) # static int i0 = 123;
-  @@f0 = FFI::MemoryPointer.new(:float, 1); @@f0.put_float32(0, 0.001) # static float f0 = 0.001f;
-  @@vec3 = FFI::MemoryPointer.new(:float, 3); @@vec3.put_array_of_float32(0, [0.10, 0.20, 0.30]) # static float vec3[3] = { 0.10f, 0.20f, 0.30f};
+  @@i0 = FFI::MemoryPointer.new(:int, 1).put_int32(0, 123) # static int i0 = 123;
+  @@f0 = FFI::MemoryPointer.new(:float, 1).put_float32(0, 0.001) # static float f0 = 0.001f;
+  @@vec3 = FFI::MemoryPointer.new(:float, 3).put_array_of_float32(0, [0.10, 0.20, 0.30]) # static float vec3[3] = { 0.10f, 0.20f, 0.30f};
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("ドロップダウンリストと文章入力欄/数字入力欄")
@@ -169,12 +169,12 @@ end
 ####################################################################################################
 
 module ImGuiDemo::SlidersWindow1
-  @@i1 = FFI::MemoryPointer.new(:int, 1); @@i1.put_int32(0, 50)  # static int i1 = 50, i2 = 42;
-  @@i2 = FFI::MemoryPointer.new(:int, 1); @@i2.put_int32(0, 42)  # static int i1 = 50, i2 = 42;
-  @@f1 = FFI::MemoryPointer.new(:float, 1); @@f1.put_float32(0, 1.0)  # static float f1 = 1.00f;
-  @@i3 = FFI::MemoryPointer.new(:int, 1); @@i3.put_int32(0, 0)  # static int i3 = 0;
-  @@f2 = FFI::MemoryPointer.new(:float, 1); @@f2.put_float32(0, 0.123)  # static float f2 = 0.123f, f3 = 0.0f;
-  @@f3 = FFI::MemoryPointer.new(:float, 1); @@f3.put_float32(0, 0.0)  # static float f2 = 0.123f, f3 = 0.0f;
+  @@i1 = FFI::MemoryPointer.new(:int, 1).put_int32(0, 50)  # static int i1 = 50, i2 = 42;
+  @@i2 = FFI::MemoryPointer.new(:int, 1).put_int32(0, 42)  # static int i1 = 50, i2 = 42;
+  @@f1 = FFI::MemoryPointer.new(:float, 1).put_float32(0, 1.0)  # static float f1 = 1.00f;
+  @@i3 = FFI::MemoryPointer.new(:int, 1).put_int32(0, 0)  # static int i3 = 0;
+  @@f2 = FFI::MemoryPointer.new(:float, 1).put_float32(0, 0.123)  # static float f2 = 0.123f, f3 = 0.0f;
+  @@f3 = FFI::MemoryPointer.new(:float, 1).put_float32(0, 0.0)  # static float f2 = 0.123f, f3 = 0.0f;
 
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
@@ -210,18 +210,18 @@ end
 ####################################################################################################
 
 module ImGuiDemo::SlidersWindow2
-  @@angle = FFI::MemoryPointer.new(:float, 1); @@angle.put_float32(0, 0.0) # static float angle = 0.0f;
-  @@begin = FFI::MemoryPointer.new(:float, 1); @@begin.put_float32(0, 10) # static float begin = 10, end = 90;
-  @@end = FFI::MemoryPointer.new(:float, 1); @@end.put_float32(0, 90) # static float begin = 10, end = 90;
-  @@vec3f = FFI::MemoryPointer.new(:float, 3); @@vec3f.put_array_of_float32(0, [0.10, 0.20, 0.30]) # static float vec3f[4] = { 0.10f, 0.20f, 0.30f };
-  @@x = FFI::MemoryPointer.new(:float, 1); @@x.put_float32(0, 1.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
-  @@y = FFI::MemoryPointer.new(:float, 1); @@y.put_float32(0, 2.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
-  @@z = FFI::MemoryPointer.new(:float, 1); @@z.put_float32(0, 3.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
+  @@angle = FFI::MemoryPointer.new(:float, 1).put_float32(0, 0.0) # static float angle = 0.0f;
+  @@begin = FFI::MemoryPointer.new(:float, 1).put_float32(0, 10) # static float begin = 10, end = 90;
+  @@end = FFI::MemoryPointer.new(:float, 1).put_float32(0, 90) # static float begin = 10, end = 90;
+  @@vec3f = FFI::MemoryPointer.new(:float, 3).put_array_of_float32(0, [0.10, 0.20, 0.30]) # static float vec3f[4] = { 0.10f, 0.20f, 0.30f };
+  @@x = FFI::MemoryPointer.new(:float, 1).put_float32(0, 1.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
+  @@y = FFI::MemoryPointer.new(:float, 1).put_float32(0, 2.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
+  @@z = FFI::MemoryPointer.new(:float, 1).put_float32(0, 3.0)  # static float x = 1.0f, y = 2.0f, z = 3.0f;
 
   @@items = FFI::MemoryPointer.new(:pointer, 4) # const char* items[] = { "AAA", "BBB", "CCC", "DDD" };
-  @@items_string = ["AAA", "BBB", "CCC", "DDD"].map! {|s| FFI::MemoryPointer.from_string(s)}
+  @@items_string = %w{AAA BBB CCC DDD}.map! {|s| FFI::MemoryPointer.from_string(s)}
   @@items.write_array_of_pointer(@@items_string)
-  @@item = FFI::MemoryPointer.new(:int, 1); @@item.put_int32(0, -1) # static int item = -1;
+  @@item = FFI::MemoryPointer.new(:int, 1).put_int32(0, -1) # static int item = -1;
 
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
@@ -272,6 +272,43 @@ module ImGuiDemo::SlidersWindow3
 
       ImGui::PopID()
     end
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::EnumAndColorSelectionWindow
+
+  module Element # enum Element { Element_Fire, Element_Earth, Element_Air, Element_Water, Element_COUNT };
+    Fire = 0
+    Earth = 1
+    Air = 2
+    Water = 3
+    COUNT = 4
+  end
+
+  @@current_element = FFI::MemoryPointer.new(:int, 1).put_int32(0, Element::Fire) # static int current_element = Element_Fire;
+  @@element_names = %w{Fire Earth Air Water}
+
+  @@col1 = FFI::MemoryPointer.new(:float, 3).put_array_of_float32(0, [1.0, 0.0, 0.2]) # static float col1[3] = { 1.0f,0.0f,0.2f };
+  @@col2 = FFI::MemoryPointer.new(:float, 4).put_array_of_float32(0, [0.4, 0.7, 0.0, 0.5]) # static float col2[4] = { 0.4f,0.7f,0.0f,0.5f };
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("enum選択UIとカラー選択UI")
+    current_element = @@current_element.get_int32(0)
+    current_element_name = (0 <= current_element && current_element < Element::COUNT) ? @@element_names[current_element] : "Unknown"
+    ImGui::SliderInt("enumの選択", @@current_element, 0, Element::COUNT - 1, current_element_name);
+
+    ImGui::ColorEdit3("カラー 1", @@col1); # RGB
+    ImGui::ColorEdit4("カラー 2", @@col2); # RGBAのアルファ付き
+
+    flag = ImGuiColorEditFlags_Float; # 0 ~ 255表記ではなく、0.0 ~ 1.0表記にします。
+    flag |= ImGuiColorEditFlags_NoInputs; # 数字入力欄を非表示にします。
+    flag |= ImGuiColorEditFlags_NoLabel;  # カラーボックスの右隣に配置されるラベルをなくします。
+    ImGui::ColorEdit3("カラーID", @@col1, flag);
     ImGui::End()
     ImGui::PopFont()
   end
