@@ -112,6 +112,7 @@ if __FILE__ == $0
     ImGuiDemo::SlidersWindow3::Show()
     ImGuiDemo::EnumAndColorSelectionWindow::Show()
     ImGuiDemo::ListBoxWindow::Show()
+    ImGuiDemo::InputTextWindow::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)

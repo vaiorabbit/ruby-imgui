@@ -390,3 +390,51 @@ end
 
 ####################################################################################################
 
+module ImGuiDemo::InputTextWindow
+
+  @@text = <<-HERE
+(複数行の文章を表示しています。
+クリックするとカーソルが表示され、
+キーボードで文字を入力できます。
+文字を選択することもできます。
+)
+HERE
+  @@text_buf = FFI::MemoryPointer.new(:char, 256+1).write_string(@@text) # +1 == \0
+
+  @@buf1 = FFI::MemoryPointer.new(:char, 64).write_string("") # static char buf1[64] = "";
+  @@buf2 = FFI::MemoryPointer.new(:char, 64).write_string("") # static char buf2[64] = "";
+  @@buf3 = FFI::MemoryPointer.new(:char, 64).write_string("") # static char buf3[64] = "";
+  @@bufpass = FFI::MemoryPointer.new(:char, 64).write_string("password123") # static char bufpass[64] = "password123"; // 最初に入力しておく文字
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("文章入力欄")
+    flags = ImGuiInputTextFlags_AllowTabInput; # Tabキーを押すことでタブが入力されるようになります。
+    # flags |= ImGuiInputTextFlags_ReadOnly; # 編集できないようにするにはこのようにします。
+
+    # 高さが3行の文章入力欄を作成します。
+    # スクロールすることで下の行も見ることができます。
+    # "##"をつけていることでラベル名は表示されません。
+    buf_capacity = @@text_buf.size()-1
+    ImGui::Text("残り %d / バッファ %d (単位はバイト)", :int, buf_capacity - @@text_buf.read_string().length, :int, buf_capacity) # -1 == \n0
+    ImGui::InputTextMultiline("##text", @@text_buf, @@text_buf.size(), ImVec2.create(-1, ImGui::GetTextLineHeight() * 3), flags)
+
+    ImGui::NewLine()
+
+    ImGui::InputText("入力欄", @@buf1, 64)
+    # ImGuiInputTextFlags_CharsDecimal をつけることで 0123456789.+-*/ の文字しか入力できない入力欄になります。
+    # InputTextWithHintを使うことで入力欄が空白の時にグレーで表示される文章を指定できます。
+    ImGui::InputTextWithHint("数字入力欄", "only 0123456789.+-*/", @@buf2, 64, ImGuiInputTextFlags_CharsDecimal)
+
+    # ***表示のパスワード入力欄にするには ImGuiInputTextFlags_Password を使います。
+    # 空白を許可しない入力欄にするには ImGuiInputTextFlags_CharsNoBlank を使います。
+    ImGui::InputText("Password", @@bufpass, 64, ImGuiInputTextFlags_Password | ImGuiInputTextFlags_CharsNoBlank)
+
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
