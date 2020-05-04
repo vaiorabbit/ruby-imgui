@@ -1,6 +1,8 @@
 require 'ffi'
 require 'json'
 
+ImGuiTypedefMapEntry = Struct.new( :name, :type, :aux, keyword_init: true )
+
 ImGuiStructMemberEntry = Struct.new( :name, :type, :is_array, :size, keyword_init: true )
 ImGuiStructMapEntry = Struct.new( :name, :members, keyword_init: true )
 
@@ -55,10 +57,18 @@ module ImGuiBindings
         # https://github.com/cimgui/cimgui/commit/f84d9c43015742dc5ad4434da92c5e1a99254d27#diff-2e9752529db931d99aade39734631cd0L70
         if imgui_type_name == "ImWchar"
           imwchar_type = json[imgui_type_name] # "ImWchar16" or "ImWchar32"
-          type_map[imgui_type_name] = get_ffi_type(json[imwchar_type])
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imwchar_type]), aux: nil)
           next
         end
-        type_map[imgui_type_name] = get_ffi_type(json[imgui_type_name])
+        # Resolve Callback
+        if imgui_type_name.end_with?("Callback")
+          # json[imgui_type_name] contans the signture of callback function (e.g.: "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd);")
+          # Keep this information in 'aux:' for later use
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), aux: json[imgui_type_name])
+          next
+        end
+        # Resolve other types into the symbols of their names
+        type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), aux: nil)
       end
     end
 
@@ -164,7 +174,7 @@ module ImGuiBindings
       return :Pair # stub
     end
     if @@imGuiToCTypeMap != nil && @@imGuiToCTypeMap.has_key?(type_name)
-      return @@imGuiToCTypeMap[type_name]
+      return @@imGuiToCTypeMap[type_name].type
     end
     return CToFFITypeMap[type_name]
   end

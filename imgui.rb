@@ -664,6 +664,32 @@ class ImGuiIO < FFI::Struct
   )
 end
 
+class ImGuiInputTextCallbackData < FFI::Struct
+  layout(
+    :EventFlag, :int,
+    :Flags, :int,
+    :UserData, :pointer,
+    :EventChar, :ushort,
+    :EventKey, :int,
+    :Buf, :pointer,
+    :BufTextLen, :int,
+    :BufSize, :int,
+    :BufDirty, :bool,
+    :CursorPos, :int,
+    :SelectionStart, :int,
+    :SelectionEnd, :int
+  )
+end
+
+class ImGuiSizeCallbackData < FFI::Struct
+  layout(
+    :UserData, :pointer,
+    :Pos, ImVec2.by_value,
+    :CurrentSize, ImVec2.by_value,
+    :DesiredSize, ImVec2.by_value
+  )
+end
+
 class ImGuiStyle < FFI::Struct
   layout(
     :Alpha, :float,

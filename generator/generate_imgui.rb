@@ -42,7 +42,7 @@ module Generator
   end
 
   def self.write_typedef(out, typedef)
-    out.write("typedef :#{typedef[1]}, :#{typedef[0]}\n")
+    out.write("typedef :#{typedef[1].type}, :#{typedef[0]}\n")
   end
 
   def self.write_struct(out, struct)
@@ -206,11 +206,11 @@ if __FILE__ == $0
   # 'ImFontAtlas',
   # 'ImFontConfig',
     'ImFontGlyph',
-    'ImGuiInputTextCallbackData',
+  # 'ImGuiInputTextCallbackData',
     'ImGuiListClipper',
     'ImGuiOnceUponAFrame',
     'ImGuiPayload',
-    'ImGuiSizeCallbackData',
+  # 'ImGuiSizeCallbackData',
     'ImGuiStorage',
     'ImGuiTextBuffer',
     'ImGuiTextFilter',
@@ -317,7 +317,7 @@ end
 
     # Typedefs
     typedefs_map.each do |typedef|
-      if typedef[0] != typedef[1].to_s
+      if typedef[0] != typedef[1].type.to_s
         Generator.write_typedef(out, typedef)
       end
     end
