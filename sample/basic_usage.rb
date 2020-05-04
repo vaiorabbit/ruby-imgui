@@ -333,8 +333,7 @@ module ImGuiDemo::ListBoxWindow
 
   @@reorder_item_names = ["並び替え可能 1", "並び替え可能 2", "並び替え可能 3", "並び替え可能 4", "並び替え可能 5"]
   @@reorder_item_current = @@reorder_item_names[0] # static const char* item_current = item_names[0]; // 最初は"並び替え可能 1"を選択している状態です。
-  @@reorder_items_str = @@reorder_item_names.map {|s| FFI::MemoryPointer.from_string(s)}
-  @@reorder_items = FFI::MemoryPointer.new(:string, @@reorder_items_str.length).write_array_of_pointer(@@reorder_items_str) # static const char* item_names[] = { "並び替え可能 1", "並び替え可能 2", "並び替え可能 3", "並び替え可能 4", "並び替え可能 5" };
+  @@reorder_items_str = @@reorder_item_names.map {|s| FFI::MemoryPointer.from_string(s)} # static const char* item_names[] = { "並び替え可能 1", "並び替え可能 2", "並び替え可能 3", "並び替え可能 4", "並び替え可能 5" };
 
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
@@ -373,14 +372,14 @@ module ImGuiDemo::ListBoxWindow
       item = @@reorder_item_names[n]
       is_selected = item == @@reorder_item_current
       @@reorder_item_current = item if ImGui::SelectableBool(item, is_selected)
-      # if ImGui::IsItemActive() && !ImGui::IsItemHovered()
-      #   n_next = n + (ImGui::GetMouseDragDelta(nil)[:y] < 0.0 ? -1 : 1)
-      #   if n_next >= 0 && n_next < names_count
-      #     @@reorder_item_names[n] = @@reorder_item_names[n_next]
-      #     @@reorder_item_names[n_next] = item
-      #     ImGui::ResetMouseDragDelta()
-      #   end
-      # end
+      if ImGui::IsItemActive() && !ImGui::IsItemHovered()
+        n_next = n + (ImGui::GetMouseDragDelta()[:y] < 0.0 ? -1 : 1)
+        if n_next >= 0 && n_next < names_count
+          @@reorder_item_names[n] = @@reorder_item_names[n_next]
+          @@reorder_item_names[n_next] = item
+          ImGui::ResetMouseDragDelta()
+        end
+      end
     end
     ImGui::Text("現在 %s が選択されています", :string, @@reorder_item_current)
 
