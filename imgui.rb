@@ -719,20 +719,29 @@ class ImGuiStoragePair < FFI::Struct
   )
 end
 
-# shorthand initializer for ImVec2 and ImVec4
-def ImVec2.create(x, y)
+# shorthand initializer
+def ImVec2.create(x = 0, y = 0)
   instance = ImVec2.new
   instance[:x] = x
   instance[:y] = y
   return instance
 end
 
-def ImVec4.create(x, y, z, w)
+def ImVec4.create(x = 0, y = 0, z = 0, w = 0)
   instance = ImVec4.new
   instance[:x] = x
   instance[:y] = y
   instance[:z] = z
   instance[:w] = w
+  return instance
+end
+
+def ImColor.create(r = 0, g = 0, b = 0, a = 0)
+  instance = ImColor.new
+  instance[:Value][:x] = r
+  instance[:Value][:y] = g
+  instance[:Value][:z] = b
+  instance[:Value][:w] = a
   return instance
 end
 
@@ -1435,8 +1444,10 @@ module ImGui
     igCalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
   end
 
-  def self.CalcTextSize(pOut, text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)
+  def self.CalcTextSize(text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)
+    pOut = ImVec2.new
     igCalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
+    return pOut
   end
 
   def self.CaptureKeyboardFromApp(want_capture_keyboard_value = true)
@@ -1483,8 +1494,10 @@ module ImGui
     igColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v)
   end
 
-  def self.ColorConvertU32ToFloat4(pOut, _in_)
+  def self.ColorConvertU32ToFloat4(_in_)
+    pOut = ImVec4.new
     igColorConvertU32ToFloat4(pOut, _in_)
+    return pOut
   end
 
   def self.ColorEdit3(label, col, flags = 0)
@@ -1679,20 +1692,26 @@ module ImGui
     igGetColumnsCount()
   end
 
-  def self.GetContentRegionAvail(pOut)
+  def self.GetContentRegionAvail()
+    pOut = ImVec2.new
     igGetContentRegionAvail(pOut)
+    return pOut
   end
 
-  def self.GetContentRegionMax(pOut)
+  def self.GetContentRegionMax()
+    pOut = ImVec2.new
     igGetContentRegionMax(pOut)
+    return pOut
   end
 
   def self.GetCurrentContext()
     igGetCurrentContext()
   end
 
-  def self.GetCursorPos(pOut)
+  def self.GetCursorPos()
+    pOut = ImVec2.new
     igGetCursorPos(pOut)
+    return pOut
   end
 
   def self.GetCursorPosX()
@@ -1703,12 +1722,16 @@ module ImGui
     igGetCursorPosY()
   end
 
-  def self.GetCursorScreenPos(pOut)
+  def self.GetCursorScreenPos()
+    pOut = ImVec2.new
     igGetCursorScreenPos(pOut)
+    return pOut
   end
 
-  def self.GetCursorStartPos(pOut)
+  def self.GetCursorStartPos()
+    pOut = ImVec2.new
     igGetCursorStartPos(pOut)
+    return pOut
   end
 
   def self.GetDragDropPayload()
@@ -1731,8 +1754,10 @@ module ImGui
     igGetFontSize()
   end
 
-  def self.GetFontTexUvWhitePixel(pOut)
+  def self.GetFontTexUvWhitePixel()
+    pOut = ImVec2.new
     igGetFontTexUvWhitePixel(pOut)
+    return pOut
   end
 
   def self.GetForegroundDrawList()
@@ -1767,16 +1792,22 @@ module ImGui
     igGetIO()
   end
 
-  def self.GetItemRectMax(pOut)
+  def self.GetItemRectMax()
+    pOut = ImVec2.new
     igGetItemRectMax(pOut)
+    return pOut
   end
 
-  def self.GetItemRectMin(pOut)
+  def self.GetItemRectMin()
+    pOut = ImVec2.new
     igGetItemRectMin(pOut)
+    return pOut
   end
 
-  def self.GetItemRectSize(pOut)
+  def self.GetItemRectSize()
+    pOut = ImVec2.new
     igGetItemRectSize(pOut)
+    return pOut
   end
 
   def self.GetKeyIndex(imgui_key)
@@ -1791,16 +1822,22 @@ module ImGui
     igGetMouseCursor()
   end
 
-  def self.GetMouseDragDelta(pOut, button = 0, lock_threshold = -1.0)
+  def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)
+    pOut = ImVec2.new
     igGetMouseDragDelta(pOut, button, lock_threshold)
+    return pOut
   end
 
-  def self.GetMousePos(pOut)
+  def self.GetMousePos()
+    pOut = ImVec2.new
     igGetMousePos(pOut)
+    return pOut
   end
 
-  def self.GetMousePosOnOpeningCurrentPopup(pOut)
+  def self.GetMousePosOnOpeningCurrentPopup()
+    pOut = ImVec2.new
     igGetMousePosOnOpeningCurrentPopup(pOut)
+    return pOut
   end
 
   def self.GetScrollMaxX()
@@ -1855,12 +1892,16 @@ module ImGui
     igGetVersion()
   end
 
-  def self.GetWindowContentRegionMax(pOut)
+  def self.GetWindowContentRegionMax()
+    pOut = ImVec2.new
     igGetWindowContentRegionMax(pOut)
+    return pOut
   end
 
-  def self.GetWindowContentRegionMin(pOut)
+  def self.GetWindowContentRegionMin()
+    pOut = ImVec2.new
     igGetWindowContentRegionMin(pOut)
+    return pOut
   end
 
   def self.GetWindowContentRegionWidth()
@@ -1875,12 +1916,16 @@ module ImGui
     igGetWindowHeight()
   end
 
-  def self.GetWindowPos(pOut)
+  def self.GetWindowPos()
+    pOut = ImVec2.new
     igGetWindowPos(pOut)
+    return pOut
   end
 
-  def self.GetWindowSize(pOut)
+  def self.GetWindowSize()
+    pOut = ImVec2.new
     igGetWindowSize(pOut)
+    return pOut
   end
 
   def self.GetWindowWidth()

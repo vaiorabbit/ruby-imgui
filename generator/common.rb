@@ -7,8 +7,8 @@ ImGuiStructMapEntry = Struct.new( :name, :members, keyword_init: true )
 ImGuiEnumValEntry = Struct.new( :name, :value, :original, keyword_init: true )
 ImGuiEnumMapEntry = Struct.new( :name, :members, keyword_init: true )
 
-ImGuiFunctionMemberEntry = Struct.new( :name, :type, :default, :is_array, :size, keyword_init: true )
-ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, keyword_init: true )
+ImGuiFunctionArgEntry = Struct.new( :name, :type, :type_name, :default, :is_array, :size, keyword_init: true )
+ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, :return_udt, keyword_init: true )
 
 module ImGuiBindings
 
@@ -144,6 +144,11 @@ module ImGuiBindings
     return enums
   end
 
+  UDT = %w{ImVec2 ImVec4 ImColor ImRect}
+  def self.is_udt(type_name)
+    return UDT.include?(type_name)
+  end
+
   def self.get_ffi_type(type_name)
     if type_name.include?('*') || type_name.include?('&') || type_name.include?(']')
       return :pointer
@@ -196,6 +201,7 @@ module ImGuiBindings
               # basic info
               is_array = false
               size = 0
+              type_name = arg_info['type']
               type = get_ffi_type(arg_info['type'])
               if type == nil # This happens when arg_info['type'] contains '[' or ']'.
                 is_array = true
@@ -209,7 +215,7 @@ module ImGuiBindings
                   default_arg = func_info['defaults'][arg_info['name']]
                 end
               end
-              arg = ImGuiFunctionMemberEntry.new(name: arg_info['name'], type: type, default: default_arg, is_array: is_array, size: size)
+              arg = ImGuiFunctionArgEntry.new(name: arg_info['name'], type: type, type_name: type_name, default: default_arg, is_array: is_array, size: size)
               func.args << arg
             end
           end
@@ -223,6 +229,18 @@ module ImGuiBindings
                         else
                           :void
                         end
+
+          #
+          # check if return value is modified from original signature
+          #
+          # If you find an entry with 'nonUDT : 1' in 'definitions.json',
+          # cimgui version API doesn't return the original value; instead has
+          # 1st output argument to write the original return value.
+          #
+          # e.g.)  imgui.h : IMGUI_API ImVec2 GetMousePos();
+          #       cimgui.h : CIMGUI_API void igGetMousePos(ImVec2 *pOut);
+          #
+          func.return_udt = func_info.has_key?('nonUDT')
 
           functions << func
 

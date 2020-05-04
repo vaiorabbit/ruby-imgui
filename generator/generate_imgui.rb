@@ -129,6 +129,8 @@ module Generator
         "ImVec2.create(#{$1},#{$2})"
       when /^ImVec4\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
         "ImVec4.create(#{$1},#{$2},#{$3},#{$4})"
+      when /^ImColor\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
+        "ImColor.create(#{$1},#{$2},#{$3},#{$4})"
       when /^FLT_MAX$/ # C's FLT_MAX -> Ruby's Float::MAX
         "Float::MAX"
       else
@@ -158,11 +160,23 @@ module Generator
         end
     end
 
-    out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
-    out.push_indent
-    out.write("#{func.name}(#{arg_names.join(', ')})\n")
-    out.pop_indent
-    out.write("end\n\n")
+    if func.return_udt
+      ret = arg_names_with_defaults.shift # == "pOut"
+      var_type = /([^\*]+)/.match(func.args[0].type_name)[0] # e.g.) ImVec2* -> ImVec2
+      out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      out.push_indent
+      out.write("#{ret} = #{var_type}.new\n")
+      out.write("#{func.name}(#{arg_names.join(', ')})\n")
+      out.write("return #{ret}\n")
+      out.pop_indent
+      out.write("end\n\n")
+    else
+      out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      out.push_indent
+      out.write("#{func.name}(#{arg_names.join(', ')})\n")
+      out.pop_indent
+      out.write("end\n\n")
+    end
   end
 
 end # module Generator
@@ -264,20 +278,29 @@ require 'ffi'
     # define shorthand initializer for ImVec2 and ImVec4
     # - See https://github.com/ffi/ffi/wiki/Structs
     out.write(<<-EOS)
-# shorthand initializer for ImVec2 and ImVec4
-def ImVec2.create(x, y)
+# shorthand initializer
+def ImVec2.create(x = 0, y = 0)
   instance = ImVec2.new
   instance[:x] = x
   instance[:y] = y
   return instance
 end
 
-def ImVec4.create(x, y, z, w)
+def ImVec4.create(x = 0, y = 0, z = 0, w = 0)
   instance = ImVec4.new
   instance[:x] = x
   instance[:y] = y
   instance[:z] = z
   instance[:w] = w
+  return instance
+end
+
+def ImColor.create(r = 0, g = 0, b = 0, a = 0)
+  instance = ImColor.new
+  instance[:Value][:x] = r
+  instance[:Value][:y] = g
+  instance[:Value][:z] = b
+  instance[:Value][:w] = a
   return instance
 end
 
