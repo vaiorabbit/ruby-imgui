@@ -7,9 +7,15 @@
 module ImGuiDemo
 
   @@font = nil
+  @@io = nil
+
+  def self.GetIO()
+    @@io = ImGuiIO.new(ImGui::GetIO()) if @@io == nil
+    return @@io
+  end
 
   def self.AddFont(ttf_filepath = './jpfont/GenShinGothic-Normal.ttf')
-    io = ImGuiIO.new(ImGui::GetIO())
+    io = GetIO()
     ImGui::FontAtlas_AddFontDefault(io[:Fonts])
     # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
     # japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
@@ -21,7 +27,7 @@ module ImGuiDemo
   end
 
   def self.SetGlobalScale(scale = 1.0)
-    io = ImGuiIO.new(ImGui::GetIO())
+    io = GetIO()
     io[:FontGlobalScale] = scale # フォントの大きさを一括で変更できます。
     style = ImGui::GetStyle()
     ImGui::ImGuiStyle_ScaleAllSizes(style, scale) # UIの大きさを一括で変更できます。
@@ -300,15 +306,84 @@ module ImGuiDemo::EnumAndColorSelectionWindow
     ImGui::Begin("enum選択UIとカラー選択UI")
     current_element = @@current_element.get_int32(0)
     current_element_name = (0 <= current_element && current_element < Element::COUNT) ? @@element_names[current_element] : "Unknown"
-    ImGui::SliderInt("enumの選択", @@current_element, 0, Element::COUNT - 1, current_element_name);
+    ImGui::SliderInt("enumの選択", @@current_element, 0, Element::COUNT - 1, current_element_name)
 
-    ImGui::ColorEdit3("カラー 1", @@col1); # RGB
-    ImGui::ColorEdit4("カラー 2", @@col2); # RGBAのアルファ付き
+    ImGui::ColorEdit3("カラー 1", @@col1) # RGB
+    ImGui::ColorEdit4("カラー 2", @@col2) # RGBAのアルファ付き
 
-    flag = ImGuiColorEditFlags_Float; # 0 ~ 255表記ではなく、0.0 ~ 1.0表記にします。
-    flag |= ImGuiColorEditFlags_NoInputs; # 数字入力欄を非表示にします。
-    flag |= ImGuiColorEditFlags_NoLabel;  # カラーボックスの右隣に配置されるラベルをなくします。
-    ImGui::ColorEdit3("カラーID", @@col1, flag);
+    flag = ImGuiColorEditFlags_Float # 0 ~ 255表記ではなく、0.0 ~ 1.0表記にします。
+    flag |= ImGuiColorEditFlags_NoInputs # 数字入力欄を非表示にします。
+    flag |= ImGuiColorEditFlags_NoLabel  # カラーボックスの右隣に配置されるラベルをなくします。
+    ImGui::ColorEdit3("カラーID", @@col1, flag)
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::ListBoxWindow
+
+  @@listbox_item_current = FFI::MemoryPointer.new(:int, 1).put_int32(0, 1) # static int listbox_item_current = 1;
+  @@listbox_items_str = %w{ Apple Banana Cherry Kiwi Mango Orange Pineapple Strawberry Watermelon }.map! {|s| FFI::MemoryPointer.from_string(s)}
+  @@listbox_items = FFI::MemoryPointer.new(:string, @@listbox_items_str.length).write_array_of_pointer(@@listbox_items_str) # const char* listbox_items[] = { "Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon" };
+
+  @@selection_values = [0, 1, 0, 0, 0]
+  @@selection = FFI::MemoryPointer.new(:int8, @@selection_values.length).put_array_of_int8(0, @@selection_values) # static bool selection[5] = { false, true, false, false, false };
+
+  @@reorder_item_names = ["並び替え可能 1", "並び替え可能 2", "並び替え可能 3", "並び替え可能 4", "並び替え可能 5"]
+  @@reorder_item_current = @@reorder_item_names[0] # static const char* item_current = item_names[0]; // 最初は"並び替え可能 1"を選択している状態です。
+  @@reorder_items_str = @@reorder_item_names.map {|s| FFI::MemoryPointer.from_string(s)}
+  @@reorder_items = FFI::MemoryPointer.new(:string, @@reorder_items_str.length).write_array_of_pointer(@@reorder_items_str) # static const char* item_names[] = { "並び替え可能 1", "並び替え可能 2", "並び替え可能 3", "並び替え可能 4", "並び替え可能 5" };
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("リストボックス/複数選択")
+    ImGui::ListBoxStr_arr("リストボックス", @@listbox_item_current, @@listbox_items, @@listbox_items_str.length, 4)
+
+    ################################################################################
+    ImGui::NewLine()
+
+    ImGui::SelectableBoolPtr("複数選択項目 1", @@selection[0])
+    ImGui::SelectableBoolPtr("複数選択項目 2", @@selection[1])
+
+    if ImGui::SelectableBool("複数選択項目 3", !@@selection[2].read_int8().zero?, ImGuiSelectableFlags_AllowDoubleClick) == true
+      # ダブルクリックした時だけ選択できるようにするには次のようにします。
+      # 引数の 0 は左クリックを表します。 1 なら右クリック。 2 なら中央ボタンクリックです。
+      if ImGui::IsMouseDoubleClicked(0) == true
+        @@selection[2].write(:int8, @@selection[2].read_int8() ^ 1) # @@selection[2] = !@@selection[2];
+      end
+    end
+
+    if ImGui::SelectableBool("複数選択項目 4", !@@selection[3].read_int8().zero?) == true
+      # CTRL+クリックの時だけ選択できるようにするには次のようにします。
+      if ImGuiDemo::GetIO()[:KeyCtrl] == true
+        @@selection[3].write(:int8, @@selection[3].read_int8() ^ 1) # @@selection[3] = !@@selection[3];
+      end
+    end
+
+    # 選択項目をそもそも選択できないようにするには次のようにします
+    ImGui::SelectableBool("複数選択項目 5", !@@selection[4].read_int8().zero?, ImGuiSelectableFlags_Disabled)
+
+    ################################################################################
+    ImGui::NewLine()
+
+    names_count = @@reorder_item_names.length
+    names_count.times do |n|
+      item = @@reorder_item_names[n]
+      is_selected = item == @@reorder_item_current
+      @@reorder_item_current = item if ImGui::SelectableBool(item, is_selected)
+      # if ImGui::IsItemActive() && !ImGui::IsItemHovered()
+      #   n_next = n + (ImGui::GetMouseDragDelta(nil)[:y] < 0.0 ? -1 : 1)
+      #   if n_next >= 0 && n_next < names_count
+      #     @@reorder_item_names[n] = @@reorder_item_names[n_next]
+      #     @@reorder_item_names[n_next] = item
+      #     ImGui::ResetMouseDragDelta()
+      #   end
+      # end
+    end
+    ImGui::Text("現在 %s が選択されています", :string, @@reorder_item_current)
+
     ImGui::End()
     ImGui::PopFont()
   end

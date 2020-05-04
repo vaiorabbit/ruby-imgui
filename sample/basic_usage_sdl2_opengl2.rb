@@ -74,7 +74,7 @@ if __FILE__ == $0
 
   ImGui::FontAtlas_AddFontDefault(io[:Fonts])
   ImGuiDemo::AddFont('./jpfont/GenShinGothic-Normal.ttf')
-  # ImGuiDemo::SetGlobalScale(0.6)
+  ImGuiDemo::SetGlobalScale(0.8)
 
   event = SDL_Event.new
   done = false
@@ -111,6 +111,7 @@ if __FILE__ == $0
     ImGuiDemo::SlidersWindow2::Show()
     ImGuiDemo::SlidersWindow3::Show()
     ImGuiDemo::EnumAndColorSelectionWindow::Show()
+    ImGuiDemo::ListBoxWindow::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)
