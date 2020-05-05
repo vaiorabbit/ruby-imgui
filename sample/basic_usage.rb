@@ -420,7 +420,7 @@ HERE
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("文章入力欄")
-    flags = ImGuiInputTextFlags_AllowTabInput; # Tabキーを押すことでタブが入力されるようになります。
+    flags = ImGuiInputTextFlags_AllowTabInput # Tabキーを押すことでタブが入力されるようになります。
     # flags |= ImGuiInputTextFlags_ReadOnly; # 編集できないようにするにはこのようにします。
 
     # 高さが3行の文章入力欄を作成します。
@@ -444,6 +444,35 @@ HERE
     # "i","m","g","u","i"という文字しか入力ができないような入力欄にするには次のようにします。
     ImGui::InputText("\"imgui\" letters", @@buf3, 64, ImGuiInputTextFlags_CallbackCharFilter, @@filter_imgui_letters)
 
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::TreeNodeWindow
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("ツリーノード")
+
+    if ImGui::CollapsingHeaderTreeNodeFlags("開閉可能なフィールド")
+      # このフィールドを開いている場合にしたい処理をここに書きます。
+      if ImGui::TreeNodeStr("ツリーノード A")
+        # "ツリーノード A"が開いている場合にしたい処理をここに書きます。
+        if ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_A))
+          ImGui::Text("Aキーが押されている場合は表示されます")
+        end
+        ImGui::TreePop()
+      end
+      # SetNextItemOpenを使うことで次のツリーノードは最初から開いている状態になります。
+      ImGui::SetNextItemOpen(true, ImGuiCond_Once)
+      if ImGui::TreeNodeStr("ツリーノード B")
+        ImGui::Text("ツリーノード Bは最初から開いた状態です")
+        ImGui::TreePop()
+      end
+    end
     ImGui::End()
     ImGui::PopFont()
   end
