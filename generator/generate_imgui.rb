@@ -42,6 +42,7 @@ module Generator
   end
 
   def self.write_typedef(out, typedef)
+    return if typedef[1].callback_signature != nil
     out.write("typedef :#{typedef[1].type}, :#{typedef[0]}\n")
   end
 
@@ -97,6 +98,11 @@ module Generator
     func_name_ruby = func.name
     func_name_c = func.name
     out.write("attach_function :#{func_name_ruby}, :#{func_name_c}, [#{func_args.join(', ')}], #{func.retval}\n")
+  end
+
+  def self.write_callback_signature(out, typedef)
+    return if typedef[1].callback_signature == nil
+    out.write("callback :#{typedef[1].name}, [#{typedef[1].callback_signature[1].join(', ')}], :#{typedef[1].callback_signature[0]}\n")
   end
 
   def self.write_method(out, func)
@@ -345,6 +351,9 @@ end
       funcs_map.each do |func|
         Generator.write_attach_function(out, func)
       end
+    end
+    typedefs_map.each do |typedef|
+      Generator.write_callback_signature(out, typedef)
     end
     out.pop_indent
 

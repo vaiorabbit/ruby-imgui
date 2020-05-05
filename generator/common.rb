@@ -1,7 +1,7 @@
 require 'ffi'
 require 'json'
 
-ImGuiTypedefMapEntry = Struct.new( :name, :type, :aux, keyword_init: true )
+ImGuiTypedefMapEntry = Struct.new( :name, :type, :callback_signature, keyword_init: true )
 
 ImGuiStructMemberEntry = Struct.new( :name, :type, :is_array, :size, keyword_init: true )
 ImGuiStructMapEntry = Struct.new( :name, :members, keyword_init: true )
@@ -58,14 +58,14 @@ module ImGuiBindings
         # https://github.com/cimgui/cimgui/commit/f84d9c43015742dc5ad4434da92c5e1a99254d27#diff-2e9752529db931d99aade39734631cd0L70
         if imgui_type_name == "ImWchar"
           imwchar_type = json[imgui_type_name] # "ImWchar16" or "ImWchar32"
-          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imwchar_type]), aux: nil)
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imwchar_type]), callback_signature: nil)
           next
         end
 
         # Resolve Callback
         if imgui_type_name.end_with?("Callback")
           # json[imgui_type_name] contans the signture of callback function (e.g.: "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd);")
-          # Keep this information in 'aux:' for later use
+          # Keep this information in 'callback_signature:' for later use
 
           ### Analyze signature of callback / TODO fragile code. need maintainance ###
           ret = nil
@@ -92,12 +92,12 @@ module ImGuiBindings
           end
           ###
 
-          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), aux: [ret, args])
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: [ret, args])
           next
         end
 
         # Resolve other types into the symbols of their names
-        type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), aux: nil)
+        type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: nil)
       end
     end
 

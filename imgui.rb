@@ -775,7 +775,6 @@ module ImGui
 
   extend FFI::Library
 
-  typedef :pointer, :ImDrawCallback
   typedef :int, :ImDrawCornerFlags
   typedef :ushort, :ImDrawIdx
   typedef :int, :ImDrawListFlags
@@ -792,7 +791,6 @@ module ImGui
   typedef :int, :ImGuiFocusedFlags
   typedef :int, :ImGuiHoveredFlags
   typedef :uint, :ImGuiID
-  typedef :pointer, :ImGuiInputTextCallback
   typedef :int, :ImGuiInputTextFlags
   typedef :int, :ImGuiKey
   typedef :int, :ImGuiKeyModFlags
@@ -800,7 +798,6 @@ module ImGui
   typedef :int, :ImGuiMouseCursor
   typedef :int, :ImGuiNavInput
   typedef :int, :ImGuiSelectableFlags
-  typedef :pointer, :ImGuiSizeCallback
   typedef :int, :ImGuiStyleVar
   typedef :int, :ImGuiTabBarFlags
   typedef :int, :ImGuiTabItemFlags
@@ -1204,6 +1201,9 @@ module ImGui
     attach_function :igValueInt, :igValueInt, [:pointer, :int], :void
     attach_function :igValueUint, :igValueUint, [:pointer, :uint], :void
     attach_function :igValueFloat, :igValueFloat, [:pointer, :float, :pointer], :void
+    callback :ImDrawCallback, [ImDrawList, ImDrawCmd], :void
+    callback :ImGuiInputTextCallback, [ImGuiInputTextCallbackData], :int
+    callback :ImGuiSizeCallback, [ImGuiSizeCallbackData], :void
   end # self.import_symbols
 
   def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset = ImVec2.create(0,0))
