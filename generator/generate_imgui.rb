@@ -141,6 +141,8 @@ module Generator
         "ImColor.create(#{$1},#{$2},#{$3},#{$4})"
       when /^FLT_MAX$/ # C's FLT_MAX -> Ruby's Float::MAX
         "Float::MAX"
+      when /^sizeof\(float\)$/ # sizeof(float) -> FFI::TYPE_FLOAT32.size (Ref.: https://www.rubydoc.info/github/ffi/ffi/FFI/NativeType)
+        "FFI::TYPE_FLOAT32.size"
       else
         arg_default
       end

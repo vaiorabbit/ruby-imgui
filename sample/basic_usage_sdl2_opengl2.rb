@@ -115,6 +115,7 @@ if __FILE__ == $0
     ImGuiDemo::InputTextWindow::Show()
     ImGuiDemo::TreeNodeWindow::Show()
     ImGuiDemo::TooltipAndPopupWindow::Show()
+    ImGuiDemo::PlotAndProgressWindow::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)

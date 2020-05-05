@@ -529,3 +529,29 @@ end
 
 ####################################################################################################
 
+module ImGuiDemo::PlotAndProgressWindow
+
+  @@arr = [0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2] # static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
+  @@arr_ptr = FFI::MemoryPointer.new(:float, @@arr.length).put_array_of_float32(0, @@arr)
+  @@progress = FFI::MemoryPointer.new(:float, 1).put_float(0, 0.22) # static float progress = 0.22f;
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("折れ線グラフ・ヒストグラム・プログレスバー")
+
+    # 最小値 0, 最大値 1 のグラフを作成します。
+    # ImVec2(0,50)としていることで、幅は自動で決まり、高さは50になります。
+    ImGui::PlotLinesFloatPtr("プロットライン", @@arr_ptr, @@arr.length, 0, "タイトル", 0.0, 1.0, ImVec2.create(0,50))
+
+    ImGui::PlotHistogramFloatPtr("ヒストグラム", @@arr_ptr, @@arr.length, 0, nil, 0.0, 1.0, ImVec2.create(0,50))
+
+    # 0 ~ 1 までの中での 0.22 が何％の位置にいるのかを表示します。
+    ImGui::ProgressBar(@@progress.read_float, ImVec2.create(0.0, 0.0))
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
