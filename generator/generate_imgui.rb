@@ -143,6 +143,8 @@ module Generator
         "Float::MAX"
       when /^sizeof\(float\)$/ # sizeof(float) -> FFI::TYPE_FLOAT32.size (Ref.: https://www.rubydoc.info/github/ffi/ffi/FFI/NativeType)
         "FFI::TYPE_FLOAT32.size"
+      when "(((ImU32)(255)<<24)|((ImU32)(255)<<16)|((ImU32)(255)<<8)|((ImU32)(255)<<0))" # #define IM_COL32_WHITE IM_COL32(255,255,255,255)
+        "ImColor.create(255,255,255,255)"
       else
         arg_default
       end
@@ -155,7 +157,7 @@ module Generator
       func_name_ruby = func_name_c.gsub(/^ig/, '')
     elsif func.name.start_with?('ImGui')
       func_name_ruby = func_name_c.gsub(/^ImGui/, '')
-    elsif func.name.start_with?('ImFontAtlas_') || func.name.start_with?('ImFontGlyphRangesBuilder_') || func.name.start_with?('ImFontConfig_')
+    elsif func.name.start_with?('ImFontAtlas_') || func.name.start_with?('ImFontGlyphRangesBuilder_') || func.name.start_with?('ImFontConfig_') || func.name.start_with?('ImDrawList_')
       func_name_ruby = func_name_c.gsub(/^Im/, '')
     end
 
@@ -239,7 +241,8 @@ if __FILE__ == $0
       func.name.start_with?('ImGuiTextFilter_') ||
       func.name.start_with?('ImGuiTextRange_') ||
       func.name.start_with?('ImFontGlyphRangesBuilder_') ||
-      func.name.start_with?('ImFontConfig_'))
+      func.name.start_with?('ImFontConfig_') ||
+      func.name.start_with?('ImDrawList_'))
   }
 
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}
@@ -317,6 +320,10 @@ def ImColor.create(r = 0, g = 0, b = 0, a = 255)
   instance[:Value][:z] = b.to_f * sc
   instance[:Value][:w] = a.to_f * sc
   return instance
+end
+
+def ImColor.col32(r = 0, g = 0, b = 0, a = 255)
+  return ((a.to_i << 24) | (b.to_i << 0) | (g.to_i << 8) | (r.to_i << 16))
 end
 
     EOS

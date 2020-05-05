@@ -780,6 +780,10 @@ def ImColor.create(r = 0, g = 0, b = 0, a = 255)
   return instance
 end
 
+def ImColor.col32(r = 0, g = 0, b = 0, a = 255)
+  return ((a.to_i << 24) | (b.to_i << 0) | (g.to_i << 8) | (r.to_i << 16))
+end
+
 module ImGui
 
   extend FFI::Library
@@ -837,6 +841,62 @@ module ImGui
     callback :ImDrawCallback, [ImDrawList, ImDrawCmd], :void
     callback :ImGuiInputTextCallback, [ImGuiInputTextCallbackData], :int
     callback :ImGuiSizeCallback, [ImGuiSizeCallbackData], :void
+    attach_function :ImDrawList_AddBezierCurve, :ImDrawList_AddBezierCurve, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void
+    attach_function :ImDrawList_AddCallback, :ImDrawList_AddCallback, [:pointer, :ImDrawCallback, :pointer], :void
+    attach_function :ImDrawList_AddCircle, :ImDrawList_AddCircle, [:pointer, ImVec2.by_value, :float, :uint, :int, :float], :void
+    attach_function :ImDrawList_AddCircleFilled, :ImDrawList_AddCircleFilled, [:pointer, ImVec2.by_value, :float, :uint, :int], :void
+    attach_function :ImDrawList_AddConvexPolyFilled, :ImDrawList_AddConvexPolyFilled, [:pointer, :pointer, :int, :uint], :void
+    attach_function :ImDrawList_AddDrawCmd, :ImDrawList_AddDrawCmd, [:pointer], :void
+    attach_function :ImDrawList_AddImage, :ImDrawList_AddImage, [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_AddImageQuad, :ImDrawList_AddImageQuad, [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_AddImageRounded, :ImDrawList_AddImageRounded, [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void
+    attach_function :ImDrawList_AddLine, :ImDrawList_AddLine, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float], :void
+    attach_function :ImDrawList_AddNgon, :ImDrawList_AddNgon, [:pointer, ImVec2.by_value, :float, :uint, :int, :float], :void
+    attach_function :ImDrawList_AddNgonFilled, :ImDrawList_AddNgonFilled, [:pointer, ImVec2.by_value, :float, :uint, :int], :void
+    attach_function :ImDrawList_AddPolyline, :ImDrawList_AddPolyline, [:pointer, :pointer, :int, :uint, :bool, :float], :void
+    attach_function :ImDrawList_AddQuad, :ImDrawList_AddQuad, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float], :void
+    attach_function :ImDrawList_AddQuadFilled, :ImDrawList_AddQuadFilled, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_AddRect, :ImDrawList_AddRect, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float], :void
+    attach_function :ImDrawList_AddRectFilled, :ImDrawList_AddRectFilled, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void
+    attach_function :ImDrawList_AddRectFilledMultiColor, :ImDrawList_AddRectFilledMultiColor, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :uint, :uint, :uint], :void
+    attach_function :ImDrawList_AddTextVec2, :ImDrawList_AddTextVec2, [:pointer, ImVec2.by_value, :uint, :pointer, :pointer], :void
+    attach_function :ImDrawList_AddTextFontPtr, :ImDrawList_AddTextFontPtr, [:pointer, :pointer, :float, ImVec2.by_value, :uint, :pointer, :pointer, :float, :pointer], :void
+    attach_function :ImDrawList_AddTriangle, :ImDrawList_AddTriangle, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float], :void
+    attach_function :ImDrawList_AddTriangleFilled, :ImDrawList_AddTriangleFilled, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_ChannelsMerge, :ImDrawList_ChannelsMerge, [:pointer], :void
+    attach_function :ImDrawList_ChannelsSetCurrent, :ImDrawList_ChannelsSetCurrent, [:pointer, :int], :void
+    attach_function :ImDrawList_ChannelsSplit, :ImDrawList_ChannelsSplit, [:pointer, :int], :void
+    attach_function :ImDrawList_Clear, :ImDrawList_Clear, [:pointer], :void
+    attach_function :ImDrawList_ClearFreeMemory, :ImDrawList_ClearFreeMemory, [:pointer], :void
+    attach_function :ImDrawList_CloneOutput, :ImDrawList_CloneOutput, [:pointer], :pointer
+    attach_function :ImDrawList_GetClipRectMax, :ImDrawList_GetClipRectMax, [:pointer, :pointer], :void
+    attach_function :ImDrawList_GetClipRectMin, :ImDrawList_GetClipRectMin, [:pointer, :pointer], :void
+    attach_function :ImDrawList_ImDrawList, :ImDrawList_ImDrawList, [:pointer], :pointer
+    attach_function :ImDrawList_PathArcTo, :ImDrawList_PathArcTo, [:pointer, ImVec2.by_value, :float, :float, :float, :int], :void
+    attach_function :ImDrawList_PathArcToFast, :ImDrawList_PathArcToFast, [:pointer, ImVec2.by_value, :float, :int, :int], :void
+    attach_function :ImDrawList_PathBezierCurveTo, :ImDrawList_PathBezierCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int], :void
+    attach_function :ImDrawList_PathClear, :ImDrawList_PathClear, [:pointer], :void
+    attach_function :ImDrawList_PathFillConvex, :ImDrawList_PathFillConvex, [:pointer, :uint], :void
+    attach_function :ImDrawList_PathLineTo, :ImDrawList_PathLineTo, [:pointer, ImVec2.by_value], :void
+    attach_function :ImDrawList_PathLineToMergeDuplicate, :ImDrawList_PathLineToMergeDuplicate, [:pointer, ImVec2.by_value], :void
+    attach_function :ImDrawList_PathRect, :ImDrawList_PathRect, [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :int], :void
+    attach_function :ImDrawList_PathStroke, :ImDrawList_PathStroke, [:pointer, :uint, :bool, :float], :void
+    attach_function :ImDrawList_PopClipRect, :ImDrawList_PopClipRect, [:pointer], :void
+    attach_function :ImDrawList_PopTextureID, :ImDrawList_PopTextureID, [:pointer], :void
+    attach_function :ImDrawList_PrimQuadUV, :ImDrawList_PrimQuadUV, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_PrimRect, :ImDrawList_PrimRect, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_PrimRectUV, :ImDrawList_PrimRectUV, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_PrimReserve, :ImDrawList_PrimReserve, [:pointer, :int, :int], :void
+    attach_function :ImDrawList_PrimUnreserve, :ImDrawList_PrimUnreserve, [:pointer, :int, :int], :void
+    attach_function :ImDrawList_PrimVtx, :ImDrawList_PrimVtx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_PrimWriteIdx, :ImDrawList_PrimWriteIdx, [:pointer, :ushort], :void
+    attach_function :ImDrawList_PrimWriteVtx, :ImDrawList_PrimWriteVtx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void
+    attach_function :ImDrawList_PushClipRect, :ImDrawList_PushClipRect, [:pointer, ImVec2.by_value, ImVec2.by_value, :bool], :void
+    attach_function :ImDrawList_PushClipRectFullScreen, :ImDrawList_PushClipRectFullScreen, [:pointer], :void
+    attach_function :ImDrawList_PushTextureID, :ImDrawList_PushTextureID, [:pointer, :pointer], :void
+    attach_function :ImDrawList_UpdateClipRect, :ImDrawList_UpdateClipRect, [:pointer], :void
+    attach_function :ImDrawList_UpdateTextureID, :ImDrawList_UpdateTextureID, [:pointer], :void
+    attach_function :ImDrawList_destroy, :ImDrawList_destroy, [:pointer], :void
     attach_function :ImFontAtlas_AddCustomRectFontGlyph, :ImFontAtlas_AddCustomRectFontGlyph, [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value], :int
     attach_function :ImFontAtlas_AddCustomRectRegular, :ImFontAtlas_AddCustomRectRegular, [:pointer, :uint, :int, :int], :int
     attach_function :ImFontAtlas_AddFont, :ImFontAtlas_AddFont, [:pointer, :pointer], :pointer
@@ -1241,6 +1301,234 @@ module ImGui
     attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void
     attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void
   end # self.import_symbols
+
+  def self.DrawList_AddBezierCurve(_self_, p1, p2, p3, p4, col, thickness, num_segments = 0)
+    ImDrawList_AddBezierCurve(_self_, p1, p2, p3, p4, col, thickness, num_segments)
+  end
+
+  def self.DrawList_AddCallback(_self_, callback, callback_data)
+    ImDrawList_AddCallback(_self_, callback, callback_data)
+  end
+
+  def self.DrawList_AddCircle(_self_, center, radius, col, num_segments = 12, thickness = 1.0)
+    ImDrawList_AddCircle(_self_, center, radius, col, num_segments, thickness)
+  end
+
+  def self.DrawList_AddCircleFilled(_self_, center, radius, col, num_segments = 12)
+    ImDrawList_AddCircleFilled(_self_, center, radius, col, num_segments)
+  end
+
+  def self.DrawList_AddConvexPolyFilled(_self_, points, num_points, col)
+    ImDrawList_AddConvexPolyFilled(_self_, points, num_points, col)
+  end
+
+  def self.DrawList_AddDrawCmd(_self_)
+    ImDrawList_AddDrawCmd(_self_)
+  end
+
+  def self.DrawList_AddImage(_self_, user_texture_id, p_min, p_max, uv_min = ImVec2.create(0,0), uv_max = ImVec2.create(1,1), col = ImColor.create(255,255,255,255))
+    ImDrawList_AddImage(_self_, user_texture_id, p_min, p_max, uv_min, uv_max, col)
+  end
+
+  def self.DrawList_AddImageQuad(_self_, user_texture_id, p1, p2, p3, p4, uv1 = ImVec2.create(0,0), uv2 = ImVec2.create(1,0), uv3 = ImVec2.create(1,1), uv4 = ImVec2.create(0,1), col = ImColor.create(255,255,255,255))
+    ImDrawList_AddImageQuad(_self_, user_texture_id, p1, p2, p3, p4, uv1, uv2, uv3, uv4, col)
+  end
+
+  def self.DrawList_AddImageRounded(_self_, user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners = ImDrawCornerFlags_All)
+    ImDrawList_AddImageRounded(_self_, user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners)
+  end
+
+  def self.DrawList_AddLine(_self_, p1, p2, col, thickness = 1.0)
+    ImDrawList_AddLine(_self_, p1, p2, col, thickness)
+  end
+
+  def self.DrawList_AddNgon(_self_, center, radius, col, num_segments, thickness = 1.0)
+    ImDrawList_AddNgon(_self_, center, radius, col, num_segments, thickness)
+  end
+
+  def self.DrawList_AddNgonFilled(_self_, center, radius, col, num_segments)
+    ImDrawList_AddNgonFilled(_self_, center, radius, col, num_segments)
+  end
+
+  def self.DrawList_AddPolyline(_self_, points, num_points, col, closed, thickness)
+    ImDrawList_AddPolyline(_self_, points, num_points, col, closed, thickness)
+  end
+
+  def self.DrawList_AddQuad(_self_, p1, p2, p3, p4, col, thickness = 1.0)
+    ImDrawList_AddQuad(_self_, p1, p2, p3, p4, col, thickness)
+  end
+
+  def self.DrawList_AddQuadFilled(_self_, p1, p2, p3, p4, col)
+    ImDrawList_AddQuadFilled(_self_, p1, p2, p3, p4, col)
+  end
+
+  def self.DrawList_AddRect(_self_, p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All, thickness = 1.0)
+    ImDrawList_AddRect(_self_, p_min, p_max, col, rounding, rounding_corners, thickness)
+  end
+
+  def self.DrawList_AddRectFilled(_self_, p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
+    ImDrawList_AddRectFilled(_self_, p_min, p_max, col, rounding, rounding_corners)
+  end
+
+  def self.DrawList_AddRectFilledMultiColor(_self_, p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
+    ImDrawList_AddRectFilledMultiColor(_self_, p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
+  end
+
+  def self.DrawList_AddTextVec2(_self_, pos, col, text_begin, text_end = nil)
+    ImDrawList_AddTextVec2(_self_, pos, col, text_begin, text_end)
+  end
+
+  def self.DrawList_AddTextFontPtr(_self_, font, font_size, pos, col, text_begin, text_end = nil, wrap_width = 0.0, cpu_fine_clip_rect = nil)
+    ImDrawList_AddTextFontPtr(_self_, font, font_size, pos, col, text_begin, text_end, wrap_width, cpu_fine_clip_rect)
+  end
+
+  def self.DrawList_AddTriangle(_self_, p1, p2, p3, col, thickness = 1.0)
+    ImDrawList_AddTriangle(_self_, p1, p2, p3, col, thickness)
+  end
+
+  def self.DrawList_AddTriangleFilled(_self_, p1, p2, p3, col)
+    ImDrawList_AddTriangleFilled(_self_, p1, p2, p3, col)
+  end
+
+  def self.DrawList_ChannelsMerge(_self_)
+    ImDrawList_ChannelsMerge(_self_)
+  end
+
+  def self.DrawList_ChannelsSetCurrent(_self_, n)
+    ImDrawList_ChannelsSetCurrent(_self_, n)
+  end
+
+  def self.DrawList_ChannelsSplit(_self_, count)
+    ImDrawList_ChannelsSplit(_self_, count)
+  end
+
+  def self.DrawList_Clear(_self_)
+    ImDrawList_Clear(_self_)
+  end
+
+  def self.DrawList_ClearFreeMemory(_self_)
+    ImDrawList_ClearFreeMemory(_self_)
+  end
+
+  def self.DrawList_CloneOutput(_self_)
+    ImDrawList_CloneOutput(_self_)
+  end
+
+  def self.DrawList_GetClipRectMax(_self_)
+    pOut = ImVec2.new
+    ImDrawList_GetClipRectMax(pOut, _self_)
+    return pOut
+  end
+
+  def self.DrawList_GetClipRectMin(_self_)
+    pOut = ImVec2.new
+    ImDrawList_GetClipRectMin(pOut, _self_)
+    return pOut
+  end
+
+  def self.DrawList_ImDrawList(shared_data)
+    ImDrawList_ImDrawList(shared_data)
+  end
+
+  def self.DrawList_PathArcTo(_self_, center, radius, a_min, a_max, num_segments = 10)
+    ImDrawList_PathArcTo(_self_, center, radius, a_min, a_max, num_segments)
+  end
+
+  def self.DrawList_PathArcToFast(_self_, center, radius, a_min_of_12, a_max_of_12)
+    ImDrawList_PathArcToFast(_self_, center, radius, a_min_of_12, a_max_of_12)
+  end
+
+  def self.DrawList_PathBezierCurveTo(_self_, p2, p3, p4, num_segments = 0)
+    ImDrawList_PathBezierCurveTo(_self_, p2, p3, p4, num_segments)
+  end
+
+  def self.DrawList_PathClear(_self_)
+    ImDrawList_PathClear(_self_)
+  end
+
+  def self.DrawList_PathFillConvex(_self_, col)
+    ImDrawList_PathFillConvex(_self_, col)
+  end
+
+  def self.DrawList_PathLineTo(_self_, pos)
+    ImDrawList_PathLineTo(_self_, pos)
+  end
+
+  def self.DrawList_PathLineToMergeDuplicate(_self_, pos)
+    ImDrawList_PathLineToMergeDuplicate(_self_, pos)
+  end
+
+  def self.DrawList_PathRect(_self_, rect_min, rect_max, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
+    ImDrawList_PathRect(_self_, rect_min, rect_max, rounding, rounding_corners)
+  end
+
+  def self.DrawList_PathStroke(_self_, col, closed, thickness = 1.0)
+    ImDrawList_PathStroke(_self_, col, closed, thickness)
+  end
+
+  def self.DrawList_PopClipRect(_self_)
+    ImDrawList_PopClipRect(_self_)
+  end
+
+  def self.DrawList_PopTextureID(_self_)
+    ImDrawList_PopTextureID(_self_)
+  end
+
+  def self.DrawList_PrimQuadUV(_self_, a, b, c, d, uv_a, uv_b, uv_c, uv_d, col)
+    ImDrawList_PrimQuadUV(_self_, a, b, c, d, uv_a, uv_b, uv_c, uv_d, col)
+  end
+
+  def self.DrawList_PrimRect(_self_, a, b, col)
+    ImDrawList_PrimRect(_self_, a, b, col)
+  end
+
+  def self.DrawList_PrimRectUV(_self_, a, b, uv_a, uv_b, col)
+    ImDrawList_PrimRectUV(_self_, a, b, uv_a, uv_b, col)
+  end
+
+  def self.DrawList_PrimReserve(_self_, idx_count, vtx_count)
+    ImDrawList_PrimReserve(_self_, idx_count, vtx_count)
+  end
+
+  def self.DrawList_PrimUnreserve(_self_, idx_count, vtx_count)
+    ImDrawList_PrimUnreserve(_self_, idx_count, vtx_count)
+  end
+
+  def self.DrawList_PrimVtx(_self_, pos, uv, col)
+    ImDrawList_PrimVtx(_self_, pos, uv, col)
+  end
+
+  def self.DrawList_PrimWriteIdx(_self_, idx)
+    ImDrawList_PrimWriteIdx(_self_, idx)
+  end
+
+  def self.DrawList_PrimWriteVtx(_self_, pos, uv, col)
+    ImDrawList_PrimWriteVtx(_self_, pos, uv, col)
+  end
+
+  def self.DrawList_PushClipRect(_self_, clip_rect_min, clip_rect_max, intersect_with_current_clip_rect = false)
+    ImDrawList_PushClipRect(_self_, clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
+  end
+
+  def self.DrawList_PushClipRectFullScreen(_self_)
+    ImDrawList_PushClipRectFullScreen(_self_)
+  end
+
+  def self.DrawList_PushTextureID(_self_, texture_id)
+    ImDrawList_PushTextureID(_self_, texture_id)
+  end
+
+  def self.DrawList_UpdateClipRect(_self_)
+    ImDrawList_UpdateClipRect(_self_)
+  end
+
+  def self.DrawList_UpdateTextureID(_self_)
+    ImDrawList_UpdateTextureID(_self_)
+  end
+
+  def self.DrawList_destroy(_self_)
+    ImDrawList_destroy(_self_)
+  end
 
   def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset = ImVec2.create(0,0))
     ImFontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset)

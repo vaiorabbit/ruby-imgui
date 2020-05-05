@@ -119,6 +119,7 @@ if __FILE__ == $0
     ImGuiDemo::TabWindow::Show()
     ImGuiDemo::SearchWindow::Show()
     ImGuiDemo::MainMenuBarWindow::Show()
+    ImGuiDemo::ClippingAndDummyWindow::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)

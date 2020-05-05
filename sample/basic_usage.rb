@@ -715,7 +715,6 @@ module ImGuiDemo::MainMenuBarWindow
 
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
-    ImGui::Begin("文字検索機能・フィルタリング")
 
     if (ImGui::BeginMainMenuBar())
       # メインメニューを表示している時の処理をここに書きます。
@@ -769,6 +768,57 @@ module ImGuiDemo::MainMenuBarWindow
         ImGui::EndMenu()
       end
       ImGui::EndMainMenuBar()
+    end
+
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::ClippingAndDummyWindow
+
+  @@size_buf = FFI::MemoryPointer.new(:float, 2)
+  @@size = ImVec2.create(100, 100) # static ImVec2 size(100, 100), offset(50, 20);
+  @@offset = ImVec2.create(50, 20)
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("クリッピング/ダミー")
+
+    ImGui::DragFloat2("size", @@size_buf, 0.5, 1.0, 200.0, "%.0f")
+    pos = ImGui::GetCursorScreenPos()
+    clip_rect = ImVec4.create(pos[:x], pos[:y], pos[:x] + @@size[:x], pos[:y] + @@size[:y])
+    # InvisibleButtonを使うことで描画はされませんがマウスによる動作の反応をしてくれるエリアを作成することができます。
+    ImGui::InvisibleButton("##dummy", @@size)
+    # IsItemActiveは直前に書いたUIパーツがアクティブかどうかを返します。
+    if ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)
+      io = ImGuiDemo::GetIO()
+      @@offset[:x] += io[:MouseDelta][:x]
+      @@offset[:y] += io[:MouseDelta][:y]
+    end
+    # ドラッグエリアの塗りつぶしをします。
+    draw_list = ImGui::GetWindowDrawList()
+    ImGui::DrawList_AddRectFilled(draw_list,
+                                  pos,
+                                  ImVec2.create(pos[:x] + @@size[:x], pos[:y] + @@size[:y]),
+                                  ImColor.col32(90, 90, 120, 255)
+                                 )
+    # 文字を作成します(指定したエリアでしか見えないようになります。クリッピングされます)
+    ImGui::DrawList_AddTextFontPtr(draw_list, ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
+                                        ImVec2.create(pos[:x] + @@offset[:x], pos[:y] + @@offset[:y]),
+                                        ImColor.col32(255, 255, 255, 255), "Click and drag", nil, 0.0, clip_rect)
+
+    ################################################################################
+    ImGui::NewLine()
+
+    button_size = ImVec2.create(40, 40)
+    ImGui::Button("A", button_size)
+    ImGui::SameLine()
+    ImGui::Dummy(button_size) # ダミーを使って間隔を空けることができます。
+    ImGui::SameLine()
+    if (ImGui::Button("B", button_size))
+      # ボタンが押された時にしたい処理を書きます。
     end
 
     ImGui::End()
