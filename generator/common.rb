@@ -268,6 +268,8 @@ module ImGuiBindings
                             func_info['ret'].gsub!(/_Simple/, '')
                           end
                           get_ffi_type(func_info['ret'])
+                        elsif func_info.has_key?('constructor') # entries with "constructor" do NOT have "ret" but it's okay just to return ":pointer"
+                          :pointer
                         else
                           :void
                         end

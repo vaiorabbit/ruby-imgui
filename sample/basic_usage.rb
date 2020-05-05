@@ -19,7 +19,18 @@ module ImGuiDemo
     ImGui::FontAtlas_AddFontDefault(io[:Fonts])
     # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
-    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
+    # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
+
+    builder_raw = ImGui::FontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
+    builder = ImFontGlyphRangesBuilder.new(builder_raw)
+
+    ranges = ImGui::ImVector_ImWchar_create() # ImVector_ImWchar*
+    ImGui::FontGlyphRangesBuilder_AddText(builder.pointer, FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
+    ImGui::FontGlyphRangesBuilder_AddRanges(builder.pointer, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
+    ImGui::FontGlyphRangesBuilder_BuildRanges(builder.pointer, ranges)
+
+    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImVector.new(ranges)[:Data])
+
   end
 
   def self.GetFont()
@@ -30,7 +41,7 @@ module ImGuiDemo
     io = GetIO()
     io[:FontGlobalScale] = scale # フォントの大きさを一括で変更できます。
     style = ImGui::GetStyle()
-    ImGui::ImGuiStyle_ScaleAllSizes(style, scale) # UIの大きさを一括で変更できます。
+    ImGui::Style_ScaleAllSizes(style, scale) # UIの大きさを一括で変更できます。
   end
 
 end # module ImGuiDemo

@@ -863,28 +863,37 @@ module ImGui
     attach_function :ImFontAtlas_GetMouseCursorTexData, :ImFontAtlas_GetMouseCursorTexData, [:pointer, :int, :pointer, :pointer, :pointer, :pointer], :bool
     attach_function :ImFontAtlas_GetTexDataAsAlpha8, :ImFontAtlas_GetTexDataAsAlpha8, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
     attach_function :ImFontAtlas_GetTexDataAsRGBA32, :ImFontAtlas_GetTexDataAsRGBA32, [:pointer, :pointer, :pointer, :pointer, :pointer], :void
-    attach_function :ImFontAtlas_ImFontAtlas, :ImFontAtlas_ImFontAtlas, [], :void
+    attach_function :ImFontAtlas_ImFontAtlas, :ImFontAtlas_ImFontAtlas, [], :pointer
     attach_function :ImFontAtlas_IsBuilt, :ImFontAtlas_IsBuilt, [:pointer], :bool
     attach_function :ImFontAtlas_SetTexID, :ImFontAtlas_SetTexID, [:pointer, :pointer], :void
     attach_function :ImFontAtlas_destroy, :ImFontAtlas_destroy, [:pointer], :void
+    attach_function :ImFontGlyphRangesBuilder_AddChar, :ImFontGlyphRangesBuilder_AddChar, [:pointer, :ushort], :void
+    attach_function :ImFontGlyphRangesBuilder_AddRanges, :ImFontGlyphRangesBuilder_AddRanges, [:pointer, :pointer], :void
+    attach_function :ImFontGlyphRangesBuilder_AddText, :ImFontGlyphRangesBuilder_AddText, [:pointer, :pointer, :pointer], :void
+    attach_function :ImFontGlyphRangesBuilder_BuildRanges, :ImFontGlyphRangesBuilder_BuildRanges, [:pointer, :pointer], :void
+    attach_function :ImFontGlyphRangesBuilder_Clear, :ImFontGlyphRangesBuilder_Clear, [:pointer], :void
+    attach_function :ImFontGlyphRangesBuilder_GetBit, :ImFontGlyphRangesBuilder_GetBit, [:pointer, :size_t], :bool
+    attach_function :ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder, :ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder, [], :pointer
+    attach_function :ImFontGlyphRangesBuilder_SetBit, :ImFontGlyphRangesBuilder_SetBit, [:pointer, :size_t], :void
+    attach_function :ImFontGlyphRangesBuilder_destroy, :ImFontGlyphRangesBuilder_destroy, [:pointer], :void
     attach_function :ImGuiIO_AddInputCharacter, :ImGuiIO_AddInputCharacter, [:pointer, :uint], :void
     attach_function :ImGuiIO_AddInputCharacterUTF16, :ImGuiIO_AddInputCharacterUTF16, [:pointer, :ushort], :void
     attach_function :ImGuiIO_AddInputCharactersUTF8, :ImGuiIO_AddInputCharactersUTF8, [:pointer, :pointer], :void
     attach_function :ImGuiIO_ClearInputCharacters, :ImGuiIO_ClearInputCharacters, [:pointer], :void
-    attach_function :ImGuiIO_ImGuiIO, :ImGuiIO_ImGuiIO, [], :void
+    attach_function :ImGuiIO_ImGuiIO, :ImGuiIO_ImGuiIO, [], :pointer
     attach_function :ImGuiIO_destroy, :ImGuiIO_destroy, [:pointer], :void
-    attach_function :ImGuiStyle_ImGuiStyle, :ImGuiStyle_ImGuiStyle, [], :void
+    attach_function :ImGuiStyle_ImGuiStyle, :ImGuiStyle_ImGuiStyle, [], :pointer
     attach_function :ImGuiStyle_ScaleAllSizes, :ImGuiStyle_ScaleAllSizes, [:pointer, :float], :void
     attach_function :ImGuiStyle_destroy, :ImGuiStyle_destroy, [:pointer], :void
     attach_function :ImGuiTextFilter_Build, :ImGuiTextFilter_Build, [:pointer], :void
     attach_function :ImGuiTextFilter_Clear, :ImGuiTextFilter_Clear, [:pointer], :void
     attach_function :ImGuiTextFilter_Draw, :ImGuiTextFilter_Draw, [:pointer, :pointer, :float], :bool
-    attach_function :ImGuiTextFilter_ImGuiTextFilter, :ImGuiTextFilter_ImGuiTextFilter, [:pointer], :void
+    attach_function :ImGuiTextFilter_ImGuiTextFilter, :ImGuiTextFilter_ImGuiTextFilter, [:pointer], :pointer
     attach_function :ImGuiTextFilter_IsActive, :ImGuiTextFilter_IsActive, [:pointer], :bool
     attach_function :ImGuiTextFilter_PassFilter, :ImGuiTextFilter_PassFilter, [:pointer, :pointer, :pointer], :bool
     attach_function :ImGuiTextFilter_destroy, :ImGuiTextFilter_destroy, [:pointer], :void
-    attach_function :ImGuiTextRange_ImGuiTextRangeNil, :ImGuiTextRange_ImGuiTextRangeNil, [], :void
-    attach_function :ImGuiTextRange_ImGuiTextRangeStr, :ImGuiTextRange_ImGuiTextRangeStr, [:pointer, :pointer], :void
+    attach_function :ImGuiTextRange_ImGuiTextRangeNil, :ImGuiTextRange_ImGuiTextRangeNil, [], :pointer
+    attach_function :ImGuiTextRange_ImGuiTextRangeStr, :ImGuiTextRange_ImGuiTextRangeStr, [:pointer, :pointer], :pointer
     attach_function :ImGuiTextRange_destroy, :ImGuiTextRange_destroy, [:pointer], :void
     attach_function :ImGuiTextRange_empty, :ImGuiTextRange_empty, [:pointer], :bool
     attach_function :ImGuiTextRange_split, :ImGuiTextRange_split, [:pointer, :char, :pointer], :void
@@ -1225,6 +1234,10 @@ module ImGui
     attach_function :igValueInt, :igValueInt, [:pointer, :int], :void
     attach_function :igValueUint, :igValueUint, [:pointer, :uint], :void
     attach_function :igValueFloat, :igValueFloat, [:pointer, :float, :pointer], :void
+    attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer
+    attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void
+    attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void
+    attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void
   end # self.import_symbols
 
   def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset = ImVec2.create(0,0))
@@ -1345,6 +1358,42 @@ module ImGui
 
   def self.FontAtlas_destroy(_self_)
     ImFontAtlas_destroy(_self_)
+  end
+
+  def self.FontGlyphRangesBuilder_AddChar(_self_, c)
+    ImFontGlyphRangesBuilder_AddChar(_self_, c)
+  end
+
+  def self.FontGlyphRangesBuilder_AddRanges(_self_, ranges)
+    ImFontGlyphRangesBuilder_AddRanges(_self_, ranges)
+  end
+
+  def self.FontGlyphRangesBuilder_AddText(_self_, text, text_end = nil)
+    ImFontGlyphRangesBuilder_AddText(_self_, text, text_end)
+  end
+
+  def self.FontGlyphRangesBuilder_BuildRanges(_self_, out_ranges)
+    ImFontGlyphRangesBuilder_BuildRanges(_self_, out_ranges)
+  end
+
+  def self.FontGlyphRangesBuilder_Clear(_self_)
+    ImFontGlyphRangesBuilder_Clear(_self_)
+  end
+
+  def self.FontGlyphRangesBuilder_GetBit(_self_, n)
+    ImFontGlyphRangesBuilder_GetBit(_self_, n)
+  end
+
+  def self.FontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
+    ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
+  end
+
+  def self.FontGlyphRangesBuilder_SetBit(_self_, n)
+    ImFontGlyphRangesBuilder_SetBit(_self_, n)
+  end
+
+  def self.FontGlyphRangesBuilder_destroy(_self_)
+    ImFontGlyphRangesBuilder_destroy(_self_)
   end
 
   def self.IO_AddInputCharacter(_self_, c)

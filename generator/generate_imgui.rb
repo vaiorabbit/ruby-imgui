@@ -155,7 +155,7 @@ module Generator
       func_name_ruby = func_name_c.gsub(/^ig/, '')
     elsif func.name.start_with?('ImGui')
       func_name_ruby = func_name_c.gsub(/^ImGui/, '')
-    elsif func.name.start_with?('ImFontAtlas_')
+    elsif func.name.start_with?('ImFontAtlas_') || func.name.start_with?('ImFontGlyphRangesBuilder_')
       func_name_ruby = func_name_c.gsub(/^Im/, '')
     end
 
@@ -237,7 +237,8 @@ if __FILE__ == $0
       func.name.start_with?('ImGuiStyle_') ||
       func.name.start_with?('ImGuiIO_') ||
       func.name.start_with?('ImGuiTextFilter_') ||
-      func.name.start_with?('ImGuiTextRange_'))
+      func.name.start_with?('ImGuiTextRange_') ||
+      func.name.start_with?('ImFontGlyphRangesBuilder_'))
   }
 
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}
@@ -364,6 +365,12 @@ end
         Generator.write_attach_function(out, func)
       end
     end
+    ## ImWchar special handling (Ref.: cimgui_template.cpp)
+    out.write("attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer\n")
+    out.write("attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    out.write("attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+
     out.pop_indent
 
     out.write("end # self.import_symbols\n")
