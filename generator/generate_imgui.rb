@@ -305,12 +305,13 @@ def ImVec4.create(x = 0, y = 0, z = 0, w = 0)
   return instance
 end
 
-def ImColor.create(r = 0, g = 0, b = 0, a = 0)
+def ImColor.create(r = 0, g = 0, b = 0, a = 255)
+  sc = 1.0 / 255.0
   instance = ImColor.new
-  instance[:Value][:x] = r
-  instance[:Value][:y] = g
-  instance[:Value][:z] = b
-  instance[:Value][:w] = a
+  instance[:Value][:x] = r.to_f * sc
+  instance[:Value][:y] = g.to_f * sc
+  instance[:Value][:z] = b.to_f * sc
+  instance[:Value][:w] = a.to_f * sc
   return instance
 end
 

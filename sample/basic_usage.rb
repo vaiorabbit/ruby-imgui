@@ -555,3 +555,98 @@ end
 
 ####################################################################################################
 
+module ImGuiDemo::ChildWindow
+
+  @@line = FFI::MemoryPointer.new(:int, 1).put_int32(0, 50) # static int line = 50;
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("子ウィンドウ")
+
+    goto_line = ImGui::Button("Goto")
+    ImGui::SameLine() # 次のUIパーツを同じ行に配置します。
+
+    # ImGuiInputTextFlags_EnterReturnsTrue をつけることで、入力欄で文字を入力してからEnterキーを押すことでInputInt関数がtrueを返すようになります。
+    # "##"をつけることでラベル名は表示されません。
+    goto_line |= ImGui::InputInt("##Line", @@line, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue)
+    # "Goto"ボタンを押すかまたは入力欄で数字を入力してからEnterキーを押すことで、goto_lineはtrueになります。
+
+    ImGui::PushStyleVarFloat(ImGuiStyleVar_ChildRounding, 5.0) # 外枠を角丸にします。
+    ImGui::PushStyleColorVec4(ImGuiCol_ChildBg, ImColor.create(60, 0, 0, 100)) # 子ウィンドウの背景色を変更します。
+    ImGui::SetNextItemWidth(100) # 次のUIパーツの幅を100にします。
+    flag = 0 # ImGuiWindowFlags
+    # flag |= ImGuiWindowFlags_NoScrollWithMouse # 子ウィンドウの中でマウススクロールしても子ウィンドウ内はスクロールされなくなります。
+    flag |= ImGuiWindowFlags_MenuBar # 子ウィンドウにBeginMenuBarをつけることを可能にします。
+    # 第3引数をtrueにすることで外枠が表示されます。
+    ImGui::BeginChildStr("ChildID", ImVec2.create(ImGui::GetWindowContentRegionWidth() * 0.5, 260), true, flag)
+    if ImGui::BeginMenuBar()
+      if ImGui::BeginMenu("Menu")
+        # "Menu"をクリックしたら開くメニュー項目を書いていきます。
+        if ImGui::MenuItemBool("New")
+          # ...
+        end
+        ImGui::EndMenu()
+      end
+      ImGui::EndMenuBar()
+    end
+
+    # 子ウィンドウの中に100行作成します。
+    100.times do |i|
+      ImGui::Text("%04d: スクロール可能領域", :int, i)
+      if goto_line && @@line.read_int == i
+        # SetScrollHereYは現在の位置にスクロール位置を持ってきます。
+        # "Goto"ボタンを押した時の行数の位置が子ウィンドウの真ん中の位置になるように瞬時にスクロールされます。
+        ImGui::SetScrollHereY()
+        # ImGui::SetScrollHereY(0.0) # 子ウィンドウの一番上に来るように瞬時にスクロールされます。
+        # ImGui::SetScrollHereY(1.0) # 子ウィンドウの一番下に来るように瞬時にスクロールされます。
+      end
+    end
+    ImGui::SetScrollHereY() if goto_line && @@line.read_int >= 100
+
+    ImGui::EndChild()
+    ImGui::PopStyleColor()
+    ImGui::PopStyleVar()
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::TabWindow
+
+  @@names = ["同じタブ名##1", "同じタブ名##2", "タブ2", "タブ3", "タブ4", "タブ5", "タブ6", "タブ7"].map! {|s| FFI::MemoryPointer.from_string(s)} # const char* names[8] = {...}
+  @@opened_values = [1, 1, 1, 1, 1, 1, 1, 1] # static bool opened[8] = { true, true, true, true, true, true, true, true };
+  @@opened = FFI::MemoryPointer.new(:int8, @@opened_values.length).put_array_of_int8(0, @@opened_values) # static bool opened[8] = { true, true, true, true, true, true, true, true };
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("タブ")
+
+    flag = ImGuiTabBarFlags_Reorderable                   # タブをドラッグして並び替えができるようになります。
+    flag |= ImGuiTabBarFlags_TabListPopupButton           # タブの一番左端にドロップダウンリストが表示される下向き三角形のクリックエリアを作成し、そこからタブを選択できるようになります。
+    flag |= ImGuiTabBarFlags_AutoSelectNewTabs            # タブを新しく作成した時に自動でそのタブを選択状態にします。
+  # flag |= ImGuiTabBarFlags_NoCloseWithMiddleMouseButton # タブの中でマウス中央ボタンクリックすることでタブを閉じることができる機能を無効にします。
+  # flag |= ImGuiTabBarFlags_NoTooltip                    # タブ上にマウスオーバーした場合に表示されるタブ名のポップアップ表示を無効にします。
+  # flag |= ImGuiTabBarFlags_FittingPolicyResizeDown      # タブがウィンドウ幅を超えてたくさんある場合にタブの幅を自動でリサイズしてフィットさせることができます。
+    flag |= ImGuiTabBarFlags_FittingPolicyScroll          # タブの幅を自動でリサイズさせずに左右の矢印ボタンを右端に配置してそこからタブを順番に選択できるようにします。
+
+    if ImGui::BeginTabBar("TabBarID", flag)
+      @@opened_values.length.times do |n|
+        # 第2引数の&opened[n]を省略すると閉じるボタン(X)が作成されません。
+        if !@@opened[n].read_int8().zero? && ImGui::BeginTabItem(@@names[n], @@opened[n])
+          ImGui::Text("これは %s のタブです", :string, @@names[n].read_string)
+          ImGui::EndTabItem()
+        end
+      end
+      ImGui::EndTabBar()
+    end
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
