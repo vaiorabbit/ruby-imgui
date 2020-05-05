@@ -153,8 +153,8 @@ module Generator
     func_name_c = func.name
     if func.name.start_with?('ig')
       func_name_ruby = func_name_c.gsub(/^ig/, '')
-    elsif func.name.start_with?('ImGui_')
-      func_name_ruby = func_name_c.gsub(/^ImGui_/, '')
+    elsif func.name.start_with?('ImGui')
+      func_name_ruby = func_name_c.gsub(/^ImGui/, '')
     elsif func.name.start_with?('ImFontAtlas_')
       func_name_ruby = func_name_c.gsub(/^Im/, '')
     end
@@ -223,7 +223,7 @@ if __FILE__ == $0
   # 'ImGuiSizeCallbackData',
     'ImGuiStorage',
     'ImGuiTextBuffer',
-    'ImGuiTextFilter',
+  # 'ImGuiTextFilter',
     'TextRange',
     'Pair',
   # 'ImVector',
@@ -235,7 +235,9 @@ if __FILE__ == $0
     !(func.name.start_with?('ig') ||
       func.name.start_with?('ImFontAtlas_') ||
       func.name.start_with?('ImGuiStyle_') ||
-      func.name.start_with?('ImGuiIO_'))
+      func.name.start_with?('ImGuiIO_') ||
+      func.name.start_with?('ImGuiTextFilter_') ||
+      func.name.start_with?('ImGuiTextRange_'))
   }
 
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}

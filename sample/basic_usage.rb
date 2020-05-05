@@ -14,12 +14,12 @@ module ImGuiDemo
     return @@io
   end
 
-  def self.AddFont(ttf_filepath = './jpfont/GenShinGothic-Normal.ttf')
+  def self.AddFont(japanese_ttf_filepath = './jpfont/GenShinGothic-Normal.ttf')
     io = GetIO()
     ImGui::FontAtlas_AddFontDefault(io[:Fonts])
     # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
-    # japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
-    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
+    # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
+    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
   end
 
   def self.GetFont()
@@ -641,6 +641,31 @@ module ImGuiDemo::TabWindow
         end
       end
       ImGui::EndTabBar()
+    end
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::SearchWindow
+
+  @@lines = ["橋本環奈", "橋下徹", "橋本奈々未", "橋本真也", "あいうえお", "abc", "かんな橋本"].map! {|s| FFI::MemoryPointer.from_string(s)} # const char* lines[] = { ... };
+
+  @@filter = ImGuiTextFilter.new # static ImGuiTextFilter filter;
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("文字検索機能・フィルタリング")
+
+    ImGui::TextFilter_Draw(@@filter.pointer, FFI::MemoryPointer.from_string("フィルターラベル"))
+
+    @@lines.length.times do |i|
+      if ImGui::TextFilter_PassFilter(@@filter, @@lines[i])
+        ImGui::BulletText("%s", :string, @@lines[i].read_string)
+      end
     end
 
     ImGui::End()

@@ -118,6 +118,7 @@ if __FILE__ == $0
     ImGuiDemo::PlotAndProgressWindow::Show()
     ImGuiDemo::ChildWindow::Show()
     ImGuiDemo::TabWindow::Show()
+    ImGuiDemo::SearchWindow::Show()
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)

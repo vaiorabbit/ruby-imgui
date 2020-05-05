@@ -731,6 +731,14 @@ class ImGuiStyle < FFI::Struct
   )
 end
 
+class ImGuiTextFilter < FFI::Struct
+  layout(
+    :InputBuf, [:char, 256],
+    :Filters, ImVector.by_value,
+    :CountGrep, :int
+  )
+end
+
 class ImGuiTextRange < FFI::Struct
   layout(
     :b, :pointer,
@@ -868,6 +876,18 @@ module ImGui
     attach_function :ImGuiStyle_ImGuiStyle, :ImGuiStyle_ImGuiStyle, [], :void
     attach_function :ImGuiStyle_ScaleAllSizes, :ImGuiStyle_ScaleAllSizes, [:pointer, :float], :void
     attach_function :ImGuiStyle_destroy, :ImGuiStyle_destroy, [:pointer], :void
+    attach_function :ImGuiTextFilter_Build, :ImGuiTextFilter_Build, [:pointer], :void
+    attach_function :ImGuiTextFilter_Clear, :ImGuiTextFilter_Clear, [:pointer], :void
+    attach_function :ImGuiTextFilter_Draw, :ImGuiTextFilter_Draw, [:pointer, :pointer, :float], :bool
+    attach_function :ImGuiTextFilter_ImGuiTextFilter, :ImGuiTextFilter_ImGuiTextFilter, [:pointer], :void
+    attach_function :ImGuiTextFilter_IsActive, :ImGuiTextFilter_IsActive, [:pointer], :bool
+    attach_function :ImGuiTextFilter_PassFilter, :ImGuiTextFilter_PassFilter, [:pointer, :pointer, :pointer], :bool
+    attach_function :ImGuiTextFilter_destroy, :ImGuiTextFilter_destroy, [:pointer], :void
+    attach_function :ImGuiTextRange_ImGuiTextRangeNil, :ImGuiTextRange_ImGuiTextRangeNil, [], :void
+    attach_function :ImGuiTextRange_ImGuiTextRangeStr, :ImGuiTextRange_ImGuiTextRangeStr, [:pointer, :pointer], :void
+    attach_function :ImGuiTextRange_destroy, :ImGuiTextRange_destroy, [:pointer], :void
+    attach_function :ImGuiTextRange_empty, :ImGuiTextRange_empty, [:pointer], :bool
+    attach_function :ImGuiTextRange_split, :ImGuiTextRange_split, [:pointer, :char, :pointer], :void
     attach_function :igAcceptDragDropPayload, :igAcceptDragDropPayload, [:pointer, :int], :pointer
     attach_function :igAlignTextToFramePadding, :igAlignTextToFramePadding, [], :void
     attach_function :igArrowButton, :igArrowButton, [:pointer, :int], :bool
@@ -1327,40 +1347,88 @@ module ImGui
     ImFontAtlas_destroy(_self_)
   end
 
-  def self.ImGuiIO_AddInputCharacter(_self_, c)
+  def self.IO_AddInputCharacter(_self_, c)
     ImGuiIO_AddInputCharacter(_self_, c)
   end
 
-  def self.ImGuiIO_AddInputCharacterUTF16(_self_, c)
+  def self.IO_AddInputCharacterUTF16(_self_, c)
     ImGuiIO_AddInputCharacterUTF16(_self_, c)
   end
 
-  def self.ImGuiIO_AddInputCharactersUTF8(_self_, str)
+  def self.IO_AddInputCharactersUTF8(_self_, str)
     ImGuiIO_AddInputCharactersUTF8(_self_, str)
   end
 
-  def self.ImGuiIO_ClearInputCharacters(_self_)
+  def self.IO_ClearInputCharacters(_self_)
     ImGuiIO_ClearInputCharacters(_self_)
   end
 
-  def self.ImGuiIO_ImGuiIO()
+  def self.IO_ImGuiIO()
     ImGuiIO_ImGuiIO()
   end
 
-  def self.ImGuiIO_destroy(_self_)
+  def self.IO_destroy(_self_)
     ImGuiIO_destroy(_self_)
   end
 
-  def self.ImGuiStyle_ImGuiStyle()
+  def self.Style_ImGuiStyle()
     ImGuiStyle_ImGuiStyle()
   end
 
-  def self.ImGuiStyle_ScaleAllSizes(_self_, scale_factor)
+  def self.Style_ScaleAllSizes(_self_, scale_factor)
     ImGuiStyle_ScaleAllSizes(_self_, scale_factor)
   end
 
-  def self.ImGuiStyle_destroy(_self_)
+  def self.Style_destroy(_self_)
     ImGuiStyle_destroy(_self_)
+  end
+
+  def self.TextFilter_Build(_self_)
+    ImGuiTextFilter_Build(_self_)
+  end
+
+  def self.TextFilter_Clear(_self_)
+    ImGuiTextFilter_Clear(_self_)
+  end
+
+  def self.TextFilter_Draw(_self_, label = "Filter(inc,-exc)", width = 0.0)
+    ImGuiTextFilter_Draw(_self_, label, width)
+  end
+
+  def self.TextFilter_ImGuiTextFilter(default_filter = "")
+    ImGuiTextFilter_ImGuiTextFilter(default_filter)
+  end
+
+  def self.TextFilter_IsActive(_self_)
+    ImGuiTextFilter_IsActive(_self_)
+  end
+
+  def self.TextFilter_PassFilter(_self_, text, text_end = nil)
+    ImGuiTextFilter_PassFilter(_self_, text, text_end)
+  end
+
+  def self.TextFilter_destroy(_self_)
+    ImGuiTextFilter_destroy(_self_)
+  end
+
+  def self.TextRange_ImGuiTextRangeNil()
+    ImGuiTextRange_ImGuiTextRangeNil()
+  end
+
+  def self.TextRange_ImGuiTextRangeStr(_b, _e)
+    ImGuiTextRange_ImGuiTextRangeStr(_b, _e)
+  end
+
+  def self.TextRange_destroy(_self_)
+    ImGuiTextRange_destroy(_self_)
+  end
+
+  def self.TextRange_empty(_self_)
+    ImGuiTextRange_empty(_self_)
+  end
+
+  def self.TextRange_split(_self_, separator, out)
+    ImGuiTextRange_split(_self_, separator, out)
   end
 
   def self.AcceptDragDropPayload(type, flags = 0)
