@@ -59,13 +59,13 @@ module Generator
              end
       args = ""
       if m.is_array
-        args = if m.type.to_s.start_with?('Im')
+        args = if m.type.to_s.start_with?('Im') # && !m.type.to_s.end_with?('Callback')
                  "[#{m.type}.by_value, #{m.size}]"
                else
                  "[:#{m.type}, #{m.size}]"
                end
       else
-        args = if m.type.to_s.start_with?('Im')
+        args = if m.type.to_s.start_with?('Im')#  && !m.type.to_s.end_with?('Callback')
                  "#{m.type}.by_value"
                else
                  ":#{m.type}"
@@ -82,7 +82,9 @@ module Generator
   def self.write_attach_function(out, func)
 
     func_args = func.args.map do |arg|
-      if arg.type.to_s.start_with?('Im')
+      if arg.type_name.to_s.end_with?('Callback')
+        ':' + arg.type_name.to_s
+      elsif arg.type.to_s.start_with?('Im')
         arg.type.to_s + '.by_value'
       else
         ':' + arg.type.to_s
@@ -347,13 +349,15 @@ end
     out.newline
 
     out.push_indent
+    # callback
+    typedefs_map.each do |typedef|
+      Generator.write_callback_signature(out, typedef)
+    end
+    # attach_function
     [funcs_base_map, funcs_impl_map].each do |funcs_map|
       funcs_map.each do |func|
         Generator.write_attach_function(out, func)
       end
-    end
-    typedefs_map.each do |typedef|
-      Generator.write_callback_signature(out, typedef)
     end
     out.pop_indent
 

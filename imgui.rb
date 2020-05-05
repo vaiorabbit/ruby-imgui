@@ -825,6 +825,9 @@ module ImGui
   end
 
   def self.import_symbols()
+    callback :ImDrawCallback, [ImDrawList, ImDrawCmd], :void
+    callback :ImGuiInputTextCallback, [ImGuiInputTextCallbackData], :int
+    callback :ImGuiSizeCallback, [ImGuiSizeCallbackData], :void
     attach_function :ImFontAtlas_AddCustomRectFontGlyph, :ImFontAtlas_AddCustomRectFontGlyph, [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value], :int
     attach_function :ImFontAtlas_AddCustomRectRegular, :ImFontAtlas_AddCustomRectRegular, [:pointer, :uint, :int, :int], :int
     attach_function :ImFontAtlas_AddFont, :ImFontAtlas_AddFont, [:pointer, :pointer], :pointer
@@ -1018,9 +1021,9 @@ module ImGui
     attach_function :igInputInt4, :igInputInt4, [:pointer, :pointer, :int], :bool
     attach_function :igInputScalar, :igInputScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :int], :bool
     attach_function :igInputScalarN, :igInputScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int], :bool
-    attach_function :igInputText, :igInputText, [:pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
-    attach_function :igInputTextMultiline, :igInputTextMultiline, [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :pointer, :pointer], :bool
-    attach_function :igInputTextWithHint, :igInputTextWithHint, [:pointer, :pointer, :pointer, :size_t, :int, :pointer, :pointer], :bool
+    attach_function :igInputText, :igInputText, [:pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer], :bool
+    attach_function :igInputTextMultiline, :igInputTextMultiline, [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :ImGuiInputTextCallback, :pointer], :bool
+    attach_function :igInputTextWithHint, :igInputTextWithHint, [:pointer, :pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer], :bool
     attach_function :igInvisibleButton, :igInvisibleButton, [:pointer, ImVec2.by_value], :bool
     attach_function :igIsAnyItemActive, :igIsAnyItemActive, [], :bool
     attach_function :igIsAnyItemFocused, :igIsAnyItemFocused, [], :bool
@@ -1137,7 +1140,7 @@ module ImGui
     attach_function :igSetNextWindowFocus, :igSetNextWindowFocus, [], :void
     attach_function :igSetNextWindowPos, :igSetNextWindowPos, [ImVec2.by_value, :int, ImVec2.by_value], :void
     attach_function :igSetNextWindowSize, :igSetNextWindowSize, [ImVec2.by_value, :int], :void
-    attach_function :igSetNextWindowSizeConstraints, :igSetNextWindowSizeConstraints, [ImVec2.by_value, ImVec2.by_value, :pointer, :pointer], :void
+    attach_function :igSetNextWindowSizeConstraints, :igSetNextWindowSizeConstraints, [ImVec2.by_value, ImVec2.by_value, :ImGuiSizeCallback, :pointer], :void
     attach_function :igSetScrollFromPosX, :igSetScrollFromPosX, [:float, :float], :void
     attach_function :igSetScrollFromPosY, :igSetScrollFromPosY, [:float, :float], :void
     attach_function :igSetScrollHereX, :igSetScrollHereX, [:float], :void
@@ -1201,9 +1204,6 @@ module ImGui
     attach_function :igValueInt, :igValueInt, [:pointer, :int], :void
     attach_function :igValueUint, :igValueUint, [:pointer, :uint], :void
     attach_function :igValueFloat, :igValueFloat, [:pointer, :float, :pointer], :void
-    callback :ImDrawCallback, [ImDrawList, ImDrawCmd], :void
-    callback :ImGuiInputTextCallback, [ImGuiInputTextCallbackData], :int
-    callback :ImGuiSizeCallback, [ImGuiSizeCallbackData], :void
   end # self.import_symbols
 
   def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset = ImVec2.create(0,0))

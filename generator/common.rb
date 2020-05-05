@@ -92,6 +92,8 @@ module ImGuiBindings
           end
           ###
 
+          # [NOTE] Register as a new ImGui to C type by specifing 'type: imgui_type_name.to_sym'
+          # type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: imgui_type_name.to_sym, callback_signature: [ret, args])
           type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: [ret, args])
           next
         end
@@ -202,6 +204,7 @@ module ImGuiBindings
     if type_name.include?('Pair')
       return :Pair # stub
     end
+
     if @@imGuiToCTypeMap != nil && @@imGuiToCTypeMap.has_key?(type_name)
       return @@imGuiToCTypeMap[type_name].type
     end
