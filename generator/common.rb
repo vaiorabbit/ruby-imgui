@@ -53,6 +53,7 @@ module ImGuiBindings
       json = JSON.load(file)
       json.keys.each do |imgui_type_name|
         next if IgnoredTypedefs.include?(imgui_type_name)
+
         # Resolve ImWchar : Now ImWchar is a typedef of ImWchar16 or ImWchar32 (v1.76 ~)
         # https://github.com/cimgui/cimgui/commit/f84d9c43015742dc5ad4434da92c5e1a99254d27#diff-2e9752529db931d99aade39734631cd0L70
         if imgui_type_name == "ImWchar"
@@ -60,13 +61,41 @@ module ImGuiBindings
           type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imwchar_type]), aux: nil)
           next
         end
+
         # Resolve Callback
         if imgui_type_name.end_with?("Callback")
           # json[imgui_type_name] contans the signture of callback function (e.g.: "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd);")
           # Keep this information in 'aux:' for later use
-          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), aux: json[imgui_type_name])
+
+          ### Analyze signature of callback / TODO fragile code. need maintainance ###
+          ret = nil
+          args = []
+
+          raw_callback_str = json[imgui_type_name]                    # e.g.) raw_callback_str = "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd)"
+          match_data = /(.+)\(\*\)\((.+)\)/.match(raw_callback_str)
+          ret_type_str, raw_args = match_data[1], match_data[2]       # e.g.) ret_type_str="void", raw_args="const ImDrawList* parent_list,const ImDrawCmd* cmd"
+
+          ret_type_sym = get_ffi_type(ret_type_str)
+          ret_type_sym = ret_type_str.to_sym if ret_type_sym == nil   # e.g.) ret_type_sym = :void
+          ret = ret_type_sym
+
+          arg_strs = raw_args.split(",")                              # e.g.) arg_strs = ["const ImDrawList* parent_list", "const ImDrawCmd* cmd"]
+          arg_strs.each do |arg_str|
+            arg_str.gsub!(/const[ ]+/, '')                            # e.g.) arg_str = "ImDrawList* parent_list"
+            elems = arg_str.split(" ")                                # e.g.) elems = ["ImDrawList*", "parent_list"]
+            elems.pop                                                 # e.g.) elems = ["ImDrawList*"]
+            raise RuntimeError if elems.length != 1
+            arg_type_str = elems[0].gsub(/\*/, '')                    # e.g.) arg_type_str = "ImDrawList"
+            arg_type_sym = get_ffi_type(arg_type_str)
+            arg_type_sym = arg_type_str.to_sym if arg_type_sym == nil # e.g.) arg_type_sym = :ImDrawList
+            args << arg_type_sym
+          end
+          ###
+
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), aux: [ret, args])
           next
         end
+
         # Resolve other types into the symbols of their names
         type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), aux: nil)
       end
