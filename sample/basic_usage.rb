@@ -711,3 +711,70 @@ end
 
 ####################################################################################################
 
+module ImGuiDemo::MainMenuBarWindow
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("文字検索機能・フィルタリング")
+
+    if (ImGui::BeginMainMenuBar())
+      # メインメニューを表示している時の処理をここに書きます。
+      if (ImGui::BeginMenu("File"))
+        # "File"をクリックしてFileメニューを開いた時の処理をここに書きます。
+        # bool MenuItem(const char* label, const char* shortcut = NULL,
+        #               bool selected = false, bool enabled = true);
+        ImGui::MenuItemBool("(dummy menu)", nil, false, false) # enabledをfalseにすることでグレー表示できます。 
+        if (ImGui::MenuItemBool("New"))
+          # "New"がクリックされた時の処理をここに書きます。
+        end
+        # ショートカットキー表示は第2引数に書きます。
+        if (ImGui::MenuItemBool("Open", "Ctrl+O"))
+        end
+        if (ImGui::BeginMenu("Open Recent"))
+          ImGui::MenuItemBool("fish_hat.c")
+          ImGui::MenuItemBool("fish_hat.inl")
+          ImGui::MenuItemBool("fish_hat.h")
+          if (ImGui::BeginMenu("More.."))
+            ImGui::MenuItemBool("Hello")
+            ImGui::MenuItemBool("Sailor")
+            if (ImGui::BeginMenu("Recurse.."))
+              # ...
+              ImGui::EndMenu()
+            end
+            ImGui::EndMenu()
+          end
+          ImGui::EndMenu()
+        end
+        if (ImGui::MenuItemBool("Save", "Ctrl+S"))
+        end
+        if (ImGui::MenuItemBool("Save As.."))
+        end
+        ImGui::Separator()
+        if (ImGui::BeginMenu("Options"))
+          ImGui::EndMenu()
+        end
+        if (ImGui::BeginMenu("Colors"))
+          ImGui::EndMenu()
+        end
+        if (ImGui::BeginMenu("Disabled", false))
+          ImGui::EndMenu()
+        end
+        if (ImGui::MenuItemBool("Checked", nil, true)) # selectedをtrueにすることでチェックマークをつけることができます
+        end
+        if (ImGui::MenuItemBool("Quit", "Alt+F4"))
+        end
+        ImGui::EndMenu()
+      end
+      if (ImGui::BeginMenu("Edit"))
+        ImGui::EndMenu()
+      end
+      ImGui::EndMainMenuBar()
+    end
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
