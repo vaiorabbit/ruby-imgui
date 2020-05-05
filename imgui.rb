@@ -867,6 +867,8 @@ module ImGui
     attach_function :ImFontAtlas_IsBuilt, :ImFontAtlas_IsBuilt, [:pointer], :bool
     attach_function :ImFontAtlas_SetTexID, :ImFontAtlas_SetTexID, [:pointer, :pointer], :void
     attach_function :ImFontAtlas_destroy, :ImFontAtlas_destroy, [:pointer], :void
+    attach_function :ImFontConfig_ImFontConfig, :ImFontConfig_ImFontConfig, [], :pointer
+    attach_function :ImFontConfig_destroy, :ImFontConfig_destroy, [:pointer], :void
     attach_function :ImFontGlyphRangesBuilder_AddChar, :ImFontGlyphRangesBuilder_AddChar, [:pointer, :ushort], :void
     attach_function :ImFontGlyphRangesBuilder_AddRanges, :ImFontGlyphRangesBuilder_AddRanges, [:pointer, :pointer], :void
     attach_function :ImFontGlyphRangesBuilder_AddText, :ImFontGlyphRangesBuilder_AddText, [:pointer, :pointer, :pointer], :void
@@ -1358,6 +1360,14 @@ module ImGui
 
   def self.FontAtlas_destroy(_self_)
     ImFontAtlas_destroy(_self_)
+  end
+
+  def self.FontConfig_ImFontConfig()
+    ImFontConfig_ImFontConfig()
+  end
+
+  def self.FontConfig_destroy(_self_)
+    ImFontConfig_destroy(_self_)
   end
 
   def self.FontGlyphRangesBuilder_AddChar(_self_, c)

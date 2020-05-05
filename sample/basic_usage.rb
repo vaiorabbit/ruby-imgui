@@ -4,7 +4,13 @@
 
 ####################################################################################################
 
+require 'stringio'
+
 module ImGuiDemo
+
+  # Ref.: "Combine two fonts into one:", imgui/docs/FONTS.txt
+  ICON_MIN_FA = 0xf000
+  ICON_MAX_FA = 0xf3ff
 
   @@font = nil
   @@io = nil
@@ -14,23 +20,34 @@ module ImGuiDemo
     return @@io
   end
 
-  def self.AddFont(japanese_ttf_filepath = './jpfont/GenShinGothic-Normal.ttf')
+  def self.AddFont(japanese_ttf_filepath = './jpfont/GenShinGothic-Normal.ttf', icon_ttf_filepath = './iconfont/fontawesome-webfont.ttf')
     io = GetIO()
     ImGui::FontAtlas_AddFontDefault(io[:Fonts])
     # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
 
+    config = ImFontConfig.new(ImGui::FontConfig_ImFontConfig())
+
     builder_raw = ImGui::FontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
     builder = ImFontGlyphRangesBuilder.new(builder_raw)
 
-    ranges = ImGui::ImVector_ImWchar_create() # ImVector_ImWchar*
+    # Japanese fonts
+    additional_ranges = ImGui::ImVector_ImWchar_create() # ranges == ImVector_ImWchar*
     ImGui::FontGlyphRangesBuilder_AddText(builder.pointer, FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
     ImGui::FontGlyphRangesBuilder_AddRanges(builder.pointer, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
-    ImGui::FontGlyphRangesBuilder_BuildRanges(builder.pointer, ranges)
+    ImGui::FontGlyphRangesBuilder_BuildRanges(builder.pointer, additional_ranges)
+    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, config, ImVector.new(additional_ranges)[:Data])
 
-    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImVector.new(ranges)[:Data])
+    # Icon fonts
+    size_icon = 20.0
+    config[:MergeMode] = true # フォントテクスチャを合体させます。
+    config[:PixelSnapH] = true
+    config[:GlyphMinAdvanceX] = size_icon # アイコンを等幅にします。
+    icon_ranges = FFI::MemoryPointer.new(:short, 3).write_array_of_short([ICON_MIN_FA, ICON_MAX_FA, 0])  # static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 }
+    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], icon_ttf_filepath, size_icon, config, icon_ranges)
 
+    ImGui::FontAtlas_Build(io[:Fonts])
   end
 
   def self.GetFont()
@@ -678,6 +695,14 @@ module ImGuiDemo::SearchWindow
         ImGui::BulletText("%s", :string, @@lines[i].read_string)
       end
     end
+
+    ImGui::Text("%s among %d items", :string, (0xf002).chr(Encoding::UTF_8), :int, 10) # 0xf002 == fa-search (Ref.: https://fontawesome.com/v4.7.0/cheatsheet/ )
+    ImGui::Text("%s Search", :string, (0xf002).chr(Encoding::UTF_8))
+    icons_str = StringIO.new
+    (0xf000...0xf0ff).each do |code|
+      icons_str << code.chr(Encoding::UTF_8)
+    end
+    ImGui::TextWrapped("%s Search", :string, icons_str.string)
 
     ImGui::End()
     ImGui::PopFont()

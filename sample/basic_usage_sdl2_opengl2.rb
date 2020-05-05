@@ -72,8 +72,7 @@ if __FILE__ == $0
   ImGui::ImplSDL2_InitForOpenGL(window, gl_context)
   ImGui::ImplOpenGL2_Init()
 
-  ImGui::FontAtlas_AddFontDefault(io[:Fonts])
-  ImGuiDemo::AddFont('./jpfont/GenShinGothic-Normal.ttf')
+  ImGuiDemo::AddFont('./jpfont/GenShinGothic-Normal.ttf', './iconfont/fontawesome-webfont.ttf')
   ImGuiDemo::SetGlobalScale(0.8)
 
   event = SDL_Event.new
