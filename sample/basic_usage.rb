@@ -473,6 +473,55 @@ module ImGuiDemo::TreeNodeWindow
         ImGui::TreePop()
       end
     end
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+module ImGuiDemo::TooltipAndPopupWindow
+
+  @@names = %w{AAA BBB CCC DDD}.map! {|s| FFI::MemoryPointer.from_string(s)} # const char* names[] = { "AAA", "BBB", "CCC", "DDD" };
+  @@selected = FFI::MemoryPointer.new(:int, 1).put_int32(0, -1) # static int selected = -1;
+
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("ツールチップ/ポップアップ")
+
+    ImGui::TextDisabled("(?)")
+    if (ImGui::IsItemHovered())
+      # "(?)"という文字をマウスオーバーしている場合にしたい処理をここに書きます。
+      ImGui::BeginTooltip()
+      # ポップアップウィンドウの横幅をフォントサイズの35倍の長さにします。
+      # これを超える文章の時は自動的にその下の行に続きます(2行になります)。
+      ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0)
+      ImGui::TextUnformatted("ポップアップ時に表示される文章をここに書きます")
+      ImGui::PopTextWrapPos()
+      ImGui::EndTooltip()
+    end
+
+    ################################################################################
+
+    if (ImGui::Button("選択.."))
+      # "選択.."ボタンがクリックされた場合にここにきます。
+      # 引数の"popupID"と同じID名のBeginPopupをポップアップとして表示します。
+      ImGui::OpenPopup("popupID")
+    end
+    ImGui::SameLine()
+    ImGui::TextUnformatted(@@selected.read_int == -1 ? "<None>" : @@names[@@selected.read_int].read_string)
+
+    if (ImGui::BeginPopup("popupID"))
+      ImGui::Text("選択項目")
+      ImGui::Separator()
+      @@names.length.times do |i|
+        if ImGui::SelectableBool(@@names[i].read_string)
+          @@selected.put_int32(0, i)
+        end
+      end
+      ImGui::EndPopup()
+    end
     ImGui::End()
     ImGui::PopFont()
   end
