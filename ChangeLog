@@ -1,3 +1,15 @@
+2020-05-05  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	*  Added ImDrawList support / Added ImColor.col32
+	*  Added support for ImFontConfig / Added icon font sample
+	*  Added support for FontGlyphRangesBuilder, ImWchar vector / Now constructors return :pointer
+	*  Added support for ImGuiTextFilter, etc. / public interfaces are changed a bit ("ImGuixxx" prefixes are omitted)
+	*  Fixed ImColor.create argument conversion
+	*  Fixed wrong default argument (sizeof(float))
+	*  Added provisional callback signature analyzer / Added callback typedef generation
+	*  Added some CallbackData / Added ImGuiTypedefMapEntry for later use
+	*  Returns ImVec2/4/Color correctly / Added default augument values to ImVec2.create, etc.
+
 2020-05-03  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Added provisional ImGuiStyle_ methods
