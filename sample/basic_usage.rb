@@ -406,9 +406,15 @@ HERE
   @@buf3 = FFI::MemoryPointer.new(:char, 64).write_string("") # static char buf3[64] = "";
   @@bufpass = FFI::MemoryPointer.new(:char, 64).write_string("password123") # static char bufpass[64] = "password123"; // 最初に入力しておく文字
 
-  @@filter_imgui_letters = Proc.new do |data| # data: ImGuiInputTextCallbackData*
-    pp data
-    return 1
+  # static int TextFilters::FilterImGuiLetters(ImGuiInputTextCallbackData* data)
+  @@filter_imgui_letters = Proc.new do |data_ptr| # data: ImGuiInputTextCallbackData*
+    data = ImGuiInputTextCallbackData.new(data_ptr)
+    ret = if data[:EventChar] < 256 && "imgui".include?(data[:EventChar].chr)
+            0
+          else
+            1
+          end
+    ret
   end
 
   def self.Show(is_open = nil)
@@ -426,7 +432,7 @@ HERE
 
     ImGui::NewLine()
 
-    ImGui::InputText("入力欄", @@buf1, 64, ImGuiInputTextFlags_CallbackCharFilter, @@filter_imgui_letters)
+    ImGui::InputText("入力欄", @@buf1, 64)
     # ImGuiInputTextFlags_CharsDecimal をつけることで 0123456789.+-*/ の文字しか入力できない入力欄になります。
     # InputTextWithHintを使うことで入力欄が空白の時にグレーで表示される文章を指定できます。
     ImGui::InputTextWithHint("数字入力欄", "only 0123456789.+-*/", @@buf2, 64, ImGuiInputTextFlags_CharsDecimal)
@@ -435,6 +441,8 @@ HERE
     # 空白を許可しない入力欄にするには ImGuiInputTextFlags_CharsNoBlank を使います。
     ImGui::InputText("Password", @@bufpass, 64, ImGuiInputTextFlags_Password | ImGuiInputTextFlags_CharsNoBlank)
 
+    # "i","m","g","u","i"という文字しか入力ができないような入力欄にするには次のようにします。
+    ImGui::InputText("\"imgui\" letters", @@buf3, 64, ImGuiInputTextFlags_CallbackCharFilter, @@filter_imgui_letters)
 
     ImGui::End()
     ImGui::PopFont()
