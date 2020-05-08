@@ -828,3 +828,37 @@ end
 
 ####################################################################################################
 
+module ImGuiDemo::PopupWindow
+
+  def self.Show(is_open = nil)
+
+    ok_clicked = false
+
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("ポップアップ")
+
+    if ImGui::Button("アプリの終了")
+      ImGui::OpenPopup("アプリケーションを終了しますか?")
+    end
+    if ImGui::BeginPopupModal("アプリケーションを終了しますか?", nil, ImGuiWindowFlags_AlwaysAutoResize)
+      if ImGui::Button("はい", ImVec2.create(120, 0))
+        ok_clicked = true
+        ImGui::CloseCurrentPopup()
+      end
+      ImGui::SetItemDefaultFocus()
+      ImGui::SameLine()
+      if ImGui::Button("いいえ", ImVec2.create(120, 0))
+        ImGui::CloseCurrentPopup()
+      end
+      ImGui::EndPopup();
+
+      return ok_clicked
+    end
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+

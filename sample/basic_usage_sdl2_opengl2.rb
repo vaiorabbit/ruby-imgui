@@ -63,7 +63,11 @@ if __FILE__ == $0
 
   # Setup Dear ImGui context
   ImGui::CreateContext()
-  io = ImGuiIO.new(ImGui::GetIO())
+  io = ImGuiDemo::GetIO()
+  # Load layout information fromm file, but never overwrite it
+  ImGui::LoadIniSettingsFromDisk("./basic_usage_layout.ini")
+  io[:IniFilename] = nil # FFI::MemoryPointer.from_string("./basic_usage_layout.ini")
+  io[:WantSaveIniSettings] = false
 
   # Setup Dear ImGui style
   ImGui::StyleColorsDark()
@@ -120,6 +124,8 @@ if __FILE__ == $0
     ImGuiDemo::SearchWindow::Show()
     ImGuiDemo::MainMenuBarWindow::Show()
     ImGuiDemo::ClippingAndDummyWindow::Show()
+    ok_clicked = ImGuiDemo::PopupWindow::Show()
+    done = true if ok_clicked
 
     ImGui::Render()
     glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)
