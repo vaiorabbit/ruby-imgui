@@ -74,7 +74,13 @@ module ImGui
     io[:BackendRendererName] = @@g_BackendRendererName
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasVtxOffset if @@g_GlVersion >= 3200
 
-    glsl_version = "#version 130" if glsl_version == nil
+    # Ref.: Fix imgui_impl_opengl3 on MacOS
+    #       https://github.com/ocornut/imgui/pull/3199
+    if OpenGL.get_platform() == :OPENGL_PLATFORM_MACOSX
+      glsl_version = "#version 150" if glsl_version == nil
+    else
+      glsl_version = "#version 130" if glsl_version == nil
+    end
 
     @@g_GlslVersionString = glsl_version.dup
 
