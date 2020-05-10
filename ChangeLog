@@ -1,6 +1,7 @@
 2020-05-10  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui_impl_opengl3.rb: Changed default GLSL version string from 130 to 150 (Ref.: https://github.com/ocornut/imgui/pull/3199 )
+	* generator: Read "stname", "constructor" and "destructor" from "definitions.json"
 
 2020-05-05  vaiorabbit  <http://twitter.com/vaiorabbit>
 

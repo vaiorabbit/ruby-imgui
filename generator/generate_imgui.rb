@@ -46,9 +46,14 @@ module Generator
     out.write("typedef :#{typedef[1].type}, :#{typedef[0]}\n")
   end
 
-  def self.write_struct(out, struct)
+  def self.write_struct_method(out, func)
+    # TODO implement modified version of 'write_module_method' here
+  end
+
+  def self.write_struct(out, struct, methods)
     out.write("class #{struct.name} < FFI::Struct\n")
     out.push_indent
+    # write member layout
     out.write("layout(\n")
     out.push_indent
     struct.members.each do |m|
@@ -75,6 +80,12 @@ module Generator
     end
     out.pop_indent
     out.write(")\n")
+
+    # # write methods
+    # methods.each do |func|
+    #   self.write_struct_method(out, func)
+    # end
+
     out.pop_indent
     out.write("end\n\n")
   end
@@ -107,7 +118,7 @@ module Generator
     out.write("callback :#{typedef[1].name}, [#{typedef[1].callback_signature[1].join(', ')}], :#{typedef[1].callback_signature[0]}\n")
   end
 
-  def self.write_method(out, func)
+  def self.write_module_method(out, func)
 
     arg_names = func.args.map do |arg|
       case arg.name
@@ -250,6 +261,8 @@ if __FILE__ == $0
   # funcs_impl_map.delete_if {|func| func.name.include?('Glfw')}
   # funcs_impl_map.delete_if {|func| func.name.include?('SDL2')} # not supported yet
 
+  funcs_map = funcs_base_map + funcs_impl_map
+
   #
   # Write to actual source code
   #
@@ -284,12 +297,14 @@ require 'ffi'
     #
 
     ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawListSplitter'].each do |name| # for forward declaration
-      Generator.write_struct(out, structs_map.find{|struct| struct.name == name})
+      methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
+      Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods)
       structs_map.delete_if {|struct| struct.name == name}
     end
 
     structs_map.each do |struct|
-      Generator.write_struct(out, struct)
+      methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == struct.name }
+      Generator.write_struct(out, struct, methods)
     end
 
     # define shorthand initializer for ImVec2 and ImVec4
@@ -368,10 +383,8 @@ end
       Generator.write_callback_signature(out, typedef)
     end
     # attach_function
-    [funcs_base_map, funcs_impl_map].each do |funcs_map|
-      funcs_map.each do |func|
-        Generator.write_attach_function(out, func)
-      end
+    funcs_map.each do |func|
+      Generator.write_attach_function(out, func)
     end
     ## ImWchar special handling (Ref.: cimgui_template.cpp)
     out.write("attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer\n")
@@ -385,12 +398,10 @@ end
     out.newline
 
     #
-    # Methods
+    # ImGui module methods
     #
-    [funcs_base_map, funcs_impl_map].each do |funcs_map|
-      funcs_map.each do |func|
-        Generator.write_method(out, func)
-      end
+    funcs_map.each do |func|
+      Generator.write_module_method(out, func)
     end
 
     #

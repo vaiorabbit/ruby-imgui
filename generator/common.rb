@@ -10,7 +10,7 @@ ImGuiEnumValEntry = Struct.new( :name, :value, :original, keyword_init: true )
 ImGuiEnumMapEntry = Struct.new( :name, :members, keyword_init: true )
 
 ImGuiFunctionArgEntry = Struct.new( :name, :type, :type_name, :default, :is_array, :size, keyword_init: true )
-ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, :return_udt, keyword_init: true )
+ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, :return_udt, :method_of, :ctor, :dtor, keyword_init: true )
 
 module ImGuiBindings
 
@@ -285,6 +285,21 @@ module ImGuiBindings
           #       cimgui.h : CIMGUI_API void igGetMousePos(ImVec2 *pOut);
           #
           func.return_udt = func_info.has_key?('nonUDT')
+
+          #
+          # check if this function should also be generated as a method of class
+          #
+          # If you find an entry with 'stname : XXX' in 'definitions.json',
+          # the original API is a method of the struct called 'XXX (e.g.: ImColor, ImFontAtlas, ...')
+          #
+          func.method_of = func_info.has_key?('stname') ? func_info['stname'] : nil
+          if func.method_of != nil
+            func.ctor = func_info.has_key?('constructor') ? func_info['constructor'] : nil
+            func.dtor = func_info.has_key?('destructor') ? func_info['destructor'] : nil
+          else
+            func.ctor = nil
+            func.dtor = nil
+          end
 
           functions << func
 
