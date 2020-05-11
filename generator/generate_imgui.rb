@@ -48,6 +48,91 @@ module Generator
 
   def self.write_struct_method(out, func)
     # TODO implement modified version of 'write_module_method' here
+    arg_names = func.args.map do |arg|
+      case arg.name
+      # va_arg -> keyword argument
+      when "..."
+        "*varargs"
+      # avoid conflict with ruby keywords by adding '_'s
+      when "in" # , "self"
+        "_#{arg.name}_"
+      else
+        arg.name
+      end
+    end
+
+    # Make default values list
+    # [TODO] write value sanitizing somewhere else
+    arg_defaults = func.args.map do |arg|
+      arg.default
+    end
+    arg_defaults.map! do |arg_default|
+      case arg_default
+      when /.*void\*.*/ # ((void*)0) -> nil
+        "nil"
+      when /^([-+]?[0-9]*\.[0-9]+)[f]*$/ # omit 'f' suffix of floating point number
+        $1
+      when /^ImVec2\((.+),(.+)\)$/ # use our own shorthand initializer
+        "ImVec2.create(#{$1},#{$2})"
+      when /^ImVec4\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
+        "ImVec4.create(#{$1},#{$2},#{$3},#{$4})"
+      when /^ImColor\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
+        "ImColor.create(#{$1},#{$2},#{$3},#{$4})"
+      when /^FLT_MAX$/ # C's FLT_MAX -> Ruby's Float::MAX
+        "Float::MAX"
+      when /^sizeof\(float\)$/ # sizeof(float) -> FFI::TYPE_FLOAT32.size (Ref.: https://www.rubydoc.info/github/ffi/ffi/FFI/NativeType)
+        "FFI::TYPE_FLOAT32.size"
+      when "(((ImU32)(255)<<24)|((ImU32)(255)<<16)|((ImU32)(255)<<8)|((ImU32)(255)<<0))" # #define IM_COL32_WHITE IM_COL32(255,255,255,255)
+        "ImColor.create(255,255,255,255)"
+      else
+        arg_default
+      end
+    end
+
+    # Fix raw names into public API names by omitting some prefixes
+    func_name_ruby = func.name
+    func_name_c = func.name
+    if /^(Im[^_]+_)/.match(func.name)
+      func_name_ruby = func_name_c.gsub($1, '')
+    end
+    # if func.name.start_with?('ig')
+    #   func_name_ruby = func_name_c.gsub(/^ig/, '')
+    # elsif func.name.start_with?('ImGui')
+    #   func_name_ruby = func_name_c.gsub(/^ImGui/, '')
+    # elsif func.name.start_with?('ImFontAtlas_') || func.name.start_with?('ImFontGlyphRangesBuilder_') || func.name.start_with?('ImFontConfig_') || func.name.start_with?('ImDrawList_')
+    #   func_name_ruby = func_name_c.gsub(/^Im/, '')
+    # end
+
+    # Make list of argument with default value
+    arg_names_with_defaults = []
+    arg_names.each_with_index do |arg_name, i|
+      next if arg_name == "self"
+      arg_names_with_defaults <<
+        if arg_defaults[i]
+          "#{arg_name} = #{arg_defaults[i]}"
+        else
+          arg_name
+        end
+    end
+
+    as_module_method = func.ctor
+    if func.return_udt
+      ret = arg_names_with_defaults.shift # == "pOut"
+      var_type = /([^\*]+)/.match(func.args[0].type_name)[0] # e.g.) ImVec2* -> ImVec2
+      out.write("def #{as_module_method ? 'self.' : ''}#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      out.push_indent
+      out.write("#{ret} = #{var_type}.new\n")
+      out.write("ImGui::#{func.name}(#{arg_names.join(', ')})\n")
+      out.write("return #{ret}\n")
+      out.pop_indent
+      out.write("end\n\n")
+    else
+      out.write("def #{as_module_method ? 'self.' : ''}#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      out.push_indent
+      out.write("ImGui::#{func.name}(#{arg_names.join(', ')})\n")
+      out.pop_indent
+      out.write("end\n\n")
+    end
   end
 
   def self.write_struct(out, struct, methods)
@@ -79,12 +164,12 @@ module Generator
       out.write(":#{m.name}, #{args}#{tail}")
     end
     out.pop_indent
-    out.write(")\n")
+    out.write(")\n\n")
 
-    # # write methods
-    # methods.each do |func|
-    #   self.write_struct_method(out, func)
-    # end
+    # write methods
+    methods.each do |func|
+      self.write_struct_method(out, func)
+    end
 
     out.pop_indent
     out.write("end\n\n")
@@ -119,6 +204,8 @@ module Generator
   end
 
   def self.write_module_method(out, func)
+
+    return unless func.name.start_with?('ig')
 
     arg_names = func.args.map do |arg|
       case arg.name
@@ -166,10 +253,10 @@ module Generator
     func_name_c = func.name
     if func.name.start_with?('ig')
       func_name_ruby = func_name_c.gsub(/^ig/, '')
-    elsif func.name.start_with?('ImGui')
-      func_name_ruby = func_name_c.gsub(/^ImGui/, '')
-    elsif func.name.start_with?('ImFontAtlas_') || func.name.start_with?('ImFontGlyphRangesBuilder_') || func.name.start_with?('ImFontConfig_') || func.name.start_with?('ImDrawList_')
-      func_name_ruby = func_name_c.gsub(/^Im/, '')
+    # elsif func.name.start_with?('ImGui')
+    #   func_name_ruby = func_name_c.gsub(/^ImGui/, '')
+    # elsif func.name.start_with?('ImFontAtlas_') || func.name.start_with?('ImFontGlyphRangesBuilder_') || func.name.start_with?('ImFontConfig_') || func.name.start_with?('ImDrawList_')
+    #   func_name_ruby = func_name_c.gsub(/^Im/, '')
     end
 
     # Make list of argument with default value

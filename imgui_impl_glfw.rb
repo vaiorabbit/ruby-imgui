@@ -127,7 +127,7 @@ module ImGui
 
   def self.ImplGlfw_NewFrame()
     io = ImGuiIO.new(ImGui::GetIO())
-    unless ImGui::FontAtlas_IsBuilt(io[:Fonts])
+    unless ImFontAtlas.new(io[:Fonts]).IsBuilt()
       puts "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame()."
     end
 

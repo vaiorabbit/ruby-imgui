@@ -22,22 +22,25 @@ module ImGuiDemo
 
   def self.AddFont(japanese_ttf_filepath = './jpfont/GenShinGothic-Normal.ttf', icon_ttf_filepath = './iconfont/fontawesome-webfont.ttf')
     io = GetIO()
-    ImGui::FontAtlas_AddFontDefault(io[:Fonts])
+    #ImGui::FontAtlas_AddFontDefault(io[:Fonts])
+    ImFontAtlas.new(io[:Fonts]).AddFontDefault()
     # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
 
-    config = ImFontConfig.new(ImGui::FontConfig_ImFontConfig())
+    config = ImFontConfig.new(ImFontConfig.ImFontConfig())
 
-    builder_raw = ImGui::FontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
+    builder_raw = ImFontGlyphRangesBuilder.ImFontGlyphRangesBuilder()
     builder = ImFontGlyphRangesBuilder.new(builder_raw)
 
     # Japanese fonts
     additional_ranges = ImGui::ImVector_ImWchar_create() # ranges == ImVector_ImWchar*
-    ImGui::FontGlyphRangesBuilder_AddText(builder.pointer, FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
-    ImGui::FontGlyphRangesBuilder_AddRanges(builder.pointer, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
-    ImGui::FontGlyphRangesBuilder_BuildRanges(builder.pointer, additional_ranges)
-    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, config, ImVector.new(additional_ranges)[:Data])
+    #ImGui::FontGlyphRangesBuilder_AddText(builder.pointer, FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
+    builder.AddText(FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
+    #ImGui::FontGlyphRangesBuilder_AddRanges(builder.pointer, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
+    builder.AddRanges(ImFontAtlas.new(io[:Fonts]).GetGlyphRangesJapanese())
+    builder.BuildRanges(additional_ranges)
+    @@font = ImFontAtlas.new(io[:Fonts]).AddFontFromFileTTF(japanese_ttf_filepath, 24.0, config, ImVector.new(additional_ranges)[:Data])
 
     # Icon fonts
     size_icon = 20.0
@@ -45,9 +48,9 @@ module ImGuiDemo
     config[:PixelSnapH] = true
     config[:GlyphMinAdvanceX] = size_icon # アイコンを等幅にします。
     icon_ranges = FFI::MemoryPointer.new(:short, 3).write_array_of_short([ICON_MIN_FA, ICON_MAX_FA, 0])  # static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 }
-    @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], icon_ttf_filepath, size_icon, config, icon_ranges)
+    @@font = ImFontAtlas.new(io[:Fonts]).AddFontFromFileTTF(icon_ttf_filepath, size_icon, config, icon_ranges)
 
-    ImGui::FontAtlas_Build(io[:Fonts])
+    ImFontAtlas.new(io[:Fonts]).Build()
   end
 
   def self.GetFont()
@@ -58,7 +61,7 @@ module ImGuiDemo
     io = GetIO()
     io[:FontGlobalScale] = scale # フォントの大きさを一括で変更できます。
     style = ImGui::GetStyle()
-    ImGui::Style_ScaleAllSizes(style, scale) # UIの大きさを一括で変更できます。
+    ImGuiStyle.new(style).ScaleAllSizes(scale) # UIの大きさを一括で変更できます。
   end
 
 end # module ImGuiDemo
@@ -688,10 +691,10 @@ module ImGuiDemo::SearchWindow
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("文字検索機能・フィルタリング")
 
-    ImGui::TextFilter_Draw(@@filter.pointer, FFI::MemoryPointer.from_string("フィルターラベル"))
+    ImGuiTextFilter.new(@@filter.pointer).Draw(FFI::MemoryPointer.from_string("フィルターラベル"))
 
     @@lines.length.times do |i|
-      if ImGui::TextFilter_PassFilter(@@filter, @@lines[i])
+      if ImGuiTextFilter.new(@@filter.pointer).PassFilter(@@lines[i])
         ImGui::BulletText("%s", :string, @@lines[i].read_string)
       end
     end
@@ -799,13 +802,13 @@ module ImGuiDemo::ClippingAndDummyWindow
     end
     # ドラッグエリアの塗りつぶしをします。
     draw_list = ImGui::GetWindowDrawList()
-    ImGui::DrawList_AddRectFilled(draw_list,
+    ImDrawList.new(draw_list).AddRectFilled(
                                   pos,
                                   ImVec2.create(pos[:x] + @@size[:x], pos[:y] + @@size[:y]),
                                   ImColor.col32(90, 90, 120, 255)
                                  )
     # 文字を作成します(指定したエリアでしか見えないようになります。クリッピングされます)
-    ImGui::DrawList_AddTextFontPtr(draw_list, ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
+    ImDrawList.new(draw_list).AddTextFontPtr(ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
                                         ImVec2.create(pos[:x] + @@offset[:x], pos[:y] + @@offset[:y]),
                                         ImColor.col32(255, 255, 255, 255), "Click and drag", nil, 0.0, clip_rect)
 

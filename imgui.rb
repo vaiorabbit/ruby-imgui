@@ -409,6 +409,7 @@ class ImVec2 < FFI::Struct
     :x, :float,
     :y, :float
   )
+
 end
 
 class ImVec4 < FFI::Struct
@@ -418,6 +419,7 @@ class ImVec4 < FFI::Struct
     :z, :float,
     :w, :float
   )
+
 end
 
 class ImVector < FFI::Struct
@@ -426,6 +428,7 @@ class ImVector < FFI::Struct
     :Capacity, :int,
     :Data, :pointer
   )
+
 end
 
 class ImDrawListSplitter < FFI::Struct
@@ -434,12 +437,14 @@ class ImDrawListSplitter < FFI::Struct
     :_Count, :int,
     :_Channels, ImVector.by_value
   )
+
 end
 
 class ImColor < FFI::Struct
   layout(
     :Value, ImVec4.by_value
   )
+
 end
 
 class ImDrawCmd < FFI::Struct
@@ -452,6 +457,7 @@ class ImDrawCmd < FFI::Struct
     :UserCallback, :pointer,
     :UserCallbackData, :pointer
   )
+
 end
 
 class ImDrawData < FFI::Struct
@@ -465,6 +471,7 @@ class ImDrawData < FFI::Struct
     :DisplaySize, ImVec2.by_value,
     :FramebufferScale, ImVec2.by_value
   )
+
 end
 
 class ImDrawList < FFI::Struct
@@ -484,6 +491,235 @@ class ImDrawList < FFI::Struct
     :_Path, ImVector.by_value,
     :_Splitter, ImDrawListSplitter.by_value
   )
+
+  def AddBezierCurve(p1, p2, p3, p4, col, thickness, num_segments = 0)
+    ImGui::ImDrawList_AddBezierCurve(self, p1, p2, p3, p4, col, thickness, num_segments)
+  end
+
+  def AddCallback(callback, callback_data)
+    ImGui::ImDrawList_AddCallback(self, callback, callback_data)
+  end
+
+  def AddCircle(center, radius, col, num_segments = 12, thickness = 1.0)
+    ImGui::ImDrawList_AddCircle(self, center, radius, col, num_segments, thickness)
+  end
+
+  def AddCircleFilled(center, radius, col, num_segments = 12)
+    ImGui::ImDrawList_AddCircleFilled(self, center, radius, col, num_segments)
+  end
+
+  def AddConvexPolyFilled(points, num_points, col)
+    ImGui::ImDrawList_AddConvexPolyFilled(self, points, num_points, col)
+  end
+
+  def AddDrawCmd()
+    ImGui::ImDrawList_AddDrawCmd(self)
+  end
+
+  def AddImage(user_texture_id, p_min, p_max, uv_min = ImVec2.create(0,0), uv_max = ImVec2.create(1,1), col = ImColor.create(255,255,255,255))
+    ImGui::ImDrawList_AddImage(self, user_texture_id, p_min, p_max, uv_min, uv_max, col)
+  end
+
+  def AddImageQuad(user_texture_id, p1, p2, p3, p4, uv1 = ImVec2.create(0,0), uv2 = ImVec2.create(1,0), uv3 = ImVec2.create(1,1), uv4 = ImVec2.create(0,1), col = ImColor.create(255,255,255,255))
+    ImGui::ImDrawList_AddImageQuad(self, user_texture_id, p1, p2, p3, p4, uv1, uv2, uv3, uv4, col)
+  end
+
+  def AddImageRounded(user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners = ImDrawCornerFlags_All)
+    ImGui::ImDrawList_AddImageRounded(self, user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners)
+  end
+
+  def AddLine(p1, p2, col, thickness = 1.0)
+    ImGui::ImDrawList_AddLine(self, p1, p2, col, thickness)
+  end
+
+  def AddNgon(center, radius, col, num_segments, thickness = 1.0)
+    ImGui::ImDrawList_AddNgon(self, center, radius, col, num_segments, thickness)
+  end
+
+  def AddNgonFilled(center, radius, col, num_segments)
+    ImGui::ImDrawList_AddNgonFilled(self, center, radius, col, num_segments)
+  end
+
+  def AddPolyline(points, num_points, col, closed, thickness)
+    ImGui::ImDrawList_AddPolyline(self, points, num_points, col, closed, thickness)
+  end
+
+  def AddQuad(p1, p2, p3, p4, col, thickness = 1.0)
+    ImGui::ImDrawList_AddQuad(self, p1, p2, p3, p4, col, thickness)
+  end
+
+  def AddQuadFilled(p1, p2, p3, p4, col)
+    ImGui::ImDrawList_AddQuadFilled(self, p1, p2, p3, p4, col)
+  end
+
+  def AddRect(p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All, thickness = 1.0)
+    ImGui::ImDrawList_AddRect(self, p_min, p_max, col, rounding, rounding_corners, thickness)
+  end
+
+  def AddRectFilled(p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
+    ImGui::ImDrawList_AddRectFilled(self, p_min, p_max, col, rounding, rounding_corners)
+  end
+
+  def AddRectFilledMultiColor(p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
+    ImGui::ImDrawList_AddRectFilledMultiColor(self, p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
+  end
+
+  def AddTextVec2(pos, col, text_begin, text_end = nil)
+    ImGui::ImDrawList_AddTextVec2(self, pos, col, text_begin, text_end)
+  end
+
+  def AddTextFontPtr(font, font_size, pos, col, text_begin, text_end = nil, wrap_width = 0.0, cpu_fine_clip_rect = nil)
+    ImGui::ImDrawList_AddTextFontPtr(self, font, font_size, pos, col, text_begin, text_end, wrap_width, cpu_fine_clip_rect)
+  end
+
+  def AddTriangle(p1, p2, p3, col, thickness = 1.0)
+    ImGui::ImDrawList_AddTriangle(self, p1, p2, p3, col, thickness)
+  end
+
+  def AddTriangleFilled(p1, p2, p3, col)
+    ImGui::ImDrawList_AddTriangleFilled(self, p1, p2, p3, col)
+  end
+
+  def ChannelsMerge()
+    ImGui::ImDrawList_ChannelsMerge(self)
+  end
+
+  def ChannelsSetCurrent(n)
+    ImGui::ImDrawList_ChannelsSetCurrent(self, n)
+  end
+
+  def ChannelsSplit(count)
+    ImGui::ImDrawList_ChannelsSplit(self, count)
+  end
+
+  def Clear()
+    ImGui::ImDrawList_Clear(self)
+  end
+
+  def ClearFreeMemory()
+    ImGui::ImDrawList_ClearFreeMemory(self)
+  end
+
+  def CloneOutput()
+    ImGui::ImDrawList_CloneOutput(self)
+  end
+
+  def GetClipRectMax()
+    pOut = ImVec2.new
+    ImGui::ImDrawList_GetClipRectMax(pOut, self)
+    return pOut
+  end
+
+  def GetClipRectMin()
+    pOut = ImVec2.new
+    ImGui::ImDrawList_GetClipRectMin(pOut, self)
+    return pOut
+  end
+
+  def self.ImDrawList(shared_data)
+    ImGui::ImDrawList_ImDrawList(shared_data)
+  end
+
+  def PathArcTo(center, radius, a_min, a_max, num_segments = 10)
+    ImGui::ImDrawList_PathArcTo(self, center, radius, a_min, a_max, num_segments)
+  end
+
+  def PathArcToFast(center, radius, a_min_of_12, a_max_of_12)
+    ImGui::ImDrawList_PathArcToFast(self, center, radius, a_min_of_12, a_max_of_12)
+  end
+
+  def PathBezierCurveTo(p2, p3, p4, num_segments = 0)
+    ImGui::ImDrawList_PathBezierCurveTo(self, p2, p3, p4, num_segments)
+  end
+
+  def PathClear()
+    ImGui::ImDrawList_PathClear(self)
+  end
+
+  def PathFillConvex(col)
+    ImGui::ImDrawList_PathFillConvex(self, col)
+  end
+
+  def PathLineTo(pos)
+    ImGui::ImDrawList_PathLineTo(self, pos)
+  end
+
+  def PathLineToMergeDuplicate(pos)
+    ImGui::ImDrawList_PathLineToMergeDuplicate(self, pos)
+  end
+
+  def PathRect(rect_min, rect_max, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
+    ImGui::ImDrawList_PathRect(self, rect_min, rect_max, rounding, rounding_corners)
+  end
+
+  def PathStroke(col, closed, thickness = 1.0)
+    ImGui::ImDrawList_PathStroke(self, col, closed, thickness)
+  end
+
+  def PopClipRect()
+    ImGui::ImDrawList_PopClipRect(self)
+  end
+
+  def PopTextureID()
+    ImGui::ImDrawList_PopTextureID(self)
+  end
+
+  def PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, col)
+    ImGui::ImDrawList_PrimQuadUV(self, a, b, c, d, uv_a, uv_b, uv_c, uv_d, col)
+  end
+
+  def PrimRect(a, b, col)
+    ImGui::ImDrawList_PrimRect(self, a, b, col)
+  end
+
+  def PrimRectUV(a, b, uv_a, uv_b, col)
+    ImGui::ImDrawList_PrimRectUV(self, a, b, uv_a, uv_b, col)
+  end
+
+  def PrimReserve(idx_count, vtx_count)
+    ImGui::ImDrawList_PrimReserve(self, idx_count, vtx_count)
+  end
+
+  def PrimUnreserve(idx_count, vtx_count)
+    ImGui::ImDrawList_PrimUnreserve(self, idx_count, vtx_count)
+  end
+
+  def PrimVtx(pos, uv, col)
+    ImGui::ImDrawList_PrimVtx(self, pos, uv, col)
+  end
+
+  def PrimWriteIdx(idx)
+    ImGui::ImDrawList_PrimWriteIdx(self, idx)
+  end
+
+  def PrimWriteVtx(pos, uv, col)
+    ImGui::ImDrawList_PrimWriteVtx(self, pos, uv, col)
+  end
+
+  def PushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect = false)
+    ImGui::ImDrawList_PushClipRect(self, clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
+  end
+
+  def PushClipRectFullScreen()
+    ImGui::ImDrawList_PushClipRectFullScreen(self)
+  end
+
+  def PushTextureID(texture_id)
+    ImGui::ImDrawList_PushTextureID(self, texture_id)
+  end
+
+  def UpdateClipRect()
+    ImGui::ImDrawList_UpdateClipRect(self)
+  end
+
+  def UpdateTextureID()
+    ImGui::ImDrawList_UpdateTextureID(self)
+  end
+
+  def destroy()
+    ImGui::ImDrawList_destroy(self)
+  end
+
 end
 
 class ImDrawVert < FFI::Struct
@@ -492,6 +728,7 @@ class ImDrawVert < FFI::Struct
     :uv, ImVec2.by_value,
     :col, :uint
   )
+
 end
 
 class ImFont < FFI::Struct
@@ -515,6 +752,7 @@ class ImFont < FFI::Struct
     :MetricsTotalSurface, :int,
     :Used4kPagesMap[(0xFFFF+1)/4096/8], [:uchar, 2]
   )
+
 end
 
 class ImFontAtlas < FFI::Struct
@@ -535,6 +773,127 @@ class ImFontAtlas < FFI::Struct
     :ConfigData, ImVector.by_value,
     :CustomRectIds, [:int, 1]
   )
+
+  def AddCustomRectFontGlyph(font, id, width, height, advance_x, offset = ImVec2.create(0,0))
+    ImGui::ImFontAtlas_AddCustomRectFontGlyph(self, font, id, width, height, advance_x, offset)
+  end
+
+  def AddCustomRectRegular(id, width, height)
+    ImGui::ImFontAtlas_AddCustomRectRegular(self, id, width, height)
+  end
+
+  def AddFont(font_cfg)
+    ImGui::ImFontAtlas_AddFont(self, font_cfg)
+  end
+
+  def AddFontDefault(font_cfg = nil)
+    ImGui::ImFontAtlas_AddFontDefault(self, font_cfg)
+  end
+
+  def AddFontFromFileTTF(filename, size_pixels, font_cfg = nil, glyph_ranges = nil)
+    ImGui::ImFontAtlas_AddFontFromFileTTF(self, filename, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def AddFontFromMemoryCompressedBase85TTF(compressed_font_data_base85, size_pixels, font_cfg = nil, glyph_ranges = nil)
+    ImGui::ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(self, compressed_font_data_base85, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def AddFontFromMemoryCompressedTTF(compressed_font_data, compressed_font_size, size_pixels, font_cfg = nil, glyph_ranges = nil)
+    ImGui::ImFontAtlas_AddFontFromMemoryCompressedTTF(self, compressed_font_data, compressed_font_size, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def AddFontFromMemoryTTF(font_data, font_size, size_pixels, font_cfg = nil, glyph_ranges = nil)
+    ImGui::ImFontAtlas_AddFontFromMemoryTTF(self, font_data, font_size, size_pixels, font_cfg, glyph_ranges)
+  end
+
+  def Build()
+    ImGui::ImFontAtlas_Build(self)
+  end
+
+  def CalcCustomRectUV(rect, out_uv_min, out_uv_max)
+    ImGui::ImFontAtlas_CalcCustomRectUV(self, rect, out_uv_min, out_uv_max)
+  end
+
+  def Clear()
+    ImGui::ImFontAtlas_Clear(self)
+  end
+
+  def ClearFonts()
+    ImGui::ImFontAtlas_ClearFonts(self)
+  end
+
+  def ClearInputData()
+    ImGui::ImFontAtlas_ClearInputData(self)
+  end
+
+  def ClearTexData()
+    ImGui::ImFontAtlas_ClearTexData(self)
+  end
+
+  def GetCustomRectByIndex(index)
+    ImGui::ImFontAtlas_GetCustomRectByIndex(self, index)
+  end
+
+  def GetGlyphRangesChineseFull()
+    ImGui::ImFontAtlas_GetGlyphRangesChineseFull(self)
+  end
+
+  def GetGlyphRangesChineseSimplifiedCommon()
+    ImGui::ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(self)
+  end
+
+  def GetGlyphRangesCyrillic()
+    ImGui::ImFontAtlas_GetGlyphRangesCyrillic(self)
+  end
+
+  def GetGlyphRangesDefault()
+    ImGui::ImFontAtlas_GetGlyphRangesDefault(self)
+  end
+
+  def GetGlyphRangesJapanese()
+    ImGui::ImFontAtlas_GetGlyphRangesJapanese(self)
+  end
+
+  def GetGlyphRangesKorean()
+    ImGui::ImFontAtlas_GetGlyphRangesKorean(self)
+  end
+
+  def GetGlyphRangesThai()
+    ImGui::ImFontAtlas_GetGlyphRangesThai(self)
+  end
+
+  def GetGlyphRangesVietnamese()
+    ImGui::ImFontAtlas_GetGlyphRangesVietnamese(self)
+  end
+
+  def GetMouseCursorTexData(cursor, out_offset, out_size, out_uv_border, out_uv_fill)
+    ImGui::ImFontAtlas_GetMouseCursorTexData(self, cursor, out_offset, out_size, out_uv_border, out_uv_fill)
+  end
+
+  def GetTexDataAsAlpha8(out_pixels, out_width, out_height, out_bytes_per_pixel = nil)
+    ImGui::ImFontAtlas_GetTexDataAsAlpha8(self, out_pixels, out_width, out_height, out_bytes_per_pixel)
+  end
+
+  def GetTexDataAsRGBA32(out_pixels, out_width, out_height, out_bytes_per_pixel = nil)
+    ImGui::ImFontAtlas_GetTexDataAsRGBA32(self, out_pixels, out_width, out_height, out_bytes_per_pixel)
+  end
+
+  def self.ImFontAtlas()
+    ImGui::ImFontAtlas_ImFontAtlas()
+  end
+
+  def IsBuilt()
+    ImGui::ImFontAtlas_IsBuilt(self)
+  end
+
+  def SetTexID(id)
+    ImGui::ImFontAtlas_SetTexID(self, id)
+  end
+
+  def destroy()
+    ImGui::ImFontAtlas_destroy(self)
+  end
+
 end
 
 class ImFontAtlasCustomRect < FFI::Struct
@@ -548,6 +907,7 @@ class ImFontAtlasCustomRect < FFI::Struct
     :GlyphOffset, ImVec2.by_value,
     :Font, :pointer
   )
+
 end
 
 class ImFontConfig < FFI::Struct
@@ -572,12 +932,58 @@ class ImFontConfig < FFI::Struct
     :Name, [:char, 40],
     :DstFont, :pointer
   )
+
+  def self.ImFontConfig()
+    ImGui::ImFontConfig_ImFontConfig()
+  end
+
+  def destroy()
+    ImGui::ImFontConfig_destroy(self)
+  end
+
 end
 
 class ImFontGlyphRangesBuilder < FFI::Struct
   layout(
     :UsedChars, ImVector.by_value
   )
+
+  def AddChar(c)
+    ImGui::ImFontGlyphRangesBuilder_AddChar(self, c)
+  end
+
+  def AddRanges(ranges)
+    ImGui::ImFontGlyphRangesBuilder_AddRanges(self, ranges)
+  end
+
+  def AddText(text, text_end = nil)
+    ImGui::ImFontGlyphRangesBuilder_AddText(self, text, text_end)
+  end
+
+  def BuildRanges(out_ranges)
+    ImGui::ImFontGlyphRangesBuilder_BuildRanges(self, out_ranges)
+  end
+
+  def Clear()
+    ImGui::ImFontGlyphRangesBuilder_Clear(self)
+  end
+
+  def GetBit(n)
+    ImGui::ImFontGlyphRangesBuilder_GetBit(self, n)
+  end
+
+  def self.ImFontGlyphRangesBuilder()
+    ImGui::ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
+  end
+
+  def SetBit(n)
+    ImGui::ImFontGlyphRangesBuilder_SetBit(self, n)
+  end
+
+  def destroy()
+    ImGui::ImFontGlyphRangesBuilder_destroy(self)
+  end
+
 end
 
 class ImGuiIO < FFI::Struct
@@ -662,6 +1068,31 @@ class ImGuiIO < FFI::Struct
     :InputQueueSurrogate, :ushort,
     :InputQueueCharacters, ImVector.by_value
   )
+
+  def AddInputCharacter(c)
+    ImGui::ImGuiIO_AddInputCharacter(self, c)
+  end
+
+  def AddInputCharacterUTF16(c)
+    ImGui::ImGuiIO_AddInputCharacterUTF16(self, c)
+  end
+
+  def AddInputCharactersUTF8(str)
+    ImGui::ImGuiIO_AddInputCharactersUTF8(self, str)
+  end
+
+  def ClearInputCharacters()
+    ImGui::ImGuiIO_ClearInputCharacters(self)
+  end
+
+  def self.ImGuiIO()
+    ImGui::ImGuiIO_ImGuiIO()
+  end
+
+  def destroy()
+    ImGui::ImGuiIO_destroy(self)
+  end
+
 end
 
 class ImGuiInputTextCallbackData < FFI::Struct
@@ -679,6 +1110,7 @@ class ImGuiInputTextCallbackData < FFI::Struct
     :SelectionStart, :int,
     :SelectionEnd, :int
   )
+
 end
 
 class ImGuiSizeCallbackData < FFI::Struct
@@ -688,6 +1120,7 @@ class ImGuiSizeCallbackData < FFI::Struct
     :CurrentSize, ImVec2.by_value,
     :DesiredSize, ImVec2.by_value
   )
+
 end
 
 class ImGuiStyle < FFI::Struct
@@ -729,6 +1162,19 @@ class ImGuiStyle < FFI::Struct
     :CircleSegmentMaxError, :float,
     :Colors, [ImVec4.by_value, 48]
   )
+
+  def self.ImGuiStyle()
+    ImGui::ImGuiStyle_ImGuiStyle()
+  end
+
+  def ScaleAllSizes(scale_factor)
+    ImGui::ImGuiStyle_ScaleAllSizes(self, scale_factor)
+  end
+
+  def destroy()
+    ImGui::ImGuiStyle_destroy(self)
+  end
+
 end
 
 class ImGuiTextFilter < FFI::Struct
@@ -737,6 +1183,35 @@ class ImGuiTextFilter < FFI::Struct
     :Filters, ImVector.by_value,
     :CountGrep, :int
   )
+
+  def Build()
+    ImGui::ImGuiTextFilter_Build(self)
+  end
+
+  def Clear()
+    ImGui::ImGuiTextFilter_Clear(self)
+  end
+
+  def Draw(label = "Filter(inc,-exc)", width = 0.0)
+    ImGui::ImGuiTextFilter_Draw(self, label, width)
+  end
+
+  def self.ImGuiTextFilter(default_filter = "")
+    ImGui::ImGuiTextFilter_ImGuiTextFilter(default_filter)
+  end
+
+  def IsActive()
+    ImGui::ImGuiTextFilter_IsActive(self)
+  end
+
+  def PassFilter(text, text_end = nil)
+    ImGui::ImGuiTextFilter_PassFilter(self, text, text_end)
+  end
+
+  def destroy()
+    ImGui::ImGuiTextFilter_destroy(self)
+  end
+
 end
 
 class ImGuiTextRange < FFI::Struct
@@ -744,6 +1219,27 @@ class ImGuiTextRange < FFI::Struct
     :b, :pointer,
     :e, :pointer
   )
+
+  def self.ImGuiTextRangeNil()
+    ImGui::ImGuiTextRange_ImGuiTextRangeNil()
+  end
+
+  def self.ImGuiTextRangeStr(_b, _e)
+    ImGui::ImGuiTextRange_ImGuiTextRangeStr(_b, _e)
+  end
+
+  def destroy()
+    ImGui::ImGuiTextRange_destroy(self)
+  end
+
+  def empty()
+    ImGui::ImGuiTextRange_empty(self)
+  end
+
+  def split(separator, out)
+    ImGui::ImGuiTextRange_split(self, separator, out)
+  end
+
 end
 
 class ImGuiStoragePair < FFI::Struct
@@ -751,6 +1247,7 @@ class ImGuiStoragePair < FFI::Struct
     :key, :uint,
     :val_p, :pointer
   )
+
 end
 
 # shorthand initializer
@@ -1301,482 +1798,6 @@ module ImGui
     attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void
     attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void
   end # self.import_symbols
-
-  def self.DrawList_AddBezierCurve(_self_, p1, p2, p3, p4, col, thickness, num_segments = 0)
-    ImDrawList_AddBezierCurve(_self_, p1, p2, p3, p4, col, thickness, num_segments)
-  end
-
-  def self.DrawList_AddCallback(_self_, callback, callback_data)
-    ImDrawList_AddCallback(_self_, callback, callback_data)
-  end
-
-  def self.DrawList_AddCircle(_self_, center, radius, col, num_segments = 12, thickness = 1.0)
-    ImDrawList_AddCircle(_self_, center, radius, col, num_segments, thickness)
-  end
-
-  def self.DrawList_AddCircleFilled(_self_, center, radius, col, num_segments = 12)
-    ImDrawList_AddCircleFilled(_self_, center, radius, col, num_segments)
-  end
-
-  def self.DrawList_AddConvexPolyFilled(_self_, points, num_points, col)
-    ImDrawList_AddConvexPolyFilled(_self_, points, num_points, col)
-  end
-
-  def self.DrawList_AddDrawCmd(_self_)
-    ImDrawList_AddDrawCmd(_self_)
-  end
-
-  def self.DrawList_AddImage(_self_, user_texture_id, p_min, p_max, uv_min = ImVec2.create(0,0), uv_max = ImVec2.create(1,1), col = ImColor.create(255,255,255,255))
-    ImDrawList_AddImage(_self_, user_texture_id, p_min, p_max, uv_min, uv_max, col)
-  end
-
-  def self.DrawList_AddImageQuad(_self_, user_texture_id, p1, p2, p3, p4, uv1 = ImVec2.create(0,0), uv2 = ImVec2.create(1,0), uv3 = ImVec2.create(1,1), uv4 = ImVec2.create(0,1), col = ImColor.create(255,255,255,255))
-    ImDrawList_AddImageQuad(_self_, user_texture_id, p1, p2, p3, p4, uv1, uv2, uv3, uv4, col)
-  end
-
-  def self.DrawList_AddImageRounded(_self_, user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners = ImDrawCornerFlags_All)
-    ImDrawList_AddImageRounded(_self_, user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners)
-  end
-
-  def self.DrawList_AddLine(_self_, p1, p2, col, thickness = 1.0)
-    ImDrawList_AddLine(_self_, p1, p2, col, thickness)
-  end
-
-  def self.DrawList_AddNgon(_self_, center, radius, col, num_segments, thickness = 1.0)
-    ImDrawList_AddNgon(_self_, center, radius, col, num_segments, thickness)
-  end
-
-  def self.DrawList_AddNgonFilled(_self_, center, radius, col, num_segments)
-    ImDrawList_AddNgonFilled(_self_, center, radius, col, num_segments)
-  end
-
-  def self.DrawList_AddPolyline(_self_, points, num_points, col, closed, thickness)
-    ImDrawList_AddPolyline(_self_, points, num_points, col, closed, thickness)
-  end
-
-  def self.DrawList_AddQuad(_self_, p1, p2, p3, p4, col, thickness = 1.0)
-    ImDrawList_AddQuad(_self_, p1, p2, p3, p4, col, thickness)
-  end
-
-  def self.DrawList_AddQuadFilled(_self_, p1, p2, p3, p4, col)
-    ImDrawList_AddQuadFilled(_self_, p1, p2, p3, p4, col)
-  end
-
-  def self.DrawList_AddRect(_self_, p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All, thickness = 1.0)
-    ImDrawList_AddRect(_self_, p_min, p_max, col, rounding, rounding_corners, thickness)
-  end
-
-  def self.DrawList_AddRectFilled(_self_, p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
-    ImDrawList_AddRectFilled(_self_, p_min, p_max, col, rounding, rounding_corners)
-  end
-
-  def self.DrawList_AddRectFilledMultiColor(_self_, p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
-    ImDrawList_AddRectFilledMultiColor(_self_, p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
-  end
-
-  def self.DrawList_AddTextVec2(_self_, pos, col, text_begin, text_end = nil)
-    ImDrawList_AddTextVec2(_self_, pos, col, text_begin, text_end)
-  end
-
-  def self.DrawList_AddTextFontPtr(_self_, font, font_size, pos, col, text_begin, text_end = nil, wrap_width = 0.0, cpu_fine_clip_rect = nil)
-    ImDrawList_AddTextFontPtr(_self_, font, font_size, pos, col, text_begin, text_end, wrap_width, cpu_fine_clip_rect)
-  end
-
-  def self.DrawList_AddTriangle(_self_, p1, p2, p3, col, thickness = 1.0)
-    ImDrawList_AddTriangle(_self_, p1, p2, p3, col, thickness)
-  end
-
-  def self.DrawList_AddTriangleFilled(_self_, p1, p2, p3, col)
-    ImDrawList_AddTriangleFilled(_self_, p1, p2, p3, col)
-  end
-
-  def self.DrawList_ChannelsMerge(_self_)
-    ImDrawList_ChannelsMerge(_self_)
-  end
-
-  def self.DrawList_ChannelsSetCurrent(_self_, n)
-    ImDrawList_ChannelsSetCurrent(_self_, n)
-  end
-
-  def self.DrawList_ChannelsSplit(_self_, count)
-    ImDrawList_ChannelsSplit(_self_, count)
-  end
-
-  def self.DrawList_Clear(_self_)
-    ImDrawList_Clear(_self_)
-  end
-
-  def self.DrawList_ClearFreeMemory(_self_)
-    ImDrawList_ClearFreeMemory(_self_)
-  end
-
-  def self.DrawList_CloneOutput(_self_)
-    ImDrawList_CloneOutput(_self_)
-  end
-
-  def self.DrawList_GetClipRectMax(_self_)
-    pOut = ImVec2.new
-    ImDrawList_GetClipRectMax(pOut, _self_)
-    return pOut
-  end
-
-  def self.DrawList_GetClipRectMin(_self_)
-    pOut = ImVec2.new
-    ImDrawList_GetClipRectMin(pOut, _self_)
-    return pOut
-  end
-
-  def self.DrawList_ImDrawList(shared_data)
-    ImDrawList_ImDrawList(shared_data)
-  end
-
-  def self.DrawList_PathArcTo(_self_, center, radius, a_min, a_max, num_segments = 10)
-    ImDrawList_PathArcTo(_self_, center, radius, a_min, a_max, num_segments)
-  end
-
-  def self.DrawList_PathArcToFast(_self_, center, radius, a_min_of_12, a_max_of_12)
-    ImDrawList_PathArcToFast(_self_, center, radius, a_min_of_12, a_max_of_12)
-  end
-
-  def self.DrawList_PathBezierCurveTo(_self_, p2, p3, p4, num_segments = 0)
-    ImDrawList_PathBezierCurveTo(_self_, p2, p3, p4, num_segments)
-  end
-
-  def self.DrawList_PathClear(_self_)
-    ImDrawList_PathClear(_self_)
-  end
-
-  def self.DrawList_PathFillConvex(_self_, col)
-    ImDrawList_PathFillConvex(_self_, col)
-  end
-
-  def self.DrawList_PathLineTo(_self_, pos)
-    ImDrawList_PathLineTo(_self_, pos)
-  end
-
-  def self.DrawList_PathLineToMergeDuplicate(_self_, pos)
-    ImDrawList_PathLineToMergeDuplicate(_self_, pos)
-  end
-
-  def self.DrawList_PathRect(_self_, rect_min, rect_max, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
-    ImDrawList_PathRect(_self_, rect_min, rect_max, rounding, rounding_corners)
-  end
-
-  def self.DrawList_PathStroke(_self_, col, closed, thickness = 1.0)
-    ImDrawList_PathStroke(_self_, col, closed, thickness)
-  end
-
-  def self.DrawList_PopClipRect(_self_)
-    ImDrawList_PopClipRect(_self_)
-  end
-
-  def self.DrawList_PopTextureID(_self_)
-    ImDrawList_PopTextureID(_self_)
-  end
-
-  def self.DrawList_PrimQuadUV(_self_, a, b, c, d, uv_a, uv_b, uv_c, uv_d, col)
-    ImDrawList_PrimQuadUV(_self_, a, b, c, d, uv_a, uv_b, uv_c, uv_d, col)
-  end
-
-  def self.DrawList_PrimRect(_self_, a, b, col)
-    ImDrawList_PrimRect(_self_, a, b, col)
-  end
-
-  def self.DrawList_PrimRectUV(_self_, a, b, uv_a, uv_b, col)
-    ImDrawList_PrimRectUV(_self_, a, b, uv_a, uv_b, col)
-  end
-
-  def self.DrawList_PrimReserve(_self_, idx_count, vtx_count)
-    ImDrawList_PrimReserve(_self_, idx_count, vtx_count)
-  end
-
-  def self.DrawList_PrimUnreserve(_self_, idx_count, vtx_count)
-    ImDrawList_PrimUnreserve(_self_, idx_count, vtx_count)
-  end
-
-  def self.DrawList_PrimVtx(_self_, pos, uv, col)
-    ImDrawList_PrimVtx(_self_, pos, uv, col)
-  end
-
-  def self.DrawList_PrimWriteIdx(_self_, idx)
-    ImDrawList_PrimWriteIdx(_self_, idx)
-  end
-
-  def self.DrawList_PrimWriteVtx(_self_, pos, uv, col)
-    ImDrawList_PrimWriteVtx(_self_, pos, uv, col)
-  end
-
-  def self.DrawList_PushClipRect(_self_, clip_rect_min, clip_rect_max, intersect_with_current_clip_rect = false)
-    ImDrawList_PushClipRect(_self_, clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
-  end
-
-  def self.DrawList_PushClipRectFullScreen(_self_)
-    ImDrawList_PushClipRectFullScreen(_self_)
-  end
-
-  def self.DrawList_PushTextureID(_self_, texture_id)
-    ImDrawList_PushTextureID(_self_, texture_id)
-  end
-
-  def self.DrawList_UpdateClipRect(_self_)
-    ImDrawList_UpdateClipRect(_self_)
-  end
-
-  def self.DrawList_UpdateTextureID(_self_)
-    ImDrawList_UpdateTextureID(_self_)
-  end
-
-  def self.DrawList_destroy(_self_)
-    ImDrawList_destroy(_self_)
-  end
-
-  def self.FontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset = ImVec2.create(0,0))
-    ImFontAtlas_AddCustomRectFontGlyph(_self_, font, id, width, height, advance_x, offset)
-  end
-
-  def self.FontAtlas_AddCustomRectRegular(_self_, id, width, height)
-    ImFontAtlas_AddCustomRectRegular(_self_, id, width, height)
-  end
-
-  def self.FontAtlas_AddFont(_self_, font_cfg)
-    ImFontAtlas_AddFont(_self_, font_cfg)
-  end
-
-  def self.FontAtlas_AddFontDefault(_self_, font_cfg = nil)
-    ImFontAtlas_AddFontDefault(_self_, font_cfg)
-  end
-
-  def self.FontAtlas_AddFontFromFileTTF(_self_, filename, size_pixels, font_cfg = nil, glyph_ranges = nil)
-    ImFontAtlas_AddFontFromFileTTF(_self_, filename, size_pixels, font_cfg, glyph_ranges)
-  end
-
-  def self.FontAtlas_AddFontFromMemoryCompressedBase85TTF(_self_, compressed_font_data_base85, size_pixels, font_cfg = nil, glyph_ranges = nil)
-    ImFontAtlas_AddFontFromMemoryCompressedBase85TTF(_self_, compressed_font_data_base85, size_pixels, font_cfg, glyph_ranges)
-  end
-
-  def self.FontAtlas_AddFontFromMemoryCompressedTTF(_self_, compressed_font_data, compressed_font_size, size_pixels, font_cfg = nil, glyph_ranges = nil)
-    ImFontAtlas_AddFontFromMemoryCompressedTTF(_self_, compressed_font_data, compressed_font_size, size_pixels, font_cfg, glyph_ranges)
-  end
-
-  def self.FontAtlas_AddFontFromMemoryTTF(_self_, font_data, font_size, size_pixels, font_cfg = nil, glyph_ranges = nil)
-    ImFontAtlas_AddFontFromMemoryTTF(_self_, font_data, font_size, size_pixels, font_cfg, glyph_ranges)
-  end
-
-  def self.FontAtlas_Build(_self_)
-    ImFontAtlas_Build(_self_)
-  end
-
-  def self.FontAtlas_CalcCustomRectUV(_self_, rect, out_uv_min, out_uv_max)
-    ImFontAtlas_CalcCustomRectUV(_self_, rect, out_uv_min, out_uv_max)
-  end
-
-  def self.FontAtlas_Clear(_self_)
-    ImFontAtlas_Clear(_self_)
-  end
-
-  def self.FontAtlas_ClearFonts(_self_)
-    ImFontAtlas_ClearFonts(_self_)
-  end
-
-  def self.FontAtlas_ClearInputData(_self_)
-    ImFontAtlas_ClearInputData(_self_)
-  end
-
-  def self.FontAtlas_ClearTexData(_self_)
-    ImFontAtlas_ClearTexData(_self_)
-  end
-
-  def self.FontAtlas_GetCustomRectByIndex(_self_, index)
-    ImFontAtlas_GetCustomRectByIndex(_self_, index)
-  end
-
-  def self.FontAtlas_GetGlyphRangesChineseFull(_self_)
-    ImFontAtlas_GetGlyphRangesChineseFull(_self_)
-  end
-
-  def self.FontAtlas_GetGlyphRangesChineseSimplifiedCommon(_self_)
-    ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(_self_)
-  end
-
-  def self.FontAtlas_GetGlyphRangesCyrillic(_self_)
-    ImFontAtlas_GetGlyphRangesCyrillic(_self_)
-  end
-
-  def self.FontAtlas_GetGlyphRangesDefault(_self_)
-    ImFontAtlas_GetGlyphRangesDefault(_self_)
-  end
-
-  def self.FontAtlas_GetGlyphRangesJapanese(_self_)
-    ImFontAtlas_GetGlyphRangesJapanese(_self_)
-  end
-
-  def self.FontAtlas_GetGlyphRangesKorean(_self_)
-    ImFontAtlas_GetGlyphRangesKorean(_self_)
-  end
-
-  def self.FontAtlas_GetGlyphRangesThai(_self_)
-    ImFontAtlas_GetGlyphRangesThai(_self_)
-  end
-
-  def self.FontAtlas_GetGlyphRangesVietnamese(_self_)
-    ImFontAtlas_GetGlyphRangesVietnamese(_self_)
-  end
-
-  def self.FontAtlas_GetMouseCursorTexData(_self_, cursor, out_offset, out_size, out_uv_border, out_uv_fill)
-    ImFontAtlas_GetMouseCursorTexData(_self_, cursor, out_offset, out_size, out_uv_border, out_uv_fill)
-  end
-
-  def self.FontAtlas_GetTexDataAsAlpha8(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel = nil)
-    ImFontAtlas_GetTexDataAsAlpha8(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
-  end
-
-  def self.FontAtlas_GetTexDataAsRGBA32(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel = nil)
-    ImFontAtlas_GetTexDataAsRGBA32(_self_, out_pixels, out_width, out_height, out_bytes_per_pixel)
-  end
-
-  def self.FontAtlas_ImFontAtlas()
-    ImFontAtlas_ImFontAtlas()
-  end
-
-  def self.FontAtlas_IsBuilt(_self_)
-    ImFontAtlas_IsBuilt(_self_)
-  end
-
-  def self.FontAtlas_SetTexID(_self_, id)
-    ImFontAtlas_SetTexID(_self_, id)
-  end
-
-  def self.FontAtlas_destroy(_self_)
-    ImFontAtlas_destroy(_self_)
-  end
-
-  def self.FontConfig_ImFontConfig()
-    ImFontConfig_ImFontConfig()
-  end
-
-  def self.FontConfig_destroy(_self_)
-    ImFontConfig_destroy(_self_)
-  end
-
-  def self.FontGlyphRangesBuilder_AddChar(_self_, c)
-    ImFontGlyphRangesBuilder_AddChar(_self_, c)
-  end
-
-  def self.FontGlyphRangesBuilder_AddRanges(_self_, ranges)
-    ImFontGlyphRangesBuilder_AddRanges(_self_, ranges)
-  end
-
-  def self.FontGlyphRangesBuilder_AddText(_self_, text, text_end = nil)
-    ImFontGlyphRangesBuilder_AddText(_self_, text, text_end)
-  end
-
-  def self.FontGlyphRangesBuilder_BuildRanges(_self_, out_ranges)
-    ImFontGlyphRangesBuilder_BuildRanges(_self_, out_ranges)
-  end
-
-  def self.FontGlyphRangesBuilder_Clear(_self_)
-    ImFontGlyphRangesBuilder_Clear(_self_)
-  end
-
-  def self.FontGlyphRangesBuilder_GetBit(_self_, n)
-    ImFontGlyphRangesBuilder_GetBit(_self_, n)
-  end
-
-  def self.FontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
-    ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
-  end
-
-  def self.FontGlyphRangesBuilder_SetBit(_self_, n)
-    ImFontGlyphRangesBuilder_SetBit(_self_, n)
-  end
-
-  def self.FontGlyphRangesBuilder_destroy(_self_)
-    ImFontGlyphRangesBuilder_destroy(_self_)
-  end
-
-  def self.IO_AddInputCharacter(_self_, c)
-    ImGuiIO_AddInputCharacter(_self_, c)
-  end
-
-  def self.IO_AddInputCharacterUTF16(_self_, c)
-    ImGuiIO_AddInputCharacterUTF16(_self_, c)
-  end
-
-  def self.IO_AddInputCharactersUTF8(_self_, str)
-    ImGuiIO_AddInputCharactersUTF8(_self_, str)
-  end
-
-  def self.IO_ClearInputCharacters(_self_)
-    ImGuiIO_ClearInputCharacters(_self_)
-  end
-
-  def self.IO_ImGuiIO()
-    ImGuiIO_ImGuiIO()
-  end
-
-  def self.IO_destroy(_self_)
-    ImGuiIO_destroy(_self_)
-  end
-
-  def self.Style_ImGuiStyle()
-    ImGuiStyle_ImGuiStyle()
-  end
-
-  def self.Style_ScaleAllSizes(_self_, scale_factor)
-    ImGuiStyle_ScaleAllSizes(_self_, scale_factor)
-  end
-
-  def self.Style_destroy(_self_)
-    ImGuiStyle_destroy(_self_)
-  end
-
-  def self.TextFilter_Build(_self_)
-    ImGuiTextFilter_Build(_self_)
-  end
-
-  def self.TextFilter_Clear(_self_)
-    ImGuiTextFilter_Clear(_self_)
-  end
-
-  def self.TextFilter_Draw(_self_, label = "Filter(inc,-exc)", width = 0.0)
-    ImGuiTextFilter_Draw(_self_, label, width)
-  end
-
-  def self.TextFilter_ImGuiTextFilter(default_filter = "")
-    ImGuiTextFilter_ImGuiTextFilter(default_filter)
-  end
-
-  def self.TextFilter_IsActive(_self_)
-    ImGuiTextFilter_IsActive(_self_)
-  end
-
-  def self.TextFilter_PassFilter(_self_, text, text_end = nil)
-    ImGuiTextFilter_PassFilter(_self_, text, text_end)
-  end
-
-  def self.TextFilter_destroy(_self_)
-    ImGuiTextFilter_destroy(_self_)
-  end
-
-  def self.TextRange_ImGuiTextRangeNil()
-    ImGuiTextRange_ImGuiTextRangeNil()
-  end
-
-  def self.TextRange_ImGuiTextRangeStr(_b, _e)
-    ImGuiTextRange_ImGuiTextRangeStr(_b, _e)
-  end
-
-  def self.TextRange_destroy(_self_)
-    ImGuiTextRange_destroy(_self_)
-  end
-
-  def self.TextRange_empty(_self_)
-    ImGuiTextRange_empty(_self_)
-  end
-
-  def self.TextRange_split(_self_, separator, out)
-    ImGuiTextRange_split(_self_, separator, out)
-  end
 
   def self.AcceptDragDropPayload(type, flags = 0)
     igAcceptDragDropPayload(type, flags)

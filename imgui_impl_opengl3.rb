@@ -273,7 +273,7 @@ module ImGui
     pixels = FFI::MemoryPointer.new :pointer
     width = FFI::MemoryPointer.new :int
     height = FFI::MemoryPointer.new :int
-    ImGui::FontAtlas_GetTexDataAsRGBA32(io[:Fonts], pixels, width, height, nil)   #  Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
+    ImFontAtlas.new(io[:Fonts]).GetTexDataAsRGBA32(pixels, width, height, nil)   #  Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
     #  Upload texture to graphics system
     last_texture = ' ' * 4
