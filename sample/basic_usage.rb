@@ -23,7 +23,7 @@ module ImGuiDemo
   def self.AddFont(japanese_ttf_filepath = './jpfont/GenShinGothic-Normal.ttf', icon_ttf_filepath = './iconfont/fontawesome-webfont.ttf')
     io = GetIO()
     #ImGui::FontAtlas_AddFontDefault(io[:Fonts])
-    ImFontAtlas.new(io[:Fonts]).AddFontDefault()
+    io[:Fonts].AddFontDefault()
     # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
@@ -38,9 +38,9 @@ module ImGuiDemo
     #ImGui::FontGlyphRangesBuilder_AddText(builder.pointer, FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
     builder.AddText(FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
     #ImGui::FontGlyphRangesBuilder_AddRanges(builder.pointer, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
-    builder.AddRanges(ImFontAtlas.new(io[:Fonts]).GetGlyphRangesJapanese())
+    builder.AddRanges(io[:Fonts].GetGlyphRangesJapanese())
     builder.BuildRanges(additional_ranges)
-    @@font = ImFontAtlas.new(io[:Fonts]).AddFontFromFileTTF(japanese_ttf_filepath, 24.0, config, ImVector.new(additional_ranges)[:Data])
+    @@font = io[:Fonts].AddFontFromFileTTF(japanese_ttf_filepath, 24.0, config, ImVector.new(additional_ranges)[:Data])
 
     # Icon fonts
     size_icon = 20.0
@@ -48,9 +48,9 @@ module ImGuiDemo
     config[:PixelSnapH] = true
     config[:GlyphMinAdvanceX] = size_icon # アイコンを等幅にします。
     icon_ranges = FFI::MemoryPointer.new(:short, 3).write_array_of_short([ICON_MIN_FA, ICON_MAX_FA, 0])  # static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 }
-    @@font = ImFontAtlas.new(io[:Fonts]).AddFontFromFileTTF(icon_ttf_filepath, size_icon, config, icon_ranges)
+    @@font = io[:Fonts].AddFontFromFileTTF(icon_ttf_filepath, size_icon, config, icon_ranges)
 
-    ImFontAtlas.new(io[:Fonts]).Build()
+    io[:Fonts].Build()
   end
 
   def self.GetFont()
