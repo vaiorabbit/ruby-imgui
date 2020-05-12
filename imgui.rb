@@ -6,6 +6,47 @@
 
 require 'ffi'
 
+FFI.typedef :int, :ImDrawCornerFlags
+FFI.typedef :ushort, :ImDrawIdx
+FFI.typedef :int, :ImDrawListFlags
+FFI.typedef :int, :ImFontAtlasFlags
+FFI.typedef :int, :ImGuiBackendFlags
+FFI.typedef :int, :ImGuiCol
+FFI.typedef :int, :ImGuiColorEditFlags
+FFI.typedef :int, :ImGuiComboFlags
+FFI.typedef :int, :ImGuiCond
+FFI.typedef :int, :ImGuiConfigFlags
+FFI.typedef :int, :ImGuiDataType
+FFI.typedef :int, :ImGuiDir
+FFI.typedef :int, :ImGuiDragDropFlags
+FFI.typedef :int, :ImGuiFocusedFlags
+FFI.typedef :int, :ImGuiHoveredFlags
+FFI.typedef :uint, :ImGuiID
+FFI.typedef :int, :ImGuiInputTextFlags
+FFI.typedef :int, :ImGuiKey
+FFI.typedef :int, :ImGuiKeyModFlags
+FFI.typedef :int, :ImGuiMouseButton
+FFI.typedef :int, :ImGuiMouseCursor
+FFI.typedef :int, :ImGuiNavInput
+FFI.typedef :int, :ImGuiSelectableFlags
+FFI.typedef :int, :ImGuiStyleVar
+FFI.typedef :int, :ImGuiTabBarFlags
+FFI.typedef :int, :ImGuiTabItemFlags
+FFI.typedef :int, :ImGuiTreeNodeFlags
+FFI.typedef :int, :ImGuiWindowFlags
+FFI.typedef :short, :ImS16
+FFI.typedef :int, :ImS32
+FFI.typedef :int64, :ImS64
+FFI.typedef :char, :ImS8
+FFI.typedef :pointer, :ImTextureID
+FFI.typedef :ushort, :ImU16
+FFI.typedef :uint, :ImU32
+FFI.typedef :uint64, :ImU64
+FFI.typedef :uchar, :ImU8
+FFI.typedef :ushort, :ImWchar
+FFI.typedef :ushort, :ImWchar16
+FFI.typedef :uint, :ImWchar32
+
 # ImDrawCornerFlags_
 ImDrawCornerFlags_None = 0 # 0
 ImDrawCornerFlags_TopLeft = 1 # 1 << 0
@@ -1271,47 +1312,6 @@ end
 module ImGui
 
   extend FFI::Library
-
-  typedef :int, :ImDrawCornerFlags
-  typedef :ushort, :ImDrawIdx
-  typedef :int, :ImDrawListFlags
-  typedef :int, :ImFontAtlasFlags
-  typedef :int, :ImGuiBackendFlags
-  typedef :int, :ImGuiCol
-  typedef :int, :ImGuiColorEditFlags
-  typedef :int, :ImGuiComboFlags
-  typedef :int, :ImGuiCond
-  typedef :int, :ImGuiConfigFlags
-  typedef :int, :ImGuiDataType
-  typedef :int, :ImGuiDir
-  typedef :int, :ImGuiDragDropFlags
-  typedef :int, :ImGuiFocusedFlags
-  typedef :int, :ImGuiHoveredFlags
-  typedef :uint, :ImGuiID
-  typedef :int, :ImGuiInputTextFlags
-  typedef :int, :ImGuiKey
-  typedef :int, :ImGuiKeyModFlags
-  typedef :int, :ImGuiMouseButton
-  typedef :int, :ImGuiMouseCursor
-  typedef :int, :ImGuiNavInput
-  typedef :int, :ImGuiSelectableFlags
-  typedef :int, :ImGuiStyleVar
-  typedef :int, :ImGuiTabBarFlags
-  typedef :int, :ImGuiTabItemFlags
-  typedef :int, :ImGuiTreeNodeFlags
-  typedef :int, :ImGuiWindowFlags
-  typedef :short, :ImS16
-  typedef :int, :ImS32
-  typedef :int64, :ImS64
-  typedef :char, :ImS8
-  typedef :pointer, :ImTextureID
-  typedef :ushort, :ImU16
-  typedef :uint, :ImU32
-  typedef :uint64, :ImU64
-  typedef :uchar, :ImU8
-  typedef :ushort, :ImWchar
-  typedef :ushort, :ImWchar16
-  typedef :uint, :ImWchar32
 
   @@imgui_import_done = false
 
