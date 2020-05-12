@@ -409,7 +409,6 @@ class ImVec2 < FFI::Struct
     :x, :float,
     :y, :float
   )
-
 end
 
 class ImVec4 < FFI::Struct
@@ -419,7 +418,6 @@ class ImVec4 < FFI::Struct
     :z, :float,
     :w, :float
   )
-
 end
 
 class ImVector < FFI::Struct
@@ -428,7 +426,6 @@ class ImVector < FFI::Struct
     :Capacity, :int,
     :Data, :pointer
   )
-
 end
 
 class ImDrawListSplitter < FFI::Struct
@@ -437,14 +434,12 @@ class ImDrawListSplitter < FFI::Struct
     :_Count, :int,
     :_Channels, ImVector.by_value
   )
-
 end
 
 class ImColor < FFI::Struct
   layout(
     :Value, ImVec4.by_value
   )
-
 end
 
 class ImDrawCmd < FFI::Struct
@@ -457,7 +452,6 @@ class ImDrawCmd < FFI::Struct
     :UserCallback, :pointer,
     :UserCallbackData, :pointer
   )
-
 end
 
 class ImDrawData < FFI::Struct
@@ -471,7 +465,6 @@ class ImDrawData < FFI::Struct
     :DisplaySize, ImVec2.by_value,
     :FramebufferScale, ImVec2.by_value
   )
-
 end
 
 class ImDrawList < FFI::Struct
@@ -728,7 +721,6 @@ class ImDrawVert < FFI::Struct
     :uv, ImVec2.by_value,
     :col, :uint
   )
-
 end
 
 class ImFont < FFI::Struct
@@ -752,7 +744,6 @@ class ImFont < FFI::Struct
     :MetricsTotalSurface, :int,
     :Used4kPagesMap[(0xFFFF+1)/4096/8], [:uchar, 2]
   )
-
 end
 
 class ImFontAtlas < FFI::Struct
@@ -907,7 +898,6 @@ class ImFontAtlasCustomRect < FFI::Struct
     :GlyphOffset, ImVec2.by_value,
     :Font, :pointer
   )
-
 end
 
 class ImFontConfig < FFI::Struct
@@ -1110,7 +1100,6 @@ class ImGuiInputTextCallbackData < FFI::Struct
     :SelectionStart, :int,
     :SelectionEnd, :int
   )
-
 end
 
 class ImGuiSizeCallbackData < FFI::Struct
@@ -1120,7 +1109,6 @@ class ImGuiSizeCallbackData < FFI::Struct
     :CurrentSize, ImVec2.by_value,
     :DesiredSize, ImVec2.by_value
   )
-
 end
 
 class ImGuiStyle < FFI::Struct
@@ -1247,7 +1235,6 @@ class ImGuiStoragePair < FFI::Struct
     :key, :uint,
     :val_p, :pointer
   )
-
 end
 
 # shorthand initializer
