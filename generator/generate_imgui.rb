@@ -157,6 +157,9 @@ module Generator
       else
         args = if m.type.to_s.start_with?('Im')#  && !m.type.to_s.end_with?('Callback')
                  "#{m.type}.by_value"
+               # elsif m.type_str.start_with?('Im') && (m.type_str.include?('*') || m.type_str.include?('&'))
+               #   imgui_struct = m.type_str.gsub(/[*&]+/, '')
+               #   "#{imgui_struct}.ptr"
                else
                  ":#{m.type}"
                end

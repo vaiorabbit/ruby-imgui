@@ -3,7 +3,7 @@ require 'json'
 
 ImGuiTypedefMapEntry = Struct.new( :name, :type, :callback_signature, keyword_init: true )
 
-ImGuiStructMemberEntry = Struct.new( :name, :type, :is_array, :size, keyword_init: true )
+ImGuiStructMemberEntry = Struct.new( :name, :type, :type_str, :is_array, :size, keyword_init: true )
 ImGuiStructMapEntry = Struct.new( :name, :members, keyword_init: true )
 
 ImGuiEnumValEntry = Struct.new( :name, :value, :original, keyword_init: true )
@@ -119,7 +119,7 @@ module ImGuiBindings
         struct = ImGuiStructMapEntry.new(name: struct_name, members: [])
         members = json_structs[struct_name]
         members.each do |m|
-          member = ImGuiStructMemberEntry.new(name: m['name'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
+          member = ImGuiStructMemberEntry.new(name: m['name'], type_str: m['type'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
           if member.is_array
             member.size = m['size'].to_i
             member.name.gsub!(/\[[\w\+]+\]/,'')
@@ -137,9 +137,9 @@ module ImGuiBindings
     struct_imvector_stub = ImGuiStructMapEntry.new
     struct_imvector_stub.name = 'ImVector'
     struct_imvector_stub.members = [
-      ImGuiStructMemberEntry.new(name: 'Size', type: :int, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'Capacity', type: :int, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'Data', type: :pointer, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Size', type_str: 'int', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Capacity', type_str: 'int', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Data', type_str: 'T*', type: :pointer, is_array: false, size: 0),
     ]
     structs << struct_imvector_stub
 
@@ -158,8 +158,8 @@ module ImGuiBindings
     struct_pair_stub = ImGuiStructMapEntry.new
     struct_pair_stub.name = 'ImGuiStoragePair'
     struct_pair_stub.members = [
-      ImGuiStructMemberEntry.new(name: 'key', type: :uint, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'val_p', type: :pointer, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'key', type_str: 'unsinged int', type: :uint, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'val_p', type_str: '', type: :pointer, is_array: false, size: 0),
     ]
     structs << struct_pair_stub
 
