@@ -85,7 +85,7 @@ module Generator
 
   def self.write_typedef(out, typedef)
     return if typedef[1].callback_signature != nil
-    out.write("typedef :#{typedef[1].type}, :#{typedef[0]}\n")
+    out.write("FFI.typedef :#{typedef[1].type}, :#{typedef[0]}\n")
   end
 
   def self.write_struct_method(out, func)
@@ -344,6 +344,17 @@ require 'ffi'
     out.newline
 
     #
+    # Typedefs
+    #
+    typedefs_map.each do |typedef|
+      if typedef[0] != typedef[1].type.to_s
+        Generator.write_typedef(out, typedef)
+      end
+    end
+    out.newline
+
+
+    #
     # Enums
     #
     enums_map.each do |enum|
@@ -409,14 +420,6 @@ end
     out.newline
     out.push_indent
     out.write("extend FFI::Library\n")
-    out.newline
-
-    # Typedefs
-    typedefs_map.each do |typedef|
-      if typedef[0] != typedef[1].type.to_s
-        Generator.write_typedef(out, typedef)
-      end
-    end
     out.newline
 
     out.pop_indent
