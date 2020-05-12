@@ -48,7 +48,7 @@ module ImGuiDemo
       ImGui::Text("io.BackendRendererName: %s", :pointer, io[:BackendRendererName] != nil ? io[:BackendRendererName].read_string_to_null : "NULL")
 
       ImGui::Separator()
-      font_atlas = ImFontAtlas.new(io[:Fonts])
+      font_atlas = io[:Fonts]
       ImGui::Text("io.Fonts: %d fonts, Flags: 0x%08X, TexSize: %d,%d", :int, font_atlas[:Fonts][:Size], :uint, font_atlas[:Flags], :int, font_atlas[:TexWidth], :int, font_atlas[:TexHeight])
       ImGui::Text("io.DisplaySize: %.2f,%.2f", :float, io[:DisplaySize][:x], :float, io[:DisplaySize][:y])
       ImGui::Separator()

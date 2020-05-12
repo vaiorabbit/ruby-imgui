@@ -469,42 +469,19 @@ class ImVector < FFI::Struct
   )
 end
 
+class ImDrawVert < FFI::Struct
+  layout(
+    :pos, ImVec2.by_value,
+    :uv, ImVec2.by_value,
+    :col, :uint
+  )
+end
+
 class ImDrawListSplitter < FFI::Struct
   layout(
     :_Current, :int,
     :_Count, :int,
     :_Channels, ImVector.by_value
-  )
-end
-
-class ImColor < FFI::Struct
-  layout(
-    :Value, ImVec4.by_value
-  )
-end
-
-class ImDrawCmd < FFI::Struct
-  layout(
-    :ElemCount, :uint,
-    :ClipRect, ImVec4.by_value,
-    :TextureId, :pointer,
-    :VtxOffset, :uint,
-    :IdxOffset, :uint,
-    :UserCallback, :pointer,
-    :UserCallbackData, :pointer
-  )
-end
-
-class ImDrawData < FFI::Struct
-  layout(
-    :Valid, :bool,
-    :CmdLists, :pointer,
-    :CmdListsCount, :int,
-    :TotalIdxCount, :int,
-    :TotalVtxCount, :int,
-    :DisplayPos, ImVec2.by_value,
-    :DisplaySize, ImVec2.by_value,
-    :FramebufferScale, ImVec2.by_value
   )
 end
 
@@ -518,7 +495,7 @@ class ImDrawList < FFI::Struct
     :_OwnerName, :pointer,
     :_VtxCurrentOffset, :uint,
     :_VtxCurrentIdx, :uint,
-    :_VtxWritePtr, :pointer,
+    :_VtxWritePtr, ImDrawVert.ptr,
     :_IdxWritePtr, :pointer,
     :_ClipRectStack, ImVector.by_value,
     :_TextureIdStack, ImVector.by_value,
@@ -756,37 +733,6 @@ class ImDrawList < FFI::Struct
 
 end
 
-class ImDrawVert < FFI::Struct
-  layout(
-    :pos, ImVec2.by_value,
-    :uv, ImVec2.by_value,
-    :col, :uint
-  )
-end
-
-class ImFont < FFI::Struct
-  layout(
-    :IndexAdvanceX, ImVector.by_value,
-    :FallbackAdvanceX, :float,
-    :FontSize, :float,
-    :IndexLookup, ImVector.by_value,
-    :Glyphs, ImVector.by_value,
-    :FallbackGlyph, :pointer,
-    :DisplayOffset, ImVec2.by_value,
-    :ContainerAtlas, :pointer,
-    :ConfigData, :pointer,
-    :ConfigDataCount, :short,
-    :FallbackChar, :ushort,
-    :EllipsisChar, :ushort,
-    :DirtyLookupTables, :bool,
-    :Scale, :float,
-    :Ascent, :float,
-    :Descent, :float,
-    :MetricsTotalSurface, :int,
-    :Used4kPagesMap[(0xFFFF+1)/4096/8], [:uchar, 2]
-  )
-end
-
 class ImFontAtlas < FFI::Struct
   layout(
     :Locked, :bool,
@@ -928,6 +874,60 @@ class ImFontAtlas < FFI::Struct
 
 end
 
+class ImColor < FFI::Struct
+  layout(
+    :Value, ImVec4.by_value
+  )
+end
+
+class ImDrawCmd < FFI::Struct
+  layout(
+    :ElemCount, :uint,
+    :ClipRect, ImVec4.by_value,
+    :TextureId, :pointer,
+    :VtxOffset, :uint,
+    :IdxOffset, :uint,
+    :UserCallback, :pointer,
+    :UserCallbackData, :pointer
+  )
+end
+
+class ImDrawData < FFI::Struct
+  layout(
+    :Valid, :bool,
+    :CmdLists, ImDrawList.ptr,
+    :CmdListsCount, :int,
+    :TotalIdxCount, :int,
+    :TotalVtxCount, :int,
+    :DisplayPos, ImVec2.by_value,
+    :DisplaySize, ImVec2.by_value,
+    :FramebufferScale, ImVec2.by_value
+  )
+end
+
+class ImFont < FFI::Struct
+  layout(
+    :IndexAdvanceX, ImVector.by_value,
+    :FallbackAdvanceX, :float,
+    :FontSize, :float,
+    :IndexLookup, ImVector.by_value,
+    :Glyphs, ImVector.by_value,
+    :FallbackGlyph, :pointer,
+    :DisplayOffset, ImVec2.by_value,
+    :ContainerAtlas, ImFontAtlas.ptr,
+    :ConfigData, :pointer,
+    :ConfigDataCount, :short,
+    :FallbackChar, :ushort,
+    :EllipsisChar, :ushort,
+    :DirtyLookupTables, :bool,
+    :Scale, :float,
+    :Ascent, :float,
+    :Descent, :float,
+    :MetricsTotalSurface, :int,
+    :Used4kPagesMap[(0xFFFF+1)/4096/8], [:uchar, 2]
+  )
+end
+
 class ImFontAtlasCustomRect < FFI::Struct
   layout(
     :ID, :uint,
@@ -937,7 +937,7 @@ class ImFontAtlasCustomRect < FFI::Struct
     :Y, :ushort,
     :GlyphAdvanceX, :float,
     :GlyphOffset, ImVec2.by_value,
-    :Font, :pointer
+    :Font, ImFont.ptr
   )
 end
 
@@ -961,7 +961,7 @@ class ImFontConfig < FFI::Struct
     :RasterizerMultiply, :float,
     :EllipsisChar, :ushort,
     :Name, [:char, 40],
-    :DstFont, :pointer
+    :DstFont, ImFont.ptr
   )
 
   def self.ImFontConfig()
@@ -1033,10 +1033,10 @@ class ImGuiIO < FFI::Struct
     :KeyRepeatDelay, :float,
     :KeyRepeatRate, :float,
     :UserData, :pointer,
-    :Fonts, :pointer,
+    :Fonts, ImFontAtlas.ptr,
     :FontGlobalScale, :float,
     :FontAllowUserScaling, :bool,
-    :FontDefault, :pointer,
+    :FontDefault, ImFont.ptr,
     :DisplayFramebufferScale, ImVec2.by_value,
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,

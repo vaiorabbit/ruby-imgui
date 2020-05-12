@@ -80,10 +80,10 @@ if __FILE__ == $0
   ImGui::ImplSDL2_InitForOpenGL(window, gl_context)
   ImGui::ImplOpenGL3_Init(glsl_version)
 
-  ImFontAtlas.new(io[:Fonts]).AddFontDefault()
+  io[:Fonts].AddFontDefault()
   # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
   # japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
-  japanese_font = ImFontAtlas.new(io[:Fonts]).AddFontFromFileTTF('./jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImFontAtlas.new(io[:Fonts]).GetGlyphRangesChineseFull())
+  japanese_font = io[:Fonts].AddFontFromFileTTF('./jpfont/GenShinGothic-Normal.ttf', 24.0, nil, io[:Fonts].GetGlyphRangesChineseFull())
 
   event = SDL_Event.new
   done = false

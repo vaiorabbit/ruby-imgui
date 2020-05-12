@@ -85,7 +85,7 @@ module Generator
 
   def self.write_typedef(out, typedef)
     return if typedef[1].callback_signature != nil
-    out.write("FFI.typedef :#{typedef[1].type}, :#{typedef[0]}\n")
+    out.write("FFI.typedef :#{typedef[1].type}, :#{typedef[0]}\n") # typedef[1].class == ImGuiTypedefMapEntry
   end
 
   def self.write_struct_method(out, func)
@@ -135,7 +135,7 @@ module Generator
     end
   end
 
-  def self.write_struct(out, struct, methods)
+  def self.write_struct(out, struct, methods, typedefs_map)
     out.write("class #{struct.name} < FFI::Struct\n")
     out.push_indent
     # write member layout
@@ -149,18 +149,40 @@ module Generator
              end
       args = ""
       if m.is_array
-        args = if m.type.to_s.start_with?('Im') # && !m.type.to_s.end_with?('Callback')
+        args = if m.type.to_s.start_with?('Im') # e.g.) :MouseClickedPos, [ImVec2.by_value, 5],
                  "[#{m.type}.by_value, #{m.size}]"
-               else
+               else # e.g.) :MouseClickedTime, [:double, 5],
                  "[:#{m.type}, #{m.size}]"
                end
       else
-        args = if m.type.to_s.start_with?('Im')#  && !m.type.to_s.end_with?('Callback')
+        args = if m.type.to_s.start_with?('Im') # e.g.) :MouseDelta, ImVec2.by_value,
                  "#{m.type}.by_value"
-               # elsif m.type_str.start_with?('Im') && (m.type_str.include?('*') || m.type_str.include?('&'))
-               #   imgui_struct = m.type_str.gsub(/[*&]+/, '')
-               #   "#{imgui_struct}.ptr"
-               else
+               elsif m.type_str.start_with?('Im') && (m.type_str.include?('*') || m.type_str.include?('&')) # e.g.) :Fonts, ImFontAtlas.ptr,
+                 imgui_struct_or_typedef = m.type_str.gsub(/[*&]+/, '') # omit asterisk, etc. e.g.) ImDrawList** -> ImDrawList
+                 # e.g.) ImDrawIdx (Starts with "Im" but just a typedef of unsinged int): then the ImGuiTypedefMapEntry looks like:
+                 # "ImDrawIdx"=>
+                 # #<struct ImGuiTypedefMapEntry
+                 #     name="ImDrawIdx",
+                 #     type=:ushort,
+                 #     callback_signature=nil>,
+                 #
+                 # e.g.) ImDrawVert (Starts with "Im" and one of a true FFI::Struct): then the ImGuiTypedefMapEntry looks like:
+                 # "ImDrawVert"=>
+                 #     #<struct ImGuiTypedefMapEntry
+                 #     name="ImDrawVert",
+                 #     type=:ImDrawVert,
+                 #     callback_signature=nil>,
+                 #
+                 # -> entry.type.to_s == entry.name ? FFI::Struct : :pointer
+                 #
+                 if typedefs_map[imgui_struct_or_typedef].type.to_s == typedefs_map[imgui_struct_or_typedef].name
+                   # FFI::Struct -> use .ptr
+                   "#{imgui_struct_or_typedef}.ptr"
+                 else
+                   # Not any of FFI::Struct instances -> use base type (:pointer, etc.)
+                   ":#{m.type}"
+                 end
+               else # e.g.) :IniFilename, :pointer,
                  ":#{m.type}"
                end
       end
@@ -366,15 +388,15 @@ require 'ffi'
     # Structs
     #
 
-    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawListSplitter'].each do |name| # for forward declaration
+    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawList', 'ImFontAtlas'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
-      Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods)
+      Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map)
       structs_map.delete_if {|struct| struct.name == name}
     end
 
     structs_map.each do |struct|
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == struct.name }
-      Generator.write_struct(out, struct, methods)
+      Generator.write_struct(out, struct, methods, typedefs_map)
     end
 
     # define shorthand initializer for ImVec2 and ImVec4

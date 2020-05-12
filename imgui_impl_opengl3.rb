@@ -141,7 +141,7 @@ module ImGui
     #  Render command lists
     draw_data[:CmdListsCount].times do |n|
 
-      cmd_list = ImDrawList.new((draw_data[:CmdLists] + 8 * n).read_pointer) # 8 == const ImDrawList*
+      cmd_list = ImDrawList.new((draw_data[:CmdLists].pointer + 8 * n).read_pointer) # 8 == const ImDrawList*
       vtx_buffer = ImDrawVert.new(cmd_list[:VtxBuffer][:Data]) # const ImDrawVert*
       idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
 
@@ -273,7 +273,7 @@ module ImGui
     pixels = FFI::MemoryPointer.new :pointer
     width = FFI::MemoryPointer.new :int
     height = FFI::MemoryPointer.new :int
-    ImFontAtlas.new(io[:Fonts]).GetTexDataAsRGBA32(pixels, width, height, nil)   #  Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
+    io[:Fonts].GetTexDataAsRGBA32(pixels, width, height, nil)   #  Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
     #  Upload texture to graphics system
     last_texture = ' ' * 4
@@ -292,7 +292,7 @@ module ImGui
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.read_uint, height.read_uint, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels_ptr)
 
     #  Store our identifier
-    ImFontAtlas.new(io[:Fonts])[:TexID] = @@g_FontTexture.unpack1('L')
+    io[:Fonts][:TexID] = @@g_FontTexture.unpack1('L')
 
     #  Restore state
     glBindTexture(GL_TEXTURE_2D, last_texture.unpack1('L'))
