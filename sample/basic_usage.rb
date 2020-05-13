@@ -14,10 +14,16 @@ module ImGuiDemo
 
   @@font = nil
   @@io = nil
+  @@style = nil
 
   def self.GetIO()
     @@io = ImGuiIO.new(ImGui::GetIO()) if @@io == nil
     return @@io
+  end
+
+  def self.GetStyle()
+    @@style = ImGuiStyle.new(ImGui::GetStyle()) if @@style == nil
+    return @@style
   end
 
   def self.AddFont(japanese_ttf_filepath = './jpfont/GenShinGothic-Normal.ttf', icon_ttf_filepath = './iconfont/fontawesome-webfont.ttf')
@@ -59,8 +65,8 @@ module ImGuiDemo
   def self.SetGlobalScale(scale = 1.0)
     io = GetIO()
     io[:FontGlobalScale] = scale # フォントの大きさを一括で変更できます。
-    style = ImGui::GetStyle()
-    ImGuiStyle.new(style).ScaleAllSizes(scale) # UIの大きさを一括で変更できます。
+    style = GetStyle()
+    style.ScaleAllSizes(scale) # UIの大きさを一括で変更できます。
   end
 
 end # module ImGuiDemo

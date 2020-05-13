@@ -1,6 +1,7 @@
 2020-05-13  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* 'Added support for pointer to struct. Now you can call like 'io[:Fonts].AddFontDefault()'.
+	* Constructors now return FFI::Struct, not :pointer
 
 2020-05-12  vaiorabbit  <http://twitter.com/vaiorabbit>
 
