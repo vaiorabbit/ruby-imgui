@@ -119,15 +119,21 @@ module Generator
     if func.return_udt
       ret = arg_names_with_defaults.shift # == "pOut"
       var_type = /([^\*]+)/.match(func.args[0].type_name)[0] # e.g.) ImVec2* -> ImVec2
-      out.write("def #{func.ctor ? 'self.' : ''}#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      out.write("def #{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
       out.push_indent
       out.write("#{ret} = #{var_type}.new\n")
       out.write("ImGui::#{func.name}(#{arg_names.join(', ')})\n")
       out.write("return #{ret}\n")
       out.pop_indent
       out.write("end\n\n")
+    elsif func.ctor
+      out.write("def self.create(#{arg_names_with_defaults.join(', ')})\n")
+      out.push_indent
+      out.write("return #{func.method_of}.new(ImGui::#{func.name}(#{arg_names.join(', ')}))\n")
+      out.pop_indent
+      out.write("end\n\n")
     else
-      out.write("def #{func.ctor ? 'self.' : ''}#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      out.write("def #{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
       out.push_indent
       out.write("ImGui::#{func.name}(#{arg_names.join(', ')})\n")
       out.pop_indent

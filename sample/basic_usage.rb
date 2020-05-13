@@ -28,10 +28,9 @@ module ImGuiDemo
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
     # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
 
-    config = ImFontConfig.new(ImFontConfig.ImFontConfig())
+    config = ImFontConfig.create
 
-    builder_raw = ImFontGlyphRangesBuilder.ImFontGlyphRangesBuilder()
-    builder = ImFontGlyphRangesBuilder.new(builder_raw)
+    builder = ImFontGlyphRangesBuilder.create
 
     # Japanese fonts
     additional_ranges = ImGui::ImVector_ImWchar_create() # ranges == ImVector_ImWchar*
@@ -801,16 +800,16 @@ module ImGuiDemo::ClippingAndDummyWindow
       @@offset[:y] += io[:MouseDelta][:y]
     end
     # ドラッグエリアの塗りつぶしをします。
-    draw_list = ImGui::GetWindowDrawList()
-    ImDrawList.new(draw_list).AddRectFilled(
-                                  pos,
-                                  ImVec2.create(pos[:x] + @@size[:x], pos[:y] + @@size[:y]),
-                                  ImColor.col32(90, 90, 120, 255)
-                                 )
+    draw_list = ImDrawList.new(ImGui::GetWindowDrawList())
+    draw_list.AddRectFilled(
+      pos,
+      ImVec2.create(pos[:x] + @@size[:x], pos[:y] + @@size[:y]),
+      ImColor.col32(90, 90, 120, 255)
+    )
     # 文字を作成します(指定したエリアでしか見えないようになります。クリッピングされます)
-    ImDrawList.new(draw_list).AddTextFontPtr(ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
-                                        ImVec2.create(pos[:x] + @@offset[:x], pos[:y] + @@offset[:y]),
-                                        ImColor.col32(255, 255, 255, 255), "Click and drag", nil, 0.0, clip_rect)
+    draw_list.AddTextFontPtr(ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
+                             ImVec2.create(pos[:x] + @@offset[:x], pos[:y] + @@offset[:y]),
+                             ImColor.col32(255, 255, 255, 255), "Click and drag", nil, 0.0, clip_rect)
 
     ################################################################################
     ImGui::NewLine()

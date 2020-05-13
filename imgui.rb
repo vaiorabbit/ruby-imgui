@@ -627,8 +627,8 @@ class ImDrawList < FFI::Struct
     return pOut
   end
 
-  def self.ImDrawList(shared_data)
-    ImGui::ImDrawList_ImDrawList(shared_data)
+  def self.create(shared_data)
+    return ImDrawList.new(ImGui::ImDrawList_ImDrawList(shared_data))
   end
 
   def PathArcTo(center, radius, a_min, a_max, num_segments = 10)
@@ -856,8 +856,8 @@ class ImFontAtlas < FFI::Struct
     ImGui::ImFontAtlas_GetTexDataAsRGBA32(self, out_pixels, out_width, out_height, out_bytes_per_pixel)
   end
 
-  def self.ImFontAtlas()
-    ImGui::ImFontAtlas_ImFontAtlas()
+  def self.create()
+    return ImFontAtlas.new(ImGui::ImFontAtlas_ImFontAtlas())
   end
 
   def IsBuilt()
@@ -964,8 +964,8 @@ class ImFontConfig < FFI::Struct
     :DstFont, ImFont.ptr
   )
 
-  def self.ImFontConfig()
-    ImGui::ImFontConfig_ImFontConfig()
+  def self.create()
+    return ImFontConfig.new(ImGui::ImFontConfig_ImFontConfig())
   end
 
   def destroy()
@@ -1003,8 +1003,8 @@ class ImFontGlyphRangesBuilder < FFI::Struct
     ImGui::ImFontGlyphRangesBuilder_GetBit(self, n)
   end
 
-  def self.ImFontGlyphRangesBuilder()
-    ImGui::ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder()
+  def self.create()
+    return ImFontGlyphRangesBuilder.new(ImGui::ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder())
   end
 
   def SetBit(n)
@@ -1116,8 +1116,8 @@ class ImGuiIO < FFI::Struct
     ImGui::ImGuiIO_ClearInputCharacters(self)
   end
 
-  def self.ImGuiIO()
-    ImGui::ImGuiIO_ImGuiIO()
+  def self.create()
+    return ImGuiIO.new(ImGui::ImGuiIO_ImGuiIO())
   end
 
   def destroy()
@@ -1192,8 +1192,8 @@ class ImGuiStyle < FFI::Struct
     :Colors, [ImVec4.by_value, 48]
   )
 
-  def self.ImGuiStyle()
-    ImGui::ImGuiStyle_ImGuiStyle()
+  def self.create()
+    return ImGuiStyle.new(ImGui::ImGuiStyle_ImGuiStyle())
   end
 
   def ScaleAllSizes(scale_factor)
@@ -1225,8 +1225,8 @@ class ImGuiTextFilter < FFI::Struct
     ImGui::ImGuiTextFilter_Draw(self, label, width)
   end
 
-  def self.ImGuiTextFilter(default_filter = "")
-    ImGui::ImGuiTextFilter_ImGuiTextFilter(default_filter)
+  def self.create(default_filter = "")
+    return ImGuiTextFilter.new(ImGui::ImGuiTextFilter_ImGuiTextFilter(default_filter))
   end
 
   def IsActive()
@@ -1249,12 +1249,12 @@ class ImGuiTextRange < FFI::Struct
     :e, :pointer
   )
 
-  def self.ImGuiTextRangeNil()
-    ImGui::ImGuiTextRange_ImGuiTextRangeNil()
+  def self.create()
+    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRangeNil())
   end
 
-  def self.ImGuiTextRangeStr(_b, _e)
-    ImGui::ImGuiTextRange_ImGuiTextRangeStr(_b, _e)
+  def self.create(_b, _e)
+    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRangeStr(_b, _e))
   end
 
   def destroy()
