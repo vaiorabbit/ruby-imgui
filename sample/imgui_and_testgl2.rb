@@ -140,7 +140,6 @@ if __FILE__ == $0
 
   # Initialize ImGUI
   ImGui::CreateContext(nil)
-  io = ImGuiIO.new(ImGui::GetIO())
   ImGui::ImplSDL2_InitForOpenGL(window, context)
   ImGui::ImplOpenGL2_Init()
 

@@ -63,11 +63,8 @@ module ImGui
       @@g_PrevUserCallbackChar.call(window, c)
     end
 
-    #
-    # [TODO] Support ImGuiIO_AddInputCharacter
-    #
-    # io = ImGuiIO.new(ImGui::GetIO())
-    # io.AddInputCharacter(c);
+    io = ImGuiIO.new(ImGui::GetIO())
+    io.AddInputCharacter(c);
   end
 
   def self.ImplGlfw_UpdateMousePosAndButtons()
@@ -81,7 +78,6 @@ module ImGui
 
     # Update mouse position
     mouse_pos_backup = io[:MousePos]
-    io[:MousePos] = ImVec2.new
     io[:MousePos][:x] = -Float::MAX
     io[:MousePos][:y] = -Float::MAX
     focused = glfwGetWindowAttrib(@@g_Window, GLFW_FOCUSED) != 0
@@ -141,16 +137,12 @@ module ImGui
 
     w = w.unpack1('L')
     h = h.unpack1('L')
-    display_size = ImVec2.new
-    display_size[:x] = w
-    display_size[:y] = h
-    io[:DisplaySize] = display_size
+    io[:DisplaySize][:x] = w
+    io[:DisplaySize][:y] = h
 
     if w > 0 && h > 0
-      fb_scale = ImVec2.new
-      fb_scale[:x] = display_w.unpack1('L') / w
-      fb_scale[:y] = display_h.unpack1('L') / h
-      io[:DisplayFramebufferScale] = fb_scale
+      io[:DisplayFramebufferScale][:x] = display_w.unpack1('L') / w
+      io[:DisplayFramebufferScale][:y] = display_h.unpack1('L') / h
     end
 
     #  Setup time step

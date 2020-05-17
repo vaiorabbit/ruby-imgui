@@ -302,9 +302,9 @@ module ImGui
 
   def self.ImplOpenGL3_DestroyFontsTexture()
     if @@g_FontTexture != 0
-      io = ImGuiIO.new(ImGui::GetIO())
       glDeleteTextures(1, @@g_FontTexture)
-      ImFontAtlas.new(io[:Fonts])[:TexID] = 0
+      io = ImGuiIO.new(ImGui::GetIO())
+      io[:Fonts][:TexID] = 0
       @@g_FontTexture = 0
     end
   end

@@ -20,12 +20,7 @@ module ImGui
   # [TODO] SDL_MOUSE
   def self.get_sdl2_mousebit(x); return (1 << ((x)-1)); end
 
-  # [TODO] SDL_TRUE, SDL_FALSE
-  SDL_TRUE = 1
-  SDL_FALSE = 0
-
-  # TODO #define KMOD_CTRL, #define KMOD_SHIFT, #define KMOD_ALT and #define KMOD_GUI
-
+  # [TODO] #define KMOD_CTRL, #define KMOD_SHIFT, #define KMOD_ALT and #define KMOD_GUI
   KMOD_CTRL = KMOD_LCTRL|KMOD_RCTRL
   KMOD_SHIFT = KMOD_LSHIFT|KMOD_RSHIFT
   KMOD_ALT = KMOD_LALT|KMOD_RALT
@@ -61,7 +56,6 @@ module ImGui
       SDL_GetGlobalMouseState(mx, my)
       # mx -= wx
       # my -= wy
-      io[:MousePos] = ImVec2.new
       io[:MousePos][:x] = mx.read(:int).to_f - wx.read(:int).to_f
       io[:MousePos][:y] = my.read(:int).to_f - wy.read(:int).to_f
     end
@@ -169,7 +163,7 @@ module ImGui
       return true
 
     when SDL_TEXTINPUT
-      ImGui::ImGuiIO_AddInputCharactersUTF8(io, event[:text][:text])
+      io.AddInputCharactersUTF8(event[:text][:text])
       return true
 
     when SDL_KEYDOWN, SDL_KEYUP

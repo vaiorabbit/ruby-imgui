@@ -171,9 +171,6 @@ module ImGui
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0)
     # Ruby/FFI <-> Fiddle pointer exchange
-    # p pixels
-    # p pixels.read_pointer
-    # p pixels.read_pointer.address.to_s(16)
     pixels_ptr = Fiddle::Pointer.new(pixels.read_pointer.address)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.read_uint, height.read_uint, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels_ptr)
 
@@ -188,9 +185,9 @@ module ImGui
 
   def self.ImplOpenGL2_DestroyFontsTexture()
     if @@g_FontTexture != 0
-      io = ImGuiIO.new(ImGui::GetIO())
       glDeleteTextures(1, @@g_FontTexture)
-      ImFontAtlas.new(io[:Fonts])[:TexID] = 0
+      io = ImGuiIO.new(ImGui::GetIO())
+      io[:Fonts][:TexID] = 0
       @@g_FontTexture = 0
     end
   end
