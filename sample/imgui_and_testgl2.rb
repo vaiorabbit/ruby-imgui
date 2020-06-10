@@ -140,7 +140,7 @@ if __FILE__ == $0
 
   # Initialize ImGUI
   ImGui::CreateContext(nil)
-  ImGui::ImplSDL2_InitForOpenGL(window, context)
+  ImGui::ImplSDL2_Init(window)
   ImGui::ImplOpenGL2_Init()
 
   glViewport( 0, 0, WINDOW_W, WINDOW_H )

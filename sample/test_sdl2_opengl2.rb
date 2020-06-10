@@ -71,7 +71,7 @@ if __FILE__ == $0
   ImGui::StyleColorsDark()
 
   # Setup Platform/Renderer bindings
-  ImGui::ImplSDL2_InitForOpenGL(window, gl_context)
+  ImGui::ImplSDL2_Init(window)
   ImGui::ImplOpenGL2_Init()
 
   io[:Fonts].AddFontDefault()

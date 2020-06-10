@@ -85,10 +85,6 @@ module ImGui
   # [TODO] Support ImplSDL2_UpdateGamepads
   #
 
-  def self.ImplSDL2_InitForOpenGL(window, install_callbacks)
-    return ImplSDL2_Init(window)
-  end
-
   def self.ImplSDL2_Shutdown()
     @@g_Window = nil
     ImGuiMouseCursor_COUNT.times do |cursor_n|
