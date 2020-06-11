@@ -144,6 +144,8 @@ module ImGuiDemo::RadioButtonWindow
     ImGui::RadioButtonIntPtr("ラジオボタン 2", @@radio, 2);
 
     ImGui::Text("ラジオボタンは%dを選択しています", :int, @@radio.read(:int))
+    ImGui::End()
+    ImGui::PopFont()
   end
 end
 
