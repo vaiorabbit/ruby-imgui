@@ -19,6 +19,8 @@ def check_error( desc )
   end
 end
 
+include SDL2
+
 if __FILE__ == $0
 
   SDL2::load_lib('/usr/local/lib/libSDL2.dylib')

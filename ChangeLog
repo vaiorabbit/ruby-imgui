@@ -1,3 +1,7 @@
+2020-06-14  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* imgui_impl_sdl2.rb: Fixed forcing 'include SDL2'
+
 2020-06-12  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* basic_usage.rb: Fixed ImGui::End() mismatch

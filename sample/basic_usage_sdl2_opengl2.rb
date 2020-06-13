@@ -9,6 +9,8 @@ require_relative './basic_usage'
 WINDOW_W = 1920
 WINDOW_H = 1080
 
+include SDL2
+
 if __FILE__ == $0
 
   $sdl2_path = case RUBY_PLATFORM
