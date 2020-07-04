@@ -28,6 +28,7 @@ FFI.typedef :int, :ImGuiKeyModFlags
 FFI.typedef :int, :ImGuiMouseButton
 FFI.typedef :int, :ImGuiMouseCursor
 FFI.typedef :int, :ImGuiNavInput
+FFI.typedef :int, :ImGuiPopupFlags
 FFI.typedef :int, :ImGuiSelectableFlags
 FFI.typedef :int, :ImGuiStyleVar
 FFI.typedef :int, :ImGuiTabBarFlags
@@ -171,6 +172,7 @@ ImGuiComboFlags_NoPreview = 64 # 1 << 6
 ImGuiComboFlags_HeightMask_ = 30 # ImGuiComboFlags_HeightSmall | ImGuiComboFlags_HeightRegular | ImGuiComboFlags_HeightLarge | ImGuiComboFlags_HeightLargest
 
 # ImGuiCond_
+ImGuiCond_None = 0 # 0
 ImGuiCond_Always = 1 # 1 << 0
 ImGuiCond_Once = 2 # 1 << 1
 ImGuiCond_FirstUseEver = 4 # 1 << 2
@@ -340,6 +342,19 @@ ImGuiNavInput_KeyDown_ = 20 # 20
 ImGuiNavInput_COUNT = 21 # 21
 ImGuiNavInput_InternalStart_ = 16 # ImGuiNavInput_KeyMenu_
 
+# ImGuiPopupFlags_
+ImGuiPopupFlags_None = 0 # 0
+ImGuiPopupFlags_MouseButtonLeft = 0 # 0
+ImGuiPopupFlags_MouseButtonRight = 1 # 1
+ImGuiPopupFlags_MouseButtonMiddle = 2 # 2
+ImGuiPopupFlags_MouseButtonMask_ = 31 # 0x1F
+ImGuiPopupFlags_MouseButtonDefault_ = 1 # 1
+ImGuiPopupFlags_NoOpenOverExistingPopup = 32 # 1 << 5
+ImGuiPopupFlags_NoOpenOverItems = 64 # 1 << 6
+ImGuiPopupFlags_AnyPopupId = 128 # 1 << 7
+ImGuiPopupFlags_AnyPopupLevel = 256 # 1 << 8
+ImGuiPopupFlags_AnyPopup = 384 # ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel
+
 # ImGuiSelectableFlags_
 ImGuiSelectableFlags_None = 0 # 0
 ImGuiSelectableFlags_DontClosePopups = 1 # 1 << 0
@@ -393,6 +408,7 @@ ImGuiTabItemFlags_UnsavedDocument = 1 # 1 << 0
 ImGuiTabItemFlags_SetSelected = 2 # 1 << 1
 ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4 # 1 << 2
 ImGuiTabItemFlags_NoPushId = 8 # 1 << 3
+ImGuiTabItemFlags_NoTooltip = 16 # 1 << 4
 
 # ImGuiTreeNodeFlags_
 ImGuiTreeNodeFlags_None = 0 # 0
@@ -485,6 +501,18 @@ class ImDrawListSplitter < FFI::Struct
   )
 end
 
+class ImDrawCmd < FFI::Struct
+  layout(
+    :ClipRect, ImVec4.by_value,
+    :TextureId, :pointer,
+    :VtxOffset, :uint,
+    :IdxOffset, :uint,
+    :ElemCount, :uint,
+    :UserCallback, :pointer,
+    :UserCallbackData, :pointer
+  )
+end
+
 class ImDrawList < FFI::Struct
   layout(
     :CmdBuffer, ImVector.by_value,
@@ -493,13 +521,13 @@ class ImDrawList < FFI::Struct
     :Flags, :int,
     :_Data, :pointer,
     :_OwnerName, :pointer,
-    :_VtxCurrentOffset, :uint,
     :_VtxCurrentIdx, :uint,
     :_VtxWritePtr, ImDrawVert.ptr,
     :_IdxWritePtr, :pointer,
     :_ClipRectStack, ImVector.by_value,
     :_TextureIdStack, ImVector.by_value,
     :_Path, ImVector.by_value,
+    :_CmdHeader, ImDrawCmd.by_value,
     :_Splitter, ImDrawListSplitter.by_value
   )
 
@@ -601,14 +629,6 @@ class ImDrawList < FFI::Struct
 
   def ChannelsSplit(count)
     ImGui::ImDrawList_ChannelsSplit(self, count)
-  end
-
-  def Clear()
-    ImGui::ImDrawList_Clear(self)
-  end
-
-  def ClearFreeMemory()
-    ImGui::ImDrawList_ClearFreeMemory(self)
   end
 
   def CloneOutput()
@@ -719,12 +739,28 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PushTextureID(self, texture_id)
   end
 
-  def UpdateClipRect()
-    ImGui::ImDrawList_UpdateClipRect(self)
+  def _ClearFreeMemory()
+    ImGui::ImDrawList__ClearFreeMemory(self)
   end
 
-  def UpdateTextureID()
-    ImGui::ImDrawList_UpdateTextureID(self)
+  def _OnChangedClipRect()
+    ImGui::ImDrawList__OnChangedClipRect(self)
+  end
+
+  def _OnChangedTextureID()
+    ImGui::ImDrawList__OnChangedTextureID(self)
+  end
+
+  def _OnChangedVtxOffset()
+    ImGui::ImDrawList__OnChangedVtxOffset(self)
+  end
+
+  def _PopUnusedDrawCmd()
+    ImGui::ImDrawList__PopUnusedDrawCmd(self)
+  end
+
+  def _ResetForNewFrame()
+    ImGui::ImDrawList__ResetForNewFrame(self)
   end
 
   def destroy()
@@ -756,8 +792,8 @@ class ImFontAtlas < FFI::Struct
     ImGui::ImFontAtlas_AddCustomRectFontGlyph(self, font, id, width, height, advance_x, offset)
   end
 
-  def AddCustomRectRegular(id, width, height)
-    ImGui::ImFontAtlas_AddCustomRectRegular(self, id, width, height)
+  def AddCustomRectRegular(width, height)
+    ImGui::ImFontAtlas_AddCustomRectRegular(self, width, height)
   end
 
   def AddFont(font_cfg)
@@ -880,18 +916,6 @@ class ImColor < FFI::Struct
   )
 end
 
-class ImDrawCmd < FFI::Struct
-  layout(
-    :ElemCount, :uint,
-    :ClipRect, ImVec4.by_value,
-    :TextureId, :pointer,
-    :VtxOffset, :uint,
-    :IdxOffset, :uint,
-    :UserCallback, :pointer,
-    :UserCallbackData, :pointer
-  )
-end
-
 class ImDrawData < FFI::Struct
   layout(
     :Valid, :bool,
@@ -930,11 +954,11 @@ end
 
 class ImFontAtlasCustomRect < FFI::Struct
   layout(
-    :ID, :uint,
     :Width, :ushort,
     :Height, :ushort,
     :X, :ushort,
     :Y, :ushort,
+    :GlyphID, :uint,
     :GlyphAdvanceX, :float,
     :GlyphOffset, ImVec2.by_value,
     :Font, ImFont.ptr
@@ -1096,6 +1120,7 @@ class ImGuiIO < FFI::Struct
     :KeysDownDurationPrev, [:float, 512],
     :NavInputsDownDuration, [:float, 21],
     :NavInputsDownDurationPrev, [:float, 21],
+    :PenPressure, :float,
     :InputQueueSurrogate, :ushort,
     :InputQueueCharacters, ImVector.by_value
   )
@@ -1179,6 +1204,7 @@ class ImGuiStyle < FFI::Struct
     :GrabRounding, :float,
     :TabRounding, :float,
     :TabBorderSize, :float,
+    :TabMinWidthForUnselectedCloseButton, :float,
     :ColorButtonPosition, :int,
     :ButtonTextAlign, ImVec2.by_value,
     :SelectableTextAlign, ImVec2.by_value,
@@ -1350,8 +1376,6 @@ module ImGui
     attach_function :ImDrawList_ChannelsMerge, :ImDrawList_ChannelsMerge, [:pointer], :void
     attach_function :ImDrawList_ChannelsSetCurrent, :ImDrawList_ChannelsSetCurrent, [:pointer, :int], :void
     attach_function :ImDrawList_ChannelsSplit, :ImDrawList_ChannelsSplit, [:pointer, :int], :void
-    attach_function :ImDrawList_Clear, :ImDrawList_Clear, [:pointer], :void
-    attach_function :ImDrawList_ClearFreeMemory, :ImDrawList_ClearFreeMemory, [:pointer], :void
     attach_function :ImDrawList_CloneOutput, :ImDrawList_CloneOutput, [:pointer], :pointer
     attach_function :ImDrawList_GetClipRectMax, :ImDrawList_GetClipRectMax, [:pointer, :pointer], :void
     attach_function :ImDrawList_GetClipRectMin, :ImDrawList_GetClipRectMin, [:pointer, :pointer], :void
@@ -1378,11 +1402,15 @@ module ImGui
     attach_function :ImDrawList_PushClipRect, :ImDrawList_PushClipRect, [:pointer, ImVec2.by_value, ImVec2.by_value, :bool], :void
     attach_function :ImDrawList_PushClipRectFullScreen, :ImDrawList_PushClipRectFullScreen, [:pointer], :void
     attach_function :ImDrawList_PushTextureID, :ImDrawList_PushTextureID, [:pointer, :pointer], :void
-    attach_function :ImDrawList_UpdateClipRect, :ImDrawList_UpdateClipRect, [:pointer], :void
-    attach_function :ImDrawList_UpdateTextureID, :ImDrawList_UpdateTextureID, [:pointer], :void
+    attach_function :ImDrawList__ClearFreeMemory, :ImDrawList__ClearFreeMemory, [:pointer], :void
+    attach_function :ImDrawList__OnChangedClipRect, :ImDrawList__OnChangedClipRect, [:pointer], :void
+    attach_function :ImDrawList__OnChangedTextureID, :ImDrawList__OnChangedTextureID, [:pointer], :void
+    attach_function :ImDrawList__OnChangedVtxOffset, :ImDrawList__OnChangedVtxOffset, [:pointer], :void
+    attach_function :ImDrawList__PopUnusedDrawCmd, :ImDrawList__PopUnusedDrawCmd, [:pointer], :void
+    attach_function :ImDrawList__ResetForNewFrame, :ImDrawList__ResetForNewFrame, [:pointer], :void
     attach_function :ImDrawList_destroy, :ImDrawList_destroy, [:pointer], :void
     attach_function :ImFontAtlas_AddCustomRectFontGlyph, :ImFontAtlas_AddCustomRectFontGlyph, [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value], :int
-    attach_function :ImFontAtlas_AddCustomRectRegular, :ImFontAtlas_AddCustomRectRegular, [:pointer, :uint, :int, :int], :int
+    attach_function :ImFontAtlas_AddCustomRectRegular, :ImFontAtlas_AddCustomRectRegular, [:pointer, :int, :int], :int
     attach_function :ImFontAtlas_AddFont, :ImFontAtlas_AddFont, [:pointer, :pointer], :pointer
     attach_function :ImFontAtlas_AddFontDefault, :ImFontAtlas_AddFontDefault, [:pointer, :pointer], :pointer
     attach_function :ImFontAtlas_AddFontFromFileTTF, :ImFontAtlas_AddFontFromFileTTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer
@@ -1460,7 +1488,7 @@ module ImGui
     attach_function :igBeginPopup, :igBeginPopup, [:pointer, :int], :bool
     attach_function :igBeginPopupContextItem, :igBeginPopupContextItem, [:pointer, :int], :bool
     attach_function :igBeginPopupContextVoid, :igBeginPopupContextVoid, [:pointer, :int], :bool
-    attach_function :igBeginPopupContextWindow, :igBeginPopupContextWindow, [:pointer, :int, :bool], :bool
+    attach_function :igBeginPopupContextWindow, :igBeginPopupContextWindow, [:pointer, :int], :bool
     attach_function :igBeginPopupModal, :igBeginPopupModal, [:pointer, :pointer, :int], :bool
     attach_function :igBeginTabBar, :igBeginTabBar, [:pointer, :int], :bool
     attach_function :igBeginTabItem, :igBeginTabItem, [:pointer, :pointer, :int], :bool
@@ -1490,7 +1518,7 @@ module ImGui
     attach_function :igColumns, :igColumns, [:int, :pointer, :bool], :void
     attach_function :igComboStr_arr, :igComboStr_arr, [:pointer, :pointer, :pointer, :int, :int], :bool
     attach_function :igComboStr, :igComboStr, [:pointer, :pointer, :pointer, :int], :bool
-    attach_function :igComboFnPtr, :igComboFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
+    attach_function :igComboFnBoolPtr, :igComboFnBoolPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
     attach_function :igCreateContext, :igCreateContext, [:pointer], :pointer
     attach_function :igDebugCheckVersionAndDataLayout, :igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool
     attach_function :igDestroyContext, :igDestroyContext, [:pointer], :void
@@ -1625,7 +1653,7 @@ module ImGui
     attach_function :igIsMouseHoveringRect, :igIsMouseHoveringRect, [ImVec2.by_value, ImVec2.by_value, :bool], :bool
     attach_function :igIsMousePosValid, :igIsMousePosValid, [:pointer], :bool
     attach_function :igIsMouseReleased, :igIsMouseReleased, [:int], :bool
-    attach_function :igIsPopupOpen, :igIsPopupOpen, [:pointer], :bool
+    attach_function :igIsPopupOpen, :igIsPopupOpen, [:pointer, :int], :bool
     attach_function :igIsRectVisibleNil, :igIsRectVisibleNil, [ImVec2.by_value], :bool
     attach_function :igIsRectVisibleVec2, :igIsRectVisibleVec2, [ImVec2.by_value, ImVec2.by_value], :bool
     attach_function :igIsWindowAppearing, :igIsWindowAppearing, [], :bool
@@ -1634,7 +1662,7 @@ module ImGui
     attach_function :igIsWindowHovered, :igIsWindowHovered, [:int], :bool
     attach_function :igLabelText, :igLabelText, [:pointer, :pointer, :varargs], :void
     attach_function :igListBoxStr_arr, :igListBoxStr_arr, [:pointer, :pointer, :pointer, :int, :int], :bool
-    attach_function :igListBoxFnPtr, :igListBoxFnPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
+    attach_function :igListBoxFnBoolPtr, :igListBoxFnBoolPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool
     attach_function :igListBoxFooter, :igListBoxFooter, [], :void
     attach_function :igListBoxHeaderVec2, :igListBoxHeaderVec2, [:pointer, ImVec2.by_value], :bool
     attach_function :igListBoxHeaderInt, :igListBoxHeaderInt, [:pointer, :int, :int], :bool
@@ -1653,12 +1681,12 @@ module ImGui
     attach_function :igNewFrame, :igNewFrame, [], :void
     attach_function :igNewLine, :igNewLine, [], :void
     attach_function :igNextColumn, :igNextColumn, [], :void
-    attach_function :igOpenPopup, :igOpenPopup, [:pointer], :void
-    attach_function :igOpenPopupOnItemClick, :igOpenPopupOnItemClick, [:pointer, :int], :bool
+    attach_function :igOpenPopup, :igOpenPopup, [:pointer, :int], :void
+    attach_function :igOpenPopupContextItem, :igOpenPopupContextItem, [:pointer, :int], :bool
     attach_function :igPlotHistogramFloatPtr, :igPlotHistogramFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
-    attach_function :igPlotHistogramFnPtr, :igPlotHistogramFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
+    attach_function :igPlotHistogramFnFloatPtr, :igPlotHistogramFnFloatPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
     attach_function :igPlotLinesFloatPtr, :igPlotLinesFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
-    attach_function :igPlotLinesFnPtr, :igPlotLinesFnPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
+    attach_function :igPlotLinesFnFloatPtr, :igPlotLinesFnFloatPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
     attach_function :igPopAllowKeyboardFocus, :igPopAllowKeyboardFocus, [], :void
     attach_function :igPopButtonRepeat, :igPopButtonRepeat, [], :void
     attach_function :igPopClipRect, :igPopClipRect, [], :void
@@ -1846,16 +1874,16 @@ module ImGui
     igBeginPopup(str_id, flags)
   end
 
-  def self.BeginPopupContextItem(str_id = nil, mouse_button = 1)
-    igBeginPopupContextItem(str_id, mouse_button)
+  def self.BeginPopupContextItem(str_id = nil, popup_flags = 1)
+    igBeginPopupContextItem(str_id, popup_flags)
   end
 
-  def self.BeginPopupContextVoid(str_id = nil, mouse_button = 1)
-    igBeginPopupContextVoid(str_id, mouse_button)
+  def self.BeginPopupContextVoid(str_id = nil, popup_flags = 1)
+    igBeginPopupContextVoid(str_id, popup_flags)
   end
 
-  def self.BeginPopupContextWindow(str_id = nil, mouse_button = 1, also_over_items = true)
-    igBeginPopupContextWindow(str_id, mouse_button, also_over_items)
+  def self.BeginPopupContextWindow(str_id = nil, popup_flags = 1)
+    igBeginPopupContextWindow(str_id, popup_flags)
   end
 
   def self.BeginPopupModal(name, p_open = nil, flags = 0)
@@ -1978,8 +2006,8 @@ module ImGui
     igComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
   end
 
-  def self.ComboFnPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items = -1)
-    igComboFnPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
+  def self.ComboFnBoolPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items = -1)
+    igComboFnBoolPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
   end
 
   def self.CreateContext(shared_font_atlas = nil)
@@ -2550,8 +2578,8 @@ module ImGui
     igIsMouseReleased(button)
   end
 
-  def self.IsPopupOpen(str_id)
-    igIsPopupOpen(str_id)
+  def self.IsPopupOpen(str_id, flags = 0)
+    igIsPopupOpen(str_id, flags)
   end
 
   def self.IsRectVisibleNil(size)
@@ -2586,8 +2614,8 @@ module ImGui
     igListBoxStr_arr(label, current_item, items, items_count, height_in_items)
   end
 
-  def self.ListBoxFnPtr(label, current_item, items_getter, data, items_count, height_in_items = -1)
-    igListBoxFnPtr(label, current_item, items_getter, data, items_count, height_in_items)
+  def self.ListBoxFnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items = -1)
+    igListBoxFnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items)
   end
 
   def self.ListBoxFooter()
@@ -2662,28 +2690,28 @@ module ImGui
     igNextColumn()
   end
 
-  def self.OpenPopup(str_id)
-    igOpenPopup(str_id)
+  def self.OpenPopup(str_id, popup_flags = 0)
+    igOpenPopup(str_id, popup_flags)
   end
 
-  def self.OpenPopupOnItemClick(str_id = nil, mouse_button = 1)
-    igOpenPopupOnItemClick(str_id, mouse_button)
+  def self.OpenPopupContextItem(str_id = nil, popup_flags = 1)
+    igOpenPopupContextItem(str_id, popup_flags)
   end
 
   def self.PlotHistogramFloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
     igPlotHistogramFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
   end
 
-  def self.PlotHistogramFnPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
-    igPlotHistogramFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  def self.PlotHistogramFnFloatPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
+    igPlotHistogramFnFloatPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
   end
 
   def self.PlotLinesFloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
     igPlotLinesFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
   end
 
-  def self.PlotLinesFnPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
-    igPlotLinesFnPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  def self.PlotLinesFnFloatPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
+    igPlotLinesFnFloatPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
   end
 
   def self.PopAllowKeyboardFocus()

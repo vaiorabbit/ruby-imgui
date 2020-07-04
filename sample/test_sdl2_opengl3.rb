@@ -23,7 +23,17 @@ include SDL2
 
 if __FILE__ == $0
 
-  SDL2::load_lib('/usr/local/lib/libSDL2.dylib')
+  $sdl2_path = case RUBY_PLATFORM
+              when /mswin|msys|mingw|cygwin/
+                Dir.pwd + '/' + 'SDL2.dll'
+              when /darwin/
+                '/usr/local/lib/libSDL2.dylib'
+              when /linux/
+                '/usr/local/lib/libSDL2.so' # not tested
+              else
+                raise RuntimeError, "test.rb : Unknown OS: #{RUBY_PLATFORM}"
+              end
+  SDL2::load_lib($sdl2_path)
 
   case OpenGL.get_platform
   when :OPENGL_PLATFORM_WINDOWS

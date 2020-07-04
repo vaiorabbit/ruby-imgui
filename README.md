@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2020-06-14
+*   Last modified : 2020-07-04
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -13,8 +13,8 @@
 
 *   Ruby interpreter
     *   Tested on:
-        *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit 2.6.0-1 (x64)
-            *   ruby 2.6.0p0 (2018-12-25 revision 66547) [x64-mingw32]
+        *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
+            *   ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x64-mingw32]
         *   [macOS]
             *   ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
             *   ruby 2.6.0p0 (2018-12-25 revision 66547) [x86_64-darwin18]

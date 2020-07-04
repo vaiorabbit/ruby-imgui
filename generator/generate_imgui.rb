@@ -394,7 +394,7 @@ require 'ffi'
     # Structs
     #
 
-    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawList', 'ImFontAtlas'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
+    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawList', 'ImFontAtlas'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
       Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map)
       structs_map.delete_if {|struct| struct.name == name}
