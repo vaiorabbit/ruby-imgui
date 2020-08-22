@@ -119,7 +119,13 @@ module ImGuiBindings
         struct = ImGuiStructMapEntry.new(name: struct_name, members: [])
         members = json_structs[struct_name]
         members.each do |m|
-          member = ImGuiStructMemberEntry.new(name: m['name'], type_str: m['type'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
+          # Some members in "structs" of "structs_and_enums.json" contains array brackets in its name (e.g.: "name": "Used4kPagesMap[(0xFFFF+1)/4096/8]",), which is not desirable as actual variable name.
+          member_name = if m['name'].include? "["
+                          m['name'].gsub(/\[.+\]/, '')
+                        else
+                          m['name']
+                        end
+          member = ImGuiStructMemberEntry.new(name: member_name, type_str: m['type'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
           if member.is_array
             member.size = m['size'].to_i
             member.name.gsub!(/\[[\w\+]+\]/,'')

@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2020-07-04
+*   Last modified : 2020-08-22
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -14,7 +14,7 @@
 *   Ruby interpreter
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
-            *   ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x64-mingw32]
+            *   ruby 2.7.1p83 (2020-03-31 revision a0c7c23c9c) [x64-mingw32]
         *   [macOS]
             *   ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
             *   ruby 2.6.0p0 (2018-12-25 revision 66547) [x86_64-darwin18]
@@ -54,7 +54,7 @@
 
 ## License ##
 
-'imgui.dylib' and 'imgui.dll' are built on top of these products and are available under the terms of the MIT License.
+'imgui.dylib', 'imgui.dll' and 'imgui_debug.dll' are built on top of these products and are available under the terms of the MIT License.
 *   cimgui ( https://github.com/cimgui/cimgui )
     *   https://github.com/cimgui/cimgui/blob/master/LICENSE
 *   Dear ImGui ( https://github.com/ocornut/imgui )

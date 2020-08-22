@@ -11,6 +11,7 @@ FFI.typedef :ushort, :ImDrawIdx
 FFI.typedef :int, :ImDrawListFlags
 FFI.typedef :int, :ImFontAtlasFlags
 FFI.typedef :int, :ImGuiBackendFlags
+FFI.typedef :int, :ImGuiButtonFlags
 FFI.typedef :int, :ImGuiCol
 FFI.typedef :int, :ImGuiColorEditFlags
 FFI.typedef :int, :ImGuiComboFlags
@@ -30,6 +31,7 @@ FFI.typedef :int, :ImGuiMouseCursor
 FFI.typedef :int, :ImGuiNavInput
 FFI.typedef :int, :ImGuiPopupFlags
 FFI.typedef :int, :ImGuiSelectableFlags
+FFI.typedef :int, :ImGuiSliderFlags
 FFI.typedef :int, :ImGuiStyleVar
 FFI.typedef :int, :ImGuiTabBarFlags
 FFI.typedef :int, :ImGuiTabItemFlags
@@ -63,13 +65,15 @@ ImDrawCornerFlags_All = 15 # 0xF
 # ImDrawListFlags_
 ImDrawListFlags_None = 0 # 0
 ImDrawListFlags_AntiAliasedLines = 1 # 1 << 0
-ImDrawListFlags_AntiAliasedFill = 2 # 1 << 1
-ImDrawListFlags_AllowVtxOffset = 4 # 1 << 2
+ImDrawListFlags_AntiAliasedLinesUseTex = 2 # 1 << 1
+ImDrawListFlags_AntiAliasedFill = 4 # 1 << 2
+ImDrawListFlags_AllowVtxOffset = 8 # 1 << 3
 
 # ImFontAtlasFlags_
 ImFontAtlasFlags_None = 0 # 0
 ImFontAtlasFlags_NoPowerOfTwoHeight = 1 # 1 << 0
 ImFontAtlasFlags_NoMouseCursors = 2 # 1 << 1
+ImFontAtlasFlags_NoBakedLines = 4 # 1 << 2
 
 # ImGuiBackendFlags_
 ImGuiBackendFlags_None = 0 # 0
@@ -77,6 +81,14 @@ ImGuiBackendFlags_HasGamepad = 1 # 1 << 0
 ImGuiBackendFlags_HasMouseCursors = 2 # 1 << 1
 ImGuiBackendFlags_HasSetMousePos = 4 # 1 << 2
 ImGuiBackendFlags_RendererHasVtxOffset = 8 # 1 << 3
+
+# ImGuiButtonFlags_
+ImGuiButtonFlags_None = 0 # 0
+ImGuiButtonFlags_MouseButtonLeft = 1 # 1 << 0
+ImGuiButtonFlags_MouseButtonRight = 2 # 1 << 1
+ImGuiButtonFlags_MouseButtonMiddle = 4 # 1 << 2
+ImGuiButtonFlags_MouseButtonMask_ = 7 # ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle
+ImGuiButtonFlags_MouseButtonDefault_ = 1 # ImGuiButtonFlags_MouseButtonLeft
 
 # ImGuiCol_
 ImGuiCol_Text = 0 # 0
@@ -154,11 +166,11 @@ ImGuiColorEditFlags_PickerHueBar = 33554432 # 1 << 25
 ImGuiColorEditFlags_PickerHueWheel = 67108864 # 1 << 26
 ImGuiColorEditFlags_InputRGB = 134217728 # 1 << 27
 ImGuiColorEditFlags_InputHSV = 268435456 # 1 << 28
-ImGuiColorEditFlags__OptionsDefault = 177209344 # ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_DisplayRGB|ImGuiColorEditFlags_InputRGB|ImGuiColorEditFlags_PickerHueBar
-ImGuiColorEditFlags__DisplayMask = 7340032 # ImGuiColorEditFlags_DisplayRGB|ImGuiColorEditFlags_DisplayHSV|ImGuiColorEditFlags_DisplayHex
-ImGuiColorEditFlags__DataTypeMask = 25165824 # ImGuiColorEditFlags_Uint8|ImGuiColorEditFlags_Float
-ImGuiColorEditFlags__PickerMask = 100663296 # ImGuiColorEditFlags_PickerHueWheel|ImGuiColorEditFlags_PickerHueBar
-ImGuiColorEditFlags__InputMask = 402653184 # ImGuiColorEditFlags_InputRGB|ImGuiColorEditFlags_InputHSV
+ImGuiColorEditFlags__OptionsDefault = 177209344 # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueBar
+ImGuiColorEditFlags__DisplayMask = 7340032 # ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex
+ImGuiColorEditFlags__DataTypeMask = 25165824 # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_Float
+ImGuiColorEditFlags__PickerMask = 100663296 # ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_PickerHueBar
+ImGuiColorEditFlags__InputMask = 402653184 # ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_InputHSV
 
 # ImGuiComboFlags_
 ImGuiComboFlags_None = 0 # 0
@@ -363,6 +375,14 @@ ImGuiSelectableFlags_AllowDoubleClick = 4 # 1 << 2
 ImGuiSelectableFlags_Disabled = 8 # 1 << 3
 ImGuiSelectableFlags_AllowItemOverlap = 16 # 1 << 4
 
+# ImGuiSliderFlags_
+ImGuiSliderFlags_None = 0 # 0
+ImGuiSliderFlags_ClampOnInput = 16 # 1 << 4
+ImGuiSliderFlags_Logarithmic = 32 # 1 << 5
+ImGuiSliderFlags_NoRoundToFormat = 64 # 1 << 6
+ImGuiSliderFlags_NoInput = 128 # 1 << 7
+ImGuiSliderFlags_InvalidMask_ = 1879048207 # 0x7000000F
+
 # ImGuiStyleVar_
 ImGuiStyleVar_Alpha = 0 # 0
 ImGuiStyleVar_WindowPadding = 1 # 1
@@ -539,11 +559,11 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddCallback(self, callback, callback_data)
   end
 
-  def AddCircle(center, radius, col, num_segments = 12, thickness = 1.0)
+  def AddCircle(center, radius, col, num_segments = 0, thickness = 1.0)
     ImGui::ImDrawList_AddCircle(self, center, radius, col, num_segments, thickness)
   end
 
-  def AddCircleFilled(center, radius, col, num_segments = 12)
+  def AddCircleFilled(center, radius, col, num_segments = 0)
     ImGui::ImDrawList_AddCircleFilled(self, center, radius, col, num_segments)
   end
 
@@ -785,7 +805,9 @@ class ImFontAtlas < FFI::Struct
     :Fonts, ImVector.by_value,
     :CustomRects, ImVector.by_value,
     :ConfigData, ImVector.by_value,
-    :CustomRectIds, [:int, 1]
+    :TexUvLines, [ImVec4.by_value, 64],
+    :PackIdMouseCursors, :int,
+    :PackIdLines, :int
   )
 
   def AddCustomRectFontGlyph(font, id, width, height, advance_x, offset = ImVec2.create(0,0))
@@ -948,7 +970,7 @@ class ImFont < FFI::Struct
     :Ascent, :float,
     :Descent, :float,
     :MetricsTotalSurface, :int,
-    :Used4kPagesMap[(0xFFFF+1)/4096/8], [:uchar, 2]
+    :Used4kPagesMap, [:uchar, 2]
   )
 end
 
@@ -1202,6 +1224,7 @@ class ImGuiStyle < FFI::Struct
     :ScrollbarRounding, :float,
     :GrabMinSize, :float,
     :GrabRounding, :float,
+    :LogSliderDeadzone, :float,
     :TabRounding, :float,
     :TabBorderSize, :float,
     :TabMinWidthForUnselectedCloseButton, :float,
@@ -1212,6 +1235,7 @@ class ImGuiStyle < FFI::Struct
     :DisplaySafeAreaPadding, ImVec2.by_value,
     :MouseCursorScale, :float,
     :AntiAliasedLines, :bool,
+    :AntiAliasedLinesUseTex, :bool,
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
     :CircleSegmentMaxError, :float,
@@ -1522,18 +1546,18 @@ module ImGui
     attach_function :igCreateContext, :igCreateContext, [:pointer], :pointer
     attach_function :igDebugCheckVersionAndDataLayout, :igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool
     attach_function :igDestroyContext, :igDestroyContext, [:pointer], :void
-    attach_function :igDragFloat, :igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :igDragFloat2, :igDragFloat2, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :igDragFloat3, :igDragFloat3, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :igDragFloat4, :igDragFloat4, [:pointer, :pointer, :float, :float, :float, :pointer, :float], :bool
-    attach_function :igDragFloatRange2, :igDragFloatRange2, [:pointer, :pointer, :pointer, :float, :float, :float, :pointer, :pointer, :float], :bool
-    attach_function :igDragInt, :igDragInt, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :igDragInt2, :igDragInt2, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :igDragInt3, :igDragInt3, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :igDragInt4, :igDragInt4, [:pointer, :pointer, :float, :int, :int, :pointer], :bool
-    attach_function :igDragIntRange2, :igDragIntRange2, [:pointer, :pointer, :pointer, :float, :int, :int, :pointer, :pointer], :bool
-    attach_function :igDragScalar, :igDragScalar, [:pointer, :int, :pointer, :float, :pointer, :pointer, :pointer, :float], :bool
-    attach_function :igDragScalarN, :igDragScalarN, [:pointer, :int, :pointer, :int, :float, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igDragFloat, :igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool
+    attach_function :igDragFloat2, :igDragFloat2, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool
+    attach_function :igDragFloat3, :igDragFloat3, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool
+    attach_function :igDragFloat4, :igDragFloat4, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool
+    attach_function :igDragFloatRange2, :igDragFloatRange2, [:pointer, :pointer, :pointer, :float, :float, :float, :pointer, :pointer, :int], :bool
+    attach_function :igDragInt, :igDragInt, [:pointer, :pointer, :float, :int, :int, :pointer, :int], :bool
+    attach_function :igDragInt2, :igDragInt2, [:pointer, :pointer, :float, :int, :int, :pointer, :int], :bool
+    attach_function :igDragInt3, :igDragInt3, [:pointer, :pointer, :float, :int, :int, :pointer, :int], :bool
+    attach_function :igDragInt4, :igDragInt4, [:pointer, :pointer, :float, :int, :int, :pointer, :int], :bool
+    attach_function :igDragIntRange2, :igDragIntRange2, [:pointer, :pointer, :pointer, :float, :int, :int, :pointer, :pointer, :int], :bool
+    attach_function :igDragScalar, :igDragScalar, [:pointer, :int, :pointer, :float, :pointer, :pointer, :pointer, :int], :bool
+    attach_function :igDragScalarN, :igDragScalarN, [:pointer, :int, :pointer, :int, :float, :pointer, :pointer, :pointer, :int], :bool
     attach_function :igDummy, :igDummy, [ImVec2.by_value], :void
     attach_function :igEnd, :igEnd, [], :void
     attach_function :igEndChild, :igEndChild, [], :void
@@ -1628,7 +1652,7 @@ module ImGui
     attach_function :igInputText, :igInputText, [:pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer], :bool
     attach_function :igInputTextMultiline, :igInputTextMultiline, [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :ImGuiInputTextCallback, :pointer], :bool
     attach_function :igInputTextWithHint, :igInputTextWithHint, [:pointer, :pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer], :bool
-    attach_function :igInvisibleButton, :igInvisibleButton, [:pointer, ImVec2.by_value], :bool
+    attach_function :igInvisibleButton, :igInvisibleButton, [:pointer, ImVec2.by_value, :int], :bool
     attach_function :igIsAnyItemActive, :igIsAnyItemActive, [], :bool
     attach_function :igIsAnyItemFocused, :igIsAnyItemFocused, [], :bool
     attach_function :igIsAnyItemHovered, :igIsAnyItemHovered, [], :bool
@@ -1770,17 +1794,17 @@ module ImGui
     attach_function :igShowStyleEditor, :igShowStyleEditor, [:pointer], :void
     attach_function :igShowStyleSelector, :igShowStyleSelector, [:pointer], :bool
     attach_function :igShowUserGuide, :igShowUserGuide, [], :void
-    attach_function :igSliderAngle, :igSliderAngle, [:pointer, :pointer, :float, :float, :pointer], :bool
-    attach_function :igSliderFloat, :igSliderFloat, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :igSliderFloat2, :igSliderFloat2, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :igSliderFloat3, :igSliderFloat3, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :igSliderFloat4, :igSliderFloat4, [:pointer, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :igSliderInt, :igSliderInt, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :igSliderInt2, :igSliderInt2, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :igSliderInt3, :igSliderInt3, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :igSliderInt4, :igSliderInt4, [:pointer, :pointer, :int, :int, :pointer], :bool
-    attach_function :igSliderScalar, :igSliderScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :float], :bool
-    attach_function :igSliderScalarN, :igSliderScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igSliderAngle, :igSliderAngle, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
+    attach_function :igSliderFloat, :igSliderFloat, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
+    attach_function :igSliderFloat2, :igSliderFloat2, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
+    attach_function :igSliderFloat3, :igSliderFloat3, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
+    attach_function :igSliderFloat4, :igSliderFloat4, [:pointer, :pointer, :float, :float, :pointer, :int], :bool
+    attach_function :igSliderInt, :igSliderInt, [:pointer, :pointer, :int, :int, :pointer, :int], :bool
+    attach_function :igSliderInt2, :igSliderInt2, [:pointer, :pointer, :int, :int, :pointer, :int], :bool
+    attach_function :igSliderInt3, :igSliderInt3, [:pointer, :pointer, :int, :int, :pointer, :int], :bool
+    attach_function :igSliderInt4, :igSliderInt4, [:pointer, :pointer, :int, :int, :pointer, :int], :bool
+    attach_function :igSliderScalar, :igSliderScalar, [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :int], :bool
+    attach_function :igSliderScalarN, :igSliderScalarN, [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int], :bool
     attach_function :igSmallButton, :igSmallButton, [:pointer], :bool
     attach_function :igSpacing, :igSpacing, [], :void
     attach_function :igStyleColorsClassic, :igStyleColorsClassic, [:pointer], :void
@@ -1801,9 +1825,9 @@ module ImGui
     attach_function :igTreePushStr, :igTreePushStr, [:pointer], :void
     attach_function :igTreePushPtr, :igTreePushPtr, [:pointer], :void
     attach_function :igUnindent, :igUnindent, [:float], :void
-    attach_function :igVSliderFloat, :igVSliderFloat, [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :float], :bool
-    attach_function :igVSliderInt, :igVSliderInt, [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer], :bool
-    attach_function :igVSliderScalar, :igVSliderScalar, [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :float], :bool
+    attach_function :igVSliderFloat, :igVSliderFloat, [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :int], :bool
+    attach_function :igVSliderInt, :igVSliderInt, [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer, :int], :bool
+    attach_function :igVSliderScalar, :igVSliderScalar, [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :int], :bool
     attach_function :igValueBool, :igValueBool, [:pointer, :bool], :void
     attach_function :igValueInt, :igValueInt, [:pointer, :int], :void
     attach_function :igValueUint, :igValueUint, [:pointer, :uint], :void
@@ -2022,52 +2046,52 @@ module ImGui
     igDestroyContext(ctx)
   end
 
-  def self.DragFloat(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
-    igDragFloat(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+    igDragFloat(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragFloat2(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
-    igDragFloat2(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat2(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+    igDragFloat2(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragFloat3(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
-    igDragFloat3(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat3(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+    igDragFloat3(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragFloat4(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", power = 1.0)
-    igDragFloat4(label, v, v_speed, v_min, v_max, format, power)
+  def self.DragFloat4(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+    igDragFloat4(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = nil, power = 1.0)
-    igDragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, power)
+  def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = nil, flags = 0)
+    igDragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
   end
 
-  def self.DragInt(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
-    igDragInt(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+    igDragInt(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragInt2(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
-    igDragInt2(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt2(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+    igDragInt2(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragInt3(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
-    igDragInt3(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt3(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+    igDragInt3(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragInt4(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d")
-    igDragInt4(label, v, v_speed, v_min, v_max, format)
+  def self.DragInt4(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+    igDragInt4(label, v, v_speed, v_min, v_max, format, flags)
   end
 
-  def self.DragIntRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = nil)
-    igDragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max)
+  def self.DragIntRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = nil, flags = 0)
+    igDragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
   end
 
-  def self.DragScalar(label, data_type, p_data, v_speed, p_min = nil, p_max = nil, format = nil, power = 1.0)
-    igDragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, power)
+  def self.DragScalar(label, data_type, p_data, v_speed, p_min = nil, p_max = nil, format = nil, flags = 0)
+    igDragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, flags)
   end
 
-  def self.DragScalarN(label, data_type, p_data, components, v_speed, p_min = nil, p_max = nil, format = nil, power = 1.0)
-    igDragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, power)
+  def self.DragScalarN(label, data_type, p_data, components, v_speed, p_min = nil, p_max = nil, format = nil, flags = 0)
+    igDragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, flags)
   end
 
   def self.Dummy(size)
@@ -2478,8 +2502,8 @@ module ImGui
     igInputTextWithHint(label, hint, buf, buf_size, flags, callback, user_data)
   end
 
-  def self.InvisibleButton(str_id, size)
-    igInvisibleButton(str_id, size)
+  def self.InvisibleButton(str_id, size, flags = 0)
+    igInvisibleButton(str_id, size, flags)
   end
 
   def self.IsAnyItemActive()
@@ -3046,48 +3070,48 @@ module ImGui
     igShowUserGuide()
   end
 
-  def self.SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg")
-    igSliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format)
+  def self.SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg", flags = 0)
+    igSliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format, flags)
   end
 
-  def self.SliderFloat(label, v, v_min, v_max, format = "%.3f", power = 1.0)
-    igSliderFloat(label, v, v_min, v_max, format, power)
+  def self.SliderFloat(label, v, v_min, v_max, format = "%.3f", flags = 0)
+    igSliderFloat(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderFloat2(label, v, v_min, v_max, format = "%.3f", power = 1.0)
-    igSliderFloat2(label, v, v_min, v_max, format, power)
+  def self.SliderFloat2(label, v, v_min, v_max, format = "%.3f", flags = 0)
+    igSliderFloat2(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderFloat3(label, v, v_min, v_max, format = "%.3f", power = 1.0)
-    igSliderFloat3(label, v, v_min, v_max, format, power)
+  def self.SliderFloat3(label, v, v_min, v_max, format = "%.3f", flags = 0)
+    igSliderFloat3(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderFloat4(label, v, v_min, v_max, format = "%.3f", power = 1.0)
-    igSliderFloat4(label, v, v_min, v_max, format, power)
+  def self.SliderFloat4(label, v, v_min, v_max, format = "%.3f", flags = 0)
+    igSliderFloat4(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderInt(label, v, v_min, v_max, format = "%d")
-    igSliderInt(label, v, v_min, v_max, format)
+  def self.SliderInt(label, v, v_min, v_max, format = "%d", flags = 0)
+    igSliderInt(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderInt2(label, v, v_min, v_max, format = "%d")
-    igSliderInt2(label, v, v_min, v_max, format)
+  def self.SliderInt2(label, v, v_min, v_max, format = "%d", flags = 0)
+    igSliderInt2(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderInt3(label, v, v_min, v_max, format = "%d")
-    igSliderInt3(label, v, v_min, v_max, format)
+  def self.SliderInt3(label, v, v_min, v_max, format = "%d", flags = 0)
+    igSliderInt3(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderInt4(label, v, v_min, v_max, format = "%d")
-    igSliderInt4(label, v, v_min, v_max, format)
+  def self.SliderInt4(label, v, v_min, v_max, format = "%d", flags = 0)
+    igSliderInt4(label, v, v_min, v_max, format, flags)
   end
 
-  def self.SliderScalar(label, data_type, p_data, p_min, p_max, format = nil, power = 1.0)
-    igSliderScalar(label, data_type, p_data, p_min, p_max, format, power)
+  def self.SliderScalar(label, data_type, p_data, p_min, p_max, format = nil, flags = 0)
+    igSliderScalar(label, data_type, p_data, p_min, p_max, format, flags)
   end
 
-  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format = nil, power = 1.0)
-    igSliderScalarN(label, data_type, p_data, components, p_min, p_max, format, power)
+  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format = nil, flags = 0)
+    igSliderScalarN(label, data_type, p_data, components, p_min, p_max, format, flags)
   end
 
   def self.SmallButton(label)
@@ -3170,16 +3194,16 @@ module ImGui
     igUnindent(indent_w)
   end
 
-  def self.VSliderFloat(label, size, v, v_min, v_max, format = "%.3f", power = 1.0)
-    igVSliderFloat(label, size, v, v_min, v_max, format, power)
+  def self.VSliderFloat(label, size, v, v_min, v_max, format = "%.3f", flags = 0)
+    igVSliderFloat(label, size, v, v_min, v_max, format, flags)
   end
 
-  def self.VSliderInt(label, size, v, v_min, v_max, format = "%d")
-    igVSliderInt(label, size, v, v_min, v_max, format)
+  def self.VSliderInt(label, size, v, v_min, v_max, format = "%d", flags = 0)
+    igVSliderInt(label, size, v, v_min, v_max, format, flags)
   end
 
-  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format = nil, power = 1.0)
-    igVSliderScalar(label, size, data_type, p_data, p_min, p_max, format, power)
+  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format = nil, flags = 0)
+    igVSliderScalar(label, size, data_type, p_data, p_min, p_max, format, flags)
   end
 
   def self.ValueBool(prefix, b)
