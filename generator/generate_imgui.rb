@@ -67,6 +67,10 @@ module Generator
         "FFI::TYPE_FLOAT32.size"
       when "(((ImU32)(255)<<24)|((ImU32)(255)<<16)|((ImU32)(255)<<8)|((ImU32)(255)<<0))" # #define IM_COL32_WHITE IM_COL32(255,255,255,255)
         "ImColor.create(255,255,255,255)"
+      when "4294967295" # #define IM_COL32_WHITE IM_COL32(255,255,255,255)  // Opaque white = 0xFFFFFFFF
+        "ImColor.col32(255,255,255,255)"
+      when "NULL"
+        "nil"
       else
         default_value
       end

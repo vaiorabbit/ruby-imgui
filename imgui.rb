@@ -275,6 +275,7 @@ ImGuiInputTextFlags_Password = 32768 # 1 << 15
 ImGuiInputTextFlags_NoUndoRedo = 65536 # 1 << 16
 ImGuiInputTextFlags_CharsScientific = 131072 # 1 << 17
 ImGuiInputTextFlags_CallbackResize = 262144 # 1 << 18
+ImGuiInputTextFlags_CallbackEdit = 524288 # 1 << 19
 ImGuiInputTextFlags_Multiline = 1048576 # 1 << 20
 ImGuiInputTextFlags_NoMarkEdited = 2097152 # 1 << 21
 
@@ -377,7 +378,7 @@ ImGuiSelectableFlags_AllowItemOverlap = 16 # 1 << 4
 
 # ImGuiSliderFlags_
 ImGuiSliderFlags_None = 0 # 0
-ImGuiSliderFlags_ClampOnInput = 16 # 1 << 4
+ImGuiSliderFlags_AlwaysClamp = 16 # 1 << 4
 ImGuiSliderFlags_Logarithmic = 32 # 1 << 5
 ImGuiSliderFlags_NoRoundToFormat = 64 # 1 << 6
 ImGuiSliderFlags_NoInput = 128 # 1 << 7
@@ -429,6 +430,9 @@ ImGuiTabItemFlags_SetSelected = 2 # 1 << 1
 ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4 # 1 << 2
 ImGuiTabItemFlags_NoPushId = 8 # 1 << 3
 ImGuiTabItemFlags_NoTooltip = 16 # 1 << 4
+ImGuiTabItemFlags_NoReorder = 32 # 1 << 5
+ImGuiTabItemFlags_Leading = 64 # 1 << 6
+ImGuiTabItemFlags_Trailing = 128 # 1 << 7
 
 # ImGuiTreeNodeFlags_
 ImGuiTreeNodeFlags_None = 0 # 0
@@ -575,11 +579,11 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddDrawCmd(self)
   end
 
-  def AddImage(user_texture_id, p_min, p_max, uv_min = ImVec2.create(0,0), uv_max = ImVec2.create(1,1), col = ImColor.create(255,255,255,255))
+  def AddImage(user_texture_id, p_min, p_max, uv_min = ImVec2.create(0,0), uv_max = ImVec2.create(1,1), col = ImColor.col32(255,255,255,255))
     ImGui::ImDrawList_AddImage(self, user_texture_id, p_min, p_max, uv_min, uv_max, col)
   end
 
-  def AddImageQuad(user_texture_id, p1, p2, p3, p4, uv1 = ImVec2.create(0,0), uv2 = ImVec2.create(1,0), uv3 = ImVec2.create(1,1), uv4 = ImVec2.create(0,1), col = ImColor.create(255,255,255,255))
+  def AddImageQuad(user_texture_id, p1, p2, p3, p4, uv1 = ImVec2.create(0,0), uv2 = ImVec2.create(1,0), uv3 = ImVec2.create(1,1), uv4 = ImVec2.create(0,1), col = ImColor.col32(255,255,255,255))
     ImGui::ImDrawList_AddImageQuad(self, user_texture_id, p1, p2, p3, p4, uv1, uv2, uv3, uv4, col)
   end
 
@@ -959,7 +963,6 @@ class ImFont < FFI::Struct
     :IndexLookup, ImVector.by_value,
     :Glyphs, ImVector.by_value,
     :FallbackGlyph, :pointer,
-    :DisplayOffset, ImVec2.by_value,
     :ContainerAtlas, ImFontAtlas.ptr,
     :ConfigData, :pointer,
     :ConfigDataCount, :short,
@@ -1227,7 +1230,7 @@ class ImGuiStyle < FFI::Struct
     :LogSliderDeadzone, :float,
     :TabRounding, :float,
     :TabBorderSize, :float,
-    :TabMinWidthForUnselectedCloseButton, :float,
+    :TabMinWidthForCloseButton, :float,
     :ColorButtonPosition, :int,
     :ButtonTextAlign, ImVec2.by_value,
     :SelectableTextAlign, ImVec2.by_value,
@@ -1706,7 +1709,7 @@ module ImGui
     attach_function :igNewLine, :igNewLine, [], :void
     attach_function :igNextColumn, :igNextColumn, [], :void
     attach_function :igOpenPopup, :igOpenPopup, [:pointer, :int], :void
-    attach_function :igOpenPopupContextItem, :igOpenPopupContextItem, [:pointer, :int], :bool
+    attach_function :igOpenPopupOnItemClick, :igOpenPopupOnItemClick, [:pointer, :int], :void
     attach_function :igPlotHistogramFloatPtr, :igPlotHistogramFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
     attach_function :igPlotHistogramFnFloatPtr, :igPlotHistogramFnFloatPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void
     attach_function :igPlotLinesFloatPtr, :igPlotLinesFloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void
@@ -1810,6 +1813,7 @@ module ImGui
     attach_function :igStyleColorsClassic, :igStyleColorsClassic, [:pointer], :void
     attach_function :igStyleColorsDark, :igStyleColorsDark, [:pointer], :void
     attach_function :igStyleColorsLight, :igStyleColorsLight, [:pointer], :void
+    attach_function :igTabItemButton, :igTabItemButton, [:pointer, :int], :bool
     attach_function :igText, :igText, [:pointer, :varargs], :void
     attach_function :igTextColored, :igTextColored, [ImVec4.by_value, :pointer, :varargs], :void
     attach_function :igTextDisabled, :igTextDisabled, [:pointer, :varargs], :void
@@ -2718,8 +2722,8 @@ module ImGui
     igOpenPopup(str_id, popup_flags)
   end
 
-  def self.OpenPopupContextItem(str_id = nil, popup_flags = 1)
-    igOpenPopupContextItem(str_id, popup_flags)
+  def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 1)
+    igOpenPopupOnItemClick(str_id, popup_flags)
   end
 
   def self.PlotHistogramFloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
@@ -3132,6 +3136,10 @@ module ImGui
 
   def self.StyleColorsLight(dst = nil)
     igStyleColorsLight(dst)
+  end
+
+  def self.TabItemButton(label, flags = 0)
+    igTabItemButton(label, flags)
   end
 
   def self.Text(fmt, *varargs)
