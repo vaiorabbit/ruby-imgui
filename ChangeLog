@@ -1,3 +1,7 @@
+2020-12-20  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* third_party/glfw_build.sh, third_party/sdl2_build_dylib.sh: Modified/added to support x86_64|arm64 Universal Binary
+
 2020-11-15  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (Windows) ImGui 1.79

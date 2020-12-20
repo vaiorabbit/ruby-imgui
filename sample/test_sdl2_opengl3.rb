@@ -27,7 +27,8 @@ if __FILE__ == $0
               when /mswin|msys|mingw|cygwin/
                 Dir.pwd + '/' + 'SDL2.dll'
               when /darwin/
-                '/usr/local/lib/libSDL2.dylib'
+                sdl2_dylib = Dir.pwd + '/' + 'libSDL2.dylib'
+                File.exist?(sdl2_dylib) ? sdl2_dylib : '/usr/local/lib/libSDL2.dylib'
               when /linux/
                 '/usr/local/lib/libSDL2.so' # not tested
               else
