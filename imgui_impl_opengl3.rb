@@ -126,6 +126,7 @@ module ImGui
     last_enable_blend = glIsEnabled(GL_BLEND)
     last_enable_cull_face = glIsEnabled(GL_CULL_FACE)
     last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST)
+    last_enable_stencil_test = glIsEnabled(GL_STENCIL_TEST)
     last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST)
 
     #  Setup desired GL state
@@ -209,6 +210,7 @@ module ImGui
     if last_enable_blend then glEnable(GL_BLEND) else glDisable(GL_BLEND) end
     if last_enable_cull_face then glEnable(GL_CULL_FACE) else glDisable(GL_CULL_FACE) end
     if last_enable_depth_test then glEnable(GL_DEPTH_TEST) else glDisable(GL_DEPTH_TEST) end
+    if last_enable_stencil_test then glEnable(GL_STENCIL_TEST) else glDisable(GL_STENCIL_TEST) end
     if last_enable_scissor_test then glEnable(GL_SCISSOR_TEST) else glDisable(GL_SCISSOR_TEST) end
 
     last_polygon_mode = last_polygon_mode.unpack('L2')
@@ -229,6 +231,7 @@ module ImGui
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glDisable(GL_CULL_FACE)
     glDisable(GL_DEPTH_TEST)
+    glDisable(GL_STENCIL_TEST)
     glEnable(GL_SCISSOR_TEST)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) # GL_POLYGON_MODE
 

@@ -48,6 +48,15 @@ module Generator
     return arg_names
   end
 
+  def self.floating_num(flt)
+    if flt.end_with?("f")
+      /([-+]?[0-9]*\.[0-9]+|[0-9]+)f/ =~ flt
+      return $1
+    else
+      return flt
+    end
+  end
+
   def self.sanitize_default_value(default_values)
     default_values.map! do |default_value|
       case default_value
@@ -56,9 +65,9 @@ module Generator
       when /^([-+]?[0-9]*\.[0-9]+)[f]*$/ # omit 'f' suffix of floating point number
         $1
       when /^ImVec2\((.+),(.+)\)$/ # use our own shorthand initializer
-        "ImVec2.create(#{$1},#{$2})"
+        "ImVec2.create(#{floating_num($1)},#{floating_num($2)})"
       when /^ImVec4\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
-        "ImVec4.create(#{$1},#{$2},#{$3},#{$4})"
+        "ImVec4.create(#{floating_num($1)},#{floating_num($2)},#{floating_num($3)},#{floating_num($4)})"
       when /^ImColor\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
         "ImColor.create(#{$1},#{$2},#{$3},#{$4})"
       when /^FLT_MAX$/ # C's FLT_MAX -> Ruby's Float::MAX
@@ -398,7 +407,7 @@ require 'ffi'
     # Structs
     #
 
-    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawList', 'ImFontAtlas'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
+    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
       Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map)
       structs_map.delete_if {|struct| struct.name == name}

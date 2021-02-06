@@ -12,6 +12,7 @@ set(IMGUI_SOURCES
 	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui.cpp
 	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_draw.cpp
 	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_demo.cpp
+	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_tables.cpp
 	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_widgets.cpp
 	)
 

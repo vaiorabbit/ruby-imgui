@@ -16,6 +16,7 @@
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
             *   ruby 2.7.1p83 (2020-03-31 revision a0c7c23c9c) [x64-mingw32]
         *   [macOS]
+            *   ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [arm64-darwin20]
             *   ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
             *   ruby 2.6.0p0 (2018-12-25 revision 66547) [x86_64-darwin18]
 *   Ruby Gems
@@ -63,7 +64,7 @@
 All ruby codes here are available under the terms of the zlib/libpng License ( http://opensource.org/licenses/Zlib ).
 
 Ruby-Imgui : Yet another ImGui wrapper for Ruby
-Copyright (c) 2019-2020 vaiorabbit <http://twitter.com/vaiorabbit>
+Copyright (c) 2019-2021 vaiorabbit <http://twitter.com/vaiorabbit>
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

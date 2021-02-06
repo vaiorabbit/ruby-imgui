@@ -42,6 +42,8 @@ module ImGui
     last_scissor_box = ' ' * 16
     glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box)
     glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT)
+    last_shade_model = ' ' * 4
+    glGetIntegerv(GL_SHADE_MODEL, last_shade_model)
     last_tex_env_mode = ' ' * 4
     glGetTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, last_tex_env_mode)
 
@@ -112,6 +114,7 @@ module ImGui
     glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3])
     last_scissor_box = last_scissor_box.unpack('L4')
     glScissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3])
+    glShadeModel(last_shade_model.unpack1('L'))
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, last_tex_env_mode.unpack1('L'))
   end
 
@@ -122,6 +125,7 @@ module ImGui
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glDisable(GL_CULL_FACE)
+    glDisable(GL_STENCIL_TEST)
     glDisable(GL_DEPTH_TEST)
     glDisable(GL_LIGHTING)
     glDisable(GL_COLOR_MATERIAL)
@@ -129,17 +133,22 @@ module ImGui
     glEnableClientState(GL_VERTEX_ARRAY)
     glEnableClientState(GL_TEXTURE_COORD_ARRAY)
     glEnableClientState(GL_COLOR_ARRAY)
+    glDisableClientState(GL_NORMAL_ARRAY)
     glEnable(GL_TEXTURE_2D)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    glShadeModel(GL_SMOOTH)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
 
     #  If you are using this code with non-legacy OpenGL header/contexts (which you should not, prefer using imgui_impl_opengl3.cpp!!),
-    #  you may need to backup/reset/restore current shader using the lines below. DO NOT MODIFY THIS FILE! Add the code in your calling function:
-    #   GLint last_program;
-    #   glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
-    #   glUseProgram(0);
-    #   ImGui_ImplOpenGL2_RenderDrawData(...);
-    #   glUseProgram(last_program)
+    #  you may need to backup/reset/restore other state, e.g. for current shader using the commented lines below.
+    #  (DO NOT MODIFY THIS FILE! Add the code in your calling function)
+    #    GLint last_program;
+    #    glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+    #    glUseProgram(0);
+    #    ImGui_ImplOpenGL2_RenderDrawData(...);
+    #    glUseProgram(last_program)
+    #  There are potentially many more states you could need to clear/setup that we can't access from default headers.
+    #  e.g. glBindBuffer(GL_ARRAY_BUFFER, 0), glDisable(GL_TEXTURE_CUBE_MAP).
 
     #  Setup viewport, orthographic projection matrix
     #  Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.

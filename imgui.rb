@@ -32,9 +32,14 @@ FFI.typedef :int, :ImGuiNavInput
 FFI.typedef :int, :ImGuiPopupFlags
 FFI.typedef :int, :ImGuiSelectableFlags
 FFI.typedef :int, :ImGuiSliderFlags
+FFI.typedef :int, :ImGuiSortDirection
 FFI.typedef :int, :ImGuiStyleVar
 FFI.typedef :int, :ImGuiTabBarFlags
 FFI.typedef :int, :ImGuiTabItemFlags
+FFI.typedef :int, :ImGuiTableBgTarget
+FFI.typedef :int, :ImGuiTableColumnFlags
+FFI.typedef :int, :ImGuiTableFlags
+FFI.typedef :int, :ImGuiTableRowFlags
 FFI.typedef :int, :ImGuiTreeNodeFlags
 FFI.typedef :int, :ImGuiWindowFlags
 FFI.typedef :short, :ImS16
@@ -133,13 +138,18 @@ ImGuiCol_PlotLines = 38 # 38
 ImGuiCol_PlotLinesHovered = 39 # 39
 ImGuiCol_PlotHistogram = 40 # 40
 ImGuiCol_PlotHistogramHovered = 41 # 41
-ImGuiCol_TextSelectedBg = 42 # 42
-ImGuiCol_DragDropTarget = 43 # 43
-ImGuiCol_NavHighlight = 44 # 44
-ImGuiCol_NavWindowingHighlight = 45 # 45
-ImGuiCol_NavWindowingDimBg = 46 # 46
-ImGuiCol_ModalWindowDimBg = 47 # 47
-ImGuiCol_COUNT = 48 # 48
+ImGuiCol_TableHeaderBg = 42 # 42
+ImGuiCol_TableBorderStrong = 43 # 43
+ImGuiCol_TableBorderLight = 44 # 44
+ImGuiCol_TableRowBg = 45 # 45
+ImGuiCol_TableRowBgAlt = 46 # 46
+ImGuiCol_TextSelectedBg = 47 # 47
+ImGuiCol_DragDropTarget = 48 # 48
+ImGuiCol_NavHighlight = 49 # 49
+ImGuiCol_NavWindowingHighlight = 50 # 50
+ImGuiCol_NavWindowingDimBg = 51 # 51
+ImGuiCol_ModalWindowDimBg = 52 # 52
+ImGuiCol_COUNT = 53 # 53
 
 # ImGuiColorEditFlags_
 ImGuiColorEditFlags_None = 0 # 0
@@ -384,6 +394,11 @@ ImGuiSliderFlags_NoRoundToFormat = 64 # 1 << 6
 ImGuiSliderFlags_NoInput = 128 # 1 << 7
 ImGuiSliderFlags_InvalidMask_ = 1879048207 # 0x7000000F
 
+# ImGuiSortDirection_
+ImGuiSortDirection_None = 0 # 0
+ImGuiSortDirection_Ascending = 1 # 1
+ImGuiSortDirection_Descending = 2 # 2
+
 # ImGuiStyleVar_
 ImGuiStyleVar_Alpha = 0 # 0
 ImGuiStyleVar_WindowPadding = 1 # 1
@@ -401,14 +416,15 @@ ImGuiStyleVar_FrameBorderSize = 12 # 12
 ImGuiStyleVar_ItemSpacing = 13 # 13
 ImGuiStyleVar_ItemInnerSpacing = 14 # 14
 ImGuiStyleVar_IndentSpacing = 15 # 15
-ImGuiStyleVar_ScrollbarSize = 16 # 16
-ImGuiStyleVar_ScrollbarRounding = 17 # 17
-ImGuiStyleVar_GrabMinSize = 18 # 18
-ImGuiStyleVar_GrabRounding = 19 # 19
-ImGuiStyleVar_TabRounding = 20 # 20
-ImGuiStyleVar_ButtonTextAlign = 21 # 21
-ImGuiStyleVar_SelectableTextAlign = 22 # 22
-ImGuiStyleVar_COUNT = 23 # 23
+ImGuiStyleVar_CellPadding = 16 # 16
+ImGuiStyleVar_ScrollbarSize = 17 # 17
+ImGuiStyleVar_ScrollbarRounding = 18 # 18
+ImGuiStyleVar_GrabMinSize = 19 # 19
+ImGuiStyleVar_GrabRounding = 20 # 20
+ImGuiStyleVar_TabRounding = 21 # 21
+ImGuiStyleVar_ButtonTextAlign = 22 # 22
+ImGuiStyleVar_SelectableTextAlign = 23 # 23
+ImGuiStyleVar_COUNT = 24 # 24
 
 # ImGuiTabBarFlags_
 ImGuiTabBarFlags_None = 0 # 0
@@ -433,6 +449,81 @@ ImGuiTabItemFlags_NoTooltip = 16 # 1 << 4
 ImGuiTabItemFlags_NoReorder = 32 # 1 << 5
 ImGuiTabItemFlags_Leading = 64 # 1 << 6
 ImGuiTabItemFlags_Trailing = 128 # 1 << 7
+
+# ImGuiTableBgTarget_
+ImGuiTableBgTarget_None = 0 # 0
+ImGuiTableBgTarget_RowBg0 = 1 # 1
+ImGuiTableBgTarget_RowBg1 = 2 # 2
+ImGuiTableBgTarget_CellBg = 3 # 3
+
+# ImGuiTableColumnFlags_
+ImGuiTableColumnFlags_None = 0 # 0
+ImGuiTableColumnFlags_DefaultHide = 1 # 1 << 0
+ImGuiTableColumnFlags_DefaultSort = 2 # 1 << 1
+ImGuiTableColumnFlags_WidthStretch = 4 # 1 << 2
+ImGuiTableColumnFlags_WidthFixed = 8 # 1 << 3
+ImGuiTableColumnFlags_NoResize = 16 # 1 << 4
+ImGuiTableColumnFlags_NoReorder = 32 # 1 << 5
+ImGuiTableColumnFlags_NoHide = 64 # 1 << 6
+ImGuiTableColumnFlags_NoClip = 128 # 1 << 7
+ImGuiTableColumnFlags_NoSort = 256 # 1 << 8
+ImGuiTableColumnFlags_NoSortAscending = 512 # 1 << 9
+ImGuiTableColumnFlags_NoSortDescending = 1024 # 1 << 10
+ImGuiTableColumnFlags_NoHeaderWidth = 2048 # 1 << 11
+ImGuiTableColumnFlags_PreferSortAscending = 4096 # 1 << 12
+ImGuiTableColumnFlags_PreferSortDescending = 8192 # 1 << 13
+ImGuiTableColumnFlags_IndentEnable = 16384 # 1 << 14
+ImGuiTableColumnFlags_IndentDisable = 32768 # 1 << 15
+ImGuiTableColumnFlags_IsEnabled = 1048576 # 1 << 20
+ImGuiTableColumnFlags_IsVisible = 2097152 # 1 << 21
+ImGuiTableColumnFlags_IsSorted = 4194304 # 1 << 22
+ImGuiTableColumnFlags_IsHovered = 8388608 # 1 << 23
+ImGuiTableColumnFlags_WidthMask_ = 12 # ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_WidthFixed
+ImGuiTableColumnFlags_IndentMask_ = 49152 # ImGuiTableColumnFlags_IndentEnable | ImGuiTableColumnFlags_IndentDisable
+ImGuiTableColumnFlags_StatusMask_ = 15728640 # ImGuiTableColumnFlags_IsEnabled | ImGuiTableColumnFlags_IsVisible | ImGuiTableColumnFlags_IsSorted | ImGuiTableColumnFlags_IsHovered
+ImGuiTableColumnFlags_NoDirectResize_ = 1073741824 # 1 << 30
+
+# ImGuiTableFlags_
+ImGuiTableFlags_None = 0 # 0
+ImGuiTableFlags_Resizable = 1 # 1 << 0
+ImGuiTableFlags_Reorderable = 2 # 1 << 1
+ImGuiTableFlags_Hideable = 4 # 1 << 2
+ImGuiTableFlags_Sortable = 8 # 1 << 3
+ImGuiTableFlags_NoSavedSettings = 16 # 1 << 4
+ImGuiTableFlags_ContextMenuInBody = 32 # 1 << 5
+ImGuiTableFlags_RowBg = 64 # 1 << 6
+ImGuiTableFlags_BordersInnerH = 128 # 1 << 7
+ImGuiTableFlags_BordersOuterH = 256 # 1 << 8
+ImGuiTableFlags_BordersInnerV = 512 # 1 << 9
+ImGuiTableFlags_BordersOuterV = 1024 # 1 << 10
+ImGuiTableFlags_BordersH = 384 # ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_BordersOuterH
+ImGuiTableFlags_BordersV = 1536 # ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_BordersOuterV
+ImGuiTableFlags_BordersInner = 640 # ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_BordersInnerH
+ImGuiTableFlags_BordersOuter = 1280 # ImGuiTableFlags_BordersOuterV | ImGuiTableFlags_BordersOuterH
+ImGuiTableFlags_Borders = 1920 # ImGuiTableFlags_BordersInner | ImGuiTableFlags_BordersOuter
+ImGuiTableFlags_NoBordersInBody = 2048 # 1 << 11
+ImGuiTableFlags_NoBordersInBodyUntilResize = 4096 # 1 << 12
+ImGuiTableFlags_SizingFixedFit = 8192 # 1 << 13
+ImGuiTableFlags_SizingFixedSame = 16384 # 2 << 13
+ImGuiTableFlags_SizingStretchProp = 24576 # 3 << 13
+ImGuiTableFlags_SizingStretchSame = 32768 # 4 << 13
+ImGuiTableFlags_NoHostExtendX = 65536 # 1 << 16
+ImGuiTableFlags_NoHostExtendY = 131072 # 1 << 17
+ImGuiTableFlags_NoKeepColumnsVisible = 262144 # 1 << 18
+ImGuiTableFlags_PreciseWidths = 524288 # 1 << 19
+ImGuiTableFlags_NoClip = 1048576 # 1 << 20
+ImGuiTableFlags_PadOuterX = 2097152 # 1 << 21
+ImGuiTableFlags_NoPadOuterX = 4194304 # 1 << 22
+ImGuiTableFlags_NoPadInnerX = 8388608 # 1 << 23
+ImGuiTableFlags_ScrollX = 16777216 # 1 << 24
+ImGuiTableFlags_ScrollY = 33554432 # 1 << 25
+ImGuiTableFlags_SortMulti = 67108864 # 1 << 26
+ImGuiTableFlags_SortTristate = 134217728 # 1 << 27
+ImGuiTableFlags_SizingMask_ = 57344 # ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_SizingFixedSame | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_SizingStretchSame
+
+# ImGuiTableRowFlags_
+ImGuiTableRowFlags_None = 0 # 0
+ImGuiTableRowFlags_Headers = 1 # 1 << 0
 
 # ImGuiTreeNodeFlags_
 ImGuiTreeNodeFlags_None = 0 # 0
@@ -537,26 +628,39 @@ class ImDrawCmd < FFI::Struct
   )
 end
 
+class ImDrawCmdHeader < FFI::Struct
+  layout(
+    :ClipRect, ImVec4.by_value,
+    :TextureId, :pointer,
+    :VtxOffset, :uint
+  )
+end
+
 class ImDrawList < FFI::Struct
   layout(
     :CmdBuffer, ImVector.by_value,
     :IdxBuffer, ImVector.by_value,
     :VtxBuffer, ImVector.by_value,
     :Flags, :int,
+    :_VtxCurrentIdx, :uint,
     :_Data, :pointer,
     :_OwnerName, :pointer,
-    :_VtxCurrentIdx, :uint,
     :_VtxWritePtr, ImDrawVert.ptr,
     :_IdxWritePtr, :pointer,
     :_ClipRectStack, ImVector.by_value,
     :_TextureIdStack, ImVector.by_value,
     :_Path, ImVector.by_value,
-    :_CmdHeader, ImDrawCmd.by_value,
-    :_Splitter, ImDrawListSplitter.by_value
+    :_CmdHeader, ImDrawCmdHeader.by_value,
+    :_Splitter, ImDrawListSplitter.by_value,
+    :_FringeScale, :float
   )
 
-  def AddBezierCurve(p1, p2, p3, p4, col, thickness, num_segments = 0)
-    ImGui::ImDrawList_AddBezierCurve(self, p1, p2, p3, p4, col, thickness, num_segments)
+  def AddBezierCubic(p1, p2, p3, p4, col, thickness, num_segments = 0)
+    ImGui::ImDrawList_AddBezierCubic(self, p1, p2, p3, p4, col, thickness, num_segments)
+  end
+
+  def AddBezierQuadratic(p1, p2, p3, col, thickness, num_segments = 0)
+    ImGui::ImDrawList_AddBezierQuadratic(self, p1, p2, p3, col, thickness, num_segments)
   end
 
   def AddCallback(callback, callback_data)
@@ -683,8 +787,12 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PathArcToFast(self, center, radius, a_min_of_12, a_max_of_12)
   end
 
-  def PathBezierCurveTo(p2, p3, p4, num_segments = 0)
-    ImGui::ImDrawList_PathBezierCurveTo(self, p2, p3, p4, num_segments)
+  def PathBezierCubicCurveTo(p2, p3, p4, num_segments = 0)
+    ImGui::ImDrawList_PathBezierCubicCurveTo(self, p2, p3, p4, num_segments)
+  end
+
+  def PathBezierQuadraticCurveTo(p2, p3, num_segments = 0)
+    ImGui::ImDrawList_PathBezierQuadraticCurveTo(self, p2, p3, num_segments)
   end
 
   def PathClear()
@@ -1090,9 +1198,10 @@ class ImGuiIO < FFI::Struct
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
     :ConfigInputTextCursorBlink, :bool,
+    :ConfigDragClickToInputText, :bool,
     :ConfigWindowsResizeFromEdges, :bool,
     :ConfigWindowsMoveFromTitleBarOnly, :bool,
-    :ConfigWindowsMemoryCompactTimer, :float,
+    :ConfigMemoryCompactTimer, :float,
     :BackendPlatformName, :pointer,
     :BackendRendererName, :pointer,
     :BackendPlatformUserData, :pointer,
@@ -1103,7 +1212,6 @@ class ImGuiIO < FFI::Struct
     :ClipboardUserData, :pointer,
     :ImeSetInputScreenPosFn, :pointer,
     :ImeWindowHandle, :pointer,
-    :RenderDrawListsFnUnused, :pointer,
     :MousePos, ImVec2.by_value,
     :MouseDown, [:bool, 5],
     :MouseWheel, :float,
@@ -1220,6 +1328,7 @@ class ImGuiStyle < FFI::Struct
     :FrameBorderSize, :float,
     :ItemSpacing, ImVec2.by_value,
     :ItemInnerSpacing, ImVec2.by_value,
+    :CellPadding, ImVec2.by_value,
     :TouchExtraPadding, ImVec2.by_value,
     :IndentSpacing, :float,
     :ColumnsMinSpacing, :float,
@@ -1242,7 +1351,7 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
     :CircleSegmentMaxError, :float,
-    :Colors, [ImVec4.by_value, 48]
+    :Colors, [ImVec4.by_value, 53]
   )
 
   def self.create()
@@ -1257,6 +1366,23 @@ class ImGuiStyle < FFI::Struct
     ImGui::ImGuiStyle_destroy(self)
   end
 
+end
+
+class ImGuiTableColumnSortSpecs < FFI::Struct
+  layout(
+    :ColumnUserID, :uint,
+    :ColumnIndex, :short,
+    :SortOrder, :short,
+    :SortDirection, :int
+  )
+end
+
+class ImGuiTableSortSpecs < FFI::Struct
+  layout(
+    :Specs, :pointer,
+    :SpecsCount, :int,
+    :SpecsDirty, :bool
+  )
 end
 
 class ImGuiTextFilter < FFI::Struct
@@ -1378,7 +1504,8 @@ module ImGui
     callback :ImDrawCallback, [ImDrawList, ImDrawCmd], :void
     callback :ImGuiInputTextCallback, [ImGuiInputTextCallbackData], :int
     callback :ImGuiSizeCallback, [ImGuiSizeCallbackData], :void
-    attach_function :ImDrawList_AddBezierCurve, :ImDrawList_AddBezierCurve, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void
+    attach_function :ImDrawList_AddBezierCubic, :ImDrawList_AddBezierCubic, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void
+    attach_function :ImDrawList_AddBezierQuadratic, :ImDrawList_AddBezierQuadratic, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void
     attach_function :ImDrawList_AddCallback, :ImDrawList_AddCallback, [:pointer, :ImDrawCallback, :pointer], :void
     attach_function :ImDrawList_AddCircle, :ImDrawList_AddCircle, [:pointer, ImVec2.by_value, :float, :uint, :int, :float], :void
     attach_function :ImDrawList_AddCircleFilled, :ImDrawList_AddCircleFilled, [:pointer, ImVec2.by_value, :float, :uint, :int], :void
@@ -1409,7 +1536,8 @@ module ImGui
     attach_function :ImDrawList_ImDrawList, :ImDrawList_ImDrawList, [:pointer], :pointer
     attach_function :ImDrawList_PathArcTo, :ImDrawList_PathArcTo, [:pointer, ImVec2.by_value, :float, :float, :float, :int], :void
     attach_function :ImDrawList_PathArcToFast, :ImDrawList_PathArcToFast, [:pointer, ImVec2.by_value, :float, :int, :int], :void
-    attach_function :ImDrawList_PathBezierCurveTo, :ImDrawList_PathBezierCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int], :void
+    attach_function :ImDrawList_PathBezierCubicCurveTo, :ImDrawList_PathBezierCubicCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int], :void
+    attach_function :ImDrawList_PathBezierQuadraticCurveTo, :ImDrawList_PathBezierQuadraticCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, :int], :void
     attach_function :ImDrawList_PathClear, :ImDrawList_PathClear, [:pointer], :void
     attach_function :ImDrawList_PathFillConvex, :ImDrawList_PathFillConvex, [:pointer, :uint], :void
     attach_function :ImDrawList_PathLineTo, :ImDrawList_PathLineTo, [:pointer, ImVec2.by_value], :void
@@ -1519,6 +1647,7 @@ module ImGui
     attach_function :igBeginPopupModal, :igBeginPopupModal, [:pointer, :pointer, :int], :bool
     attach_function :igBeginTabBar, :igBeginTabBar, [:pointer, :int], :bool
     attach_function :igBeginTabItem, :igBeginTabItem, [:pointer, :pointer, :int], :bool
+    attach_function :igBeginTable, :igBeginTable, [:pointer, :int, :int, ImVec2.by_value, :float], :bool
     attach_function :igBeginTooltip, :igBeginTooltip, [], :void
     attach_function :igBullet, :igBullet, [], :void
     attach_function :igBulletText, :igBulletText, [:pointer, :varargs], :void
@@ -1529,7 +1658,8 @@ module ImGui
     attach_function :igCaptureKeyboardFromApp, :igCaptureKeyboardFromApp, [:bool], :void
     attach_function :igCaptureMouseFromApp, :igCaptureMouseFromApp, [:bool], :void
     attach_function :igCheckbox, :igCheckbox, [:pointer, :pointer], :bool
-    attach_function :igCheckboxFlags, :igCheckboxFlags, [:pointer, :pointer, :uint], :bool
+    attach_function :igCheckboxFlagsIntPtr, :igCheckboxFlagsIntPtr, [:pointer, :pointer, :int], :bool
+    attach_function :igCheckboxFlagsUintPtr, :igCheckboxFlagsUintPtr, [:pointer, :pointer, :uint], :bool
     attach_function :igCloseCurrentPopup, :igCloseCurrentPopup, [], :void
     attach_function :igCollapsingHeaderTreeNodeFlags, :igCollapsingHeaderTreeNodeFlags, [:pointer, :int], :bool
     attach_function :igCollapsingHeaderBoolPtr, :igCollapsingHeaderBoolPtr, [:pointer, :pointer, :int], :bool
@@ -1576,6 +1706,7 @@ module ImGui
     attach_function :igEndPopup, :igEndPopup, [], :void
     attach_function :igEndTabBar, :igEndTabBar, [], :void
     attach_function :igEndTabItem, :igEndTabItem, [], :void
+    attach_function :igEndTable, :igEndTable, [], :void
     attach_function :igEndTooltip, :igEndTooltip, [], :void
     attach_function :igGetBackgroundDrawList, :igGetBackgroundDrawList, [], :pointer
     attach_function :igGetClipboardText, :igGetClipboardText, [], :pointer
@@ -1814,6 +1945,20 @@ module ImGui
     attach_function :igStyleColorsDark, :igStyleColorsDark, [:pointer], :void
     attach_function :igStyleColorsLight, :igStyleColorsLight, [:pointer], :void
     attach_function :igTabItemButton, :igTabItemButton, [:pointer, :int], :bool
+    attach_function :igTableGetColumnCount, :igTableGetColumnCount, [], :int
+    attach_function :igTableGetColumnFlags, :igTableGetColumnFlags, [:int], :int
+    attach_function :igTableGetColumnIndex, :igTableGetColumnIndex, [], :int
+    attach_function :igTableGetColumnName, :igTableGetColumnName, [:int], :pointer
+    attach_function :igTableGetRowIndex, :igTableGetRowIndex, [], :int
+    attach_function :igTableGetSortSpecs, :igTableGetSortSpecs, [], :pointer
+    attach_function :igTableHeader, :igTableHeader, [:pointer], :void
+    attach_function :igTableHeadersRow, :igTableHeadersRow, [], :void
+    attach_function :igTableNextColumn, :igTableNextColumn, [], :bool
+    attach_function :igTableNextRow, :igTableNextRow, [:int, :float], :void
+    attach_function :igTableSetBgColor, :igTableSetBgColor, [:int, :uint, :int], :void
+    attach_function :igTableSetColumnIndex, :igTableSetColumnIndex, [:int], :bool
+    attach_function :igTableSetupColumn, :igTableSetupColumn, [:pointer, :int, :float, :uint], :void
+    attach_function :igTableSetupScrollFreeze, :igTableSetupScrollFreeze, [:int, :int], :void
     attach_function :igText, :igText, [:pointer, :varargs], :void
     attach_function :igTextColored, :igTextColored, [ImVec4.by_value, :pointer, :varargs], :void
     attach_function :igTextDisabled, :igTextDisabled, [:pointer, :varargs], :void
@@ -1926,6 +2071,10 @@ module ImGui
     igBeginTabItem(label, p_open, flags)
   end
 
+  def self.BeginTable(str_id, column, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)
+    igBeginTable(str_id, column, flags, outer_size, inner_width)
+  end
+
   def self.BeginTooltip()
     igBeginTooltip()
   end
@@ -1968,8 +2117,12 @@ module ImGui
     igCheckbox(label, v)
   end
 
-  def self.CheckboxFlags(label, flags, flags_value)
-    igCheckboxFlags(label, flags, flags_value)
+  def self.CheckboxFlagsIntPtr(label, flags, flags_value)
+    igCheckboxFlagsIntPtr(label, flags, flags_value)
+  end
+
+  def self.CheckboxFlagsUintPtr(label, flags, flags_value)
+    igCheckboxFlagsUintPtr(label, flags, flags_value)
   end
 
   def self.CloseCurrentPopup()
@@ -1980,8 +2133,8 @@ module ImGui
     igCollapsingHeaderTreeNodeFlags(label, flags)
   end
 
-  def self.CollapsingHeaderBoolPtr(label, p_open, flags = 0)
-    igCollapsingHeaderBoolPtr(label, p_open, flags)
+  def self.CollapsingHeaderBoolPtr(label, p_visible, flags = 0)
+    igCollapsingHeaderBoolPtr(label, p_visible, flags)
   end
 
   def self.ColorButton(desc_id, col, flags = 0, size = ImVec2.create(0,0))
@@ -2156,6 +2309,10 @@ module ImGui
 
   def self.EndTabItem()
     igEndTabItem()
+  end
+
+  def self.EndTable()
+    igEndTable()
   end
 
   def self.EndTooltip()
@@ -2778,7 +2935,7 @@ module ImGui
     igPopTextWrapPos()
   end
 
-  def self.ProgressBar(fraction, size_arg = ImVec2.create(-1,0), overlay = nil)
+  def self.ProgressBar(fraction, size_arg = ImVec2.create(-FLT_MIN,0), overlay = nil)
     igProgressBar(fraction, size_arg, overlay)
   end
 
@@ -3140,6 +3297,62 @@ module ImGui
 
   def self.TabItemButton(label, flags = 0)
     igTabItemButton(label, flags)
+  end
+
+  def self.TableGetColumnCount()
+    igTableGetColumnCount()
+  end
+
+  def self.TableGetColumnFlags(column_n = -1)
+    igTableGetColumnFlags(column_n)
+  end
+
+  def self.TableGetColumnIndex()
+    igTableGetColumnIndex()
+  end
+
+  def self.TableGetColumnName(column_n = -1)
+    igTableGetColumnName(column_n)
+  end
+
+  def self.TableGetRowIndex()
+    igTableGetRowIndex()
+  end
+
+  def self.TableGetSortSpecs()
+    igTableGetSortSpecs()
+  end
+
+  def self.TableHeader(label)
+    igTableHeader(label)
+  end
+
+  def self.TableHeadersRow()
+    igTableHeadersRow()
+  end
+
+  def self.TableNextColumn()
+    igTableNextColumn()
+  end
+
+  def self.TableNextRow(row_flags = 0, min_row_height = 0.0)
+    igTableNextRow(row_flags, min_row_height)
+  end
+
+  def self.TableSetBgColor(target, color, column_n = -1)
+    igTableSetBgColor(target, color, column_n)
+  end
+
+  def self.TableSetColumnIndex(column_n)
+    igTableSetColumnIndex(column_n)
+  end
+
+  def self.TableSetupColumn(label, flags = 0, init_width_or_weight = 0.0, user_id = 0)
+    igTableSetupColumn(label, flags, init_width_or_weight, user_id)
+  end
+
+  def self.TableSetupScrollFreeze(cols, rows)
+    igTableSetupScrollFreeze(cols, rows)
   end
 
   def self.Text(fmt, *varargs)
