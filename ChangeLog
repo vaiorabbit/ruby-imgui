@@ -1,6 +1,13 @@
 2021-02-07  vaiorabbit  <http://twitter.com/vaiorabbit>
 
+	* (Windows) ImGui 1.80
+	* (Windows) Built imgui.dll and imgui_debug.dll with:
+	*     ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [x64-mingw32]
+	*     gcc (Rev6, Built by MSYS2 project) 10.2.0
 	* (macOS) ImGui 1.80
+	* (macOS) Built imgui.dylib with:
+	*     ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [arm64-darwin20]
+	*     Apple clang version 12.0.0 (clang-1200.0.32.29) / Target: arm64-apple-darwin20.2.0
 	* imgui_impl_opengl2.rb, imgui_impl_opengl3.rb: Applied same changes made at https://github.com/ocornut/imgui/commit/7d5d5711c20d2448fb379de245ddc3b950289873
 	* generator/generate_imgui.rb: Modified to handle exceptions
 
