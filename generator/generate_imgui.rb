@@ -49,11 +49,10 @@ module Generator
   end
 
   def self.floating_num(flt)
-    if flt.end_with?("f")
-      /([-+]?[0-9]*\.[0-9]+|[0-9]+)f/ =~ flt
-      return $1
+    if /^([-+]?[0-9]*\.[0-9]+)[f]*$/ =~ flt # omit 'f' suffix of floating point number
+      $1
     else
-      return flt
+      flt
     end
   end
 
@@ -225,6 +224,70 @@ module Generator
     out.write("end\n\n")
   end
 
+  def self.write_attach_functions(out, funcs_map)
+    # symbols array
+    out.write("symbols = [\n")
+    out.push_indent
+    funcs_map.each do |func|
+      out.write(":#{func.name},\n")
+    end
+    out.pop_indent
+    out.write("]\n\n")
+
+    # args map
+    out.write("args = {\n")
+    out.push_indent
+    funcs_map.each do |func|
+      func_args = func.args.map do |arg|
+        if arg.type_name.to_s.end_with?('Callback')
+          ':' + arg.type_name.to_s
+        elsif arg.type.to_s.start_with?('Im')
+          arg.type.to_s + '.by_value'
+        else
+          ':' + arg.type.to_s
+        end
+      end
+      out.write(":#{func.name} => [#{func_args.join(', ')}],\n")
+    end
+    out.pop_indent
+    out.write("}\n\n")
+
+    # retval map
+    out.write("retvals = {\n")
+    out.push_indent
+    funcs_map.each do |func|
+      func.retval = if func.retval.to_s.start_with?('Im')
+                      func.retval.to_s + '.by_value'
+                    else
+                      ':' + func.retval.to_s
+                    end
+      out.write(":#{func.name} => #{func.retval},\n")
+    end
+    out.pop_indent
+    out.write("}\n\n")
+
+    out.write("symbols.each do |sym|\n")
+    out.push_indent
+    out.write("begin\n")
+    out.push_indent
+    out.write("attach_function sym, args[sym], retvals[sym]\n")
+    out.pop_indent
+    out.write("rescue FFI::NotFoundError => error\n")
+    out.push_indent
+    out.write("$stderr.puts(\"[Warning] Failed to import \#{s}.\\n\") if output_error\n")
+    out.pop_indent
+    out.write("end\n")
+    out.pop_indent
+    out.write("end\n\n")
+
+    ## ImWchar special handling (Ref.: cimgui_template.cpp)
+    out.write("attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer\n")
+    out.write("attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    out.write("attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+  end
+
+  # [obsolete] Use write_attach_functions instead
   def self.write_attach_function(out, func)
 
     func_args = func.args.map do |arg|
@@ -467,17 +530,17 @@ end
     out.write(<<-EOS)
   @@imgui_import_done = false
 
-  def self.load_lib(libpath = './imgui.dylib')
+  def self.load_lib(libpath = './imgui.dylib', output_error = false)
     ffi_lib_flags :now, :global
     ffi_lib libpath
-    import_symbols() unless @@imgui_import_done
+    import_symbols(output_error) unless @@imgui_import_done
   end
 
     EOS
 
     # Import Symbols
     out.push_indent
-    out.write("def self.import_symbols()")
+    out.write("def self.import_symbols(output_error = false)")
     out.newline
 
     out.push_indent
@@ -485,15 +548,13 @@ end
     typedefs_map.each do |typedef|
       Generator.write_callback_signature(out, typedef)
     end
+    out.newline
+
     # attach_function
-    funcs_map.each do |func|
-      Generator.write_attach_function(out, func)
-    end
-    ## ImWchar special handling (Ref.: cimgui_template.cpp)
-    out.write("attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer\n")
-    out.write("attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void\n")
-    out.write("attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void\n")
-    out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    # funcs_map.each do |func|
+    #   Generator.write_attach_function(out, func)
+    # end
+    Generator.write_attach_functions(out, funcs_map)
 
     out.pop_indent
 

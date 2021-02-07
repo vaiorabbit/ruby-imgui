@@ -2,6 +2,7 @@
 
 	* (macOS) ImGui 1.80
 	* imgui_impl_opengl2.rb, imgui_impl_opengl3.rb: Applied same changes made at https://github.com/ocornut/imgui/commit/7d5d5711c20d2448fb379de245ddc3b950289873
+	* generator/generate_imgui.rb: Modified to handle exceptions
 
 2020-12-20  vaiorabbit  <http://twitter.com/vaiorabbit>
 
