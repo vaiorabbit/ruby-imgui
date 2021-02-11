@@ -86,17 +86,23 @@ if __FILE__ == $0
   ImGui::CreateContext()
   io = ImGuiIO.new(ImGui::GetIO())
 
+  config = ImFontConfig.create
+  builder = ImFontGlyphRangesBuilder.create
+
+  additional_ranges = ImGui::ImVector_ImWchar_create() # ranges == ImVector_ImWchar*
+  builder.AddRanges(io[:Fonts].GetGlyphRangesJapanese()) # 常用漢字・人名用漢字を追加します。
+  builder.AddText(FFI::MemoryPointer.from_string("獰")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
+  builder.BuildRanges(additional_ranges)
+
+  io[:Fonts].AddFontDefault()
+  japanese_font = io[:Fonts].AddFontFromFileTTF('./jpfont/GenShinGothic-Normal.ttf', 24.0, config, ImVector.new(additional_ranges)[:Data])
+
   # Setup Dear ImGui style
   ImGui::StyleColorsDark()
 
   # Setup Platform/Renderer bindings
   ImGui::ImplSDL2_Init(window)
   ImGui::ImplOpenGL3_Init(glsl_version)
-
-  io[:Fonts].AddFontDefault()
-  # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
-  # japanese_font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], './jpfont/GenShinGothic-Normal.ttf', 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
-  japanese_font = io[:Fonts].AddFontFromFileTTF('./jpfont/GenShinGothic-Normal.ttf', 24.0, nil, io[:Fonts].GetGlyphRangesChineseFull())
 
   event = SDL_Event.new
   done = false

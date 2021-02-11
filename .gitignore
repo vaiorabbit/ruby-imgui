@@ -1,4 +1,4 @@
 cimgui_impl_dll/build/*
-imgui_dll/build*
+imgui_dll/*build*
 *.so
 *.so.*

@@ -41,6 +41,7 @@ FFI.typedef :int, :ImGuiTableColumnFlags
 FFI.typedef :int, :ImGuiTableFlags
 FFI.typedef :int, :ImGuiTableRowFlags
 FFI.typedef :int, :ImGuiTreeNodeFlags
+FFI.typedef :int, :ImGuiViewportFlags
 FFI.typedef :int, :ImGuiWindowFlags
 FFI.typedef :short, :ImS16
 FFI.typedef :int, :ImS32
@@ -543,6 +544,12 @@ ImGuiTreeNodeFlags_SpanFullWidth = 4096 # 1 << 12
 ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 8192 # 1 << 13
 ImGuiTreeNodeFlags_CollapsingHeader = 26 # ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_NoAutoOpenOnLog
 
+# ImGuiViewportFlags_
+ImGuiViewportFlags_None = 0 # 0
+ImGuiViewportFlags_IsPlatformWindow = 1 # 1 << 0
+ImGuiViewportFlags_IsPlatformMonitor = 2 # 1 << 1
+ImGuiViewportFlags_OwnedByApp = 4 # 1 << 2
+
 # ImGuiWindowFlags_
 ImGuiWindowFlags_None = 0 # 0
 ImGuiWindowFlags_NoTitleBar = 1 # 1 << 0
@@ -918,6 +925,8 @@ class ImFontAtlas < FFI::Struct
     :CustomRects, ImVector.by_value,
     :ConfigData, ImVector.by_value,
     :TexUvLines, [ImVec4.by_value, 64],
+    :FontBuilderIO, :pointer,
+    :FontBuilderFlags, :uint,
     :PackIdMouseCursors, :int,
     :PackIdLines, :int
   )
@@ -1053,10 +1062,10 @@ end
 class ImDrawData < FFI::Struct
   layout(
     :Valid, :bool,
-    :CmdLists, ImDrawList.ptr,
     :CmdListsCount, :int,
     :TotalIdxCount, :int,
     :TotalVtxCount, :int,
+    :CmdLists, ImDrawList.ptr,
     :DisplayPos, ImVec2.by_value,
     :DisplaySize, ImVec2.by_value,
     :FramebufferScale, ImVec2.by_value
@@ -1114,7 +1123,7 @@ class ImFontConfig < FFI::Struct
     :GlyphMinAdvanceX, :float,
     :GlyphMaxAdvanceX, :float,
     :MergeMode, :bool,
-    :RasterizerFlags, :uint,
+    :FontBuilderFlags, :uint,
     :RasterizerMultiply, :float,
     :EllipsisChar, :ushort,
     :Name, [:char, 40],
@@ -1450,6 +1459,16 @@ class ImGuiTextRange < FFI::Struct
 
 end
 
+class ImGuiViewport < FFI::Struct
+  layout(
+    :Flags, :int,
+    :Pos, ImVec2.by_value,
+    :Size, ImVec2.by_value,
+    :WorkPos, ImVec2.by_value,
+    :WorkSize, ImVec2.by_value
+  )
+end
+
 class ImGuiStoragePair < FFI::Struct
   layout(
     :key, :uint,
@@ -1639,6 +1658,7 @@ module ImGui
       :igBeginDragDropSource,
       :igBeginDragDropTarget,
       :igBeginGroup,
+      :igBeginListBox,
       :igBeginMainMenuBar,
       :igBeginMenu,
       :igBeginMenuBar,
@@ -1702,6 +1722,7 @@ module ImGui
       :igEndDragDropTarget,
       :igEndFrame,
       :igEndGroup,
+      :igEndListBox,
       :igEndMainMenuBar,
       :igEndMenu,
       :igEndMenuBar,
@@ -1746,6 +1767,7 @@ module ImGui
       :igGetItemRectSize,
       :igGetKeyIndex,
       :igGetKeyPressedAmount,
+      :igGetMainViewport,
       :igGetMouseCursor,
       :igGetMouseDragDelta,
       :igGetMousePos,
@@ -1823,9 +1845,6 @@ module ImGui
       :igLabelText,
       :igListBoxStr_arr,
       :igListBoxFnBoolPtr,
-      :igListBoxFooter,
-      :igListBoxHeaderVec2,
-      :igListBoxHeaderInt,
       :igLoadIniSettingsFromDisk,
       :igLoadIniSettingsFromMemory,
       :igLogButtons,
@@ -2119,6 +2138,7 @@ module ImGui
       :igBeginDragDropSource => [:int],
       :igBeginDragDropTarget => [],
       :igBeginGroup => [],
+      :igBeginListBox => [:pointer, ImVec2.by_value],
       :igBeginMainMenuBar => [],
       :igBeginMenu => [:pointer, :bool],
       :igBeginMenuBar => [],
@@ -2182,6 +2202,7 @@ module ImGui
       :igEndDragDropTarget => [],
       :igEndFrame => [],
       :igEndGroup => [],
+      :igEndListBox => [],
       :igEndMainMenuBar => [],
       :igEndMenu => [],
       :igEndMenuBar => [],
@@ -2226,6 +2247,7 @@ module ImGui
       :igGetItemRectSize => [:pointer],
       :igGetKeyIndex => [:int],
       :igGetKeyPressedAmount => [:int, :float, :float],
+      :igGetMainViewport => [],
       :igGetMouseCursor => [],
       :igGetMouseDragDelta => [:pointer, :int, :float],
       :igGetMousePos => [:pointer],
@@ -2303,9 +2325,6 @@ module ImGui
       :igLabelText => [:pointer, :pointer, :varargs],
       :igListBoxStr_arr => [:pointer, :pointer, :pointer, :int, :int],
       :igListBoxFnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
-      :igListBoxFooter => [],
-      :igListBoxHeaderVec2 => [:pointer, ImVec2.by_value],
-      :igListBoxHeaderInt => [:pointer, :int, :int],
       :igLoadIniSettingsFromDisk => [:pointer],
       :igLoadIniSettingsFromMemory => [:pointer, :size_t],
       :igLogButtons => [],
@@ -2599,6 +2618,7 @@ module ImGui
       :igBeginDragDropSource => :bool,
       :igBeginDragDropTarget => :bool,
       :igBeginGroup => :void,
+      :igBeginListBox => :bool,
       :igBeginMainMenuBar => :bool,
       :igBeginMenu => :bool,
       :igBeginMenuBar => :bool,
@@ -2662,6 +2682,7 @@ module ImGui
       :igEndDragDropTarget => :void,
       :igEndFrame => :void,
       :igEndGroup => :void,
+      :igEndListBox => :void,
       :igEndMainMenuBar => :void,
       :igEndMenu => :void,
       :igEndMenuBar => :void,
@@ -2706,6 +2727,7 @@ module ImGui
       :igGetItemRectSize => :void,
       :igGetKeyIndex => :int,
       :igGetKeyPressedAmount => :int,
+      :igGetMainViewport => :pointer,
       :igGetMouseCursor => :int,
       :igGetMouseDragDelta => :void,
       :igGetMousePos => :void,
@@ -2783,9 +2805,6 @@ module ImGui
       :igLabelText => :void,
       :igListBoxStr_arr => :bool,
       :igListBoxFnBoolPtr => :bool,
-      :igListBoxFooter => :void,
-      :igListBoxHeaderVec2 => :bool,
-      :igListBoxHeaderInt => :bool,
       :igLoadIniSettingsFromDisk => :void,
       :igLoadIniSettingsFromMemory => :void,
       :igLogButtons => :void,
@@ -2949,7 +2968,7 @@ module ImGui
       begin
         attach_function sym, args[sym], retvals[sym]
       rescue FFI::NotFoundError => error
-        $stderr.puts("[Warning] Failed to import #{sym}.\n") if output_error
+        $stderr.puts("[Warning] Failed to import #{s}.\n") if output_error
       end
     end
 
@@ -3001,6 +3020,10 @@ module ImGui
 
   def self.BeginGroup()
     igBeginGroup()
+  end
+
+  def self.BeginListBox(label, size = ImVec2.create(0,0))
+    igBeginListBox(label, size)
   end
 
   def self.BeginMainMenuBar()
@@ -3259,6 +3282,10 @@ module ImGui
     igEndGroup()
   end
 
+  def self.EndListBox()
+    igEndListBox()
+  end
+
   def self.EndMainMenuBar()
     igEndMainMenuBar()
   end
@@ -3451,6 +3478,10 @@ module ImGui
 
   def self.GetKeyPressedAmount(key_index, repeat_delay, rate)
     igGetKeyPressedAmount(key_index, repeat_delay, rate)
+  end
+
+  def self.GetMainViewport()
+    igGetMainViewport()
   end
 
   def self.GetMouseCursor()
@@ -3773,18 +3804,6 @@ module ImGui
 
   def self.ListBoxFnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items = -1)
     igListBoxFnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items)
-  end
-
-  def self.ListBoxFooter()
-    igListBoxFooter()
-  end
-
-  def self.ListBoxHeaderVec2(label, size = ImVec2.create(0,0))
-    igListBoxHeaderVec2(label, size)
-  end
-
-  def self.ListBoxHeaderInt(label, items_count, height_in_items = -1)
-    igListBoxHeaderInt(label, items_count, height_in_items)
   end
 
   def self.LoadIniSettingsFromDisk(ini_filename)

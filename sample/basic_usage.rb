@@ -28,11 +28,7 @@ module ImGuiDemo
 
   def self.AddFont(japanese_ttf_filepath = './jpfont/GenShinGothic-Normal.ttf', icon_ttf_filepath = './iconfont/fontawesome-webfont.ttf')
     io = GetIO()
-    #ImGui::FontAtlas_AddFontDefault(io[:Fonts])
     io[:Fonts].AddFontDefault()
-    # ?? GetGlyphRangesJapanese fails to render Japanese Kanji characters '漱', '吾', '獰', '逢', '頃' and '咽' in 'jpfont.txt'.
-    # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesChineseFull(io[:Fonts]))
-    # @@font = ImGui::FontAtlas_AddFontFromFileTTF(io[:Fonts], japanese_ttf_filepath, 24.0, nil, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
 
     config = ImFontConfig.create
 
@@ -40,10 +36,8 @@ module ImGuiDemo
 
     # Japanese fonts
     additional_ranges = ImGui::ImVector_ImWchar_create() # ranges == ImVector_ImWchar*
-    #ImGui::FontGlyphRangesBuilder_AddText(builder.pointer, FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
-    builder.AddText(FFI::MemoryPointer.from_string("奈也")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
-    #ImGui::FontGlyphRangesBuilder_AddRanges(builder.pointer, ImGui::FontAtlas_GetGlyphRangesJapanese(io[:Fonts]))
-    builder.AddRanges(io[:Fonts].GetGlyphRangesJapanese())
+    builder.AddRanges(io[:Fonts].GetGlyphRangesJapanese()) # 常用漢字・人名用漢字を追加します。
+    # builder.AddText(FFI::MemoryPointer.from_string("漱吾獰逢頃咽")) # GetGlyphRangesJapaneseに追加したい文字を並べて書きます。
     builder.BuildRanges(additional_ranges)
     @@font = io[:Fonts].AddFontFromFileTTF(japanese_ttf_filepath, 24.0, config, ImVector.new(additional_ranges)[:Data])
 
