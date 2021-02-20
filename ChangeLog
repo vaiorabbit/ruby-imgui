@@ -1,3 +1,7 @@
+2021-02-20  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Applied https://github.com/ocornut/imgui/commit/bda12e5fdd829e44e01a25aac015e156f3dad761
+
 2021-02-12  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (Windows) ImGui 1.81
