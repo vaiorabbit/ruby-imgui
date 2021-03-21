@@ -6,7 +6,7 @@
 
 require 'ffi'
 
-FFI.typedef :int, :ImDrawCornerFlags
+FFI.typedef :int, :ImDrawFlags
 FFI.typedef :ushort, :ImDrawIdx
 FFI.typedef :int, :ImDrawListFlags
 FFI.typedef :int, :ImFontAtlasFlags
@@ -26,6 +26,8 @@ FFI.typedef :uint, :ImGuiID
 FFI.typedef :int, :ImGuiInputTextFlags
 FFI.typedef :int, :ImGuiKey
 FFI.typedef :int, :ImGuiKeyModFlags
+FFI.typedef :pointer, :ImGuiMemAllocFunc
+FFI.typedef :pointer, :ImGuiMemFreeFunc
 FFI.typedef :int, :ImGuiMouseButton
 FFI.typedef :int, :ImGuiMouseCursor
 FFI.typedef :int, :ImGuiNavInput
@@ -56,17 +58,21 @@ FFI.typedef :ushort, :ImWchar
 FFI.typedef :ushort, :ImWchar16
 FFI.typedef :uint, :ImWchar32
 
-# ImDrawCornerFlags_
-ImDrawCornerFlags_None = 0 # 0
-ImDrawCornerFlags_TopLeft = 1 # 1 << 0
-ImDrawCornerFlags_TopRight = 2 # 1 << 1
-ImDrawCornerFlags_BotLeft = 4 # 1 << 2
-ImDrawCornerFlags_BotRight = 8 # 1 << 3
-ImDrawCornerFlags_Top = 3 # ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_TopRight
-ImDrawCornerFlags_Bot = 12 # ImDrawCornerFlags_BotLeft | ImDrawCornerFlags_BotRight
-ImDrawCornerFlags_Left = 5 # ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_BotLeft
-ImDrawCornerFlags_Right = 10 # ImDrawCornerFlags_TopRight | ImDrawCornerFlags_BotRight
-ImDrawCornerFlags_All = 15 # 0xF
+# ImDrawFlags_
+ImDrawFlags_None = 0 # 0
+ImDrawFlags_Closed = 1 # 1 << 0
+ImDrawFlags_RoundCornersTopLeft = 16 # 1 << 4
+ImDrawFlags_RoundCornersTopRight = 32 # 1 << 5
+ImDrawFlags_RoundCornersBottomLeft = 64 # 1 << 6
+ImDrawFlags_RoundCornersBottomRight = 128 # 1 << 7
+ImDrawFlags_RoundCornersNone = 256 # 1 << 8
+ImDrawFlags_RoundCornersTop = 48 # ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersTopRight
+ImDrawFlags_RoundCornersBottom = 192 # ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight
+ImDrawFlags_RoundCornersLeft = 80 # ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersTopLeft
+ImDrawFlags_RoundCornersRight = 160 # ImDrawFlags_RoundCornersBottomRight | ImDrawFlags_RoundCornersTopRight
+ImDrawFlags_RoundCornersAll = 240 # ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersTopRight | ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight
+ImDrawFlags_RoundCornersDefault_ = 240 # ImDrawFlags_RoundCornersAll
+ImDrawFlags_RoundCornersMask_ = 496 # ImDrawFlags_RoundCornersAll | ImDrawFlags_RoundCornersNone
 
 # ImDrawListFlags_
 ImDrawListFlags_None = 0 # 0
@@ -280,7 +286,7 @@ ImGuiInputTextFlags_CallbackCharFilter = 512 # 1 << 9
 ImGuiInputTextFlags_AllowTabInput = 1024 # 1 << 10
 ImGuiInputTextFlags_CtrlEnterForNewLine = 2048 # 1 << 11
 ImGuiInputTextFlags_NoHorizontalScroll = 4096 # 1 << 12
-ImGuiInputTextFlags_AlwaysInsertMode = 8192 # 1 << 13
+ImGuiInputTextFlags_AlwaysOverwrite = 8192 # 1 << 13
 ImGuiInputTextFlags_ReadOnly = 16384 # 1 << 14
 ImGuiInputTextFlags_Password = 32768 # 1 << 15
 ImGuiInputTextFlags_NoUndoRedo = 65536 # 1 << 16
@@ -698,8 +704,8 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddImageQuad(self, user_texture_id, p1, p2, p3, p4, uv1, uv2, uv3, uv4, col)
   end
 
-  def AddImageRounded(user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners = ImDrawCornerFlags_All)
-    ImGui::ImDrawList_AddImageRounded(self, user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, rounding_corners)
+  def AddImageRounded(user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, flags = 0)
+    ImGui::ImDrawList_AddImageRounded(self, user_texture_id, p_min, p_max, uv_min, uv_max, col, rounding, flags)
   end
 
   def AddLine(p1, p2, col, thickness = 1.0)
@@ -714,8 +720,8 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddNgonFilled(self, center, radius, col, num_segments)
   end
 
-  def AddPolyline(points, num_points, col, closed, thickness)
-    ImGui::ImDrawList_AddPolyline(self, points, num_points, col, closed, thickness)
+  def AddPolyline(points, num_points, col, flags, thickness)
+    ImGui::ImDrawList_AddPolyline(self, points, num_points, col, flags, thickness)
   end
 
   def AddQuad(p1, p2, p3, p4, col, thickness = 1.0)
@@ -726,12 +732,12 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddQuadFilled(self, p1, p2, p3, p4, col)
   end
 
-  def AddRect(p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All, thickness = 1.0)
-    ImGui::ImDrawList_AddRect(self, p_min, p_max, col, rounding, rounding_corners, thickness)
+  def AddRect(p_min, p_max, col, rounding = 0.0, flags = 0, thickness = 1.0)
+    ImGui::ImDrawList_AddRect(self, p_min, p_max, col, rounding, flags, thickness)
   end
 
-  def AddRectFilled(p_min, p_max, col, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
-    ImGui::ImDrawList_AddRectFilled(self, p_min, p_max, col, rounding, rounding_corners)
+  def AddRectFilled(p_min, p_max, col, rounding = 0.0, flags = 0)
+    ImGui::ImDrawList_AddRectFilled(self, p_min, p_max, col, rounding, flags)
   end
 
   def AddRectFilledMultiColor(p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
@@ -786,7 +792,7 @@ class ImDrawList < FFI::Struct
     return ImDrawList.new(ImGui::ImDrawList_ImDrawList(shared_data))
   end
 
-  def PathArcTo(center, radius, a_min, a_max, num_segments = 10)
+  def PathArcTo(center, radius, a_min, a_max, num_segments = 0)
     ImGui::ImDrawList_PathArcTo(self, center, radius, a_min, a_max, num_segments)
   end
 
@@ -818,12 +824,12 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PathLineToMergeDuplicate(self, pos)
   end
 
-  def PathRect(rect_min, rect_max, rounding = 0.0, rounding_corners = ImDrawCornerFlags_All)
-    ImGui::ImDrawList_PathRect(self, rect_min, rect_max, rounding, rounding_corners)
+  def PathRect(rect_min, rect_max, rounding = 0.0, flags = 0)
+    ImGui::ImDrawList_PathRect(self, rect_min, rect_max, rounding, flags)
   end
 
-  def PathStroke(col, closed, thickness = 1.0)
-    ImGui::ImDrawList_PathStroke(self, col, closed, thickness)
+  def PathStroke(col, flags = 0, thickness = 1.0)
+    ImGui::ImDrawList_PathStroke(self, col, flags, thickness)
   end
 
   def PopClipRect()
@@ -878,6 +884,10 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PushTextureID(self, texture_id)
   end
 
+  def _CalcCircleAutoSegmentCount(radius)
+    ImGui::ImDrawList__CalcCircleAutoSegmentCount(self, radius)
+  end
+
   def _ClearFreeMemory()
     ImGui::ImDrawList__ClearFreeMemory(self)
   end
@@ -892,6 +902,14 @@ class ImDrawList < FFI::Struct
 
   def _OnChangedVtxOffset()
     ImGui::ImDrawList__OnChangedVtxOffset(self)
+  end
+
+  def _PathArcToFastEx(center, radius, a_min_sample, a_max_sample, a_step)
+    ImGui::ImDrawList__PathArcToFastEx(self, center, radius, a_min_sample, a_max_sample, a_step)
+  end
+
+  def _PathArcToN(center, radius, a_min, a_max, num_segments)
+    ImGui::ImDrawList__PathArcToN(self, center, radius, a_min, a_max, num_segments)
   end
 
   def _PopUnusedDrawCmd()
@@ -910,11 +928,12 @@ end
 
 class ImFontAtlas < FFI::Struct
   layout(
-    :Locked, :bool,
     :Flags, :int,
     :TexID, :pointer,
     :TexDesiredWidth, :int,
     :TexGlyphPadding, :int,
+    :Locked, :bool,
+    :TexPixelsUseColors, :bool,
     :TexPixelsAlpha8, :pointer,
     :TexPixelsRGBA32, :pointer,
     :TexWidth, :int,
@@ -1359,7 +1378,7 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedLinesUseTex, :bool,
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
-    :CircleSegmentMaxError, :float,
+    :CircleTessellationMaxError, :float,
     :Colors, [ImVec4.by_value, 53]
   )
 
@@ -1578,10 +1597,13 @@ module ImGui
       :ImDrawList_PushClipRect,
       :ImDrawList_PushClipRectFullScreen,
       :ImDrawList_PushTextureID,
+      :ImDrawList__CalcCircleAutoSegmentCount,
       :ImDrawList__ClearFreeMemory,
       :ImDrawList__OnChangedClipRect,
       :ImDrawList__OnChangedTextureID,
       :ImDrawList__OnChangedVtxOffset,
+      :ImDrawList__PathArcToFastEx,
+      :ImDrawList__PathArcToN,
       :ImDrawList__PopUnusedDrawCmd,
       :ImDrawList__ResetForNewFrame,
       :ImDrawList_destroy,
@@ -1731,6 +1753,7 @@ module ImGui
       :igEndTabItem,
       :igEndTable,
       :igEndTooltip,
+      :igGetAllocatorFunctions,
       :igGetBackgroundDrawList,
       :igGetClipboardText,
       :igGetColorU32Col,
@@ -2018,7 +2041,7 @@ module ImGui
       :ImDrawList_AddLine => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float],
       :ImDrawList_AddNgon => [:pointer, ImVec2.by_value, :float, :uint, :int, :float],
       :ImDrawList_AddNgonFilled => [:pointer, ImVec2.by_value, :float, :uint, :int],
-      :ImDrawList_AddPolyline => [:pointer, :pointer, :int, :uint, :bool, :float],
+      :ImDrawList_AddPolyline => [:pointer, :pointer, :int, :uint, :int, :float],
       :ImDrawList_AddQuad => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float],
       :ImDrawList_AddQuadFilled => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
       :ImDrawList_AddRect => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float],
@@ -2044,7 +2067,7 @@ module ImGui
       :ImDrawList_PathLineTo => [:pointer, ImVec2.by_value],
       :ImDrawList_PathLineToMergeDuplicate => [:pointer, ImVec2.by_value],
       :ImDrawList_PathRect => [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :int],
-      :ImDrawList_PathStroke => [:pointer, :uint, :bool, :float],
+      :ImDrawList_PathStroke => [:pointer, :uint, :int, :float],
       :ImDrawList_PopClipRect => [:pointer],
       :ImDrawList_PopTextureID => [:pointer],
       :ImDrawList_PrimQuadUV => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
@@ -2058,10 +2081,13 @@ module ImGui
       :ImDrawList_PushClipRect => [:pointer, ImVec2.by_value, ImVec2.by_value, :bool],
       :ImDrawList_PushClipRectFullScreen => [:pointer],
       :ImDrawList_PushTextureID => [:pointer, :pointer],
+      :ImDrawList__CalcCircleAutoSegmentCount => [:pointer, :float],
       :ImDrawList__ClearFreeMemory => [:pointer],
       :ImDrawList__OnChangedClipRect => [:pointer],
       :ImDrawList__OnChangedTextureID => [:pointer],
       :ImDrawList__OnChangedVtxOffset => [:pointer],
+      :ImDrawList__PathArcToFastEx => [:pointer, ImVec2.by_value, :float, :int, :int, :int],
+      :ImDrawList__PathArcToN => [:pointer, ImVec2.by_value, :float, :float, :float, :int],
       :ImDrawList__PopUnusedDrawCmd => [:pointer],
       :ImDrawList__ResetForNewFrame => [:pointer],
       :ImDrawList_destroy => [:pointer],
@@ -2211,6 +2237,7 @@ module ImGui
       :igEndTabItem => [],
       :igEndTable => [],
       :igEndTooltip => [],
+      :igGetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :igGetBackgroundDrawList => [],
       :igGetClipboardText => [],
       :igGetColorU32Col => [:int, :float],
@@ -2538,10 +2565,13 @@ module ImGui
       :ImDrawList_PushClipRect => :void,
       :ImDrawList_PushClipRectFullScreen => :void,
       :ImDrawList_PushTextureID => :void,
+      :ImDrawList__CalcCircleAutoSegmentCount => :int,
       :ImDrawList__ClearFreeMemory => :void,
       :ImDrawList__OnChangedClipRect => :void,
       :ImDrawList__OnChangedTextureID => :void,
       :ImDrawList__OnChangedVtxOffset => :void,
+      :ImDrawList__PathArcToFastEx => :void,
+      :ImDrawList__PathArcToN => :void,
       :ImDrawList__PopUnusedDrawCmd => :void,
       :ImDrawList__ResetForNewFrame => :void,
       :ImDrawList_destroy => :void,
@@ -2691,6 +2721,7 @@ module ImGui
       :igEndTabItem => :void,
       :igEndTable => :void,
       :igEndTooltip => :void,
+      :igGetAllocatorFunctions => :void,
       :igGetBackgroundDrawList => :pointer,
       :igGetClipboardText => :pointer,
       :igGetColorU32Col => :uint,
@@ -3316,6 +3347,10 @@ module ImGui
 
   def self.EndTooltip()
     igEndTooltip()
+  end
+
+  def self.GetAllocatorFunctions(p_alloc_func, p_free_func, p_user_data)
+    igGetAllocatorFunctions(p_alloc_func, p_free_func, p_user_data)
   end
 
   def self.GetBackgroundDrawList()
