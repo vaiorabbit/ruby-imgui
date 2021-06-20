@@ -1,3 +1,11 @@
+2021-06-20  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* (macOS) ImGui 1.83
+	* (macOS) Build script now generates ARM64 binary
+	* Added reference comments of arguments and return value
+	* Several APIs now contain underscore in its name due to cimgui change (e.g. GetColorU32Col -> GetColorU32_Col)
+	* (Experimental) Added overload functions (e.g.: ImGui::Combo, ImGui::MenuItem)
+
 2021-03-27  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (Windows) ImGui 1.82

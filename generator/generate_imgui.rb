@@ -346,6 +346,16 @@ module Generator
         end
     end
 
+    args_comment = []
+    func.args.length.times do |i|
+      next if i == 0 && func.return_udt # skip pOut
+      args_comment << "#{func.args[i].name}(#{func.args[i].type_name})"
+    end
+
+    retval_comment = func.retval.gsub(/^:/,'')
+
+    out.write("# arg: #{args_comment.join(', ')}\n") unless args_comment.empty?
+    out.write("# ret: #{retval_comment}\n")
     if func.return_udt
       ret = arg_names_with_defaults.shift # == "pOut"
       var_type = /([^\*]+)/.match(func.args[0].type_name)[0] # e.g.) ImVec2* -> ImVec2
@@ -363,6 +373,99 @@ module Generator
       out.pop_indent
       out.write("end\n\n")
     end
+  end
+
+  def self.write_overload_module_methods(out, funcs_map, typedefs_map)
+
+    # extract function names that require overload definition
+    original_funcnames = funcs_map.collect {|func| func.original_funcname}.filter {|original_funcname| !original_funcname.empty?}
+    overload_funcnames = original_funcnames.find_all {|ofn| original_funcnames.count(ofn) > 1}.uniq!
+
+    # remove candidates that aren't the ImGui module methods (e.g. ImGuiTextRange_ImGuiTextRange_Nil)
+    overload_funcnames.delete_if do |ofn|
+      ovl_funcs = funcs_map.filter {|func| func.original_funcname == ofn}
+      ovl_funcs.any? { |ovl_func| /^(Im[^_]+_)/.match(ovl_func.name) }
+    end
+
+    out.write("# Overload functions\n\n")
+    overload_funcnames.each do |ofn|
+      ovl_funcs = funcs_map.filter {|func| func.original_funcname == ofn}
+
+      out.write("def self.#{ofn}(*arg)\n")
+      out.push_indent
+      ovl_funcs.each do |ovl_func|
+
+        # Make list of argument
+        has_vararg = false
+        type_check = []
+        ovl_func.args.length.times do |i|
+          type_name = ovl_func.args[i].type_name
+          has_bool = false
+          ruby_type = if type_name.include?(']')
+                        FFI::Pointer
+                      elsif type_name.include?('char*')
+                        String
+                      elsif type_name.include?('*')
+                        FFI::Pointer
+                      elsif type_name.include?('int')
+                        Integer
+                      elsif type_name.include?('float')
+                        Float
+                      elsif type_name.include?('bool')
+                        has_bool = true
+                      elsif type_name.include?('...')
+                        has_vararg = true
+                      elsif typedefs_map.has_key?(type_name) # { |typedef| typedef[0] == type_name}
+                        case typedefs_map[type_name][1]
+                        when /int/
+                          Integer
+                        when /pointer/
+                          FFI::Pointer
+                        else
+                          typedefs_map[type_name][0] # e.g.) ImVec2, ImVec4
+                        end
+                      else
+                        pp type_name
+                        type_name # bool
+                      end
+          if has_bool
+            type_check << "(arg[#{i}].is_a?(TrueClass) || arg[#{i}].is_a?(FalseClass))"
+          elsif has_vararg
+            # skip type check and pass directly to method
+          else
+            type_check << "arg[#{i}].kind_of?(#{ruby_type})"
+          end
+        end
+
+        args = []
+        ovl_func.args.length.times do |i|
+          args << "arg[#{i}]"
+        end
+        if has_vararg
+          args[-1] = "arg[#{args.length-1}..]"
+        end
+
+        args_comment = []
+        ovl_func.args.length.times do |i|
+          args_comment << "#{i}:#{ovl_func.args[i].name}(#{ovl_func.args[i].type_name})"
+        end
+
+        retval_comment = ovl_func.retval.gsub(/^:/,'')
+
+        out.write("# arg: #{args_comment.join(', ')}\n")
+        out.write("# ret: #{retval_comment}\n")
+        if has_vararg
+          out.write("return #{ovl_func.name}(#{args.join(', ')}) if arg.length >= #{ovl_func.args.length - 1} && (#{type_check.join(' && ')})\n")
+        else
+          out.write("return #{ovl_func.name}(#{args.join(', ')}) if arg.length == #{ovl_func.args.length} && (#{type_check.join(' && ')})\n")
+        end
+      end
+      out.write('$stderr.puts("[Warning] ' + "#{ofn}" + ' : No matching functions found (#{arg})")' + "\n")
+      out.pop_indent
+      out.write("end\n")
+      out.newline
+    end
+
   end
 
 end # module Generator
@@ -567,6 +670,8 @@ end
     funcs_map.each do |func|
       Generator.write_module_method(out, func)
     end
+
+    Generator.write_overload_module_methods(out, funcs_map, typedefs_map)
 
     #
     # Epilogue

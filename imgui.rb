@@ -293,8 +293,6 @@ ImGuiInputTextFlags_NoUndoRedo = 65536 # 1 << 16
 ImGuiInputTextFlags_CharsScientific = 131072 # 1 << 17
 ImGuiInputTextFlags_CallbackResize = 262144 # 1 << 18
 ImGuiInputTextFlags_CallbackEdit = 524288 # 1 << 19
-ImGuiInputTextFlags_Multiline = 1048576 # 1 << 20
-ImGuiInputTextFlags_NoMarkEdited = 2097152 # 1 << 21
 
 # ImGuiKeyModFlags_
 ImGuiKeyModFlags_None = 0 # 0
@@ -744,12 +742,12 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddRectFilledMultiColor(self, p_min, p_max, col_upr_left, col_upr_right, col_bot_right, col_bot_left)
   end
 
-  def AddTextVec2(pos, col, text_begin, text_end = nil)
-    ImGui::ImDrawList_AddTextVec2(self, pos, col, text_begin, text_end)
+  def AddText_Vec2(pos, col, text_begin, text_end = nil)
+    ImGui::ImDrawList_AddText_Vec2(self, pos, col, text_begin, text_end)
   end
 
-  def AddTextFontPtr(font, font_size, pos, col, text_begin, text_end = nil, wrap_width = 0.0, cpu_fine_clip_rect = nil)
-    ImGui::ImDrawList_AddTextFontPtr(self, font, font_size, pos, col, text_begin, text_end, wrap_width, cpu_fine_clip_rect)
+  def AddText_FontPtr(font, font_size, pos, col, text_begin, text_end = nil, wrap_width = 0.0, cpu_fine_clip_rect = nil)
+    ImGui::ImDrawList_AddText_FontPtr(self, font, font_size, pos, col, text_begin, text_end, wrap_width, cpu_fine_clip_rect)
   end
 
   def AddTriangle(p1, p2, p3, col, thickness = 1.0)
@@ -1457,11 +1455,11 @@ class ImGuiTextRange < FFI::Struct
   )
 
   def self.create()
-    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRangeNil())
+    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRange_Nil())
   end
 
   def self.create(_b, _e)
-    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRangeStr(_b, _e))
+    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRange_Str(_b, _e))
   end
 
   def destroy()
@@ -1563,8 +1561,8 @@ module ImGui
       :ImDrawList_AddRect,
       :ImDrawList_AddRectFilled,
       :ImDrawList_AddRectFilledMultiColor,
-      :ImDrawList_AddTextVec2,
-      :ImDrawList_AddTextFontPtr,
+      :ImDrawList_AddText_Vec2,
+      :ImDrawList_AddText_FontPtr,
       :ImDrawList_AddTriangle,
       :ImDrawList_AddTriangleFilled,
       :ImDrawList_ChannelsMerge,
@@ -1664,8 +1662,8 @@ module ImGui
       :ImGuiTextFilter_IsActive,
       :ImGuiTextFilter_PassFilter,
       :ImGuiTextFilter_destroy,
-      :ImGuiTextRange_ImGuiTextRangeNil,
-      :ImGuiTextRange_ImGuiTextRangeStr,
+      :ImGuiTextRange_ImGuiTextRange_Nil,
+      :ImGuiTextRange_ImGuiTextRange_Str,
       :ImGuiTextRange_destroy,
       :ImGuiTextRange_empty,
       :ImGuiTextRange_split,
@@ -1673,8 +1671,8 @@ module ImGui
       :igAlignTextToFramePadding,
       :igArrowButton,
       :igBegin,
-      :igBeginChildStr,
-      :igBeginChildID,
+      :igBeginChild_Str,
+      :igBeginChild_ID,
       :igBeginChildFrame,
       :igBeginCombo,
       :igBeginDragDropSource,
@@ -1702,11 +1700,11 @@ module ImGui
       :igCaptureKeyboardFromApp,
       :igCaptureMouseFromApp,
       :igCheckbox,
-      :igCheckboxFlagsIntPtr,
-      :igCheckboxFlagsUintPtr,
+      :igCheckboxFlags_IntPtr,
+      :igCheckboxFlags_UintPtr,
       :igCloseCurrentPopup,
-      :igCollapsingHeaderTreeNodeFlags,
-      :igCollapsingHeaderBoolPtr,
+      :igCollapsingHeader_TreeNodeFlags,
+      :igCollapsingHeader_BoolPtr,
       :igColorButton,
       :igColorConvertFloat4ToU32,
       :igColorConvertHSVtoRGB,
@@ -1717,9 +1715,9 @@ module ImGui
       :igColorPicker3,
       :igColorPicker4,
       :igColumns,
-      :igComboStr_arr,
-      :igComboStr,
-      :igComboFnBoolPtr,
+      :igCombo_Str_arr,
+      :igCombo_Str,
+      :igCombo_FnBoolPtr,
       :igCreateContext,
       :igDebugCheckVersionAndDataLayout,
       :igDestroyContext,
@@ -1756,9 +1754,9 @@ module ImGui
       :igGetAllocatorFunctions,
       :igGetBackgroundDrawList,
       :igGetClipboardText,
-      :igGetColorU32Col,
-      :igGetColorU32Vec4,
-      :igGetColorU32U32,
+      :igGetColorU32_Col,
+      :igGetColorU32_Vec4,
+      :igGetColorU32_U32,
       :igGetColumnIndex,
       :igGetColumnOffset,
       :igGetColumnWidth,
@@ -1781,9 +1779,9 @@ module ImGui
       :igGetFrameCount,
       :igGetFrameHeight,
       :igGetFrameHeightWithSpacing,
-      :igGetIDStr,
-      :igGetIDStrStr,
-      :igGetIDPtr,
+      :igGetID_Str,
+      :igGetID_StrStr,
+      :igGetID_Ptr,
       :igGetIO,
       :igGetItemRectMax,
       :igGetItemRectMin,
@@ -1859,15 +1857,15 @@ module ImGui
       :igIsMousePosValid,
       :igIsMouseReleased,
       :igIsPopupOpen,
-      :igIsRectVisibleNil,
-      :igIsRectVisibleVec2,
+      :igIsRectVisible_Nil,
+      :igIsRectVisible_Vec2,
       :igIsWindowAppearing,
       :igIsWindowCollapsed,
       :igIsWindowFocused,
       :igIsWindowHovered,
       :igLabelText,
-      :igListBoxStr_arr,
-      :igListBoxFnBoolPtr,
+      :igListBox_Str_arr,
+      :igListBox_FnBoolPtr,
       :igLoadIniSettingsFromDisk,
       :igLoadIniSettingsFromMemory,
       :igLogButtons,
@@ -1878,17 +1876,18 @@ module ImGui
       :igLogToTTY,
       :igMemAlloc,
       :igMemFree,
-      :igMenuItemBool,
-      :igMenuItemBoolPtr,
+      :igMenuItem_Bool,
+      :igMenuItem_BoolPtr,
       :igNewFrame,
       :igNewLine,
       :igNextColumn,
-      :igOpenPopup,
+      :igOpenPopup_Str,
+      :igOpenPopup_ID,
       :igOpenPopupOnItemClick,
-      :igPlotHistogramFloatPtr,
-      :igPlotHistogramFnFloatPtr,
-      :igPlotLinesFloatPtr,
-      :igPlotLinesFnFloatPtr,
+      :igPlotHistogram_FloatPtr,
+      :igPlotHistogram_FnFloatPtr,
+      :igPlotLines_FloatPtr,
+      :igPlotLines_FnFloatPtr,
       :igPopAllowKeyboardFocus,
       :igPopButtonRepeat,
       :igPopClipRect,
@@ -1903,25 +1902,25 @@ module ImGui
       :igPushButtonRepeat,
       :igPushClipRect,
       :igPushFont,
-      :igPushIDStr,
-      :igPushIDStrStr,
-      :igPushIDPtr,
-      :igPushIDInt,
+      :igPushID_Str,
+      :igPushID_StrStr,
+      :igPushID_Ptr,
+      :igPushID_Int,
       :igPushItemWidth,
-      :igPushStyleColorU32,
-      :igPushStyleColorVec4,
-      :igPushStyleVarFloat,
-      :igPushStyleVarVec2,
+      :igPushStyleColor_U32,
+      :igPushStyleColor_Vec4,
+      :igPushStyleVar_Float,
+      :igPushStyleVar_Vec2,
       :igPushTextWrapPos,
-      :igRadioButtonBool,
-      :igRadioButtonIntPtr,
+      :igRadioButton_Bool,
+      :igRadioButton_IntPtr,
       :igRender,
       :igResetMouseDragDelta,
       :igSameLine,
       :igSaveIniSettingsToDisk,
       :igSaveIniSettingsToMemory,
-      :igSelectableBool,
-      :igSelectableBoolPtr,
+      :igSelectable_Bool,
+      :igSelectable_BoolPtr,
       :igSeparator,
       :igSetAllocatorFunctions,
       :igSetClipboardText,
@@ -1956,15 +1955,15 @@ module ImGui
       :igSetStateStorage,
       :igSetTabItemClosed,
       :igSetTooltip,
-      :igSetWindowCollapsedBool,
-      :igSetWindowCollapsedStr,
-      :igSetWindowFocusNil,
-      :igSetWindowFocusStr,
+      :igSetWindowCollapsed_Bool,
+      :igSetWindowCollapsed_Str,
+      :igSetWindowFocus_Nil,
+      :igSetWindowFocus_Str,
       :igSetWindowFontScale,
-      :igSetWindowPosVec2,
-      :igSetWindowPosStr,
-      :igSetWindowSizeVec2,
-      :igSetWindowSizeStr,
+      :igSetWindowPos_Vec2,
+      :igSetWindowPos_Str,
+      :igSetWindowSize_Vec2,
+      :igSetWindowSize_Str,
       :igShowAboutWindow,
       :igShowDemoWindow,
       :igShowFontSelector,
@@ -2000,6 +1999,7 @@ module ImGui
       :igTableNextColumn,
       :igTableNextRow,
       :igTableSetBgColor,
+      :igTableSetColumnEnabled,
       :igTableSetColumnIndex,
       :igTableSetupColumn,
       :igTableSetupScrollFreeze,
@@ -2008,23 +2008,23 @@ module ImGui
       :igTextDisabled,
       :igTextUnformatted,
       :igTextWrapped,
-      :igTreeNodeStr,
-      :igTreeNodeStrStr,
-      :igTreeNodePtr,
-      :igTreeNodeExStr,
-      :igTreeNodeExStrStr,
-      :igTreeNodeExPtr,
+      :igTreeNode_Str,
+      :igTreeNode_StrStr,
+      :igTreeNode_Ptr,
+      :igTreeNodeEx_Str,
+      :igTreeNodeEx_StrStr,
+      :igTreeNodeEx_Ptr,
       :igTreePop,
-      :igTreePushStr,
-      :igTreePushPtr,
+      :igTreePush_Str,
+      :igTreePush_Ptr,
       :igUnindent,
       :igVSliderFloat,
       :igVSliderInt,
       :igVSliderScalar,
-      :igValueBool,
-      :igValueInt,
-      :igValueUint,
-      :igValueFloat,
+      :igValue_Bool,
+      :igValue_Int,
+      :igValue_Uint,
+      :igValue_Float,
     ]
 
     args = {
@@ -2047,8 +2047,8 @@ module ImGui
       :ImDrawList_AddRect => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float],
       :ImDrawList_AddRectFilled => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int],
       :ImDrawList_AddRectFilledMultiColor => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :uint, :uint, :uint],
-      :ImDrawList_AddTextVec2 => [:pointer, ImVec2.by_value, :uint, :pointer, :pointer],
-      :ImDrawList_AddTextFontPtr => [:pointer, :pointer, :float, ImVec2.by_value, :uint, :pointer, :pointer, :float, :pointer],
+      :ImDrawList_AddText_Vec2 => [:pointer, ImVec2.by_value, :uint, :pointer, :pointer],
+      :ImDrawList_AddText_FontPtr => [:pointer, :pointer, :float, ImVec2.by_value, :uint, :pointer, :pointer, :float, :pointer],
       :ImDrawList_AddTriangle => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float],
       :ImDrawList_AddTriangleFilled => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
       :ImDrawList_ChannelsMerge => [:pointer],
@@ -2148,8 +2148,8 @@ module ImGui
       :ImGuiTextFilter_IsActive => [:pointer],
       :ImGuiTextFilter_PassFilter => [:pointer, :pointer, :pointer],
       :ImGuiTextFilter_destroy => [:pointer],
-      :ImGuiTextRange_ImGuiTextRangeNil => [],
-      :ImGuiTextRange_ImGuiTextRangeStr => [:pointer, :pointer],
+      :ImGuiTextRange_ImGuiTextRange_Nil => [],
+      :ImGuiTextRange_ImGuiTextRange_Str => [:pointer, :pointer],
       :ImGuiTextRange_destroy => [:pointer],
       :ImGuiTextRange_empty => [:pointer],
       :ImGuiTextRange_split => [:pointer, :char, :pointer],
@@ -2157,8 +2157,8 @@ module ImGui
       :igAlignTextToFramePadding => [],
       :igArrowButton => [:pointer, :int],
       :igBegin => [:pointer, :pointer, :int],
-      :igBeginChildStr => [:pointer, ImVec2.by_value, :bool, :int],
-      :igBeginChildID => [:uint, ImVec2.by_value, :bool, :int],
+      :igBeginChild_Str => [:pointer, ImVec2.by_value, :bool, :int],
+      :igBeginChild_ID => [:uint, ImVec2.by_value, :bool, :int],
       :igBeginChildFrame => [:uint, ImVec2.by_value, :int],
       :igBeginCombo => [:pointer, :pointer, :int],
       :igBeginDragDropSource => [:int],
@@ -2186,11 +2186,11 @@ module ImGui
       :igCaptureKeyboardFromApp => [:bool],
       :igCaptureMouseFromApp => [:bool],
       :igCheckbox => [:pointer, :pointer],
-      :igCheckboxFlagsIntPtr => [:pointer, :pointer, :int],
-      :igCheckboxFlagsUintPtr => [:pointer, :pointer, :uint],
+      :igCheckboxFlags_IntPtr => [:pointer, :pointer, :int],
+      :igCheckboxFlags_UintPtr => [:pointer, :pointer, :uint],
       :igCloseCurrentPopup => [],
-      :igCollapsingHeaderTreeNodeFlags => [:pointer, :int],
-      :igCollapsingHeaderBoolPtr => [:pointer, :pointer, :int],
+      :igCollapsingHeader_TreeNodeFlags => [:pointer, :int],
+      :igCollapsingHeader_BoolPtr => [:pointer, :pointer, :int],
       :igColorButton => [:pointer, ImVec4.by_value, :int, ImVec2.by_value],
       :igColorConvertFloat4ToU32 => [ImVec4.by_value],
       :igColorConvertHSVtoRGB => [:float, :float, :float, :pointer, :pointer, :pointer],
@@ -2201,9 +2201,9 @@ module ImGui
       :igColorPicker3 => [:pointer, :pointer, :int],
       :igColorPicker4 => [:pointer, :pointer, :int, :pointer],
       :igColumns => [:int, :pointer, :bool],
-      :igComboStr_arr => [:pointer, :pointer, :pointer, :int, :int],
-      :igComboStr => [:pointer, :pointer, :pointer, :int],
-      :igComboFnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
+      :igCombo_Str_arr => [:pointer, :pointer, :pointer, :int, :int],
+      :igCombo_Str => [:pointer, :pointer, :pointer, :int],
+      :igCombo_FnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
       :igCreateContext => [:pointer],
       :igDebugCheckVersionAndDataLayout => [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t],
       :igDestroyContext => [:pointer],
@@ -2240,9 +2240,9 @@ module ImGui
       :igGetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :igGetBackgroundDrawList => [],
       :igGetClipboardText => [],
-      :igGetColorU32Col => [:int, :float],
-      :igGetColorU32Vec4 => [ImVec4.by_value],
-      :igGetColorU32U32 => [:uint],
+      :igGetColorU32_Col => [:int, :float],
+      :igGetColorU32_Vec4 => [ImVec4.by_value],
+      :igGetColorU32_U32 => [:uint],
       :igGetColumnIndex => [],
       :igGetColumnOffset => [:int],
       :igGetColumnWidth => [:int],
@@ -2265,9 +2265,9 @@ module ImGui
       :igGetFrameCount => [],
       :igGetFrameHeight => [],
       :igGetFrameHeightWithSpacing => [],
-      :igGetIDStr => [:pointer],
-      :igGetIDStrStr => [:pointer, :pointer],
-      :igGetIDPtr => [:pointer],
+      :igGetID_Str => [:pointer],
+      :igGetID_StrStr => [:pointer, :pointer],
+      :igGetID_Ptr => [:pointer],
       :igGetIO => [],
       :igGetItemRectMax => [:pointer],
       :igGetItemRectMin => [:pointer],
@@ -2343,15 +2343,15 @@ module ImGui
       :igIsMousePosValid => [:pointer],
       :igIsMouseReleased => [:int],
       :igIsPopupOpen => [:pointer, :int],
-      :igIsRectVisibleNil => [ImVec2.by_value],
-      :igIsRectVisibleVec2 => [ImVec2.by_value, ImVec2.by_value],
+      :igIsRectVisible_Nil => [ImVec2.by_value],
+      :igIsRectVisible_Vec2 => [ImVec2.by_value, ImVec2.by_value],
       :igIsWindowAppearing => [],
       :igIsWindowCollapsed => [],
       :igIsWindowFocused => [:int],
       :igIsWindowHovered => [:int],
       :igLabelText => [:pointer, :pointer, :varargs],
-      :igListBoxStr_arr => [:pointer, :pointer, :pointer, :int, :int],
-      :igListBoxFnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
+      :igListBox_Str_arr => [:pointer, :pointer, :pointer, :int, :int],
+      :igListBox_FnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
       :igLoadIniSettingsFromDisk => [:pointer],
       :igLoadIniSettingsFromMemory => [:pointer, :size_t],
       :igLogButtons => [],
@@ -2362,17 +2362,18 @@ module ImGui
       :igLogToTTY => [:int],
       :igMemAlloc => [:size_t],
       :igMemFree => [:pointer],
-      :igMenuItemBool => [:pointer, :pointer, :bool, :bool],
-      :igMenuItemBoolPtr => [:pointer, :pointer, :pointer, :bool],
+      :igMenuItem_Bool => [:pointer, :pointer, :bool, :bool],
+      :igMenuItem_BoolPtr => [:pointer, :pointer, :pointer, :bool],
       :igNewFrame => [],
       :igNewLine => [],
       :igNextColumn => [],
-      :igOpenPopup => [:pointer, :int],
+      :igOpenPopup_Str => [:pointer, :int],
+      :igOpenPopup_ID => [:uint, :int],
       :igOpenPopupOnItemClick => [:pointer, :int],
-      :igPlotHistogramFloatPtr => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
-      :igPlotHistogramFnFloatPtr => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
-      :igPlotLinesFloatPtr => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
-      :igPlotLinesFnFloatPtr => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
+      :igPlotHistogram_FloatPtr => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
+      :igPlotHistogram_FnFloatPtr => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
+      :igPlotLines_FloatPtr => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
+      :igPlotLines_FnFloatPtr => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
       :igPopAllowKeyboardFocus => [],
       :igPopButtonRepeat => [],
       :igPopClipRect => [],
@@ -2387,25 +2388,25 @@ module ImGui
       :igPushButtonRepeat => [:bool],
       :igPushClipRect => [ImVec2.by_value, ImVec2.by_value, :bool],
       :igPushFont => [:pointer],
-      :igPushIDStr => [:pointer],
-      :igPushIDStrStr => [:pointer, :pointer],
-      :igPushIDPtr => [:pointer],
-      :igPushIDInt => [:int],
+      :igPushID_Str => [:pointer],
+      :igPushID_StrStr => [:pointer, :pointer],
+      :igPushID_Ptr => [:pointer],
+      :igPushID_Int => [:int],
       :igPushItemWidth => [:float],
-      :igPushStyleColorU32 => [:int, :uint],
-      :igPushStyleColorVec4 => [:int, ImVec4.by_value],
-      :igPushStyleVarFloat => [:int, :float],
-      :igPushStyleVarVec2 => [:int, ImVec2.by_value],
+      :igPushStyleColor_U32 => [:int, :uint],
+      :igPushStyleColor_Vec4 => [:int, ImVec4.by_value],
+      :igPushStyleVar_Float => [:int, :float],
+      :igPushStyleVar_Vec2 => [:int, ImVec2.by_value],
       :igPushTextWrapPos => [:float],
-      :igRadioButtonBool => [:pointer, :bool],
-      :igRadioButtonIntPtr => [:pointer, :pointer, :int],
+      :igRadioButton_Bool => [:pointer, :bool],
+      :igRadioButton_IntPtr => [:pointer, :pointer, :int],
       :igRender => [],
       :igResetMouseDragDelta => [:int],
       :igSameLine => [:float, :float],
       :igSaveIniSettingsToDisk => [:pointer],
       :igSaveIniSettingsToMemory => [:pointer],
-      :igSelectableBool => [:pointer, :bool, :int, ImVec2.by_value],
-      :igSelectableBoolPtr => [:pointer, :pointer, :int, ImVec2.by_value],
+      :igSelectable_Bool => [:pointer, :bool, :int, ImVec2.by_value],
+      :igSelectable_BoolPtr => [:pointer, :pointer, :int, ImVec2.by_value],
       :igSeparator => [],
       :igSetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :igSetClipboardText => [:pointer],
@@ -2440,15 +2441,15 @@ module ImGui
       :igSetStateStorage => [:pointer],
       :igSetTabItemClosed => [:pointer],
       :igSetTooltip => [:pointer, :varargs],
-      :igSetWindowCollapsedBool => [:bool, :int],
-      :igSetWindowCollapsedStr => [:pointer, :bool, :int],
-      :igSetWindowFocusNil => [],
-      :igSetWindowFocusStr => [:pointer],
+      :igSetWindowCollapsed_Bool => [:bool, :int],
+      :igSetWindowCollapsed_Str => [:pointer, :bool, :int],
+      :igSetWindowFocus_Nil => [],
+      :igSetWindowFocus_Str => [:pointer],
       :igSetWindowFontScale => [:float],
-      :igSetWindowPosVec2 => [ImVec2.by_value, :int],
-      :igSetWindowPosStr => [:pointer, ImVec2.by_value, :int],
-      :igSetWindowSizeVec2 => [ImVec2.by_value, :int],
-      :igSetWindowSizeStr => [:pointer, ImVec2.by_value, :int],
+      :igSetWindowPos_Vec2 => [ImVec2.by_value, :int],
+      :igSetWindowPos_Str => [:pointer, ImVec2.by_value, :int],
+      :igSetWindowSize_Vec2 => [ImVec2.by_value, :int],
+      :igSetWindowSize_Str => [:pointer, ImVec2.by_value, :int],
       :igShowAboutWindow => [:pointer],
       :igShowDemoWindow => [:pointer],
       :igShowFontSelector => [:pointer],
@@ -2484,6 +2485,7 @@ module ImGui
       :igTableNextColumn => [],
       :igTableNextRow => [:int, :float],
       :igTableSetBgColor => [:int, :uint, :int],
+      :igTableSetColumnEnabled => [:int, :bool],
       :igTableSetColumnIndex => [:int],
       :igTableSetupColumn => [:pointer, :int, :float, :uint],
       :igTableSetupScrollFreeze => [:int, :int],
@@ -2492,23 +2494,23 @@ module ImGui
       :igTextDisabled => [:pointer, :varargs],
       :igTextUnformatted => [:pointer, :pointer],
       :igTextWrapped => [:pointer, :varargs],
-      :igTreeNodeStr => [:pointer],
-      :igTreeNodeStrStr => [:pointer, :pointer, :varargs],
-      :igTreeNodePtr => [:pointer, :pointer, :varargs],
-      :igTreeNodeExStr => [:pointer, :int],
-      :igTreeNodeExStrStr => [:pointer, :int, :pointer, :varargs],
-      :igTreeNodeExPtr => [:pointer, :int, :pointer, :varargs],
+      :igTreeNode_Str => [:pointer],
+      :igTreeNode_StrStr => [:pointer, :pointer, :varargs],
+      :igTreeNode_Ptr => [:pointer, :pointer, :varargs],
+      :igTreeNodeEx_Str => [:pointer, :int],
+      :igTreeNodeEx_StrStr => [:pointer, :int, :pointer, :varargs],
+      :igTreeNodeEx_Ptr => [:pointer, :int, :pointer, :varargs],
       :igTreePop => [],
-      :igTreePushStr => [:pointer],
-      :igTreePushPtr => [:pointer],
+      :igTreePush_Str => [:pointer],
+      :igTreePush_Ptr => [:pointer],
       :igUnindent => [:float],
       :igVSliderFloat => [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :int],
       :igVSliderInt => [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer, :int],
       :igVSliderScalar => [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :int],
-      :igValueBool => [:pointer, :bool],
-      :igValueInt => [:pointer, :int],
-      :igValueUint => [:pointer, :uint],
-      :igValueFloat => [:pointer, :float, :pointer],
+      :igValue_Bool => [:pointer, :bool],
+      :igValue_Int => [:pointer, :int],
+      :igValue_Uint => [:pointer, :uint],
+      :igValue_Float => [:pointer, :float, :pointer],
     }
 
     retvals = {
@@ -2531,8 +2533,8 @@ module ImGui
       :ImDrawList_AddRect => :void,
       :ImDrawList_AddRectFilled => :void,
       :ImDrawList_AddRectFilledMultiColor => :void,
-      :ImDrawList_AddTextVec2 => :void,
-      :ImDrawList_AddTextFontPtr => :void,
+      :ImDrawList_AddText_Vec2 => :void,
+      :ImDrawList_AddText_FontPtr => :void,
       :ImDrawList_AddTriangle => :void,
       :ImDrawList_AddTriangleFilled => :void,
       :ImDrawList_ChannelsMerge => :void,
@@ -2632,8 +2634,8 @@ module ImGui
       :ImGuiTextFilter_IsActive => :bool,
       :ImGuiTextFilter_PassFilter => :bool,
       :ImGuiTextFilter_destroy => :void,
-      :ImGuiTextRange_ImGuiTextRangeNil => :pointer,
-      :ImGuiTextRange_ImGuiTextRangeStr => :pointer,
+      :ImGuiTextRange_ImGuiTextRange_Nil => :pointer,
+      :ImGuiTextRange_ImGuiTextRange_Str => :pointer,
       :ImGuiTextRange_destroy => :void,
       :ImGuiTextRange_empty => :bool,
       :ImGuiTextRange_split => :void,
@@ -2641,8 +2643,8 @@ module ImGui
       :igAlignTextToFramePadding => :void,
       :igArrowButton => :bool,
       :igBegin => :bool,
-      :igBeginChildStr => :bool,
-      :igBeginChildID => :bool,
+      :igBeginChild_Str => :bool,
+      :igBeginChild_ID => :bool,
       :igBeginChildFrame => :bool,
       :igBeginCombo => :bool,
       :igBeginDragDropSource => :bool,
@@ -2670,11 +2672,11 @@ module ImGui
       :igCaptureKeyboardFromApp => :void,
       :igCaptureMouseFromApp => :void,
       :igCheckbox => :bool,
-      :igCheckboxFlagsIntPtr => :bool,
-      :igCheckboxFlagsUintPtr => :bool,
+      :igCheckboxFlags_IntPtr => :bool,
+      :igCheckboxFlags_UintPtr => :bool,
       :igCloseCurrentPopup => :void,
-      :igCollapsingHeaderTreeNodeFlags => :bool,
-      :igCollapsingHeaderBoolPtr => :bool,
+      :igCollapsingHeader_TreeNodeFlags => :bool,
+      :igCollapsingHeader_BoolPtr => :bool,
       :igColorButton => :bool,
       :igColorConvertFloat4ToU32 => :uint,
       :igColorConvertHSVtoRGB => :void,
@@ -2685,9 +2687,9 @@ module ImGui
       :igColorPicker3 => :bool,
       :igColorPicker4 => :bool,
       :igColumns => :void,
-      :igComboStr_arr => :bool,
-      :igComboStr => :bool,
-      :igComboFnBoolPtr => :bool,
+      :igCombo_Str_arr => :bool,
+      :igCombo_Str => :bool,
+      :igCombo_FnBoolPtr => :bool,
       :igCreateContext => :pointer,
       :igDebugCheckVersionAndDataLayout => :bool,
       :igDestroyContext => :void,
@@ -2724,9 +2726,9 @@ module ImGui
       :igGetAllocatorFunctions => :void,
       :igGetBackgroundDrawList => :pointer,
       :igGetClipboardText => :pointer,
-      :igGetColorU32Col => :uint,
-      :igGetColorU32Vec4 => :uint,
-      :igGetColorU32U32 => :uint,
+      :igGetColorU32_Col => :uint,
+      :igGetColorU32_Vec4 => :uint,
+      :igGetColorU32_U32 => :uint,
       :igGetColumnIndex => :int,
       :igGetColumnOffset => :float,
       :igGetColumnWidth => :float,
@@ -2749,9 +2751,9 @@ module ImGui
       :igGetFrameCount => :int,
       :igGetFrameHeight => :float,
       :igGetFrameHeightWithSpacing => :float,
-      :igGetIDStr => :uint,
-      :igGetIDStrStr => :uint,
-      :igGetIDPtr => :uint,
+      :igGetID_Str => :uint,
+      :igGetID_StrStr => :uint,
+      :igGetID_Ptr => :uint,
       :igGetIO => :pointer,
       :igGetItemRectMax => :void,
       :igGetItemRectMin => :void,
@@ -2827,15 +2829,15 @@ module ImGui
       :igIsMousePosValid => :bool,
       :igIsMouseReleased => :bool,
       :igIsPopupOpen => :bool,
-      :igIsRectVisibleNil => :bool,
-      :igIsRectVisibleVec2 => :bool,
+      :igIsRectVisible_Nil => :bool,
+      :igIsRectVisible_Vec2 => :bool,
       :igIsWindowAppearing => :bool,
       :igIsWindowCollapsed => :bool,
       :igIsWindowFocused => :bool,
       :igIsWindowHovered => :bool,
       :igLabelText => :void,
-      :igListBoxStr_arr => :bool,
-      :igListBoxFnBoolPtr => :bool,
+      :igListBox_Str_arr => :bool,
+      :igListBox_FnBoolPtr => :bool,
       :igLoadIniSettingsFromDisk => :void,
       :igLoadIniSettingsFromMemory => :void,
       :igLogButtons => :void,
@@ -2846,17 +2848,18 @@ module ImGui
       :igLogToTTY => :void,
       :igMemAlloc => :pointer,
       :igMemFree => :void,
-      :igMenuItemBool => :bool,
-      :igMenuItemBoolPtr => :bool,
+      :igMenuItem_Bool => :bool,
+      :igMenuItem_BoolPtr => :bool,
       :igNewFrame => :void,
       :igNewLine => :void,
       :igNextColumn => :void,
-      :igOpenPopup => :void,
+      :igOpenPopup_Str => :void,
+      :igOpenPopup_ID => :void,
       :igOpenPopupOnItemClick => :void,
-      :igPlotHistogramFloatPtr => :void,
-      :igPlotHistogramFnFloatPtr => :void,
-      :igPlotLinesFloatPtr => :void,
-      :igPlotLinesFnFloatPtr => :void,
+      :igPlotHistogram_FloatPtr => :void,
+      :igPlotHistogram_FnFloatPtr => :void,
+      :igPlotLines_FloatPtr => :void,
+      :igPlotLines_FnFloatPtr => :void,
       :igPopAllowKeyboardFocus => :void,
       :igPopButtonRepeat => :void,
       :igPopClipRect => :void,
@@ -2871,25 +2874,25 @@ module ImGui
       :igPushButtonRepeat => :void,
       :igPushClipRect => :void,
       :igPushFont => :void,
-      :igPushIDStr => :void,
-      :igPushIDStrStr => :void,
-      :igPushIDPtr => :void,
-      :igPushIDInt => :void,
+      :igPushID_Str => :void,
+      :igPushID_StrStr => :void,
+      :igPushID_Ptr => :void,
+      :igPushID_Int => :void,
       :igPushItemWidth => :void,
-      :igPushStyleColorU32 => :void,
-      :igPushStyleColorVec4 => :void,
-      :igPushStyleVarFloat => :void,
-      :igPushStyleVarVec2 => :void,
+      :igPushStyleColor_U32 => :void,
+      :igPushStyleColor_Vec4 => :void,
+      :igPushStyleVar_Float => :void,
+      :igPushStyleVar_Vec2 => :void,
       :igPushTextWrapPos => :void,
-      :igRadioButtonBool => :bool,
-      :igRadioButtonIntPtr => :bool,
+      :igRadioButton_Bool => :bool,
+      :igRadioButton_IntPtr => :bool,
       :igRender => :void,
       :igResetMouseDragDelta => :void,
       :igSameLine => :void,
       :igSaveIniSettingsToDisk => :void,
       :igSaveIniSettingsToMemory => :pointer,
-      :igSelectableBool => :bool,
-      :igSelectableBoolPtr => :bool,
+      :igSelectable_Bool => :bool,
+      :igSelectable_BoolPtr => :bool,
       :igSeparator => :void,
       :igSetAllocatorFunctions => :void,
       :igSetClipboardText => :void,
@@ -2924,15 +2927,15 @@ module ImGui
       :igSetStateStorage => :void,
       :igSetTabItemClosed => :void,
       :igSetTooltip => :void,
-      :igSetWindowCollapsedBool => :void,
-      :igSetWindowCollapsedStr => :void,
-      :igSetWindowFocusNil => :void,
-      :igSetWindowFocusStr => :void,
+      :igSetWindowCollapsed_Bool => :void,
+      :igSetWindowCollapsed_Str => :void,
+      :igSetWindowFocus_Nil => :void,
+      :igSetWindowFocus_Str => :void,
       :igSetWindowFontScale => :void,
-      :igSetWindowPosVec2 => :void,
-      :igSetWindowPosStr => :void,
-      :igSetWindowSizeVec2 => :void,
-      :igSetWindowSizeStr => :void,
+      :igSetWindowPos_Vec2 => :void,
+      :igSetWindowPos_Str => :void,
+      :igSetWindowSize_Vec2 => :void,
+      :igSetWindowSize_Str => :void,
       :igShowAboutWindow => :void,
       :igShowDemoWindow => :void,
       :igShowFontSelector => :void,
@@ -2968,6 +2971,7 @@ module ImGui
       :igTableNextColumn => :bool,
       :igTableNextRow => :void,
       :igTableSetBgColor => :void,
+      :igTableSetColumnEnabled => :void,
       :igTableSetColumnIndex => :bool,
       :igTableSetupColumn => :void,
       :igTableSetupScrollFreeze => :void,
@@ -2976,23 +2980,23 @@ module ImGui
       :igTextDisabled => :void,
       :igTextUnformatted => :void,
       :igTextWrapped => :void,
-      :igTreeNodeStr => :bool,
-      :igTreeNodeStrStr => :bool,
-      :igTreeNodePtr => :bool,
-      :igTreeNodeExStr => :bool,
-      :igTreeNodeExStrStr => :bool,
-      :igTreeNodeExPtr => :bool,
+      :igTreeNode_Str => :bool,
+      :igTreeNode_StrStr => :bool,
+      :igTreeNode_Ptr => :bool,
+      :igTreeNodeEx_Str => :bool,
+      :igTreeNodeEx_StrStr => :bool,
+      :igTreeNodeEx_Ptr => :bool,
       :igTreePop => :void,
-      :igTreePushStr => :void,
-      :igTreePushPtr => :void,
+      :igTreePush_Str => :void,
+      :igTreePush_Ptr => :void,
       :igUnindent => :void,
       :igVSliderFloat => :bool,
       :igVSliderInt => :bool,
       :igVSliderScalar => :bool,
-      :igValueBool => :void,
-      :igValueInt => :void,
-      :igValueUint => :void,
-      :igValueFloat => :void,
+      :igValue_Bool => :void,
+      :igValue_Int => :void,
+      :igValue_Uint => :void,
+      :igValue_Float => :void,
     }
 
     symbols.each do |sym|
@@ -3009,1464 +3013,2351 @@ module ImGui
     attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void
   end # self.import_symbols
 
+  # arg: type(const char*), flags(ImGuiDragDropFlags)
+  # ret: pointer
   def self.AcceptDragDropPayload(type, flags = 0)
     igAcceptDragDropPayload(type, flags)
   end
 
+  # ret: void
   def self.AlignTextToFramePadding()
     igAlignTextToFramePadding()
   end
 
+  # arg: str_id(const char*), dir(ImGuiDir)
+  # ret: bool
   def self.ArrowButton(str_id, dir)
     igArrowButton(str_id, dir)
   end
 
+  # arg: name(const char*), p_open(bool*), flags(ImGuiWindowFlags)
+  # ret: bool
   def self.Begin(name, p_open = nil, flags = 0)
     igBegin(name, p_open, flags)
   end
 
-  def self.BeginChildStr(str_id, size = ImVec2.create(0,0), border = false, flags = 0)
-    igBeginChildStr(str_id, size, border, flags)
+  # arg: str_id(const char*), size(ImVec2), border(bool), flags(ImGuiWindowFlags)
+  # ret: bool
+  def self.BeginChild_Str(str_id, size = ImVec2.create(0,0), border = false, flags = 0)
+    igBeginChild_Str(str_id, size, border, flags)
   end
 
-  def self.BeginChildID(id, size = ImVec2.create(0,0), border = false, flags = 0)
-    igBeginChildID(id, size, border, flags)
+  # arg: id(ImGuiID), size(ImVec2), border(bool), flags(ImGuiWindowFlags)
+  # ret: bool
+  def self.BeginChild_ID(id, size = ImVec2.create(0,0), border = false, flags = 0)
+    igBeginChild_ID(id, size, border, flags)
   end
 
+  # arg: id(ImGuiID), size(ImVec2), flags(ImGuiWindowFlags)
+  # ret: bool
   def self.BeginChildFrame(id, size, flags = 0)
     igBeginChildFrame(id, size, flags)
   end
 
+  # arg: label(const char*), preview_value(const char*), flags(ImGuiComboFlags)
+  # ret: bool
   def self.BeginCombo(label, preview_value, flags = 0)
     igBeginCombo(label, preview_value, flags)
   end
 
+  # arg: flags(ImGuiDragDropFlags)
+  # ret: bool
   def self.BeginDragDropSource(flags = 0)
     igBeginDragDropSource(flags)
   end
 
+  # ret: bool
   def self.BeginDragDropTarget()
     igBeginDragDropTarget()
   end
 
+  # ret: void
   def self.BeginGroup()
     igBeginGroup()
   end
 
+  # arg: label(const char*), size(ImVec2)
+  # ret: bool
   def self.BeginListBox(label, size = ImVec2.create(0,0))
     igBeginListBox(label, size)
   end
 
+  # ret: bool
   def self.BeginMainMenuBar()
     igBeginMainMenuBar()
   end
 
+  # arg: label(const char*), enabled(bool)
+  # ret: bool
   def self.BeginMenu(label, enabled = true)
     igBeginMenu(label, enabled)
   end
 
+  # ret: bool
   def self.BeginMenuBar()
     igBeginMenuBar()
   end
 
+  # arg: str_id(const char*), flags(ImGuiWindowFlags)
+  # ret: bool
   def self.BeginPopup(str_id, flags = 0)
     igBeginPopup(str_id, flags)
   end
 
+  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
+  # ret: bool
   def self.BeginPopupContextItem(str_id = nil, popup_flags = 1)
     igBeginPopupContextItem(str_id, popup_flags)
   end
 
+  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
+  # ret: bool
   def self.BeginPopupContextVoid(str_id = nil, popup_flags = 1)
     igBeginPopupContextVoid(str_id, popup_flags)
   end
 
+  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
+  # ret: bool
   def self.BeginPopupContextWindow(str_id = nil, popup_flags = 1)
     igBeginPopupContextWindow(str_id, popup_flags)
   end
 
+  # arg: name(const char*), p_open(bool*), flags(ImGuiWindowFlags)
+  # ret: bool
   def self.BeginPopupModal(name, p_open = nil, flags = 0)
     igBeginPopupModal(name, p_open, flags)
   end
 
+  # arg: str_id(const char*), flags(ImGuiTabBarFlags)
+  # ret: bool
   def self.BeginTabBar(str_id, flags = 0)
     igBeginTabBar(str_id, flags)
   end
 
+  # arg: label(const char*), p_open(bool*), flags(ImGuiTabItemFlags)
+  # ret: bool
   def self.BeginTabItem(label, p_open = nil, flags = 0)
     igBeginTabItem(label, p_open, flags)
   end
 
+  # arg: str_id(const char*), column(int), flags(ImGuiTableFlags), outer_size(ImVec2), inner_width(float)
+  # ret: bool
   def self.BeginTable(str_id, column, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)
     igBeginTable(str_id, column, flags, outer_size, inner_width)
   end
 
+  # ret: void
   def self.BeginTooltip()
     igBeginTooltip()
   end
 
+  # ret: void
   def self.Bullet()
     igBullet()
   end
 
+  # arg: fmt(const char*), ...(...)
+  # ret: void
   def self.BulletText(fmt, *varargs)
     igBulletText(fmt, *varargs)
   end
 
+  # arg: label(const char*), size(ImVec2)
+  # ret: bool
   def self.Button(label, size = ImVec2.create(0,0))
     igButton(label, size)
   end
 
+  # ret: float
   def self.CalcItemWidth()
     igCalcItemWidth()
   end
 
+  # arg: items_count(int), items_height(float), out_items_display_start(int*), out_items_display_end(int*)
+  # ret: void
   def self.CalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
     igCalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
   end
 
+  # arg: text(const char*), text_end(const char*), hide_text_after_double_hash(bool), wrap_width(float)
+  # ret: void
   def self.CalcTextSize(text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)
     pOut = ImVec2.new
     igCalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
     return pOut
   end
 
+  # arg: want_capture_keyboard_value(bool)
+  # ret: void
   def self.CaptureKeyboardFromApp(want_capture_keyboard_value = true)
     igCaptureKeyboardFromApp(want_capture_keyboard_value)
   end
 
+  # arg: want_capture_mouse_value(bool)
+  # ret: void
   def self.CaptureMouseFromApp(want_capture_mouse_value = true)
     igCaptureMouseFromApp(want_capture_mouse_value)
   end
 
+  # arg: label(const char*), v(bool*)
+  # ret: bool
   def self.Checkbox(label, v)
     igCheckbox(label, v)
   end
 
-  def self.CheckboxFlagsIntPtr(label, flags, flags_value)
-    igCheckboxFlagsIntPtr(label, flags, flags_value)
+  # arg: label(const char*), flags(int*), flags_value(int)
+  # ret: bool
+  def self.CheckboxFlags_IntPtr(label, flags, flags_value)
+    igCheckboxFlags_IntPtr(label, flags, flags_value)
   end
 
-  def self.CheckboxFlagsUintPtr(label, flags, flags_value)
-    igCheckboxFlagsUintPtr(label, flags, flags_value)
+  # arg: label(const char*), flags(unsigned int*), flags_value(unsigned int)
+  # ret: bool
+  def self.CheckboxFlags_UintPtr(label, flags, flags_value)
+    igCheckboxFlags_UintPtr(label, flags, flags_value)
   end
 
+  # ret: void
   def self.CloseCurrentPopup()
     igCloseCurrentPopup()
   end
 
-  def self.CollapsingHeaderTreeNodeFlags(label, flags = 0)
-    igCollapsingHeaderTreeNodeFlags(label, flags)
+  # arg: label(const char*), flags(ImGuiTreeNodeFlags)
+  # ret: bool
+  def self.CollapsingHeader_TreeNodeFlags(label, flags = 0)
+    igCollapsingHeader_TreeNodeFlags(label, flags)
   end
 
-  def self.CollapsingHeaderBoolPtr(label, p_visible, flags = 0)
-    igCollapsingHeaderBoolPtr(label, p_visible, flags)
+  # arg: label(const char*), p_visible(bool*), flags(ImGuiTreeNodeFlags)
+  # ret: bool
+  def self.CollapsingHeader_BoolPtr(label, p_visible, flags = 0)
+    igCollapsingHeader_BoolPtr(label, p_visible, flags)
   end
 
+  # arg: desc_id(const char*), col(ImVec4), flags(ImGuiColorEditFlags), size(ImVec2)
+  # ret: bool
   def self.ColorButton(desc_id, col, flags = 0, size = ImVec2.create(0,0))
     igColorButton(desc_id, col, flags, size)
   end
 
+  # arg: in(ImVec4)
+  # ret: uint
   def self.ColorConvertFloat4ToU32(_in_)
     igColorConvertFloat4ToU32(_in_)
   end
 
+  # arg: h(float), s(float), v(float), out_r(float*), out_g(float*), out_b(float*)
+  # ret: void
   def self.ColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b)
     igColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b)
   end
 
+  # arg: r(float), g(float), b(float), out_h(float*), out_s(float*), out_v(float*)
+  # ret: void
   def self.ColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v)
     igColorConvertRGBtoHSV(r, g, b, out_h, out_s, out_v)
   end
 
+  # arg: in(ImU32)
+  # ret: void
   def self.ColorConvertU32ToFloat4(_in_)
     pOut = ImVec4.new
     igColorConvertU32ToFloat4(pOut, _in_)
     return pOut
   end
 
+  # arg: label(const char*), col(float[3]), flags(ImGuiColorEditFlags)
+  # ret: bool
   def self.ColorEdit3(label, col, flags = 0)
     igColorEdit3(label, col, flags)
   end
 
+  # arg: label(const char*), col(float[4]), flags(ImGuiColorEditFlags)
+  # ret: bool
   def self.ColorEdit4(label, col, flags = 0)
     igColorEdit4(label, col, flags)
   end
 
+  # arg: label(const char*), col(float[3]), flags(ImGuiColorEditFlags)
+  # ret: bool
   def self.ColorPicker3(label, col, flags = 0)
     igColorPicker3(label, col, flags)
   end
 
+  # arg: label(const char*), col(float[4]), flags(ImGuiColorEditFlags), ref_col(const float*)
+  # ret: bool
   def self.ColorPicker4(label, col, flags = 0, ref_col = nil)
     igColorPicker4(label, col, flags, ref_col)
   end
 
+  # arg: count(int), id(const char*), border(bool)
+  # ret: void
   def self.Columns(count = 1, id = nil, border = true)
     igColumns(count, id, border)
   end
 
-  def self.ComboStr_arr(label, current_item, items, items_count, popup_max_height_in_items = -1)
-    igComboStr_arr(label, current_item, items, items_count, popup_max_height_in_items)
+  # arg: label(const char*), current_item(int*), items(const char* const[]), items_count(int), popup_max_height_in_items(int)
+  # ret: bool
+  def self.Combo_Str_arr(label, current_item, items, items_count, popup_max_height_in_items = -1)
+    igCombo_Str_arr(label, current_item, items, items_count, popup_max_height_in_items)
   end
 
-  def self.ComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items = -1)
-    igComboStr(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
+  # arg: label(const char*), current_item(int*), items_separated_by_zeros(const char*), popup_max_height_in_items(int)
+  # ret: bool
+  def self.Combo_Str(label, current_item, items_separated_by_zeros, popup_max_height_in_items = -1)
+    igCombo_Str(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
   end
 
-  def self.ComboFnBoolPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items = -1)
-    igComboFnBoolPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
+  # arg: label(const char*), current_item(int*), items_getter(bool(*)(void* data,int idx,const char** out_text)), data(void*), items_count(int), popup_max_height_in_items(int)
+  # ret: bool
+  def self.Combo_FnBoolPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items = -1)
+    igCombo_FnBoolPtr(label, current_item, items_getter, data, items_count, popup_max_height_in_items)
   end
 
+  # arg: shared_font_atlas(ImFontAtlas*)
+  # ret: pointer
   def self.CreateContext(shared_font_atlas = nil)
     igCreateContext(shared_font_atlas)
   end
 
+  # arg: version_str(const char*), sz_io(size_t), sz_style(size_t), sz_vec2(size_t), sz_vec4(size_t), sz_drawvert(size_t), sz_drawidx(size_t)
+  # ret: bool
   def self.DebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
     igDebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
   end
 
+  # arg: ctx(ImGuiContext*)
+  # ret: void
   def self.DestroyContext(ctx = nil)
     igDestroyContext(ctx)
   end
 
+  # arg: label(const char*), v(float*), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragFloat(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
     igDragFloat(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(float[2]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragFloat2(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
     igDragFloat2(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(float[3]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragFloat3(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
     igDragFloat3(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(float[4]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragFloat4(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
     igDragFloat4(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v_current_min(float*), v_current_max(float*), v_speed(float), v_min(float), v_max(float), format(const char*), format_max(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = nil, flags = 0)
     igDragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
   end
 
+  # arg: label(const char*), v(int*), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragInt(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
     igDragInt(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(int[2]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragInt2(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
     igDragInt2(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(int[3]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragInt3(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
     igDragInt3(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(int[4]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragInt4(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
     igDragInt4(label, v, v_speed, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v_current_min(int*), v_current_max(int*), v_speed(float), v_min(int), v_max(int), format(const char*), format_max(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.DragIntRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = nil, flags = 0)
     igDragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
   end
 
-  def self.DragScalar(label, data_type, p_data, v_speed, p_min = nil, p_max = nil, format = nil, flags = 0)
+  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), v_speed(float), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
+  def self.DragScalar(label, data_type, p_data, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)
     igDragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, flags)
   end
 
-  def self.DragScalarN(label, data_type, p_data, components, v_speed, p_min = nil, p_max = nil, format = nil, flags = 0)
+  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), v_speed(float), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
+  def self.DragScalarN(label, data_type, p_data, components, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)
     igDragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, flags)
   end
 
+  # arg: size(ImVec2)
+  # ret: void
   def self.Dummy(size)
     igDummy(size)
   end
 
+  # ret: void
   def self.End()
     igEnd()
   end
 
+  # ret: void
   def self.EndChild()
     igEndChild()
   end
 
+  # ret: void
   def self.EndChildFrame()
     igEndChildFrame()
   end
 
+  # ret: void
   def self.EndCombo()
     igEndCombo()
   end
 
+  # ret: void
   def self.EndDragDropSource()
     igEndDragDropSource()
   end
 
+  # ret: void
   def self.EndDragDropTarget()
     igEndDragDropTarget()
   end
 
+  # ret: void
   def self.EndFrame()
     igEndFrame()
   end
 
+  # ret: void
   def self.EndGroup()
     igEndGroup()
   end
 
+  # ret: void
   def self.EndListBox()
     igEndListBox()
   end
 
+  # ret: void
   def self.EndMainMenuBar()
     igEndMainMenuBar()
   end
 
+  # ret: void
   def self.EndMenu()
     igEndMenu()
   end
 
+  # ret: void
   def self.EndMenuBar()
     igEndMenuBar()
   end
 
+  # ret: void
   def self.EndPopup()
     igEndPopup()
   end
 
+  # ret: void
   def self.EndTabBar()
     igEndTabBar()
   end
 
+  # ret: void
   def self.EndTabItem()
     igEndTabItem()
   end
 
+  # ret: void
   def self.EndTable()
     igEndTable()
   end
 
+  # ret: void
   def self.EndTooltip()
     igEndTooltip()
   end
 
+  # arg: p_alloc_func(ImGuiMemAllocFunc*), p_free_func(ImGuiMemFreeFunc*), p_user_data(void**)
+  # ret: void
   def self.GetAllocatorFunctions(p_alloc_func, p_free_func, p_user_data)
     igGetAllocatorFunctions(p_alloc_func, p_free_func, p_user_data)
   end
 
+  # ret: pointer
   def self.GetBackgroundDrawList()
     igGetBackgroundDrawList()
   end
 
+  # ret: pointer
   def self.GetClipboardText()
     igGetClipboardText()
   end
 
-  def self.GetColorU32Col(idx, alpha_mul = 1.0)
-    igGetColorU32Col(idx, alpha_mul)
+  # arg: idx(ImGuiCol), alpha_mul(float)
+  # ret: uint
+  def self.GetColorU32_Col(idx, alpha_mul = 1.0)
+    igGetColorU32_Col(idx, alpha_mul)
   end
 
-  def self.GetColorU32Vec4(col)
-    igGetColorU32Vec4(col)
+  # arg: col(ImVec4)
+  # ret: uint
+  def self.GetColorU32_Vec4(col)
+    igGetColorU32_Vec4(col)
   end
 
-  def self.GetColorU32U32(col)
-    igGetColorU32U32(col)
+  # arg: col(ImU32)
+  # ret: uint
+  def self.GetColorU32_U32(col)
+    igGetColorU32_U32(col)
   end
 
+  # ret: int
   def self.GetColumnIndex()
     igGetColumnIndex()
   end
 
+  # arg: column_index(int)
+  # ret: float
   def self.GetColumnOffset(column_index = -1)
     igGetColumnOffset(column_index)
   end
 
+  # arg: column_index(int)
+  # ret: float
   def self.GetColumnWidth(column_index = -1)
     igGetColumnWidth(column_index)
   end
 
+  # ret: int
   def self.GetColumnsCount()
     igGetColumnsCount()
   end
 
+  # ret: void
   def self.GetContentRegionAvail()
     pOut = ImVec2.new
     igGetContentRegionAvail(pOut)
     return pOut
   end
 
+  # ret: void
   def self.GetContentRegionMax()
     pOut = ImVec2.new
     igGetContentRegionMax(pOut)
     return pOut
   end
 
+  # ret: pointer
   def self.GetCurrentContext()
     igGetCurrentContext()
   end
 
+  # ret: void
   def self.GetCursorPos()
     pOut = ImVec2.new
     igGetCursorPos(pOut)
     return pOut
   end
 
+  # ret: float
   def self.GetCursorPosX()
     igGetCursorPosX()
   end
 
+  # ret: float
   def self.GetCursorPosY()
     igGetCursorPosY()
   end
 
+  # ret: void
   def self.GetCursorScreenPos()
     pOut = ImVec2.new
     igGetCursorScreenPos(pOut)
     return pOut
   end
 
+  # ret: void
   def self.GetCursorStartPos()
     pOut = ImVec2.new
     igGetCursorStartPos(pOut)
     return pOut
   end
 
+  # ret: pointer
   def self.GetDragDropPayload()
     igGetDragDropPayload()
   end
 
+  # ret: pointer
   def self.GetDrawData()
     igGetDrawData()
   end
 
+  # ret: pointer
   def self.GetDrawListSharedData()
     igGetDrawListSharedData()
   end
 
+  # ret: pointer
   def self.GetFont()
     igGetFont()
   end
 
+  # ret: float
   def self.GetFontSize()
     igGetFontSize()
   end
 
+  # ret: void
   def self.GetFontTexUvWhitePixel()
     pOut = ImVec2.new
     igGetFontTexUvWhitePixel(pOut)
     return pOut
   end
 
+  # ret: pointer
   def self.GetForegroundDrawList()
     igGetForegroundDrawList()
   end
 
+  # ret: int
   def self.GetFrameCount()
     igGetFrameCount()
   end
 
+  # ret: float
   def self.GetFrameHeight()
     igGetFrameHeight()
   end
 
+  # ret: float
   def self.GetFrameHeightWithSpacing()
     igGetFrameHeightWithSpacing()
   end
 
-  def self.GetIDStr(str_id)
-    igGetIDStr(str_id)
+  # arg: str_id(const char*)
+  # ret: uint
+  def self.GetID_Str(str_id)
+    igGetID_Str(str_id)
   end
 
-  def self.GetIDStrStr(str_id_begin, str_id_end)
-    igGetIDStrStr(str_id_begin, str_id_end)
+  # arg: str_id_begin(const char*), str_id_end(const char*)
+  # ret: uint
+  def self.GetID_StrStr(str_id_begin, str_id_end)
+    igGetID_StrStr(str_id_begin, str_id_end)
   end
 
-  def self.GetIDPtr(ptr_id)
-    igGetIDPtr(ptr_id)
+  # arg: ptr_id(const void*)
+  # ret: uint
+  def self.GetID_Ptr(ptr_id)
+    igGetID_Ptr(ptr_id)
   end
 
+  # ret: pointer
   def self.GetIO()
     igGetIO()
   end
 
+  # ret: void
   def self.GetItemRectMax()
     pOut = ImVec2.new
     igGetItemRectMax(pOut)
     return pOut
   end
 
+  # ret: void
   def self.GetItemRectMin()
     pOut = ImVec2.new
     igGetItemRectMin(pOut)
     return pOut
   end
 
+  # ret: void
   def self.GetItemRectSize()
     pOut = ImVec2.new
     igGetItemRectSize(pOut)
     return pOut
   end
 
+  # arg: imgui_key(ImGuiKey)
+  # ret: int
   def self.GetKeyIndex(imgui_key)
     igGetKeyIndex(imgui_key)
   end
 
+  # arg: key_index(int), repeat_delay(float), rate(float)
+  # ret: int
   def self.GetKeyPressedAmount(key_index, repeat_delay, rate)
     igGetKeyPressedAmount(key_index, repeat_delay, rate)
   end
 
+  # ret: pointer
   def self.GetMainViewport()
     igGetMainViewport()
   end
 
+  # ret: int
   def self.GetMouseCursor()
     igGetMouseCursor()
   end
 
+  # arg: button(ImGuiMouseButton), lock_threshold(float)
+  # ret: void
   def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)
     pOut = ImVec2.new
     igGetMouseDragDelta(pOut, button, lock_threshold)
     return pOut
   end
 
+  # ret: void
   def self.GetMousePos()
     pOut = ImVec2.new
     igGetMousePos(pOut)
     return pOut
   end
 
+  # ret: void
   def self.GetMousePosOnOpeningCurrentPopup()
     pOut = ImVec2.new
     igGetMousePosOnOpeningCurrentPopup(pOut)
     return pOut
   end
 
+  # ret: float
   def self.GetScrollMaxX()
     igGetScrollMaxX()
   end
 
+  # ret: float
   def self.GetScrollMaxY()
     igGetScrollMaxY()
   end
 
+  # ret: float
   def self.GetScrollX()
     igGetScrollX()
   end
 
+  # ret: float
   def self.GetScrollY()
     igGetScrollY()
   end
 
+  # ret: pointer
   def self.GetStateStorage()
     igGetStateStorage()
   end
 
+  # ret: pointer
   def self.GetStyle()
     igGetStyle()
   end
 
+  # arg: idx(ImGuiCol)
+  # ret: pointer
   def self.GetStyleColorName(idx)
     igGetStyleColorName(idx)
   end
 
+  # arg: idx(ImGuiCol)
+  # ret: pointer
   def self.GetStyleColorVec4(idx)
     igGetStyleColorVec4(idx)
   end
 
+  # ret: float
   def self.GetTextLineHeight()
     igGetTextLineHeight()
   end
 
+  # ret: float
   def self.GetTextLineHeightWithSpacing()
     igGetTextLineHeightWithSpacing()
   end
 
+  # ret: double
   def self.GetTime()
     igGetTime()
   end
 
+  # ret: float
   def self.GetTreeNodeToLabelSpacing()
     igGetTreeNodeToLabelSpacing()
   end
 
+  # ret: pointer
   def self.GetVersion()
     igGetVersion()
   end
 
+  # ret: void
   def self.GetWindowContentRegionMax()
     pOut = ImVec2.new
     igGetWindowContentRegionMax(pOut)
     return pOut
   end
 
+  # ret: void
   def self.GetWindowContentRegionMin()
     pOut = ImVec2.new
     igGetWindowContentRegionMin(pOut)
     return pOut
   end
 
+  # ret: float
   def self.GetWindowContentRegionWidth()
     igGetWindowContentRegionWidth()
   end
 
+  # ret: pointer
   def self.GetWindowDrawList()
     igGetWindowDrawList()
   end
 
+  # ret: float
   def self.GetWindowHeight()
     igGetWindowHeight()
   end
 
+  # ret: void
   def self.GetWindowPos()
     pOut = ImVec2.new
     igGetWindowPos(pOut)
     return pOut
   end
 
+  # ret: void
   def self.GetWindowSize()
     pOut = ImVec2.new
     igGetWindowSize(pOut)
     return pOut
   end
 
+  # ret: float
   def self.GetWindowWidth()
     igGetWindowWidth()
   end
 
+  # arg: user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), tint_col(ImVec4), border_col(ImVec4)
+  # ret: void
   def self.Image(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), tint_col = ImVec4.create(1,1,1,1), border_col = ImVec4.create(0,0,0,0))
     igImage(user_texture_id, size, uv0, uv1, tint_col, border_col)
   end
 
+  # arg: user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), frame_padding(int), bg_col(ImVec4), tint_col(ImVec4)
+  # ret: bool
   def self.ImageButton(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), frame_padding = -1, bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))
     igImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col)
   end
 
+  # arg: indent_w(float)
+  # ret: void
   def self.Indent(indent_w = 0.0)
     igIndent(indent_w)
   end
 
+  # arg: label(const char*), v(double*), step(double), step_fast(double), format(const char*), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputDouble(label, v, step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0)
     igInputDouble(label, v, step, step_fast, format, flags)
   end
 
+  # arg: label(const char*), v(float*), step(float), step_fast(float), format(const char*), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputFloat(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0)
     igInputFloat(label, v, step, step_fast, format, flags)
   end
 
+  # arg: label(const char*), v(float[2]), format(const char*), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputFloat2(label, v, format = "%.3f", flags = 0)
     igInputFloat2(label, v, format, flags)
   end
 
+  # arg: label(const char*), v(float[3]), format(const char*), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputFloat3(label, v, format = "%.3f", flags = 0)
     igInputFloat3(label, v, format, flags)
   end
 
+  # arg: label(const char*), v(float[4]), format(const char*), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputFloat4(label, v, format = "%.3f", flags = 0)
     igInputFloat4(label, v, format, flags)
   end
 
+  # arg: label(const char*), v(int*), step(int), step_fast(int), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputInt(label, v, step = 1, step_fast = 100, flags = 0)
     igInputInt(label, v, step, step_fast, flags)
   end
 
+  # arg: label(const char*), v(int[2]), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputInt2(label, v, flags = 0)
     igInputInt2(label, v, flags)
   end
 
+  # arg: label(const char*), v(int[3]), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputInt3(label, v, flags = 0)
     igInputInt3(label, v, flags)
   end
 
+  # arg: label(const char*), v(int[4]), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputInt4(label, v, flags = 0)
     igInputInt4(label, v, flags)
   end
 
+  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), p_step(const void*), p_step_fast(const void*), format(const char*), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputScalar(label, data_type, p_data, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
     igInputScalar(label, data_type, p_data, p_step, p_step_fast, format, flags)
   end
 
+  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), p_step(const void*), p_step_fast(const void*), format(const char*), flags(ImGuiInputTextFlags)
+  # ret: bool
   def self.InputScalarN(label, data_type, p_data, components, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
     igInputScalarN(label, data_type, p_data, components, p_step, p_step_fast, format, flags)
   end
 
+  # arg: label(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
+  # ret: bool
   def self.InputText(label, buf, buf_size, flags = 0, callback = nil, user_data = nil)
     igInputText(label, buf, buf_size, flags, callback, user_data)
   end
 
+  # arg: label(const char*), buf(char*), buf_size(size_t), size(ImVec2), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
+  # ret: bool
   def self.InputTextMultiline(label, buf, buf_size, size = ImVec2.create(0,0), flags = 0, callback = nil, user_data = nil)
     igInputTextMultiline(label, buf, buf_size, size, flags, callback, user_data)
   end
 
+  # arg: label(const char*), hint(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
+  # ret: bool
   def self.InputTextWithHint(label, hint, buf, buf_size, flags = 0, callback = nil, user_data = nil)
     igInputTextWithHint(label, hint, buf, buf_size, flags, callback, user_data)
   end
 
+  # arg: str_id(const char*), size(ImVec2), flags(ImGuiButtonFlags)
+  # ret: bool
   def self.InvisibleButton(str_id, size, flags = 0)
     igInvisibleButton(str_id, size, flags)
   end
 
+  # ret: bool
   def self.IsAnyItemActive()
     igIsAnyItemActive()
   end
 
+  # ret: bool
   def self.IsAnyItemFocused()
     igIsAnyItemFocused()
   end
 
+  # ret: bool
   def self.IsAnyItemHovered()
     igIsAnyItemHovered()
   end
 
+  # ret: bool
   def self.IsAnyMouseDown()
     igIsAnyMouseDown()
   end
 
+  # ret: bool
   def self.IsItemActivated()
     igIsItemActivated()
   end
 
+  # ret: bool
   def self.IsItemActive()
     igIsItemActive()
   end
 
+  # arg: mouse_button(ImGuiMouseButton)
+  # ret: bool
   def self.IsItemClicked(mouse_button = 0)
     igIsItemClicked(mouse_button)
   end
 
+  # ret: bool
   def self.IsItemDeactivated()
     igIsItemDeactivated()
   end
 
+  # ret: bool
   def self.IsItemDeactivatedAfterEdit()
     igIsItemDeactivatedAfterEdit()
   end
 
+  # ret: bool
   def self.IsItemEdited()
     igIsItemEdited()
   end
 
+  # ret: bool
   def self.IsItemFocused()
     igIsItemFocused()
   end
 
+  # arg: flags(ImGuiHoveredFlags)
+  # ret: bool
   def self.IsItemHovered(flags = 0)
     igIsItemHovered(flags)
   end
 
+  # ret: bool
   def self.IsItemToggledOpen()
     igIsItemToggledOpen()
   end
 
+  # ret: bool
   def self.IsItemVisible()
     igIsItemVisible()
   end
 
+  # arg: user_key_index(int)
+  # ret: bool
   def self.IsKeyDown(user_key_index)
     igIsKeyDown(user_key_index)
   end
 
+  # arg: user_key_index(int), repeat(bool)
+  # ret: bool
   def self.IsKeyPressed(user_key_index, repeat = true)
     igIsKeyPressed(user_key_index, repeat)
   end
 
+  # arg: user_key_index(int)
+  # ret: bool
   def self.IsKeyReleased(user_key_index)
     igIsKeyReleased(user_key_index)
   end
 
+  # arg: button(ImGuiMouseButton), repeat(bool)
+  # ret: bool
   def self.IsMouseClicked(button, repeat = false)
     igIsMouseClicked(button, repeat)
   end
 
+  # arg: button(ImGuiMouseButton)
+  # ret: bool
   def self.IsMouseDoubleClicked(button)
     igIsMouseDoubleClicked(button)
   end
 
+  # arg: button(ImGuiMouseButton)
+  # ret: bool
   def self.IsMouseDown(button)
     igIsMouseDown(button)
   end
 
+  # arg: button(ImGuiMouseButton), lock_threshold(float)
+  # ret: bool
   def self.IsMouseDragging(button, lock_threshold = -1.0)
     igIsMouseDragging(button, lock_threshold)
   end
 
+  # arg: r_min(ImVec2), r_max(ImVec2), clip(bool)
+  # ret: bool
   def self.IsMouseHoveringRect(r_min, r_max, clip = true)
     igIsMouseHoveringRect(r_min, r_max, clip)
   end
 
+  # arg: mouse_pos(const ImVec2*)
+  # ret: bool
   def self.IsMousePosValid(mouse_pos = nil)
     igIsMousePosValid(mouse_pos)
   end
 
+  # arg: button(ImGuiMouseButton)
+  # ret: bool
   def self.IsMouseReleased(button)
     igIsMouseReleased(button)
   end
 
+  # arg: str_id(const char*), flags(ImGuiPopupFlags)
+  # ret: bool
   def self.IsPopupOpen(str_id, flags = 0)
     igIsPopupOpen(str_id, flags)
   end
 
-  def self.IsRectVisibleNil(size)
-    igIsRectVisibleNil(size)
+  # arg: size(ImVec2)
+  # ret: bool
+  def self.IsRectVisible_Nil(size)
+    igIsRectVisible_Nil(size)
   end
 
-  def self.IsRectVisibleVec2(rect_min, rect_max)
-    igIsRectVisibleVec2(rect_min, rect_max)
+  # arg: rect_min(ImVec2), rect_max(ImVec2)
+  # ret: bool
+  def self.IsRectVisible_Vec2(rect_min, rect_max)
+    igIsRectVisible_Vec2(rect_min, rect_max)
   end
 
+  # ret: bool
   def self.IsWindowAppearing()
     igIsWindowAppearing()
   end
 
+  # ret: bool
   def self.IsWindowCollapsed()
     igIsWindowCollapsed()
   end
 
+  # arg: flags(ImGuiFocusedFlags)
+  # ret: bool
   def self.IsWindowFocused(flags = 0)
     igIsWindowFocused(flags)
   end
 
+  # arg: flags(ImGuiHoveredFlags)
+  # ret: bool
   def self.IsWindowHovered(flags = 0)
     igIsWindowHovered(flags)
   end
 
+  # arg: label(const char*), fmt(const char*), ...(...)
+  # ret: void
   def self.LabelText(label, fmt, *varargs)
     igLabelText(label, fmt, *varargs)
   end
 
-  def self.ListBoxStr_arr(label, current_item, items, items_count, height_in_items = -1)
-    igListBoxStr_arr(label, current_item, items, items_count, height_in_items)
+  # arg: label(const char*), current_item(int*), items(const char* const[]), items_count(int), height_in_items(int)
+  # ret: bool
+  def self.ListBox_Str_arr(label, current_item, items, items_count, height_in_items = -1)
+    igListBox_Str_arr(label, current_item, items, items_count, height_in_items)
   end
 
-  def self.ListBoxFnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items = -1)
-    igListBoxFnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items)
+  # arg: label(const char*), current_item(int*), items_getter(bool(*)(void* data,int idx,const char** out_text)), data(void*), items_count(int), height_in_items(int)
+  # ret: bool
+  def self.ListBox_FnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items = -1)
+    igListBox_FnBoolPtr(label, current_item, items_getter, data, items_count, height_in_items)
   end
 
+  # arg: ini_filename(const char*)
+  # ret: void
   def self.LoadIniSettingsFromDisk(ini_filename)
     igLoadIniSettingsFromDisk(ini_filename)
   end
 
+  # arg: ini_data(const char*), ini_size(size_t)
+  # ret: void
   def self.LoadIniSettingsFromMemory(ini_data, ini_size = 0)
     igLoadIniSettingsFromMemory(ini_data, ini_size)
   end
 
+  # ret: void
   def self.LogButtons()
     igLogButtons()
   end
 
+  # ret: void
   def self.LogFinish()
     igLogFinish()
   end
 
+  # arg: fmt(const char*), ...(...)
+  # ret: void
   def self.LogText(fmt, *varargs)
     igLogText(fmt, *varargs)
   end
 
+  # arg: auto_open_depth(int)
+  # ret: void
   def self.LogToClipboard(auto_open_depth = -1)
     igLogToClipboard(auto_open_depth)
   end
 
+  # arg: auto_open_depth(int), filename(const char*)
+  # ret: void
   def self.LogToFile(auto_open_depth = -1, filename = nil)
     igLogToFile(auto_open_depth, filename)
   end
 
+  # arg: auto_open_depth(int)
+  # ret: void
   def self.LogToTTY(auto_open_depth = -1)
     igLogToTTY(auto_open_depth)
   end
 
+  # arg: size(size_t)
+  # ret: pointer
   def self.MemAlloc(size)
     igMemAlloc(size)
   end
 
+  # arg: ptr(void*)
+  # ret: void
   def self.MemFree(ptr)
     igMemFree(ptr)
   end
 
-  def self.MenuItemBool(label, shortcut = nil, selected = false, enabled = true)
-    igMenuItemBool(label, shortcut, selected, enabled)
+  # arg: label(const char*), shortcut(const char*), selected(bool), enabled(bool)
+  # ret: bool
+  def self.MenuItem_Bool(label, shortcut = nil, selected = false, enabled = true)
+    igMenuItem_Bool(label, shortcut, selected, enabled)
   end
 
-  def self.MenuItemBoolPtr(label, shortcut, p_selected, enabled = true)
-    igMenuItemBoolPtr(label, shortcut, p_selected, enabled)
+  # arg: label(const char*), shortcut(const char*), p_selected(bool*), enabled(bool)
+  # ret: bool
+  def self.MenuItem_BoolPtr(label, shortcut, p_selected, enabled = true)
+    igMenuItem_BoolPtr(label, shortcut, p_selected, enabled)
   end
 
+  # ret: void
   def self.NewFrame()
     igNewFrame()
   end
 
+  # ret: void
   def self.NewLine()
     igNewLine()
   end
 
+  # ret: void
   def self.NextColumn()
     igNextColumn()
   end
 
-  def self.OpenPopup(str_id, popup_flags = 0)
-    igOpenPopup(str_id, popup_flags)
+  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
+  # ret: void
+  def self.OpenPopup_Str(str_id, popup_flags = 0)
+    igOpenPopup_Str(str_id, popup_flags)
   end
 
+  # arg: id(ImGuiID), popup_flags(ImGuiPopupFlags)
+  # ret: void
+  def self.OpenPopup_ID(id, popup_flags = 0)
+    igOpenPopup_ID(id, popup_flags)
+  end
+
+  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
+  # ret: void
   def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 1)
     igOpenPopupOnItemClick(str_id, popup_flags)
   end
 
-  def self.PlotHistogramFloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
-    igPlotHistogramFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+  # arg: label(const char*), values(const float*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2), stride(int)
+  # ret: void
+  def self.PlotHistogram_FloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
+    igPlotHistogram_FloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
   end
 
-  def self.PlotHistogramFnFloatPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
-    igPlotHistogramFnFloatPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  # arg: label(const char*), values_getter(float(*)(void* data,int idx)), data(void*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2)
+  # ret: void
+  def self.PlotHistogram_FnFloatPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
+    igPlotHistogram_FnFloatPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
   end
 
-  def self.PlotLinesFloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
-    igPlotLinesFloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
+  # arg: label(const char*), values(const float*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2), stride(int)
+  # ret: void
+  def self.PlotLines_FloatPtr(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
+    igPlotLines_FloatPtr(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
   end
 
-  def self.PlotLinesFnFloatPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
-    igPlotLinesFnFloatPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
+  # arg: label(const char*), values_getter(float(*)(void* data,int idx)), data(void*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2)
+  # ret: void
+  def self.PlotLines_FnFloatPtr(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
+    igPlotLines_FnFloatPtr(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
   end
 
+  # ret: void
   def self.PopAllowKeyboardFocus()
     igPopAllowKeyboardFocus()
   end
 
+  # ret: void
   def self.PopButtonRepeat()
     igPopButtonRepeat()
   end
 
+  # ret: void
   def self.PopClipRect()
     igPopClipRect()
   end
 
+  # ret: void
   def self.PopFont()
     igPopFont()
   end
 
+  # ret: void
   def self.PopID()
     igPopID()
   end
 
+  # ret: void
   def self.PopItemWidth()
     igPopItemWidth()
   end
 
+  # arg: count(int)
+  # ret: void
   def self.PopStyleColor(count = 1)
     igPopStyleColor(count)
   end
 
+  # arg: count(int)
+  # ret: void
   def self.PopStyleVar(count = 1)
     igPopStyleVar(count)
   end
 
+  # ret: void
   def self.PopTextWrapPos()
     igPopTextWrapPos()
   end
 
+  # arg: fraction(float), size_arg(ImVec2), overlay(const char*)
+  # ret: void
   def self.ProgressBar(fraction, size_arg = ImVec2.create(-FLT_MIN,0), overlay = nil)
     igProgressBar(fraction, size_arg, overlay)
   end
 
+  # arg: allow_keyboard_focus(bool)
+  # ret: void
   def self.PushAllowKeyboardFocus(allow_keyboard_focus)
     igPushAllowKeyboardFocus(allow_keyboard_focus)
   end
 
+  # arg: repeat(bool)
+  # ret: void
   def self.PushButtonRepeat(repeat)
     igPushButtonRepeat(repeat)
   end
 
+  # arg: clip_rect_min(ImVec2), clip_rect_max(ImVec2), intersect_with_current_clip_rect(bool)
+  # ret: void
   def self.PushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
     igPushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
   end
 
+  # arg: font(ImFont*)
+  # ret: void
   def self.PushFont(font)
     igPushFont(font)
   end
 
-  def self.PushIDStr(str_id)
-    igPushIDStr(str_id)
+  # arg: str_id(const char*)
+  # ret: void
+  def self.PushID_Str(str_id)
+    igPushID_Str(str_id)
   end
 
-  def self.PushIDStrStr(str_id_begin, str_id_end)
-    igPushIDStrStr(str_id_begin, str_id_end)
+  # arg: str_id_begin(const char*), str_id_end(const char*)
+  # ret: void
+  def self.PushID_StrStr(str_id_begin, str_id_end)
+    igPushID_StrStr(str_id_begin, str_id_end)
   end
 
-  def self.PushIDPtr(ptr_id)
-    igPushIDPtr(ptr_id)
+  # arg: ptr_id(const void*)
+  # ret: void
+  def self.PushID_Ptr(ptr_id)
+    igPushID_Ptr(ptr_id)
   end
 
-  def self.PushIDInt(int_id)
-    igPushIDInt(int_id)
+  # arg: int_id(int)
+  # ret: void
+  def self.PushID_Int(int_id)
+    igPushID_Int(int_id)
   end
 
+  # arg: item_width(float)
+  # ret: void
   def self.PushItemWidth(item_width)
     igPushItemWidth(item_width)
   end
 
-  def self.PushStyleColorU32(idx, col)
-    igPushStyleColorU32(idx, col)
+  # arg: idx(ImGuiCol), col(ImU32)
+  # ret: void
+  def self.PushStyleColor_U32(idx, col)
+    igPushStyleColor_U32(idx, col)
   end
 
-  def self.PushStyleColorVec4(idx, col)
-    igPushStyleColorVec4(idx, col)
+  # arg: idx(ImGuiCol), col(ImVec4)
+  # ret: void
+  def self.PushStyleColor_Vec4(idx, col)
+    igPushStyleColor_Vec4(idx, col)
   end
 
-  def self.PushStyleVarFloat(idx, val)
-    igPushStyleVarFloat(idx, val)
+  # arg: idx(ImGuiStyleVar), val(float)
+  # ret: void
+  def self.PushStyleVar_Float(idx, val)
+    igPushStyleVar_Float(idx, val)
   end
 
-  def self.PushStyleVarVec2(idx, val)
-    igPushStyleVarVec2(idx, val)
+  # arg: idx(ImGuiStyleVar), val(ImVec2)
+  # ret: void
+  def self.PushStyleVar_Vec2(idx, val)
+    igPushStyleVar_Vec2(idx, val)
   end
 
+  # arg: wrap_local_pos_x(float)
+  # ret: void
   def self.PushTextWrapPos(wrap_local_pos_x = 0.0)
     igPushTextWrapPos(wrap_local_pos_x)
   end
 
-  def self.RadioButtonBool(label, active)
-    igRadioButtonBool(label, active)
+  # arg: label(const char*), active(bool)
+  # ret: bool
+  def self.RadioButton_Bool(label, active)
+    igRadioButton_Bool(label, active)
   end
 
-  def self.RadioButtonIntPtr(label, v, v_button)
-    igRadioButtonIntPtr(label, v, v_button)
+  # arg: label(const char*), v(int*), v_button(int)
+  # ret: bool
+  def self.RadioButton_IntPtr(label, v, v_button)
+    igRadioButton_IntPtr(label, v, v_button)
   end
 
+  # ret: void
   def self.Render()
     igRender()
   end
 
+  # arg: button(ImGuiMouseButton)
+  # ret: void
   def self.ResetMouseDragDelta(button = 0)
     igResetMouseDragDelta(button)
   end
 
+  # arg: offset_from_start_x(float), spacing(float)
+  # ret: void
   def self.SameLine(offset_from_start_x = 0.0, spacing = -1.0)
     igSameLine(offset_from_start_x, spacing)
   end
 
+  # arg: ini_filename(const char*)
+  # ret: void
   def self.SaveIniSettingsToDisk(ini_filename)
     igSaveIniSettingsToDisk(ini_filename)
   end
 
+  # arg: out_ini_size(size_t*)
+  # ret: pointer
   def self.SaveIniSettingsToMemory(out_ini_size = nil)
     igSaveIniSettingsToMemory(out_ini_size)
   end
 
-  def self.SelectableBool(label, selected = false, flags = 0, size = ImVec2.create(0,0))
-    igSelectableBool(label, selected, flags, size)
+  # arg: label(const char*), selected(bool), flags(ImGuiSelectableFlags), size(ImVec2)
+  # ret: bool
+  def self.Selectable_Bool(label, selected = false, flags = 0, size = ImVec2.create(0,0))
+    igSelectable_Bool(label, selected, flags, size)
   end
 
-  def self.SelectableBoolPtr(label, p_selected, flags = 0, size = ImVec2.create(0,0))
-    igSelectableBoolPtr(label, p_selected, flags, size)
+  # arg: label(const char*), p_selected(bool*), flags(ImGuiSelectableFlags), size(ImVec2)
+  # ret: bool
+  def self.Selectable_BoolPtr(label, p_selected, flags = 0, size = ImVec2.create(0,0))
+    igSelectable_BoolPtr(label, p_selected, flags, size)
   end
 
+  # ret: void
   def self.Separator()
     igSeparator()
   end
 
+  # arg: alloc_func(ImGuiMemAllocFunc), free_func(ImGuiMemFreeFunc), user_data(void*)
+  # ret: void
   def self.SetAllocatorFunctions(alloc_func, free_func, user_data = nil)
     igSetAllocatorFunctions(alloc_func, free_func, user_data)
   end
 
+  # arg: text(const char*)
+  # ret: void
   def self.SetClipboardText(text)
     igSetClipboardText(text)
   end
 
+  # arg: flags(ImGuiColorEditFlags)
+  # ret: void
   def self.SetColorEditOptions(flags)
     igSetColorEditOptions(flags)
   end
 
+  # arg: column_index(int), offset_x(float)
+  # ret: void
   def self.SetColumnOffset(column_index, offset_x)
     igSetColumnOffset(column_index, offset_x)
   end
 
+  # arg: column_index(int), width(float)
+  # ret: void
   def self.SetColumnWidth(column_index, width)
     igSetColumnWidth(column_index, width)
   end
 
+  # arg: ctx(ImGuiContext*)
+  # ret: void
   def self.SetCurrentContext(ctx)
     igSetCurrentContext(ctx)
   end
 
+  # arg: local_pos(ImVec2)
+  # ret: void
   def self.SetCursorPos(local_pos)
     igSetCursorPos(local_pos)
   end
 
+  # arg: local_x(float)
+  # ret: void
   def self.SetCursorPosX(local_x)
     igSetCursorPosX(local_x)
   end
 
+  # arg: local_y(float)
+  # ret: void
   def self.SetCursorPosY(local_y)
     igSetCursorPosY(local_y)
   end
 
+  # arg: pos(ImVec2)
+  # ret: void
   def self.SetCursorScreenPos(pos)
     igSetCursorScreenPos(pos)
   end
 
+  # arg: type(const char*), data(const void*), sz(size_t), cond(ImGuiCond)
+  # ret: bool
   def self.SetDragDropPayload(type, data, sz, cond = 0)
     igSetDragDropPayload(type, data, sz, cond)
   end
 
+  # ret: void
   def self.SetItemAllowOverlap()
     igSetItemAllowOverlap()
   end
 
+  # ret: void
   def self.SetItemDefaultFocus()
     igSetItemDefaultFocus()
   end
 
+  # arg: offset(int)
+  # ret: void
   def self.SetKeyboardFocusHere(offset = 0)
     igSetKeyboardFocusHere(offset)
   end
 
+  # arg: cursor_type(ImGuiMouseCursor)
+  # ret: void
   def self.SetMouseCursor(cursor_type)
     igSetMouseCursor(cursor_type)
   end
 
+  # arg: is_open(bool), cond(ImGuiCond)
+  # ret: void
   def self.SetNextItemOpen(is_open, cond = 0)
     igSetNextItemOpen(is_open, cond)
   end
 
+  # arg: item_width(float)
+  # ret: void
   def self.SetNextItemWidth(item_width)
     igSetNextItemWidth(item_width)
   end
 
+  # arg: alpha(float)
+  # ret: void
   def self.SetNextWindowBgAlpha(alpha)
     igSetNextWindowBgAlpha(alpha)
   end
 
+  # arg: collapsed(bool), cond(ImGuiCond)
+  # ret: void
   def self.SetNextWindowCollapsed(collapsed, cond = 0)
     igSetNextWindowCollapsed(collapsed, cond)
   end
 
+  # arg: size(ImVec2)
+  # ret: void
   def self.SetNextWindowContentSize(size)
     igSetNextWindowContentSize(size)
   end
 
+  # ret: void
   def self.SetNextWindowFocus()
     igSetNextWindowFocus()
   end
 
+  # arg: pos(ImVec2), cond(ImGuiCond), pivot(ImVec2)
+  # ret: void
   def self.SetNextWindowPos(pos, cond = 0, pivot = ImVec2.create(0,0))
     igSetNextWindowPos(pos, cond, pivot)
   end
 
+  # arg: size(ImVec2), cond(ImGuiCond)
+  # ret: void
   def self.SetNextWindowSize(size, cond = 0)
     igSetNextWindowSize(size, cond)
   end
 
+  # arg: size_min(ImVec2), size_max(ImVec2), custom_callback(ImGuiSizeCallback), custom_callback_data(void*)
+  # ret: void
   def self.SetNextWindowSizeConstraints(size_min, size_max, custom_callback = nil, custom_callback_data = nil)
     igSetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
   end
 
+  # arg: local_x(float), center_x_ratio(float)
+  # ret: void
   def self.SetScrollFromPosX(local_x, center_x_ratio = 0.5)
     igSetScrollFromPosX(local_x, center_x_ratio)
   end
 
+  # arg: local_y(float), center_y_ratio(float)
+  # ret: void
   def self.SetScrollFromPosY(local_y, center_y_ratio = 0.5)
     igSetScrollFromPosY(local_y, center_y_ratio)
   end
 
+  # arg: center_x_ratio(float)
+  # ret: void
   def self.SetScrollHereX(center_x_ratio = 0.5)
     igSetScrollHereX(center_x_ratio)
   end
 
+  # arg: center_y_ratio(float)
+  # ret: void
   def self.SetScrollHereY(center_y_ratio = 0.5)
     igSetScrollHereY(center_y_ratio)
   end
 
+  # arg: scroll_x(float)
+  # ret: void
   def self.SetScrollX(scroll_x)
     igSetScrollX(scroll_x)
   end
 
+  # arg: scroll_y(float)
+  # ret: void
   def self.SetScrollY(scroll_y)
     igSetScrollY(scroll_y)
   end
 
+  # arg: storage(ImGuiStorage*)
+  # ret: void
   def self.SetStateStorage(storage)
     igSetStateStorage(storage)
   end
 
+  # arg: tab_or_docked_window_label(const char*)
+  # ret: void
   def self.SetTabItemClosed(tab_or_docked_window_label)
     igSetTabItemClosed(tab_or_docked_window_label)
   end
 
+  # arg: fmt(const char*), ...(...)
+  # ret: void
   def self.SetTooltip(fmt, *varargs)
     igSetTooltip(fmt, *varargs)
   end
 
-  def self.SetWindowCollapsedBool(collapsed, cond = 0)
-    igSetWindowCollapsedBool(collapsed, cond)
+  # arg: collapsed(bool), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowCollapsed_Bool(collapsed, cond = 0)
+    igSetWindowCollapsed_Bool(collapsed, cond)
   end
 
-  def self.SetWindowCollapsedStr(name, collapsed, cond = 0)
-    igSetWindowCollapsedStr(name, collapsed, cond)
+  # arg: name(const char*), collapsed(bool), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowCollapsed_Str(name, collapsed, cond = 0)
+    igSetWindowCollapsed_Str(name, collapsed, cond)
   end
 
-  def self.SetWindowFocusNil()
-    igSetWindowFocusNil()
+  # ret: void
+  def self.SetWindowFocus_Nil()
+    igSetWindowFocus_Nil()
   end
 
-  def self.SetWindowFocusStr(name)
-    igSetWindowFocusStr(name)
+  # arg: name(const char*)
+  # ret: void
+  def self.SetWindowFocus_Str(name)
+    igSetWindowFocus_Str(name)
   end
 
+  # arg: scale(float)
+  # ret: void
   def self.SetWindowFontScale(scale)
     igSetWindowFontScale(scale)
   end
 
-  def self.SetWindowPosVec2(pos, cond = 0)
-    igSetWindowPosVec2(pos, cond)
+  # arg: pos(ImVec2), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowPos_Vec2(pos, cond = 0)
+    igSetWindowPos_Vec2(pos, cond)
   end
 
-  def self.SetWindowPosStr(name, pos, cond = 0)
-    igSetWindowPosStr(name, pos, cond)
+  # arg: name(const char*), pos(ImVec2), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowPos_Str(name, pos, cond = 0)
+    igSetWindowPos_Str(name, pos, cond)
   end
 
-  def self.SetWindowSizeVec2(size, cond = 0)
-    igSetWindowSizeVec2(size, cond)
+  # arg: size(ImVec2), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowSize_Vec2(size, cond = 0)
+    igSetWindowSize_Vec2(size, cond)
   end
 
-  def self.SetWindowSizeStr(name, size, cond = 0)
-    igSetWindowSizeStr(name, size, cond)
+  # arg: name(const char*), size(ImVec2), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowSize_Str(name, size, cond = 0)
+    igSetWindowSize_Str(name, size, cond)
   end
 
+  # arg: p_open(bool*)
+  # ret: void
   def self.ShowAboutWindow(p_open = nil)
     igShowAboutWindow(p_open)
   end
 
+  # arg: p_open(bool*)
+  # ret: void
   def self.ShowDemoWindow(p_open = nil)
     igShowDemoWindow(p_open)
   end
 
+  # arg: label(const char*)
+  # ret: void
   def self.ShowFontSelector(label)
     igShowFontSelector(label)
   end
 
+  # arg: p_open(bool*)
+  # ret: void
   def self.ShowMetricsWindow(p_open = nil)
     igShowMetricsWindow(p_open)
   end
 
+  # arg: ref(ImGuiStyle*)
+  # ret: void
   def self.ShowStyleEditor(ref = nil)
     igShowStyleEditor(ref)
   end
 
+  # arg: label(const char*)
+  # ret: bool
   def self.ShowStyleSelector(label)
     igShowStyleSelector(label)
   end
 
+  # ret: void
   def self.ShowUserGuide()
     igShowUserGuide()
   end
 
+  # arg: label(const char*), v_rad(float*), v_degrees_min(float), v_degrees_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg", flags = 0)
     igSliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format, flags)
   end
 
+  # arg: label(const char*), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderFloat(label, v, v_min, v_max, format = "%.3f", flags = 0)
     igSliderFloat(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(float[2]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderFloat2(label, v, v_min, v_max, format = "%.3f", flags = 0)
     igSliderFloat2(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(float[3]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderFloat3(label, v, v_min, v_max, format = "%.3f", flags = 0)
     igSliderFloat3(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(float[4]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderFloat4(label, v, v_min, v_max, format = "%.3f", flags = 0)
     igSliderFloat4(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(int*), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderInt(label, v, v_min, v_max, format = "%d", flags = 0)
     igSliderInt(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(int[2]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderInt2(label, v, v_min, v_max, format = "%d", flags = 0)
     igSliderInt2(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(int[3]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderInt3(label, v, v_min, v_max, format = "%d", flags = 0)
     igSliderInt3(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), v(int[4]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderInt4(label, v, v_min, v_max, format = "%d", flags = 0)
     igSliderInt4(label, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderScalar(label, data_type, p_data, p_min, p_max, format = nil, flags = 0)
     igSliderScalar(label, data_type, p_data, p_min, p_max, format, flags)
   end
 
+  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format = nil, flags = 0)
     igSliderScalarN(label, data_type, p_data, components, p_min, p_max, format, flags)
   end
 
+  # arg: label(const char*)
+  # ret: bool
   def self.SmallButton(label)
     igSmallButton(label)
   end
 
+  # ret: void
   def self.Spacing()
     igSpacing()
   end
 
+  # arg: dst(ImGuiStyle*)
+  # ret: void
   def self.StyleColorsClassic(dst = nil)
     igStyleColorsClassic(dst)
   end
 
+  # arg: dst(ImGuiStyle*)
+  # ret: void
   def self.StyleColorsDark(dst = nil)
     igStyleColorsDark(dst)
   end
 
+  # arg: dst(ImGuiStyle*)
+  # ret: void
   def self.StyleColorsLight(dst = nil)
     igStyleColorsLight(dst)
   end
 
+  # arg: label(const char*), flags(ImGuiTabItemFlags)
+  # ret: bool
   def self.TabItemButton(label, flags = 0)
     igTabItemButton(label, flags)
   end
 
+  # ret: int
   def self.TableGetColumnCount()
     igTableGetColumnCount()
   end
 
+  # arg: column_n(int)
+  # ret: int
   def self.TableGetColumnFlags(column_n = -1)
     igTableGetColumnFlags(column_n)
   end
 
+  # ret: int
   def self.TableGetColumnIndex()
     igTableGetColumnIndex()
   end
 
+  # arg: column_n(int)
+  # ret: pointer
   def self.TableGetColumnName(column_n = -1)
     igTableGetColumnName(column_n)
   end
 
+  # ret: int
   def self.TableGetRowIndex()
     igTableGetRowIndex()
   end
 
+  # ret: pointer
   def self.TableGetSortSpecs()
     igTableGetSortSpecs()
   end
 
+  # arg: label(const char*)
+  # ret: void
   def self.TableHeader(label)
     igTableHeader(label)
   end
 
+  # ret: void
   def self.TableHeadersRow()
     igTableHeadersRow()
   end
 
+  # ret: bool
   def self.TableNextColumn()
     igTableNextColumn()
   end
 
+  # arg: row_flags(ImGuiTableRowFlags), min_row_height(float)
+  # ret: void
   def self.TableNextRow(row_flags = 0, min_row_height = 0.0)
     igTableNextRow(row_flags, min_row_height)
   end
 
+  # arg: target(ImGuiTableBgTarget), color(ImU32), column_n(int)
+  # ret: void
   def self.TableSetBgColor(target, color, column_n = -1)
     igTableSetBgColor(target, color, column_n)
   end
 
+  # arg: column_n(int), v(bool)
+  # ret: void
+  def self.TableSetColumnEnabled(column_n, v)
+    igTableSetColumnEnabled(column_n, v)
+  end
+
+  # arg: column_n(int)
+  # ret: bool
   def self.TableSetColumnIndex(column_n)
     igTableSetColumnIndex(column_n)
   end
 
+  # arg: label(const char*), flags(ImGuiTableColumnFlags), init_width_or_weight(float), user_id(ImGuiID)
+  # ret: void
   def self.TableSetupColumn(label, flags = 0, init_width_or_weight = 0.0, user_id = 0)
     igTableSetupColumn(label, flags, init_width_or_weight, user_id)
   end
 
+  # arg: cols(int), rows(int)
+  # ret: void
   def self.TableSetupScrollFreeze(cols, rows)
     igTableSetupScrollFreeze(cols, rows)
   end
 
+  # arg: fmt(const char*), ...(...)
+  # ret: void
   def self.Text(fmt, *varargs)
     igText(fmt, *varargs)
   end
 
+  # arg: col(ImVec4), fmt(const char*), ...(...)
+  # ret: void
   def self.TextColored(col, fmt, *varargs)
     igTextColored(col, fmt, *varargs)
   end
 
+  # arg: fmt(const char*), ...(...)
+  # ret: void
   def self.TextDisabled(fmt, *varargs)
     igTextDisabled(fmt, *varargs)
   end
 
+  # arg: text(const char*), text_end(const char*)
+  # ret: void
   def self.TextUnformatted(text, text_end = nil)
     igTextUnformatted(text, text_end)
   end
 
+  # arg: fmt(const char*), ...(...)
+  # ret: void
   def self.TextWrapped(fmt, *varargs)
     igTextWrapped(fmt, *varargs)
   end
 
-  def self.TreeNodeStr(label)
-    igTreeNodeStr(label)
+  # arg: label(const char*)
+  # ret: bool
+  def self.TreeNode_Str(label)
+    igTreeNode_Str(label)
   end
 
-  def self.TreeNodeStrStr(str_id, fmt, *varargs)
-    igTreeNodeStrStr(str_id, fmt, *varargs)
+  # arg: str_id(const char*), fmt(const char*), ...(...)
+  # ret: bool
+  def self.TreeNode_StrStr(str_id, fmt, *varargs)
+    igTreeNode_StrStr(str_id, fmt, *varargs)
   end
 
-  def self.TreeNodePtr(ptr_id, fmt, *varargs)
-    igTreeNodePtr(ptr_id, fmt, *varargs)
+  # arg: ptr_id(const void*), fmt(const char*), ...(...)
+  # ret: bool
+  def self.TreeNode_Ptr(ptr_id, fmt, *varargs)
+    igTreeNode_Ptr(ptr_id, fmt, *varargs)
   end
 
-  def self.TreeNodeExStr(label, flags = 0)
-    igTreeNodeExStr(label, flags)
+  # arg: label(const char*), flags(ImGuiTreeNodeFlags)
+  # ret: bool
+  def self.TreeNodeEx_Str(label, flags = 0)
+    igTreeNodeEx_Str(label, flags)
   end
 
-  def self.TreeNodeExStrStr(str_id, flags, fmt, *varargs)
-    igTreeNodeExStrStr(str_id, flags, fmt, *varargs)
+  # arg: str_id(const char*), flags(ImGuiTreeNodeFlags), fmt(const char*), ...(...)
+  # ret: bool
+  def self.TreeNodeEx_StrStr(str_id, flags, fmt, *varargs)
+    igTreeNodeEx_StrStr(str_id, flags, fmt, *varargs)
   end
 
-  def self.TreeNodeExPtr(ptr_id, flags, fmt, *varargs)
-    igTreeNodeExPtr(ptr_id, flags, fmt, *varargs)
+  # arg: ptr_id(const void*), flags(ImGuiTreeNodeFlags), fmt(const char*), ...(...)
+  # ret: bool
+  def self.TreeNodeEx_Ptr(ptr_id, flags, fmt, *varargs)
+    igTreeNodeEx_Ptr(ptr_id, flags, fmt, *varargs)
   end
 
+  # ret: void
   def self.TreePop()
     igTreePop()
   end
 
-  def self.TreePushStr(str_id)
-    igTreePushStr(str_id)
+  # arg: str_id(const char*)
+  # ret: void
+  def self.TreePush_Str(str_id)
+    igTreePush_Str(str_id)
   end
 
-  def self.TreePushPtr(ptr_id = nil)
-    igTreePushPtr(ptr_id)
+  # arg: ptr_id(const void*)
+  # ret: void
+  def self.TreePush_Ptr(ptr_id = nil)
+    igTreePush_Ptr(ptr_id)
   end
 
+  # arg: indent_w(float)
+  # ret: void
   def self.Unindent(indent_w = 0.0)
     igUnindent(indent_w)
   end
 
+  # arg: label(const char*), size(ImVec2), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.VSliderFloat(label, size, v, v_min, v_max, format = "%.3f", flags = 0)
     igVSliderFloat(label, size, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), size(ImVec2), v(int*), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.VSliderInt(label, size, v, v_min, v_max, format = "%d", flags = 0)
     igVSliderInt(label, size, v, v_min, v_max, format, flags)
   end
 
+  # arg: label(const char*), size(ImVec2), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
   def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format = nil, flags = 0)
     igVSliderScalar(label, size, data_type, p_data, p_min, p_max, format, flags)
   end
 
-  def self.ValueBool(prefix, b)
-    igValueBool(prefix, b)
+  # arg: prefix(const char*), b(bool)
+  # ret: void
+  def self.Value_Bool(prefix, b)
+    igValue_Bool(prefix, b)
   end
 
-  def self.ValueInt(prefix, v)
-    igValueInt(prefix, v)
+  # arg: prefix(const char*), v(int)
+  # ret: void
+  def self.Value_Int(prefix, v)
+    igValue_Int(prefix, v)
   end
 
-  def self.ValueUint(prefix, v)
-    igValueUint(prefix, v)
+  # arg: prefix(const char*), v(unsigned int)
+  # ret: void
+  def self.Value_Uint(prefix, v)
+    igValue_Uint(prefix, v)
   end
 
-  def self.ValueFloat(prefix, v, float_format = nil)
-    igValueFloat(prefix, v, float_format)
+  # arg: prefix(const char*), v(float), float_format(const char*)
+  # ret: void
+  def self.Value_Float(prefix, v, float_format = nil)
+    igValue_Float(prefix, v, float_format)
+  end
+
+  # Overload functions
+
+  def self.BeginChild(*arg)
+    # arg: 0:str_id(const char*), 1:size(ImVec2), 2:border(bool), 3:flags(ImGuiWindowFlags)
+    # ret: bool
+    return igBeginChild_Str(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)) && arg[3].kind_of?(Integer))
+    # arg: 0:id(ImGuiID), 1:size(ImVec2), 2:border(bool), 3:flags(ImGuiWindowFlags)
+    # ret: bool
+    return igBeginChild_ID(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)) && arg[3].kind_of?(Integer))
+    $stderr.puts("[Warning] BeginChild : No matching functions found (#{arg})")
+  end
+
+  def self.CheckboxFlags(*arg)
+    # arg: 0:label(const char*), 1:flags(int*), 2:flags_value(int)
+    # ret: bool
+    return igCheckboxFlags_IntPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:flags(unsigned int*), 2:flags_value(unsigned int)
+    # ret: bool
+    return igCheckboxFlags_UintPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    $stderr.puts("[Warning] CheckboxFlags : No matching functions found (#{arg})")
+  end
+
+  def self.CollapsingHeader(*arg)
+    # arg: 0:label(const char*), 1:flags(ImGuiTreeNodeFlags)
+    # ret: bool
+    return igCollapsingHeader_TreeNodeFlags(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:p_visible(bool*), 2:flags(ImGuiTreeNodeFlags)
+    # ret: bool
+    return igCollapsingHeader_BoolPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    $stderr.puts("[Warning] CollapsingHeader : No matching functions found (#{arg})")
+  end
+
+  def self.Combo(*arg)
+    # arg: 0:label(const char*), 1:current_item(int*), 2:items(const char* const[]), 3:items_count(int), 4:popup_max_height_in_items(int)
+    # ret: bool
+    return igCombo_Str_arr(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:current_item(int*), 2:items_separated_by_zeros(const char*), 3:popup_max_height_in_items(int)
+    # ret: bool
+    return igCombo_Str(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:current_item(int*), 2:items_getter(bool(*)(void* data,int idx,const char** out_text)), 3:data(void*), 4:items_count(int), 5:popup_max_height_in_items(int)
+    # ret: bool
+    return igCombo_FnBoolPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    $stderr.puts("[Warning] Combo : No matching functions found (#{arg})")
+  end
+
+  def self.GetColorU32(*arg)
+    # arg: 0:idx(ImGuiCol), 1:alpha_mul(float)
+    # ret: uint
+    return igGetColorU32_Col(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
+    # arg: 0:col(ImVec4)
+    # ret: uint
+    return igGetColorU32_Vec4(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImVec4))
+    # arg: 0:col(ImU32)
+    # ret: uint
+    return igGetColorU32_U32(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    $stderr.puts("[Warning] GetColorU32 : No matching functions found (#{arg})")
+  end
+
+  def self.GetID(*arg)
+    # arg: 0:str_id(const char*)
+    # ret: uint
+    return igGetID_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
+    # arg: 0:str_id_begin(const char*), 1:str_id_end(const char*)
+    # ret: uint
+    return igGetID_StrStr(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
+    # arg: 0:ptr_id(const void*)
+    # ret: uint
+    return igGetID_Ptr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] GetID : No matching functions found (#{arg})")
+  end
+
+  def self.IsRectVisible(*arg)
+    # arg: 0:size(ImVec2)
+    # ret: bool
+    return igIsRectVisible_Nil(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
+    # arg: 0:rect_min(ImVec2), 1:rect_max(ImVec2)
+    # ret: bool
+    return igIsRectVisible_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2))
+    $stderr.puts("[Warning] IsRectVisible : No matching functions found (#{arg})")
+  end
+
+  def self.ListBox(*arg)
+    # arg: 0:label(const char*), 1:current_item(int*), 2:items(const char* const[]), 3:items_count(int), 4:height_in_items(int)
+    # ret: bool
+    return igListBox_Str_arr(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:current_item(int*), 2:items_getter(bool(*)(void* data,int idx,const char** out_text)), 3:data(void*), 4:items_count(int), 5:height_in_items(int)
+    # ret: bool
+    return igListBox_FnBoolPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    $stderr.puts("[Warning] ListBox : No matching functions found (#{arg})")
+  end
+
+  def self.MenuItem(*arg)
+    # arg: 0:label(const char*), 1:shortcut(const char*), 2:selected(bool), 3:enabled(bool)
+    # ret: bool
+    return igMenuItem_Bool(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
+    # arg: 0:label(const char*), 1:shortcut(const char*), 2:p_selected(bool*), 3:enabled(bool)
+    # ret: bool
+    return igMenuItem_BoolPtr(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
+    $stderr.puts("[Warning] MenuItem : No matching functions found (#{arg})")
+  end
+
+  def self.OpenPopup(*arg)
+    # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
+    # ret: void
+    return igOpenPopup_Str(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
+    # arg: 0:id(ImGuiID), 1:popup_flags(ImGuiPopupFlags)
+    # ret: void
+    return igOpenPopup_ID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
+    $stderr.puts("[Warning] OpenPopup : No matching functions found (#{arg})")
+  end
+
+  def self.PlotHistogram(*arg)
+    # arg: 0:label(const char*), 1:values(const float*), 2:values_count(int), 3:values_offset(int), 4:overlay_text(const char*), 5:scale_min(float), 6:scale_max(float), 7:graph_size(ImVec2), 8:stride(int)
+    # ret: void
+    return igPlotHistogram_FloatPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2) && arg[8].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:values_getter(float(*)(void* data,int idx)), 2:data(void*), 3:values_count(int), 4:values_offset(int), 5:overlay_text(const char*), 6:scale_min(float), 7:scale_max(float), 8:graph_size(ImVec2)
+    # ret: void
+    return igPlotHistogram_FnFloatPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(ImVec2))
+    $stderr.puts("[Warning] PlotHistogram : No matching functions found (#{arg})")
+  end
+
+  def self.PlotLines(*arg)
+    # arg: 0:label(const char*), 1:values(const float*), 2:values_count(int), 3:values_offset(int), 4:overlay_text(const char*), 5:scale_min(float), 6:scale_max(float), 7:graph_size(ImVec2), 8:stride(int)
+    # ret: void
+    return igPlotLines_FloatPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2) && arg[8].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:values_getter(float(*)(void* data,int idx)), 2:data(void*), 3:values_count(int), 4:values_offset(int), 5:overlay_text(const char*), 6:scale_min(float), 7:scale_max(float), 8:graph_size(ImVec2)
+    # ret: void
+    return igPlotLines_FnFloatPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(ImVec2))
+    $stderr.puts("[Warning] PlotLines : No matching functions found (#{arg})")
+  end
+
+  def self.PushID(*arg)
+    # arg: 0:str_id(const char*)
+    # ret: void
+    return igPushID_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
+    # arg: 0:str_id_begin(const char*), 1:str_id_end(const char*)
+    # ret: void
+    return igPushID_StrStr(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
+    # arg: 0:ptr_id(const void*)
+    # ret: void
+    return igPushID_Ptr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    # arg: 0:int_id(int)
+    # ret: void
+    return igPushID_Int(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    $stderr.puts("[Warning] PushID : No matching functions found (#{arg})")
+  end
+
+  def self.PushStyleColor(*arg)
+    # arg: 0:idx(ImGuiCol), 1:col(ImU32)
+    # ret: void
+    return igPushStyleColor_U32(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
+    # arg: 0:idx(ImGuiCol), 1:col(ImVec4)
+    # ret: void
+    return igPushStyleColor_Vec4(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec4))
+    $stderr.puts("[Warning] PushStyleColor : No matching functions found (#{arg})")
+  end
+
+  def self.PushStyleVar(*arg)
+    # arg: 0:idx(ImGuiStyleVar), 1:val(float)
+    # ret: void
+    return igPushStyleVar_Float(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
+    # arg: 0:idx(ImGuiStyleVar), 1:val(ImVec2)
+    # ret: void
+    return igPushStyleVar_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2))
+    $stderr.puts("[Warning] PushStyleVar : No matching functions found (#{arg})")
+  end
+
+  def self.RadioButton(*arg)
+    # arg: 0:label(const char*), 1:active(bool)
+    # ret: bool
+    return igRadioButton_Bool(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
+    # arg: 0:label(const char*), 1:v(int*), 2:v_button(int)
+    # ret: bool
+    return igRadioButton_IntPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    $stderr.puts("[Warning] RadioButton : No matching functions found (#{arg})")
+  end
+
+  def self.Selectable(*arg)
+    # arg: 0:label(const char*), 1:selected(bool), 2:flags(ImGuiSelectableFlags), 3:size(ImVec2)
+    # ret: bool
+    return igSelectable_Bool(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
+    # arg: 0:label(const char*), 1:p_selected(bool*), 2:flags(ImGuiSelectableFlags), 3:size(ImVec2)
+    # ret: bool
+    return igSelectable_BoolPtr(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
+    $stderr.puts("[Warning] Selectable : No matching functions found (#{arg})")
+  end
+
+  def self.SetWindowCollapsed(*arg)
+    # arg: 0:collapsed(bool), 1:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowCollapsed_Bool(arg[0], arg[1]) if arg.length == 2 && ((arg[0].is_a?(TrueClass) || arg[0].is_a?(FalseClass)) && arg[1].kind_of?(Integer))
+    # arg: 0:name(const char*), 1:collapsed(bool), 2:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowCollapsed_Str(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer))
+    $stderr.puts("[Warning] SetWindowCollapsed : No matching functions found (#{arg})")
+  end
+
+  def self.SetWindowFocus(*arg)
+    # arg: 
+    # ret: void
+    return igSetWindowFocus_Nil() if arg.length == 0 && ()
+    # arg: 0:name(const char*)
+    # ret: void
+    return igSetWindowFocus_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
+    $stderr.puts("[Warning] SetWindowFocus : No matching functions found (#{arg})")
+  end
+
+  def self.SetWindowPos(*arg)
+    # arg: 0:pos(ImVec2), 1:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowPos_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
+    # arg: 0:name(const char*), 1:pos(ImVec2), 2:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowPos_Str(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
+    $stderr.puts("[Warning] SetWindowPos : No matching functions found (#{arg})")
+  end
+
+  def self.SetWindowSize(*arg)
+    # arg: 0:size(ImVec2), 1:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowSize_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
+    # arg: 0:name(const char*), 1:size(ImVec2), 2:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowSize_Str(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
+    $stderr.puts("[Warning] SetWindowSize : No matching functions found (#{arg})")
+  end
+
+  def self.TreeNode(*arg)
+    # arg: 0:label(const char*)
+    # ret: bool
+    return igTreeNode_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
+    # arg: 0:str_id(const char*), 1:fmt(const char*), 2:...(...)
+    # ret: bool
+    return igTreeNode_StrStr(arg[0], arg[1], arg[2..]) if arg.length >= 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
+    # arg: 0:ptr_id(const void*), 1:fmt(const char*), 2:...(...)
+    # ret: bool
+    return igTreeNode_Ptr(arg[0], arg[1], arg[2..]) if arg.length >= 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(String))
+    $stderr.puts("[Warning] TreeNode : No matching functions found (#{arg})")
+  end
+
+  def self.TreeNodeEx(*arg)
+    # arg: 0:label(const char*), 1:flags(ImGuiTreeNodeFlags)
+    # ret: bool
+    return igTreeNodeEx_Str(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
+    # arg: 0:str_id(const char*), 1:flags(ImGuiTreeNodeFlags), 2:fmt(const char*), 3:...(...)
+    # ret: bool
+    return igTreeNodeEx_StrStr(arg[0], arg[1], arg[2], arg[3..]) if arg.length >= 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String))
+    # arg: 0:ptr_id(const void*), 1:flags(ImGuiTreeNodeFlags), 2:fmt(const char*), 3:...(...)
+    # ret: bool
+    return igTreeNodeEx_Ptr(arg[0], arg[1], arg[2], arg[3..]) if arg.length >= 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String))
+    $stderr.puts("[Warning] TreeNodeEx : No matching functions found (#{arg})")
+  end
+
+  def self.TreePush(*arg)
+    # arg: 0:str_id(const char*)
+    # ret: void
+    return igTreePush_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
+    # arg: 0:ptr_id(const void*)
+    # ret: void
+    return igTreePush_Ptr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] TreePush : No matching functions found (#{arg})")
+  end
+
+  def self.Value(*arg)
+    # arg: 0:prefix(const char*), 1:b(bool)
+    # ret: void
+    return igValue_Bool(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
+    # arg: 0:prefix(const char*), 1:v(int)
+    # ret: void
+    return igValue_Int(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
+    # arg: 0:prefix(const char*), 1:v(unsigned int)
+    # ret: void
+    return igValue_Uint(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
+    # arg: 0:prefix(const char*), 1:v(float), 2:float_format(const char*)
+    # ret: void
+    return igValue_Float(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Float) && arg[2].kind_of?(String))
+    $stderr.puts("[Warning] Value : No matching functions found (#{arg})")
   end
 
 end # module ImGui

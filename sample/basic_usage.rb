@@ -133,9 +133,12 @@ module ImGuiDemo::RadioButtonWindow
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("ラジオボタン")
     # ラジオボタンがクリックされると第3引数の整数が第2引数のradioに格納されます。
-    ImGui::RadioButtonIntPtr("ラジオボタン 0", @@radio, 0); ImGui::SameLine() # TODO define overload to hide RadioButtonIntPtr
-    ImGui::RadioButtonIntPtr("ラジオボタン 1", @@radio, 1); ImGui::SameLine()
-    ImGui::RadioButtonIntPtr("ラジオボタン 2", @@radio, 2);
+    # ImGui::RadioButton_IntPtr("ラジオボタン 0", @@radio, 0); ImGui::SameLine() # TODO define overload to hide RadioButtonIntPtr
+    # ImGui::RadioButton_IntPtr("ラジオボタン 1", @@radio, 1); ImGui::SameLine()
+    # ImGui::RadioButton_IntPtr("ラジオボタン 2", @@radio, 2);
+    ImGui::RadioButton("ラジオボタン 0", @@radio, 0); ImGui::SameLine()
+    ImGui::RadioButton("ラジオボタン 1", @@radio, 1); ImGui::SameLine()
+    ImGui::RadioButton("ラジオボタン 2", @@radio, 2);
 
     ImGui::Text("ラジオボタンは%dを選択しています", :int, @@radio.read(:int))
     ImGui::End()
@@ -184,9 +187,9 @@ module ImGuiDemo::DropdownListAndInputWindow
     ImGui::Begin("ドロップダウンリストと文章入力欄/数字入力欄")
     ImGui::LabelText("ラベル", "値")
 
-    ImGui::ComboStr_arr("ドロップダウンリスト##1", @@item_current, @@items, @@items_string.length)
+    ImGui::Combo("ドロップダウンリスト##1", @@item_current, @@items, @@items_string.length, -1)
     # 別の書き方として \0 で項目を区切って書く方法があります。
-    ImGui::ComboStr("ドロップダウンリスト##2", @@item_current, "AAA\0BBB\0CCC\0")
+    ImGui::Combo("ドロップダウンリスト##2", @@item_current, "AAA\0BBB\0CCC\0", -1)
 
     item_current = @@item_current.read(:int)
     items = @@items.get_array_of_pointer(0, @@items_string.length)
@@ -277,7 +280,8 @@ module ImGuiDemo::SlidersWindow2
 
     ImGui::PushItemWidth(70) # これから先のUIパーツの幅を70で固定します。
 
-    ImGui::ComboStr_arr("##XYZ", @@item, @@items, @@items_string.length)
+    # ImGui::Combo_Str_arr("##XYZ", @@item, @@items, @@items_string.length)
+    ImGui::Combo("##XYZ", @@item, @@items, @@items_string.length, -1)
 
     ImGui::SameLine(0, 10) # 次のUIパーツを同じ行に配置し、その際、右に10だけスペースを空けます。
 
@@ -300,7 +304,7 @@ module ImGuiDemo::SlidersWindow3
     ImGui::Begin("スライダー(3)")
     7.times do |i|
       ImGui::SameLine() if i > 0
-      ImGui::PushIDInt(i)
+      ImGui::PushID_Int(i)
 
       # 垂直スライダーを幅18,高さ160,最小値0,最大値1で作成します。
       ImGui::VSliderFloat("##v", ImVec2.create(18,160), @@values[i], 0.0, 1.0, "")
@@ -370,15 +374,20 @@ module ImGuiDemo::ListBoxWindow
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("リストボックス/複数選択")
-    ImGui::ListBoxStr_arr("リストボックス", @@listbox_item_current, @@listbox_items, @@listbox_items_str.length, 4)
+    # ImGui::ListBox_Str_arr("リストボックス", @@listbox_item_current, @@listbox_items, @@listbox_items_str.length, 4)
+    ImGui::ListBox("リストボックス", @@listbox_item_current, @@listbox_items, @@listbox_items_str.length, 4)
 
     ################################################################################
     ImGui::NewLine()
 
-    ImGui::SelectableBoolPtr("複数選択項目 1", @@selection[0])
-    ImGui::SelectableBoolPtr("複数選択項目 2", @@selection[1])
+    # ImGui::Selectable_BoolPtr("複数選択項目 1", @@selection[0])
+    # ImGui::Selectable_BoolPtr("複数選択項目 2", @@selection[1])
+    default_size = ImVec2.create(0,0)
+    ImGui::Selectable("複数選択項目 1", @@selection[0], 0, default_size)
+    ImGui::Selectable("複数選択項目 2", @@selection[1], 0, default_size)
 
-    if ImGui::SelectableBool("複数選択項目 3", !@@selection[2].read_int8().zero?, ImGuiSelectableFlags_AllowDoubleClick) == true
+    # if ImGui::Selectable_Bool("複数選択項目 3", !@@selection[2].read_int8().zero?, ImGuiSelectableFlags_AllowDoubleClick) == true
+    if ImGui::Selectable("複数選択項目 3", !@@selection[2].read_int8().zero?, ImGuiSelectableFlags_AllowDoubleClick, default_size) == true
       # ダブルクリックした時だけ選択できるようにするには次のようにします。
       # 引数の 0 は左クリックを表します。 1 なら右クリック。 2 なら中央ボタンクリックです。
       if ImGui::IsMouseDoubleClicked(0) == true
@@ -386,7 +395,8 @@ module ImGuiDemo::ListBoxWindow
       end
     end
 
-    if ImGui::SelectableBool("複数選択項目 4", !@@selection[3].read_int8().zero?) == true
+    # if ImGui::Selectable_Bool("複数選択項目 4", !@@selection[3].read_int8().zero?) == true
+    if ImGui::Selectable("複数選択項目 4", !@@selection[3].read_int8().zero?, 0, default_size) == true
       # CTRL+クリックの時だけ選択できるようにするには次のようにします。
       if ImGuiDemo::GetIO()[:KeyCtrl] == true
         @@selection[3].write(:int8, @@selection[3].read_int8() ^ 1) # @@selection[3] = !@@selection[3];
@@ -394,7 +404,7 @@ module ImGuiDemo::ListBoxWindow
     end
 
     # 選択項目をそもそも選択できないようにするには次のようにします
-    ImGui::SelectableBool("複数選択項目 5", !@@selection[4].read_int8().zero?, ImGuiSelectableFlags_Disabled)
+    ImGui::Selectable("複数選択項目 5", !@@selection[4].read_int8().zero?, ImGuiSelectableFlags_Disabled, default_size)
 
     ################################################################################
     ImGui::NewLine()
@@ -403,7 +413,8 @@ module ImGuiDemo::ListBoxWindow
     names_count.times do |n|
       item = @@reorder_item_names[n]
       is_selected = item == @@reorder_item_current
-      @@reorder_item_current = item if ImGui::SelectableBool(item, is_selected)
+      # @@reorder_item_current = item if ImGui::Selectable_Bool(item, is_selected)
+      @@reorder_item_current = item if ImGui::Selectable(item, is_selected, 0, default_size)
       if ImGui::IsItemActive() && !ImGui::IsItemHovered()
         n_next = n + (ImGui::GetMouseDragDelta()[:y] < 0.0 ? -1 : 1)
         if n_next >= 0 && n_next < names_count
@@ -489,9 +500,11 @@ module ImGuiDemo::TreeNodeWindow
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("ツリーノード")
 
-    if ImGui::CollapsingHeaderTreeNodeFlags("開閉可能なフィールド")
+    # if ImGui::CollapsingHeader_TreeNodeFlags("開閉可能なフィールド")
+    if ImGui::CollapsingHeader("開閉可能なフィールド", 0)
       # このフィールドを開いている場合にしたい処理をここに書きます。
-      if ImGui::TreeNodeStr("ツリーノード A")
+      # if ImGui::TreeNodeStr("ツリーノード A")
+      if ImGui::TreeNode("ツリーノード A")
         # "ツリーノード A"が開いている場合にしたい処理をここに書きます。
         if ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_A))
           ImGui::Text("Aキーが押されている場合は表示されます")
@@ -500,7 +513,8 @@ module ImGuiDemo::TreeNodeWindow
       end
       # SetNextItemOpenを使うことで次のツリーノードは最初から開いている状態になります。
       ImGui::SetNextItemOpen(true, ImGuiCond_Once)
-      if ImGui::TreeNodeStr("ツリーノード B")
+      # if ImGui::TreeNodeStr("ツリーノード B")
+      if ImGui::TreeNode("ツリーノード B")
         ImGui::Text("ツリーノード Bは最初から開いた状態です")
         ImGui::TreePop()
       end
@@ -548,7 +562,8 @@ module ImGuiDemo::TooltipAndPopupWindow
       ImGui::Text("選択項目")
       ImGui::Separator()
       @@names.length.times do |i|
-        if ImGui::SelectableBool(@@names[i].read_string)
+        # if ImGui::Selectable_Bool(@@names[i].read_string)
+        if ImGui::Selectable(@@names[i].read_string, 0, ImVec2.create())
           @@selected.put_int32(0, i)
         end
       end
@@ -573,9 +588,11 @@ module ImGuiDemo::PlotAndProgressWindow
 
     # 最小値 0, 最大値 1 のグラフを作成します。
     # ImVec2(0,50)としていることで、幅は自動で決まり、高さは50になります。
-    ImGui::PlotLinesFloatPtr("プロットライン", @@arr_ptr, @@arr.length, 0, "タイトル", 0.0, 1.0, ImVec2.create(0,50))
+    # ImGui::PlotLines_FloatPtr("プロットライン", @@arr_ptr, @@arr.length, 0, "タイトル", 0.0, 1.0, ImVec2.create(0,50))
+    ImGui::PlotLines("プロットライン", @@arr_ptr, @@arr.length, 0, "タイトル", 0.0, 1.0, ImVec2.create(0,50), FFI::TYPE_FLOAT32.size)
 
-    ImGui::PlotHistogramFloatPtr("ヒストグラム", @@arr_ptr, @@arr.length, 0, nil, 0.0, 1.0, ImVec2.create(0,50))
+    # ImGui::PlotHistogram_FloatPtr("ヒストグラム", @@arr_ptr, @@arr.length, 0, nil, 0.0, 1.0, ImVec2.create(0,50))
+    ImGui::PlotHistogram("ヒストグラム", @@arr_ptr, @@arr.length, 0, "", 0.0, 1.0, ImVec2.create(0,50), FFI::TYPE_FLOAT32.size)
 
     # 0 ~ 1 までの中での 0.22 が何％の位置にいるのかを表示します。
     ImGui::ProgressBar(@@progress.read_float, ImVec2.create(0.0, 0.0))
@@ -603,18 +620,22 @@ module ImGuiDemo::ChildWindow
     goto_line |= ImGui::InputInt("##Line", @@line, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue)
     # "Goto"ボタンを押すかまたは入力欄で数字を入力してからEnterキーを押すことで、goto_lineはtrueになります。
 
-    ImGui::PushStyleVarFloat(ImGuiStyleVar_ChildRounding, 5.0) # 外枠を角丸にします。
-    ImGui::PushStyleColorVec4(ImGuiCol_ChildBg, ImColor.create(60, 0, 0, 100)) # 子ウィンドウの背景色を変更します。
+    # ImGui::PushStyleVar_Float(ImGuiStyleVar_ChildRounding, 5.0) # 外枠を角丸にします。
+    # ImGui::PushStyleColor_Vec4(ImGuiCol_ChildBg, ImColor.create(60, 0, 0, 100)) # 子ウィンドウの背景色を変更します。
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0) # 外枠を角丸にします。
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImColor.create(60, 0, 0, 100)[:Value]) # 子ウィンドウの背景色を変更します。
     ImGui::SetNextItemWidth(100) # 次のUIパーツの幅を100にします。
     flag = 0 # ImGuiWindowFlags
     # flag |= ImGuiWindowFlags_NoScrollWithMouse # 子ウィンドウの中でマウススクロールしても子ウィンドウ内はスクロールされなくなります。
     flag |= ImGuiWindowFlags_MenuBar # 子ウィンドウにBeginMenuBarをつけることを可能にします。
     # 第3引数をtrueにすることで外枠が表示されます。
-    ImGui::BeginChildStr("ChildID", ImVec2.create(ImGui::GetWindowContentRegionWidth() * 0.5, 260), true, flag)
+    # ImGui::BeginChild_Str("ChildID", ImVec2.create(ImGui::GetWindowContentRegionWidth() * 0.5, 260), true, flag)
+    ImGui::BeginChild("ChildID", ImVec2.create(ImGui::GetWindowContentRegionWidth() * 0.5, 260), true, flag)
     if ImGui::BeginMenuBar()
       if ImGui::BeginMenu("Menu")
         # "Menu"をクリックしたら開くメニュー項目を書いていきます。
-        if ImGui::MenuItemBool("New")
+        # if ImGui::MenuItem_Bool("New")
+        if ImGui::MenuItem("New", "", false, true)
           # ...
         end
         ImGui::EndMenu()
@@ -726,20 +747,20 @@ module ImGuiDemo::MainMenuBarWindow
         # "File"をクリックしてFileメニューを開いた時の処理をここに書きます。
         # bool MenuItem(const char* label, const char* shortcut = NULL,
         #               bool selected = false, bool enabled = true);
-        ImGui::MenuItemBool("(dummy menu)", nil, false, false) # enabledをfalseにすることでグレー表示できます。 
-        if (ImGui::MenuItemBool("New"))
+        ImGui::MenuItem_Bool("(dummy menu)", nil, false, false) # enabledをfalseにすることでグレー表示できます。 
+        if (ImGui::MenuItem_Bool("New"))
           # "New"がクリックされた時の処理をここに書きます。
         end
         # ショートカットキー表示は第2引数に書きます。
-        if (ImGui::MenuItemBool("Open", "Ctrl+O"))
+        if (ImGui::MenuItem_Bool("Open", "Ctrl+O"))
         end
         if (ImGui::BeginMenu("Open Recent"))
-          ImGui::MenuItemBool("fish_hat.c")
-          ImGui::MenuItemBool("fish_hat.inl")
-          ImGui::MenuItemBool("fish_hat.h")
+          ImGui::MenuItem_Bool("fish_hat.c")
+          ImGui::MenuItem_Bool("fish_hat.inl")
+          ImGui::MenuItem_Bool("fish_hat.h")
           if (ImGui::BeginMenu("More.."))
-            ImGui::MenuItemBool("Hello")
-            ImGui::MenuItemBool("Sailor")
+            ImGui::MenuItem_Bool("Hello")
+            ImGui::MenuItem_Bool("Sailor")
             if (ImGui::BeginMenu("Recurse.."))
               # ...
               ImGui::EndMenu()
@@ -748,9 +769,9 @@ module ImGuiDemo::MainMenuBarWindow
           end
           ImGui::EndMenu()
         end
-        if (ImGui::MenuItemBool("Save", "Ctrl+S"))
+        if (ImGui::MenuItem_Bool("Save", "Ctrl+S"))
         end
-        if (ImGui::MenuItemBool("Save As.."))
+        if (ImGui::MenuItem_Bool("Save As.."))
         end
         ImGui::Separator()
         if (ImGui::BeginMenu("Options"))
@@ -762,9 +783,9 @@ module ImGuiDemo::MainMenuBarWindow
         if (ImGui::BeginMenu("Disabled", false))
           ImGui::EndMenu()
         end
-        if (ImGui::MenuItemBool("Checked", nil, true)) # selectedをtrueにすることでチェックマークをつけることができます
+        if (ImGui::MenuItem_Bool("Checked", nil, true)) # selectedをtrueにすることでチェックマークをつけることができます
         end
-        if (ImGui::MenuItemBool("Quit", "Alt+F4"))
+        if (ImGui::MenuItem_Bool("Quit", "Alt+F4"))
         end
         ImGui::EndMenu()
       end
@@ -809,7 +830,7 @@ module ImGuiDemo::ClippingAndDummyWindow
       ImColor.col32(90, 90, 120, 255)
     )
     # 文字を作成します(指定したエリアでしか見えないようになります。クリッピングされます)
-    draw_list.AddTextFontPtr(ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
+    draw_list.AddText_FontPtr(ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
                              ImVec2.create(pos[:x] + @@offset[:x], pos[:y] + @@offset[:y]),
                              ImColor.col32(255, 255, 255, 255), "Click and drag", nil, 0.0, clip_rect)
 
@@ -842,7 +863,7 @@ module ImGuiDemo::PopupWindow
     ImGui::Begin("ポップアップ")
 
     if ImGui::Button("アプリの終了")
-      ImGui::OpenPopup("アプリケーションを終了しますか?")
+      ImGui::OpenPopup("アプリケーションを終了しますか?", 0)
     end
     if ImGui::BeginPopupModal("アプリケーションを終了しますか?", nil, ImGuiWindowFlags_AlwaysAutoResize)
       if ImGui::Button("はい", ImVec2.create(120, 0))

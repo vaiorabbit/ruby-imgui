@@ -36,10 +36,19 @@ if (IMGUI_STATIC)
     add_library(imgui STATIC ${IMGUI_SOURCES})
 else (IMGUI_STATIC)
     add_library(imgui SHARED ${IMGUI_SOURCES})
-	target_link_libraries(imgui imm32)
+    if (WIN32)
+	    target_link_libraries(imgui imm32)
+    endif(WIN32)
 endif (IMGUI_STATIC)
 
 set_target_properties(imgui PROPERTIES PREFIX "")
+
+if (APPLE)
+    set_target_properties(imgui PROPERTIES
+        XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ""
+	)
+endif (APPLE)
+
 
 #install
 install(TARGETS imgui
