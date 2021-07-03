@@ -4,7 +4,23 @@ require_relative 'imgui'
 
 module ImGui
 
-  @@g_Window = nil # SDL_Window*
+  class ImGui_ImplSDL2_Data < FFI::Struct
+    layout(
+      :Window, :pointer,
+      :Time, :uint64,
+      :MousePressed, [:bool, 3],
+      :MouseCursors, [:pointer, ImGuiMouseCursor_COUNT],
+      :ClipboardTextData, :pointer,
+      :MouseCanUseGlobalState, :bool
+    )
+  end
+
+  def self.ImGui_ImplSDL2_GetBackendData()
+    io = ImGuiIO.new(ImGui::GetIO())
+    return ImGui_ImplSDL2_Data.new(io[:BackendPlatformUserData])
+  end
+
+  ## @@g_Window = nil # SDL_Window*
   @@g_Time = 0.0 # UInt64
   @@g_MousePressed = [false, false, false]
   @@g_MouseCursors = Array.new(ImGuiMouseCursor_COUNT) { nil } # SDL_Cursor*
@@ -27,10 +43,12 @@ module ImGui
   def self.ImplSDL2_UpdateMousePosAndButtons()
     # Update buttons
     io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
+    window = bd[:Window]
 
     # Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
     if io[:WantSetMousePos]
-      SDL2::SDL_WarpMouseInWindow(@@g_Window, io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
+      SDL2::SDL_WarpMouseInWindow(window, io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
     else
       io[:MousePos][:x] = -Float::MAX
       io[:MousePos][:y] = -Float::MAX
@@ -45,7 +63,7 @@ module ImGui
     @@g_MousePressed[0] = @@g_MousePressed[1] = @@g_MousePressed[2] = false
 
     focused_window = SDL2::SDL_GetKeyboardFocus()
-    if @@g_Window == focused_window
+    if window == focused_window
       # SDL_GetMouseState() gives mouse position seemingly based on the last window entered/focused(?)
       # The creation of a new windows at runtime and SDL_CaptureMouse both seems to severely mess up with that, so we retrieve that position globally.
       wx = FFI::MemoryPointer.new(:int)
@@ -89,10 +107,13 @@ module ImGui
       SDL2::SDL_FreeCursor(@@g_MouseCursors[cursor_n])
       @@g_MouseCursors[cursor_n] = nil
     end
+    @@g_BackendPlatformUserData = nil
   end
 
-  def self.ImplSDL2_NewFrame(window)
+  def self.ImplSDL2_NewFrame()
     io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
+
     unless io[:Fonts].IsBuilt()
       puts "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame()."
     end
@@ -102,8 +123,8 @@ module ImGui
     h = ' ' * 4
     display_w = ' ' * 4
     display_h = ' ' * 4
-    SDL2::SDL_GetWindowSize(window, w, h)
-    SDL2::SDL_GL_GetDrawableSize(window, display_w, display_h)
+    SDL2::SDL_GetWindowSize(bd[:Window], w, h)
+    SDL2::SDL_GL_GetDrawableSize(bd[:Window], display_w, display_h)
 
     w = w.unpack1('L')
     h = h.unpack1('L')
@@ -118,7 +139,7 @@ module ImGui
       fb_scale[:y] = display_h.unpack1('L').to_f / h
       io[:DisplayFramebufferScale] = fb_scale
     end
-
+p
     # Setup time step (we don't use SDL_GetTicks() because it is using millisecond resolution)
     frequency = SDL2::SDL_GetPerformanceFrequency()
     current_time = SDL2::SDL_GetPerformanceCounter()
@@ -175,13 +196,19 @@ module ImGui
   end
 
   def self.ImplSDL2_Init(window)
+
     @@g_Window = window
     @@g_Time = 0
 
+    @@g_BackendPlatformUserData = ImGui_ImplSDL2_Data.new
+    @@g_BackendPlatformUserData[:Window] = window
+
     io = ImGuiIO.new(ImGui::GetIO())
+
+    io[:BackendPlatformUserData] = @@g_BackendPlatformUserData
+    io[:BackendPlatformName] = @@g_BackendPlatformName
     io[:BackendFlags] |= ImGuiBackendFlags_HasMouseCursors # We can honor GetMouseCursor() values (optional)
     io[:BackendFlags] |= ImGuiBackendFlags_HasSetMousePos  # We can honor io.WantSetMousePos requests (optional, rarely used)
-    io[:BackendPlatformName] = @@g_BackendPlatformName
 
     # Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
     io[:KeyMap][ImGuiKey_Tab] = SDL2::SDL_SCANCODE_TAB
