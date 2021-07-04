@@ -1,3 +1,7 @@
+2021-07-05  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* imgui_impl_sdl2.rb: Partially applied changes in https://github.com/ocornut/imgui/commit/6792e1a3e08c30c6e9015cf51658d14f7872b10b https://github.com/ocornut/imgui/blob/6792e1a3e08c30c6e9015cf51658d14f7872b10b/backends/imgui_impl_sdl.cpp
+
 2021-06-21  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui_impl_opengl3.rb: Applied changes in https://github.com/ocornut/imgui/pull/4244

@@ -20,11 +20,10 @@ module ImGui
     return ImGui_ImplSDL2_Data.new(io[:BackendPlatformUserData])
   end
 
-  ## @@g_Window = nil # SDL_Window*
+  @@g_Window = nil # SDL_Window*
   @@g_Time = 0.0 # UInt64
-  @@g_MousePressed = [false, false, false]
-  @@g_MouseCursors = Array.new(ImGuiMouseCursor_COUNT) { nil } # SDL_Cursor*
   @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_sdl")
+  @@g_BackendPlatformUserData = nil
 
   # [TODO] Support ClipboardText
   # g_ClipboardTextData
@@ -57,10 +56,10 @@ module ImGui
     mx = FFI::MemoryPointer.new(:int)
     my = FFI::MemoryPointer.new(:int)
     mouse_buttons = SDL2::SDL_GetMouseState(mx, my)
-    io[:MouseDown][0] = @@g_MousePressed[0] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_LEFT)) != 0  # If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
-    io[:MouseDown][1] = @@g_MousePressed[1] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_RIGHT)) != 0
-    io[:MouseDown][2] = @@g_MousePressed[2] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_MIDDLE)) != 0
-    @@g_MousePressed[0] = @@g_MousePressed[1] = @@g_MousePressed[2] = false
+    io[:MouseDown][0] = bd[:MousePressed][0] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_LEFT)) != 0  # If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+    io[:MouseDown][1] = bd[:MousePressed][1] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_RIGHT)) != 0
+    io[:MouseDown][2] = bd[:MousePressed][2] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_MIDDLE)) != 0
+    bd[:MousePressed][0] = bd[:MousePressed][1] = bd[:MousePressed][2] = false
 
     focused_window = SDL2::SDL_GetKeyboardFocus()
     if window == focused_window
@@ -80,11 +79,15 @@ module ImGui
     # The function is only supported from SDL 2.0.4 (released Jan 2016)
     any_mouse_button_down = ImGui::IsAnyMouseDown()
     SDL2::SDL_CaptureMouse(any_mouse_button_down ? SDL2::SDL_TRUE : SDL2::SDL_FALSE)
+
+    # [TODO]
+    #if SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__) && !(defined(__APPLE__) && TARGET_OS_IOS)
   end
 
   def self.ImplSDL2_UpdateMouseCursor()
     io = ImGuiIO.new(ImGui::GetIO())
     return if (io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange)
+    bd = ImGui_ImplSDL2_GetBackendData()
 
     imgui_cursor = ImGui::GetMouseCursor()
     if io[:MouseDrawCursor] || imgui_cursor == ImGuiMouseCursor_None
@@ -92,7 +95,7 @@ module ImGui
       SDL2::SDL_ShowCursor(SDL2::SDL_FALSE)
     else
       # Show OS mouse cursor
-      SDL2::SDL_SetCursor(@@g_MouseCursors[imgui_cursor] ? @@g_MouseCursors[imgui_cursor] : @@g_MouseCursors[ImGuiMouseCursor_Arrow])
+      SDL2::SDL_SetCursor(bd[:MouseCursors][imgui_cursor] ? bd[:MouseCursors][imgui_cursor] : bd[:MouseCursors][ImGuiMouseCursor_Arrow])
       SDL2::SDL_ShowCursor(SDL2::SDL_TRUE)
     end
   end
@@ -102,10 +105,15 @@ module ImGui
   #
 
   def self.ImplSDL2_Shutdown()
+    io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
+
+    # [TODO] Destroy last known clipboard data
+
     @@g_Window = nil
     ImGuiMouseCursor_COUNT.times do |cursor_n|
-      SDL2::SDL_FreeCursor(@@g_MouseCursors[cursor_n])
-      @@g_MouseCursors[cursor_n] = nil
+      SDL2::SDL_FreeCursor(bd[:MouseCursors][cursor_n])
+      bd[:MouseCursors][cursor_n] = nil
     end
     @@g_BackendPlatformUserData = nil
   end
@@ -159,8 +167,8 @@ p
   # Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
   # If you have multiple SDL events and some of them are not meant to be used by dear imgui, you may need to filter events based on their windowID field.
   def self.ImplSDL2_ProcessEvent(event)
-
     io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
 
     case event[:type]
 
@@ -172,9 +180,9 @@ p
       return true
 
     when SDL2::SDL_MOUSEBUTTONDOWN
-      @@g_MousePressed[0] = true if event[:button][:button] == SDL2::SDL_BUTTON_LEFT
-      @@g_MousePressed[1] = true if event[:button][:button] == SDL2::SDL_BUTTON_RIGHT
-      @@g_MousePressed[2] = true if event[:button][:button] == SDL2::SDL_BUTTON_MIDDLE
+      bd[:MousePressed][0] = true if event[:button][:button] == SDL2::SDL_BUTTON_LEFT
+      bd[:MousePressed][1] = true if event[:button][:button] == SDL2::SDL_BUTTON_RIGHT
+      bd[:MousePressed][2] = true if event[:button][:button] == SDL2::SDL_BUTTON_MIDDLE
       return true
 
     when SDL2::SDL_TEXTINPUT
@@ -188,7 +196,7 @@ p
       io[:KeyShift] = ((SDL2::SDL_GetModState() & KMOD_SHIFT) != 0)
       io[:KeyCtrl] = ((SDL2::SDL_GetModState() & KMOD_CTRL) != 0)
       io[:KeyAlt] = ((SDL2::SDL_GetModState() & KMOD_ALT) != 0)
-      io[:KeySuper] = ((SDL2::SDL_GetModState() & KMOD_GUI) != 0)
+      io[:KeySuper] = ((SDL2::SDL_GetModState() & KMOD_GUI) != 0) # [TODO] io.KeySuper = false on _WIN32
       return true
     end
 
@@ -236,14 +244,16 @@ p
 
     # [TODO] Support ClipboardText
 
-    @@g_MouseCursors[ImGuiMouseCursor_Arrow]      = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_ARROW)
-    @@g_MouseCursors[ImGuiMouseCursor_TextInput]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_IBEAM)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeAll]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEALL)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNS]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENS)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeEW]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEWE)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENESW)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENWSE)
-    @@g_MouseCursors[ImGuiMouseCursor_Hand]       = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_HAND)
+    bd = ImGui_ImplSDL2_GetBackendData()
+
+    bd[:MouseCursors][ImGuiMouseCursor_Arrow]      = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_ARROW)
+    bd[:MouseCursors][ImGuiMouseCursor_TextInput]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_IBEAM)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeAll]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEALL)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeNS]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENS)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeEW]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEWE)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeNESW] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENESW)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeNWSE] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENWSE)
+    bd[:MouseCursors][ImGuiMouseCursor_Hand]       = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_HAND)
 
     return true
   end
