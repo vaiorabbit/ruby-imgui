@@ -1,3 +1,8 @@
+2021-08-07  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* imgui_impl_sdl2.rb: Applied https://github.com/ocornut/imgui/commit/1cdd110eb41830ed3c852eade976a066946b7071 (See https://github.com/ocornut/imgui/pull/2696#issuecomment-889336981 )
+	* imgui_impl_glfw.rb: Applied https://github.com/ocornut/imgui/commit/044fd0cd2d976b31962689afa73c9824a6a08146 (See https://github.com/ocornut/imgui/pull/2696#issuecomment-889336981 )
+
 2021-07-05  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui_impl_sdl2.rb: Partially applied changes in https://github.com/ocornut/imgui/commit/6792e1a3e08c30c6e9015cf51658d14f7872b10b https://github.com/ocornut/imgui/blob/6792e1a3e08c30c6e9015cf51658d14f7872b10b/backends/imgui_impl_sdl.cpp
