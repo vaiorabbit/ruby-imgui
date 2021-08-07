@@ -62,17 +62,29 @@ module ImGui
     bd[:MousePressed][0] = bd[:MousePressed][1] = bd[:MousePressed][2] = false
 
     focused_window = SDL2::SDL_GetKeyboardFocus()
-    if window == focused_window
-      # SDL_GetMouseState() gives mouse position seemingly based on the last window entered/focused(?)
-      # The creation of a new windows at runtime and SDL_CaptureMouse both seems to severely mess up with that, so we retrieve that position globally.
-      wx = FFI::MemoryPointer.new(:int)
-      wy = FFI::MemoryPointer.new(:int)
-      SDL2::SDL_GetWindowPosition(focused_window, wx, wy)
-      SDL2::SDL_GetGlobalMouseState(mx, my)
-      # mx -= wx
-      # my -= wy
-      io[:MousePos][:x] = mx.read(:int).to_f - wx.read(:int).to_f
-      io[:MousePos][:y] = my.read(:int).to_f - wy.read(:int).to_f
+    hover_window = nil
+    mouse_window = nil
+    if defined?(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)
+      hovered_window = SDL_GetMouseFocus() # This is better but is only reliably useful with SDL 2.0.5+ and SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH enabled.
+      mouse_window = (window == focused_window || window == hovered_window) ? window : nil
+    else
+      mouse_window = (window == focused_window) ? window : nil
+    end
+    if mouse_window != nil
+      if bd[:MouseCanUseGlobalState]
+        # SDL_GetMouseState() gives mouse position seemingly based on the last window entered/focused(?)
+        # The creation of a new windows at runtime and SDL_CaptureMouse both seems to severely mess up with that, so we retrieve that position globally.
+        # Won't use this workaround on SDL backends that have no global mouse position, like Wayland or RPI
+        wx = FFI::MemoryPointer.new(:int)
+        wy = FFI::MemoryPointer.new(:int)
+        SDL2::SDL_GetWindowPosition(focused_window, wx, wy)
+        SDL2::SDL_GetGlobalMouseState(mx, my)
+        io[:MousePos][:x] = mx.read(:int).to_f - wx.read(:int).to_f
+        io[:MousePos][:y] = my.read(:int).to_f - wy.read(:int).to_f
+      else
+        io[:MousePos][:x] = mx.read(:int).to_f
+        io[:MousePos][:y] = my.read(:int).to_f
+      end
     end
 
     # SDL_CaptureMouse() let the OS know e.g. that our imgui drag outside the SDL window boundaries shouldn't e.g. trigger the OS window resize cursor.
@@ -254,6 +266,18 @@ p
     bd[:MouseCursors][ImGuiMouseCursor_ResizeNESW] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENESW)
     bd[:MouseCursors][ImGuiMouseCursor_ResizeNWSE] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENWSE)
     bd[:MouseCursors][ImGuiMouseCursor_Hand]       = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_HAND)
+    bd[:MouseCursors][ImGuiMouseCursor_NotAllowed] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_NO)
+
+    sdl_backend = SDL_GetCurrentVideoDriver().read_string
+    global_mouse_whitelist = [ "windows", "cocoa", "x11", "DIVE", "VMAN" ]
+    bd[:MouseCanUseGlobalState] = false
+    global_mouse_whitelist.each do |elem|
+      bd[:MouseCanUseGlobalState] = true if sdl_backend == elem
+    end
+
+    if defined?(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)
+      SDL_SetHint(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1")
+    end
 
     return true
   end
