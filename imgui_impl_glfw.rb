@@ -8,12 +8,14 @@ module ImGui
 
   @@g_Window = nil # GLFWwindow*
   @@g_Time = 0.0 # double
+  @@g_MouseWindow = nil # GLFWwindow*
   @@g_MouseJustPressed = [false, false, false, false, false]
   @@g_MouseCursors = Array.new(ImGuiMouseCursor_COUNT) { 0 }
 
   @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_glfw")
 
   # Chain GLFW callbacks: our callbacks will call the user's previously installed callbacks, if any.
+  @@g_PrevUserCallbackCursorEnter = nil
   @@g_PrevUserCallbackMousebutton = nil
   @@g_PrevUserCallbackScroll = nil
   @@g_PrevUserCallbackKey = nil
@@ -58,6 +60,16 @@ module ImGui
     io[:KeySuper] = io[:KeysDown][GLFW_KEY_LEFT_SUPER] || io[:KeysDown][GLFW_KEY_RIGHT_SUPER]
   end
 
+  @@ImGui_ImplGlfw_CursorEnterCallback = GLFW::create_callback(:GLFWcursorenterfun) do |window, entered|
+     unless @@g_PrevUserCallbackCursorEnter.null?
+       userfunc = Fiddle::Function.new(@@g_PrevUserCallbackCursorEnter, GLFWcursorenterfun_cb_args, GLFWcursorenterfun_cb_retval)
+       userfunc.call(window, entered)
+     end
+
+     @@g_MouseWindow = window if entered
+     @@g_MouseWindow = nil if (!entered && @@g_MouseWindow == window)
+  end
+
   @@ImplGlfw_CharCallback = GLFW::create_callback(:GLFWcharfun) do |window, c|
     unless @@g_PrevUserCallbackChar.null?
       @@g_PrevUserCallbackChar.call(window, c)
@@ -76,21 +88,23 @@ module ImGui
       @@g_MouseJustPressed[i] = false
     end
 
+    focused = glfwGetWindowAttrib(@@g_Window, GLFW_FOCUSED) != 0
+    mouse_window = (@@g_MouseWindow == @@g_Window || focused) ? @@g_Window : nil
+
     # Update mouse position
     mouse_pos_backup = io[:MousePos]
     io[:MousePos][:x] = -Float::MAX
     io[:MousePos][:y] = -Float::MAX
-    focused = glfwGetWindowAttrib(@@g_Window, GLFW_FOCUSED) != 0
-    if focused
-      if io[:WantSetMousePos]
+    if io[:WantSetMousePos]
+      if focused
         glfwSetCursorPos(@@g_Window, mouse_pos_backup[:x].to_f, mouse_pos_backup[:y].to_f)
-      else
-        mouse_x = ' ' * 8
-        mouse_y = ' ' * 8
-        glfwGetCursorPos(@@g_Window, mouse_x, mouse_y)
-        io[:MousePos][:x] = mouse_x.unpack1('d')
-        io[:MousePos][:y] = mouse_y.unpack1('d')
       end
+    elsif @@g_MouseWindow != nil
+      mouse_x = ' ' * 8
+      mouse_y = ' ' * 8
+      glfwGetCursorPos(@@g_Window, mouse_x, mouse_y)
+      io[:MousePos][:x] = mouse_x.unpack1('d')
+      io[:MousePos][:y] = mouse_y.unpack1('d')
     end
   end
 
@@ -213,6 +227,7 @@ module ImGui
     @@g_PrevUserCallbackKey = nil
     @@g_PrevUserCallbackChar = nil
     if install_callbacks
+      @@g_PrevUserCallbackCursorEnter = glfwSetCursorEnterCallback(window, @@ImGui_ImplGlfw_CursorEnterCallback)
       @@g_PrevUserCallbackMousebutton = glfwSetMouseButtonCallback(window, @@ImplGlfw_MouseButtonCallback)
       @@g_PrevUserCallbackScroll = glfwSetScrollCallback(window, @@ImplGlfw_ScrollCallback)
       @@g_PrevUserCallbackKey = glfwSetKeyCallback(window, @@ImplGlfw_KeyCallback)
