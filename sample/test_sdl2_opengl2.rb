@@ -109,7 +109,7 @@ if __FILE__ == $0
 
     # Start the Dear ImGui frame
     ImGui::ImplOpenGL2_NewFrame()
-    ImGui::ImplSDL2_NewFrame(window)
+    ImGui::ImplSDL2_NewFrame()
     ImGui::NewFrame()
 
     ImGui::ShowDemoWindow()

@@ -11,8 +11,6 @@ module ImGui
   @@g_FontTexture = nil
 
   @@g_ShaderHandle = 0
-  @@g_VertHandle = 0
-  @@g_FragHandle = 0
 
   @@g_AttribLocationTex = 0
   @@g_AttribLocationProjMtx = 0
@@ -445,22 +443,27 @@ module ImGui
                                      end
 
     vertex_shader.prepend(@@g_GlslVersionString + "\n")
-    @@g_VertHandle = glCreateShader(GL_VERTEX_SHADER)
-    glShaderSource(@@g_VertHandle, 1, [vertex_shader].pack('p'), nil)
-    glCompileShader(@@g_VertHandle)
-    PrintShaderCompileStatus(@@g_VertHandle)
+    vert_handle = glCreateShader(GL_VERTEX_SHADER)
+    glShaderSource(vert_handle, 1, [vertex_shader].pack('p'), nil)
+    glCompileShader(vert_handle)
+    PrintShaderCompileStatus(vert_handle)
 
     fragment_shader.prepend(@@g_GlslVersionString + "\n")
-    @@g_FragHandle = glCreateShader(GL_FRAGMENT_SHADER)
-    glShaderSource(@@g_FragHandle, 1, [fragment_shader].pack('p'), [fragment_shader.size].pack('I'))
-    glCompileShader(@@g_FragHandle)
-    PrintShaderCompileStatus(@@g_FragHandle)
+    frag_handle = glCreateShader(GL_FRAGMENT_SHADER)
+    glShaderSource(frag_handle, 1, [fragment_shader].pack('p'), [fragment_shader.size].pack('I'))
+    glCompileShader(frag_handle)
+    PrintShaderCompileStatus(frag_handle)
 
     @@g_ShaderHandle = glCreateProgram()
-    glAttachShader(@@g_ShaderHandle, @@g_VertHandle)
-    glAttachShader(@@g_ShaderHandle, @@g_FragHandle)
+    glAttachShader(@@g_ShaderHandle, vert_handle)
+    glAttachShader(@@g_ShaderHandle, frag_handle)
     glLinkProgram(@@g_ShaderHandle)
     PrintProgramLinkStatus(@@g_ShaderHandle)
+
+    glDetachShader(@@g_ShaderHandle, vert_handle)
+    glDetachShader(@@g_ShaderHandle, frag_handle)
+    glDeleteShader(vert_handle)
+    glDeleteShader(frag_handle)
 
     @@g_AttribLocationTex = glGetUniformLocation(@@g_ShaderHandle, "Texture")
     @@g_AttribLocationProjMtx = glGetUniformLocation(@@g_ShaderHandle, "ProjMtx")
@@ -498,20 +501,6 @@ module ImGui
     if @@g_ElementsHandle != 0
       glDeleteBuffers(1, [@@g_ElementsHandle].pack('L'))
       @@g_ElementsHandle = 0
-    end
-    if @@g_ShaderHandle != 0 && @@g_VertHandle != 0
-      glDetachShader(@@g_ShaderHandle, @@g_VertHandle)
-    end
-    if @@g_ShaderHandle != 0 && @@g_FragHandle != 0
-      glDetachShader(@@g_ShaderHandle, @@g_FragHandle)
-    end
-    if @@g_VertHandle != 0
-      glDeleteShader(@@g_VertHandle)
-      @@g_VertHandle = 0
-    end
-    if @@g_FragHandle != 0
-      glDeleteShader(@@g_FragHandle)
-      @@g_FragHandle = 0
     end
     if @@g_ShaderHandle != 0
       glDeleteProgram(@@g_ShaderHandle)

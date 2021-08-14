@@ -4,11 +4,26 @@ require_relative 'imgui'
 
 module ImGui
 
+  class ImGui_ImplSDL2_Data < FFI::Struct
+    layout(
+      :Window, :pointer,
+      :Time, :uint64,
+      :MousePressed, [:bool, 3],
+      :MouseCursors, [:pointer, ImGuiMouseCursor_COUNT],
+      :ClipboardTextData, :pointer,
+      :MouseCanUseGlobalState, :bool
+    )
+  end
+
+  def self.ImGui_ImplSDL2_GetBackendData()
+    io = ImGuiIO.new(ImGui::GetIO())
+    return ImGui_ImplSDL2_Data.new(io[:BackendPlatformUserData])
+  end
+
   @@g_Window = nil # SDL_Window*
   @@g_Time = 0.0 # UInt64
-  @@g_MousePressed = [false, false, false]
-  @@g_MouseCursors = Array.new(ImGuiMouseCursor_COUNT) { nil } # SDL_Cursor*
   @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_sdl")
+  @@g_BackendPlatformUserData = nil
 
   # [TODO] Support ClipboardText
   # g_ClipboardTextData
@@ -27,10 +42,12 @@ module ImGui
   def self.ImplSDL2_UpdateMousePosAndButtons()
     # Update buttons
     io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
+    window = bd[:Window]
 
     # Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
     if io[:WantSetMousePos]
-      SDL2::SDL_WarpMouseInWindow(@@g_Window, io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
+      SDL2::SDL_WarpMouseInWindow(window, io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
     else
       io[:MousePos][:x] = -Float::MAX
       io[:MousePos][:y] = -Float::MAX
@@ -39,34 +56,50 @@ module ImGui
     mx = FFI::MemoryPointer.new(:int)
     my = FFI::MemoryPointer.new(:int)
     mouse_buttons = SDL2::SDL_GetMouseState(mx, my)
-    io[:MouseDown][0] = @@g_MousePressed[0] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_LEFT)) != 0  # If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
-    io[:MouseDown][1] = @@g_MousePressed[1] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_RIGHT)) != 0
-    io[:MouseDown][2] = @@g_MousePressed[2] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_MIDDLE)) != 0
-    @@g_MousePressed[0] = @@g_MousePressed[1] = @@g_MousePressed[2] = false
+    io[:MouseDown][0] = bd[:MousePressed][0] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_LEFT)) != 0  # If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+    io[:MouseDown][1] = bd[:MousePressed][1] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_RIGHT)) != 0
+    io[:MouseDown][2] = bd[:MousePressed][2] || (mouse_buttons & get_sdl2_mousebit(SDL2::SDL_BUTTON_MIDDLE)) != 0
+    bd[:MousePressed][0] = bd[:MousePressed][1] = bd[:MousePressed][2] = false
 
     focused_window = SDL2::SDL_GetKeyboardFocus()
-    if @@g_Window == focused_window
-      # SDL_GetMouseState() gives mouse position seemingly based on the last window entered/focused(?)
-      # The creation of a new windows at runtime and SDL_CaptureMouse both seems to severely mess up with that, so we retrieve that position globally.
-      wx = FFI::MemoryPointer.new(:int)
-      wy = FFI::MemoryPointer.new(:int)
-      SDL2::SDL_GetWindowPosition(focused_window, wx, wy)
-      SDL2::SDL_GetGlobalMouseState(mx, my)
-      # mx -= wx
-      # my -= wy
-      io[:MousePos][:x] = mx.read(:int).to_f - wx.read(:int).to_f
-      io[:MousePos][:y] = my.read(:int).to_f - wy.read(:int).to_f
+    hover_window = nil
+    mouse_window = nil
+    if defined?(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)
+      hovered_window = SDL_GetMouseFocus() # This is better but is only reliably useful with SDL 2.0.5+ and SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH enabled.
+      mouse_window = (window == focused_window || window == hovered_window) ? window : nil
+    else
+      mouse_window = (window == focused_window) ? window : nil
+    end
+    if mouse_window != nil
+      if bd[:MouseCanUseGlobalState]
+        # SDL_GetMouseState() gives mouse position seemingly based on the last window entered/focused(?)
+        # The creation of a new windows at runtime and SDL_CaptureMouse both seems to severely mess up with that, so we retrieve that position globally.
+        # Won't use this workaround on SDL backends that have no global mouse position, like Wayland or RPI
+        wx = FFI::MemoryPointer.new(:int)
+        wy = FFI::MemoryPointer.new(:int)
+        SDL2::SDL_GetWindowPosition(focused_window, wx, wy)
+        SDL2::SDL_GetGlobalMouseState(mx, my)
+        io[:MousePos][:x] = mx.read(:int).to_f - wx.read(:int).to_f
+        io[:MousePos][:y] = my.read(:int).to_f - wy.read(:int).to_f
+      else
+        io[:MousePos][:x] = mx.read(:int).to_f
+        io[:MousePos][:y] = my.read(:int).to_f
+      end
     end
 
     # SDL_CaptureMouse() let the OS know e.g. that our imgui drag outside the SDL window boundaries shouldn't e.g. trigger the OS window resize cursor.
     # The function is only supported from SDL 2.0.4 (released Jan 2016)
     any_mouse_button_down = ImGui::IsAnyMouseDown()
     SDL2::SDL_CaptureMouse(any_mouse_button_down ? SDL2::SDL_TRUE : SDL2::SDL_FALSE)
+
+    # [TODO]
+    #if SDL_HAS_CAPTURE_AND_GLOBAL_MOUSE && !defined(__EMSCRIPTEN__) && !defined(__ANDROID__) && !(defined(__APPLE__) && TARGET_OS_IOS)
   end
 
   def self.ImplSDL2_UpdateMouseCursor()
     io = ImGuiIO.new(ImGui::GetIO())
     return if (io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange)
+    bd = ImGui_ImplSDL2_GetBackendData()
 
     imgui_cursor = ImGui::GetMouseCursor()
     if io[:MouseDrawCursor] || imgui_cursor == ImGuiMouseCursor_None
@@ -74,7 +107,7 @@ module ImGui
       SDL2::SDL_ShowCursor(SDL2::SDL_FALSE)
     else
       # Show OS mouse cursor
-      SDL2::SDL_SetCursor(@@g_MouseCursors[imgui_cursor] ? @@g_MouseCursors[imgui_cursor] : @@g_MouseCursors[ImGuiMouseCursor_Arrow])
+      SDL2::SDL_SetCursor(bd[:MouseCursors][imgui_cursor] ? bd[:MouseCursors][imgui_cursor] : bd[:MouseCursors][ImGuiMouseCursor_Arrow])
       SDL2::SDL_ShowCursor(SDL2::SDL_TRUE)
     end
   end
@@ -84,15 +117,23 @@ module ImGui
   #
 
   def self.ImplSDL2_Shutdown()
+    io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
+
+    # [TODO] Destroy last known clipboard data
+
     @@g_Window = nil
     ImGuiMouseCursor_COUNT.times do |cursor_n|
-      SDL2::SDL_FreeCursor(@@g_MouseCursors[cursor_n])
-      @@g_MouseCursors[cursor_n] = nil
+      SDL2::SDL_FreeCursor(bd[:MouseCursors][cursor_n])
+      bd[:MouseCursors][cursor_n] = nil
     end
+    @@g_BackendPlatformUserData = nil
   end
 
-  def self.ImplSDL2_NewFrame(window)
+  def self.ImplSDL2_NewFrame()
     io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
+
     unless io[:Fonts].IsBuilt()
       puts "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame()."
     end
@@ -102,8 +143,8 @@ module ImGui
     h = ' ' * 4
     display_w = ' ' * 4
     display_h = ' ' * 4
-    SDL2::SDL_GetWindowSize(window, w, h)
-    SDL2::SDL_GL_GetDrawableSize(window, display_w, display_h)
+    SDL2::SDL_GetWindowSize(bd[:Window], w, h)
+    SDL2::SDL_GL_GetDrawableSize(bd[:Window], display_w, display_h)
 
     w = w.unpack1('L')
     h = h.unpack1('L')
@@ -118,7 +159,7 @@ module ImGui
       fb_scale[:y] = display_h.unpack1('L').to_f / h
       io[:DisplayFramebufferScale] = fb_scale
     end
-
+p
     # Setup time step (we don't use SDL_GetTicks() because it is using millisecond resolution)
     frequency = SDL2::SDL_GetPerformanceFrequency()
     current_time = SDL2::SDL_GetPerformanceCounter()
@@ -138,8 +179,8 @@ module ImGui
   # Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
   # If you have multiple SDL events and some of them are not meant to be used by dear imgui, you may need to filter events based on their windowID field.
   def self.ImplSDL2_ProcessEvent(event)
-
     io = ImGuiIO.new(ImGui::GetIO())
+    bd = ImGui_ImplSDL2_GetBackendData()
 
     case event[:type]
 
@@ -151,9 +192,9 @@ module ImGui
       return true
 
     when SDL2::SDL_MOUSEBUTTONDOWN
-      @@g_MousePressed[0] = true if event[:button][:button] == SDL2::SDL_BUTTON_LEFT
-      @@g_MousePressed[1] = true if event[:button][:button] == SDL2::SDL_BUTTON_RIGHT
-      @@g_MousePressed[2] = true if event[:button][:button] == SDL2::SDL_BUTTON_MIDDLE
+      bd[:MousePressed][0] = true if event[:button][:button] == SDL2::SDL_BUTTON_LEFT
+      bd[:MousePressed][1] = true if event[:button][:button] == SDL2::SDL_BUTTON_RIGHT
+      bd[:MousePressed][2] = true if event[:button][:button] == SDL2::SDL_BUTTON_MIDDLE
       return true
 
     when SDL2::SDL_TEXTINPUT
@@ -167,7 +208,7 @@ module ImGui
       io[:KeyShift] = ((SDL2::SDL_GetModState() & KMOD_SHIFT) != 0)
       io[:KeyCtrl] = ((SDL2::SDL_GetModState() & KMOD_CTRL) != 0)
       io[:KeyAlt] = ((SDL2::SDL_GetModState() & KMOD_ALT) != 0)
-      io[:KeySuper] = ((SDL2::SDL_GetModState() & KMOD_GUI) != 0)
+      io[:KeySuper] = ((SDL2::SDL_GetModState() & KMOD_GUI) != 0) # [TODO] io.KeySuper = false on _WIN32
       return true
     end
 
@@ -175,13 +216,19 @@ module ImGui
   end
 
   def self.ImplSDL2_Init(window)
+
     @@g_Window = window
     @@g_Time = 0
 
+    @@g_BackendPlatformUserData = ImGui_ImplSDL2_Data.new
+    @@g_BackendPlatformUserData[:Window] = window
+
     io = ImGuiIO.new(ImGui::GetIO())
+
+    io[:BackendPlatformUserData] = @@g_BackendPlatformUserData
+    io[:BackendPlatformName] = @@g_BackendPlatformName
     io[:BackendFlags] |= ImGuiBackendFlags_HasMouseCursors # We can honor GetMouseCursor() values (optional)
     io[:BackendFlags] |= ImGuiBackendFlags_HasSetMousePos  # We can honor io.WantSetMousePos requests (optional, rarely used)
-    io[:BackendPlatformName] = @@g_BackendPlatformName
 
     # Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
     io[:KeyMap][ImGuiKey_Tab] = SDL2::SDL_SCANCODE_TAB
@@ -209,14 +256,28 @@ module ImGui
 
     # [TODO] Support ClipboardText
 
-    @@g_MouseCursors[ImGuiMouseCursor_Arrow]      = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_ARROW)
-    @@g_MouseCursors[ImGuiMouseCursor_TextInput]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_IBEAM)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeAll]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEALL)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNS]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENS)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeEW]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEWE)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENESW)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENWSE)
-    @@g_MouseCursors[ImGuiMouseCursor_Hand]       = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_HAND)
+    bd = ImGui_ImplSDL2_GetBackendData()
+
+    bd[:MouseCursors][ImGuiMouseCursor_Arrow]      = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_ARROW)
+    bd[:MouseCursors][ImGuiMouseCursor_TextInput]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_IBEAM)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeAll]  = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEALL)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeNS]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENS)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeEW]   = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZEWE)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeNESW] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENESW)
+    bd[:MouseCursors][ImGuiMouseCursor_ResizeNWSE] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_SIZENWSE)
+    bd[:MouseCursors][ImGuiMouseCursor_Hand]       = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_HAND)
+    bd[:MouseCursors][ImGuiMouseCursor_NotAllowed] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_NO)
+
+    sdl_backend = SDL_GetCurrentVideoDriver().read_string
+    global_mouse_whitelist = [ "windows", "cocoa", "x11", "DIVE", "VMAN" ]
+    bd[:MouseCanUseGlobalState] = false
+    global_mouse_whitelist.each do |elem|
+      bd[:MouseCanUseGlobalState] = true if sdl_backend == elem
+    end
+
+    if defined?(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)
+      SDL_SetHint(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1")
+    end
 
     return true
   end
