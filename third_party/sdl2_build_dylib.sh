@@ -1,7 +1,7 @@
 # For macOS + Xcode + CMake users.
-curl -O https://www.libsdl.org/release/SDL2-2.0.12.zip
-unzip SDL2-2.0.12.zip
-cd SDL2-2.0.12/
+curl -O https://www.libsdl.org/release/SDL2-2.0.16.zip
+unzip SDL2-2.0.16.zip
+cd SDL2-2.0.16/
 mkdir build
 cd build
 export MACOSX_DEPLOYMENT_TARGET=10.14
