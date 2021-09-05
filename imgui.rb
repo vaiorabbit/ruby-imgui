@@ -183,11 +183,11 @@ ImGuiColorEditFlags_PickerHueBar = 33554432 # 1 << 25
 ImGuiColorEditFlags_PickerHueWheel = 67108864 # 1 << 26
 ImGuiColorEditFlags_InputRGB = 134217728 # 1 << 27
 ImGuiColorEditFlags_InputHSV = 268435456 # 1 << 28
-ImGuiColorEditFlags__OptionsDefault = 177209344 # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueBar
-ImGuiColorEditFlags__DisplayMask = 7340032 # ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex
-ImGuiColorEditFlags__DataTypeMask = 25165824 # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_Float
-ImGuiColorEditFlags__PickerMask = 100663296 # ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_PickerHueBar
-ImGuiColorEditFlags__InputMask = 402653184 # ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_InputHSV
+ImGuiColorEditFlags_DefaultOptions_ = 177209344 # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueBar
+ImGuiColorEditFlags_DisplayMask_ = 7340032 # ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex
+ImGuiColorEditFlags_DataTypeMask_ = 25165824 # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_Float
+ImGuiColorEditFlags_PickerMask_ = 100663296 # ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_PickerHueBar
+ImGuiColorEditFlags_InputMask_ = 402653184 # ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_InputHSV
 
 # ImGuiComboFlags_
 ImGuiComboFlags_None = 0 # 0
@@ -362,13 +362,12 @@ ImGuiNavInput_FocusPrev = 12 # 12
 ImGuiNavInput_FocusNext = 13 # 13
 ImGuiNavInput_TweakSlow = 14 # 14
 ImGuiNavInput_TweakFast = 15 # 15
-ImGuiNavInput_KeyMenu_ = 16 # 16
-ImGuiNavInput_KeyLeft_ = 17 # 17
-ImGuiNavInput_KeyRight_ = 18 # 18
-ImGuiNavInput_KeyUp_ = 19 # 19
-ImGuiNavInput_KeyDown_ = 20 # 20
-ImGuiNavInput_COUNT = 21 # 21
-ImGuiNavInput_InternalStart_ = 16 # ImGuiNavInput_KeyMenu_
+ImGuiNavInput_KeyLeft_ = 16 # 16
+ImGuiNavInput_KeyRight_ = 17 # 17
+ImGuiNavInput_KeyUp_ = 18 # 18
+ImGuiNavInput_KeyDown_ = 19 # 19
+ImGuiNavInput_COUNT = 20 # 20
+ImGuiNavInput_InternalStart_ = 16 # ImGuiNavInput_KeyLeft_
 
 # ImGuiPopupFlags_
 ImGuiPopupFlags_None = 0 # 0
@@ -406,30 +405,31 @@ ImGuiSortDirection_Descending = 2 # 2
 
 # ImGuiStyleVar_
 ImGuiStyleVar_Alpha = 0 # 0
-ImGuiStyleVar_WindowPadding = 1 # 1
-ImGuiStyleVar_WindowRounding = 2 # 2
-ImGuiStyleVar_WindowBorderSize = 3 # 3
-ImGuiStyleVar_WindowMinSize = 4 # 4
-ImGuiStyleVar_WindowTitleAlign = 5 # 5
-ImGuiStyleVar_ChildRounding = 6 # 6
-ImGuiStyleVar_ChildBorderSize = 7 # 7
-ImGuiStyleVar_PopupRounding = 8 # 8
-ImGuiStyleVar_PopupBorderSize = 9 # 9
-ImGuiStyleVar_FramePadding = 10 # 10
-ImGuiStyleVar_FrameRounding = 11 # 11
-ImGuiStyleVar_FrameBorderSize = 12 # 12
-ImGuiStyleVar_ItemSpacing = 13 # 13
-ImGuiStyleVar_ItemInnerSpacing = 14 # 14
-ImGuiStyleVar_IndentSpacing = 15 # 15
-ImGuiStyleVar_CellPadding = 16 # 16
-ImGuiStyleVar_ScrollbarSize = 17 # 17
-ImGuiStyleVar_ScrollbarRounding = 18 # 18
-ImGuiStyleVar_GrabMinSize = 19 # 19
-ImGuiStyleVar_GrabRounding = 20 # 20
-ImGuiStyleVar_TabRounding = 21 # 21
-ImGuiStyleVar_ButtonTextAlign = 22 # 22
-ImGuiStyleVar_SelectableTextAlign = 23 # 23
-ImGuiStyleVar_COUNT = 24 # 24
+ImGuiStyleVar_DisabledAlpha = 1 # 1
+ImGuiStyleVar_WindowPadding = 2 # 2
+ImGuiStyleVar_WindowRounding = 3 # 3
+ImGuiStyleVar_WindowBorderSize = 4 # 4
+ImGuiStyleVar_WindowMinSize = 5 # 5
+ImGuiStyleVar_WindowTitleAlign = 6 # 6
+ImGuiStyleVar_ChildRounding = 7 # 7
+ImGuiStyleVar_ChildBorderSize = 8 # 8
+ImGuiStyleVar_PopupRounding = 9 # 9
+ImGuiStyleVar_PopupBorderSize = 10 # 10
+ImGuiStyleVar_FramePadding = 11 # 11
+ImGuiStyleVar_FrameRounding = 12 # 12
+ImGuiStyleVar_FrameBorderSize = 13 # 13
+ImGuiStyleVar_ItemSpacing = 14 # 14
+ImGuiStyleVar_ItemInnerSpacing = 15 # 15
+ImGuiStyleVar_IndentSpacing = 16 # 16
+ImGuiStyleVar_CellPadding = 17 # 17
+ImGuiStyleVar_ScrollbarSize = 18 # 18
+ImGuiStyleVar_ScrollbarRounding = 19 # 19
+ImGuiStyleVar_GrabMinSize = 20 # 20
+ImGuiStyleVar_GrabRounding = 21 # 21
+ImGuiStyleVar_TabRounding = 22 # 22
+ImGuiStyleVar_ButtonTextAlign = 23 # 23
+ImGuiStyleVar_SelectableTextAlign = 24 # 24
+ImGuiStyleVar_COUNT = 25 # 25
 
 # ImGuiTabBarFlags_
 ImGuiTabBarFlags_None = 0 # 0
@@ -463,29 +463,31 @@ ImGuiTableBgTarget_CellBg = 3 # 3
 
 # ImGuiTableColumnFlags_
 ImGuiTableColumnFlags_None = 0 # 0
-ImGuiTableColumnFlags_DefaultHide = 1 # 1 << 0
-ImGuiTableColumnFlags_DefaultSort = 2 # 1 << 1
-ImGuiTableColumnFlags_WidthStretch = 4 # 1 << 2
-ImGuiTableColumnFlags_WidthFixed = 8 # 1 << 3
-ImGuiTableColumnFlags_NoResize = 16 # 1 << 4
-ImGuiTableColumnFlags_NoReorder = 32 # 1 << 5
-ImGuiTableColumnFlags_NoHide = 64 # 1 << 6
-ImGuiTableColumnFlags_NoClip = 128 # 1 << 7
-ImGuiTableColumnFlags_NoSort = 256 # 1 << 8
-ImGuiTableColumnFlags_NoSortAscending = 512 # 1 << 9
-ImGuiTableColumnFlags_NoSortDescending = 1024 # 1 << 10
-ImGuiTableColumnFlags_NoHeaderWidth = 2048 # 1 << 11
-ImGuiTableColumnFlags_PreferSortAscending = 4096 # 1 << 12
-ImGuiTableColumnFlags_PreferSortDescending = 8192 # 1 << 13
-ImGuiTableColumnFlags_IndentEnable = 16384 # 1 << 14
-ImGuiTableColumnFlags_IndentDisable = 32768 # 1 << 15
-ImGuiTableColumnFlags_IsEnabled = 1048576 # 1 << 20
-ImGuiTableColumnFlags_IsVisible = 2097152 # 1 << 21
-ImGuiTableColumnFlags_IsSorted = 4194304 # 1 << 22
-ImGuiTableColumnFlags_IsHovered = 8388608 # 1 << 23
-ImGuiTableColumnFlags_WidthMask_ = 12 # ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_WidthFixed
-ImGuiTableColumnFlags_IndentMask_ = 49152 # ImGuiTableColumnFlags_IndentEnable | ImGuiTableColumnFlags_IndentDisable
-ImGuiTableColumnFlags_StatusMask_ = 15728640 # ImGuiTableColumnFlags_IsEnabled | ImGuiTableColumnFlags_IsVisible | ImGuiTableColumnFlags_IsSorted | ImGuiTableColumnFlags_IsHovered
+ImGuiTableColumnFlags_Disabled = 1 # 1 << 0
+ImGuiTableColumnFlags_DefaultHide = 2 # 1 << 1
+ImGuiTableColumnFlags_DefaultSort = 4 # 1 << 2
+ImGuiTableColumnFlags_WidthStretch = 8 # 1 << 3
+ImGuiTableColumnFlags_WidthFixed = 16 # 1 << 4
+ImGuiTableColumnFlags_NoResize = 32 # 1 << 5
+ImGuiTableColumnFlags_NoReorder = 64 # 1 << 6
+ImGuiTableColumnFlags_NoHide = 128 # 1 << 7
+ImGuiTableColumnFlags_NoClip = 256 # 1 << 8
+ImGuiTableColumnFlags_NoSort = 512 # 1 << 9
+ImGuiTableColumnFlags_NoSortAscending = 1024 # 1 << 10
+ImGuiTableColumnFlags_NoSortDescending = 2048 # 1 << 11
+ImGuiTableColumnFlags_NoHeaderLabel = 4096 # 1 << 12
+ImGuiTableColumnFlags_NoHeaderWidth = 8192 # 1 << 13
+ImGuiTableColumnFlags_PreferSortAscending = 16384 # 1 << 14
+ImGuiTableColumnFlags_PreferSortDescending = 32768 # 1 << 15
+ImGuiTableColumnFlags_IndentEnable = 65536 # 1 << 16
+ImGuiTableColumnFlags_IndentDisable = 131072 # 1 << 17
+ImGuiTableColumnFlags_IsEnabled = 16777216 # 1 << 24
+ImGuiTableColumnFlags_IsVisible = 33554432 # 1 << 25
+ImGuiTableColumnFlags_IsSorted = 67108864 # 1 << 26
+ImGuiTableColumnFlags_IsHovered = 134217728 # 1 << 27
+ImGuiTableColumnFlags_WidthMask_ = 24 # ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_WidthFixed
+ImGuiTableColumnFlags_IndentMask_ = 196608 # ImGuiTableColumnFlags_IndentEnable | ImGuiTableColumnFlags_IndentDisable
+ImGuiTableColumnFlags_StatusMask_ = 251658240 # ImGuiTableColumnFlags_IsEnabled | ImGuiTableColumnFlags_IsVisible | ImGuiTableColumnFlags_IsSorted | ImGuiTableColumnFlags_IsHovered
 ImGuiTableColumnFlags_NoDirectResize_ = 1073741824 # 1 << 30
 
 # ImGuiTableFlags_
@@ -918,6 +920,10 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList__ResetForNewFrame(self)
   end
 
+  def _TryMergeDrawCmds()
+    ImGui::ImDrawList__TryMergeDrawCmds(self)
+  end
+
   def destroy()
     ImGui::ImDrawList_destroy(self)
   end
@@ -931,6 +937,7 @@ class ImFontAtlas < FFI::Struct
     :TexDesiredWidth, :int,
     :TexGlyphPadding, :int,
     :Locked, :bool,
+    :TexReady, :bool,
     :TexPixelsUseColors, :bool,
     :TexPixelsAlpha8, :pointer,
     :TexPixelsRGBA32, :pointer,
@@ -1102,6 +1109,7 @@ class ImFont < FFI::Struct
     :ConfigDataCount, :short,
     :FallbackChar, :ushort,
     :EllipsisChar, :ushort,
+    :DotChar, :ushort,
     :DirtyLookupTables, :bool,
     :Scale, :float,
     :Ascent, :float,
@@ -1247,7 +1255,7 @@ class ImGuiIO < FFI::Struct
     :KeyAlt, :bool,
     :KeySuper, :bool,
     :KeysDown, [:bool, 512],
-    :NavInputs, [:float, 21],
+    :NavInputs, [:float, 20],
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
     :WantTextInput, :bool,
@@ -1263,6 +1271,7 @@ class ImGuiIO < FFI::Struct
     :MetricsActiveAllocations, :int,
     :MouseDelta, ImVec2.by_value,
     :KeyMods, :int,
+    :KeyModsPrev, :int,
     :MousePosPrev, ImVec2.by_value,
     :MouseClickedPos, [ImVec2.by_value, 5],
     :MouseClickedTime, [:double, 5],
@@ -1277,12 +1286,16 @@ class ImGuiIO < FFI::Struct
     :MouseDragMaxDistanceSqr, [:float, 5],
     :KeysDownDuration, [:float, 512],
     :KeysDownDurationPrev, [:float, 512],
-    :NavInputsDownDuration, [:float, 21],
-    :NavInputsDownDurationPrev, [:float, 21],
+    :NavInputsDownDuration, [:float, 20],
+    :NavInputsDownDurationPrev, [:float, 20],
     :PenPressure, :float,
     :InputQueueSurrogate, :ushort,
     :InputQueueCharacters, ImVector.by_value
   )
+
+  def AddFocusEvent(focused)
+    ImGui::ImGuiIO_AddFocusEvent(self, focused)
+  end
 
   def AddInputCharacter(c)
     ImGui::ImGuiIO_AddInputCharacter(self, c)
@@ -1339,6 +1352,7 @@ end
 class ImGuiStyle < FFI::Struct
   layout(
     :Alpha, :float,
+    :DisabledAlpha, :float,
     :WindowPadding, ImVec2.by_value,
     :WindowRounding, :float,
     :WindowBorderSize, :float,
@@ -1604,6 +1618,7 @@ module ImGui
       :ImDrawList__PathArcToN,
       :ImDrawList__PopUnusedDrawCmd,
       :ImDrawList__ResetForNewFrame,
+      :ImDrawList__TryMergeDrawCmds,
       :ImDrawList_destroy,
       :ImFontAtlas_AddCustomRectFontGlyph,
       :ImFontAtlas_AddCustomRectRegular,
@@ -1646,6 +1661,7 @@ module ImGui
       :ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder,
       :ImFontGlyphRangesBuilder_SetBit,
       :ImFontGlyphRangesBuilder_destroy,
+      :ImGuiIO_AddFocusEvent,
       :ImGuiIO_AddInputCharacter,
       :ImGuiIO_AddInputCharacterUTF16,
       :ImGuiIO_AddInputCharactersUTF8,
@@ -1675,6 +1691,7 @@ module ImGui
       :igBeginChild_ID,
       :igBeginChildFrame,
       :igBeginCombo,
+      :igBeginDisabled,
       :igBeginDragDropSource,
       :igBeginDragDropTarget,
       :igBeginGroup,
@@ -1738,6 +1755,7 @@ module ImGui
       :igEndChild,
       :igEndChildFrame,
       :igEndCombo,
+      :igEndDisabled,
       :igEndDragDropSource,
       :igEndDragDropTarget,
       :igEndFrame,
@@ -2090,6 +2108,7 @@ module ImGui
       :ImDrawList__PathArcToN => [:pointer, ImVec2.by_value, :float, :float, :float, :int],
       :ImDrawList__PopUnusedDrawCmd => [:pointer],
       :ImDrawList__ResetForNewFrame => [:pointer],
+      :ImDrawList__TryMergeDrawCmds => [:pointer],
       :ImDrawList_destroy => [:pointer],
       :ImFontAtlas_AddCustomRectFontGlyph => [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value],
       :ImFontAtlas_AddCustomRectRegular => [:pointer, :int, :int],
@@ -2132,6 +2151,7 @@ module ImGui
       :ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder => [],
       :ImFontGlyphRangesBuilder_SetBit => [:pointer, :size_t],
       :ImFontGlyphRangesBuilder_destroy => [:pointer],
+      :ImGuiIO_AddFocusEvent => [:pointer, :bool],
       :ImGuiIO_AddInputCharacter => [:pointer, :uint],
       :ImGuiIO_AddInputCharacterUTF16 => [:pointer, :ushort],
       :ImGuiIO_AddInputCharactersUTF8 => [:pointer, :pointer],
@@ -2161,6 +2181,7 @@ module ImGui
       :igBeginChild_ID => [:uint, ImVec2.by_value, :bool, :int],
       :igBeginChildFrame => [:uint, ImVec2.by_value, :int],
       :igBeginCombo => [:pointer, :pointer, :int],
+      :igBeginDisabled => [:bool],
       :igBeginDragDropSource => [:int],
       :igBeginDragDropTarget => [],
       :igBeginGroup => [],
@@ -2224,6 +2245,7 @@ module ImGui
       :igEndChild => [],
       :igEndChildFrame => [],
       :igEndCombo => [],
+      :igEndDisabled => [],
       :igEndDragDropSource => [],
       :igEndDragDropTarget => [],
       :igEndFrame => [],
@@ -2576,6 +2598,7 @@ module ImGui
       :ImDrawList__PathArcToN => :void,
       :ImDrawList__PopUnusedDrawCmd => :void,
       :ImDrawList__ResetForNewFrame => :void,
+      :ImDrawList__TryMergeDrawCmds => :void,
       :ImDrawList_destroy => :void,
       :ImFontAtlas_AddCustomRectFontGlyph => :int,
       :ImFontAtlas_AddCustomRectRegular => :int,
@@ -2618,6 +2641,7 @@ module ImGui
       :ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder => :pointer,
       :ImFontGlyphRangesBuilder_SetBit => :void,
       :ImFontGlyphRangesBuilder_destroy => :void,
+      :ImGuiIO_AddFocusEvent => :void,
       :ImGuiIO_AddInputCharacter => :void,
       :ImGuiIO_AddInputCharacterUTF16 => :void,
       :ImGuiIO_AddInputCharactersUTF8 => :void,
@@ -2647,6 +2671,7 @@ module ImGui
       :igBeginChild_ID => :bool,
       :igBeginChildFrame => :bool,
       :igBeginCombo => :bool,
+      :igBeginDisabled => :void,
       :igBeginDragDropSource => :bool,
       :igBeginDragDropTarget => :bool,
       :igBeginGroup => :void,
@@ -2710,6 +2735,7 @@ module ImGui
       :igEndChild => :void,
       :igEndChildFrame => :void,
       :igEndCombo => :void,
+      :igEndDisabled => :void,
       :igEndDragDropSource => :void,
       :igEndDragDropTarget => :void,
       :igEndFrame => :void,
@@ -3058,6 +3084,12 @@ module ImGui
   # ret: bool
   def self.BeginCombo(label, preview_value, flags = 0)
     igBeginCombo(label, preview_value, flags)
+  end
+
+  # arg: disabled(bool)
+  # ret: void
+  def self.BeginDisabled(disabled = true)
+    igBeginDisabled(disabled)
   end
 
   # arg: flags(ImGuiDragDropFlags)
@@ -3428,6 +3460,11 @@ module ImGui
   # ret: void
   def self.EndCombo()
     igEndCombo()
+  end
+
+  # ret: void
+  def self.EndDisabled()
+    igEndDisabled()
   end
 
   # ret: void

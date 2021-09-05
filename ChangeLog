@@ -1,3 +1,7 @@
+2021-08-22  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* (macOS) ImGui 1.84.1
+
 2021-08-07  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui_impl_sdl2.rb: Applied https://github.com/ocornut/imgui/commit/1cdd110eb41830ed3c852eade976a066946b7071 (See https://github.com/ocornut/imgui/pull/2696#issuecomment-889336981 )
