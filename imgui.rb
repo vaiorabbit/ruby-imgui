@@ -257,6 +257,7 @@ ImGuiFocusedFlags_None = 0 # 0
 ImGuiFocusedFlags_ChildWindows = 1 # 1 << 0
 ImGuiFocusedFlags_RootWindow = 2 # 1 << 1
 ImGuiFocusedFlags_AnyWindow = 4 # 1 << 2
+ImGuiFocusedFlags_NoPopupHierarchy = 8 # 1 << 3
 ImGuiFocusedFlags_RootAndChildWindows = 3 # ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_ChildWindows
 
 # ImGuiHoveredFlags_
@@ -264,11 +265,12 @@ ImGuiHoveredFlags_None = 0 # 0
 ImGuiHoveredFlags_ChildWindows = 1 # 1 << 0
 ImGuiHoveredFlags_RootWindow = 2 # 1 << 1
 ImGuiHoveredFlags_AnyWindow = 4 # 1 << 2
-ImGuiHoveredFlags_AllowWhenBlockedByPopup = 8 # 1 << 3
-ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 32 # 1 << 5
-ImGuiHoveredFlags_AllowWhenOverlapped = 64 # 1 << 6
-ImGuiHoveredFlags_AllowWhenDisabled = 128 # 1 << 7
-ImGuiHoveredFlags_RectOnly = 104 # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
+ImGuiHoveredFlags_NoPopupHierarchy = 8 # 1 << 3
+ImGuiHoveredFlags_AllowWhenBlockedByPopup = 32 # 1 << 5
+ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 128 # 1 << 7
+ImGuiHoveredFlags_AllowWhenOverlapped = 256 # 1 << 8
+ImGuiHoveredFlags_AllowWhenDisabled = 512 # 1 << 9
+ImGuiHoveredFlags_RectOnly = 416 # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
 ImGuiHoveredFlags_RootAndChildWindows = 3 # ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows
 
 # ImGuiInputTextFlags_
@@ -1270,6 +1272,7 @@ class ImGuiIO < FFI::Struct
     :MetricsActiveWindows, :int,
     :MetricsActiveAllocations, :int,
     :MouseDelta, ImVec2.by_value,
+    :WantCaptureMouseUnlessPopupClose, :bool,
     :KeyMods, :int,
     :KeyModsPrev, :int,
     :MousePosPrev, ImVec2.by_value,
@@ -1279,6 +1282,7 @@ class ImGuiIO < FFI::Struct
     :MouseDoubleClicked, [:bool, 5],
     :MouseReleased, [:bool, 5],
     :MouseDownOwned, [:bool, 5],
+    :MouseDownOwnedUnlessPopupClose, [:bool, 5],
     :MouseDownWasDoubleClick, [:bool, 5],
     :MouseDownDuration, [:float, 5],
     :MouseDownDurationPrev, [:float, 5],
@@ -1289,6 +1293,7 @@ class ImGuiIO < FFI::Struct
     :NavInputsDownDuration, [:float, 20],
     :NavInputsDownDurationPrev, [:float, 20],
     :PenPressure, :float,
+    :AppFocusLost, :bool,
     :InputQueueSurrogate, :ushort,
     :InputQueueCharacters, ImVector.by_value
   )
@@ -1311,6 +1316,10 @@ class ImGuiIO < FFI::Struct
 
   def ClearInputCharacters()
     ImGui::ImGuiIO_ClearInputCharacters(self)
+  end
+
+  def ClearInputKeys()
+    ImGui::ImGuiIO_ClearInputKeys(self)
   end
 
   def self.create()
@@ -1666,6 +1675,7 @@ module ImGui
       :ImGuiIO_AddInputCharacterUTF16,
       :ImGuiIO_AddInputCharactersUTF8,
       :ImGuiIO_ClearInputCharacters,
+      :ImGuiIO_ClearInputKeys,
       :ImGuiIO_ImGuiIO,
       :ImGuiIO_destroy,
       :ImGuiStyle_ImGuiStyle,
@@ -1826,7 +1836,6 @@ module ImGui
       :igGetVersion,
       :igGetWindowContentRegionMax,
       :igGetWindowContentRegionMin,
-      :igGetWindowContentRegionWidth,
       :igGetWindowDrawList,
       :igGetWindowHeight,
       :igGetWindowPos,
@@ -1986,6 +1995,7 @@ module ImGui
       :igShowDemoWindow,
       :igShowFontSelector,
       :igShowMetricsWindow,
+      :igShowStackToolWindow,
       :igShowStyleEditor,
       :igShowStyleSelector,
       :igShowUserGuide,
@@ -2156,6 +2166,7 @@ module ImGui
       :ImGuiIO_AddInputCharacterUTF16 => [:pointer, :ushort],
       :ImGuiIO_AddInputCharactersUTF8 => [:pointer, :pointer],
       :ImGuiIO_ClearInputCharacters => [:pointer],
+      :ImGuiIO_ClearInputKeys => [:pointer],
       :ImGuiIO_ImGuiIO => [],
       :ImGuiIO_destroy => [:pointer],
       :ImGuiStyle_ImGuiStyle => [],
@@ -2316,7 +2327,6 @@ module ImGui
       :igGetVersion => [],
       :igGetWindowContentRegionMax => [:pointer],
       :igGetWindowContentRegionMin => [:pointer],
-      :igGetWindowContentRegionWidth => [],
       :igGetWindowDrawList => [],
       :igGetWindowHeight => [],
       :igGetWindowPos => [:pointer],
@@ -2476,6 +2486,7 @@ module ImGui
       :igShowDemoWindow => [:pointer],
       :igShowFontSelector => [:pointer],
       :igShowMetricsWindow => [:pointer],
+      :igShowStackToolWindow => [:pointer],
       :igShowStyleEditor => [:pointer],
       :igShowStyleSelector => [:pointer],
       :igShowUserGuide => [],
@@ -2646,6 +2657,7 @@ module ImGui
       :ImGuiIO_AddInputCharacterUTF16 => :void,
       :ImGuiIO_AddInputCharactersUTF8 => :void,
       :ImGuiIO_ClearInputCharacters => :void,
+      :ImGuiIO_ClearInputKeys => :void,
       :ImGuiIO_ImGuiIO => :pointer,
       :ImGuiIO_destroy => :void,
       :ImGuiStyle_ImGuiStyle => :pointer,
@@ -2806,7 +2818,6 @@ module ImGui
       :igGetVersion => :pointer,
       :igGetWindowContentRegionMax => :void,
       :igGetWindowContentRegionMin => :void,
-      :igGetWindowContentRegionWidth => :float,
       :igGetWindowDrawList => :pointer,
       :igGetWindowHeight => :float,
       :igGetWindowPos => :void,
@@ -2966,6 +2977,7 @@ module ImGui
       :igShowDemoWindow => :void,
       :igShowFontSelector => :void,
       :igShowMetricsWindow => :void,
+      :igShowStackToolWindow => :void,
       :igShowStyleEditor => :void,
       :igShowStyleSelector => :bool,
       :igShowUserGuide => :void,
@@ -3857,11 +3869,6 @@ module ImGui
     pOut = ImVec2.new
     igGetWindowContentRegionMin(pOut)
     return pOut
-  end
-
-  # ret: float
-  def self.GetWindowContentRegionWidth()
-    igGetWindowContentRegionWidth()
   end
 
   # ret: pointer
@@ -4783,6 +4790,12 @@ module ImGui
   # ret: void
   def self.ShowMetricsWindow(p_open = nil)
     igShowMetricsWindow(p_open)
+  end
+
+  # arg: p_open(bool*)
+  # ret: void
+  def self.ShowStackToolWindow(p_open = nil)
+    igShowStackToolWindow(p_open)
   end
 
   # arg: ref(ImGuiStyle*)

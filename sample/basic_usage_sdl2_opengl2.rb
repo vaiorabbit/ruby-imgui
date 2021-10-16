@@ -127,6 +127,7 @@ if __FILE__ == $0
     ImGuiDemo::SearchWindow::Show()
     ImGuiDemo::MainMenuBarWindow::Show()
     ImGuiDemo::ClippingAndDummyWindow::Show()
+    ImGuiDemo::StackToolWindow::Show()
     ok_clicked = ImGuiDemo::PopupWindow::Show()
     done = true if ok_clicked
 

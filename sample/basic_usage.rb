@@ -629,8 +629,9 @@ module ImGuiDemo::ChildWindow
     # flag |= ImGuiWindowFlags_NoScrollWithMouse # 子ウィンドウの中でマウススクロールしても子ウィンドウ内はスクロールされなくなります。
     flag |= ImGuiWindowFlags_MenuBar # 子ウィンドウにBeginMenuBarをつけることを可能にします。
     # 第3引数をtrueにすることで外枠が表示されます。
-    # ImGui::BeginChild_Str("ChildID", ImVec2.create(ImGui::GetWindowContentRegionWidth() * 0.5, 260), true, flag)
-    ImGui::BeginChild("ChildID", ImVec2.create(ImGui::GetWindowContentRegionWidth() * 0.5, 260), true, flag)
+    # [2021-10-16] GetWindowContentRegionWidth was removed in v1.85 https://github.com/ocornut/imgui/releases/tag/v1.85
+    content_region_width = ImGui::GetWindowContentRegionMax()[:x] - ImGui::GetWindowContentRegionMin()[:x]
+    ImGui::BeginChild("ChildID", ImVec2.create(content_region_width * 0.5, 260), true, flag)
     if ImGui::BeginMenuBar()
       if ImGui::BeginMenu("Menu")
         # "Menu"をクリックしたら開くメニュー項目を書いていきます。
@@ -847,6 +848,17 @@ module ImGuiDemo::ClippingAndDummyWindow
     end
 
     ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
+# Available since v1.85
+module ImGuiDemo::StackToolWindow
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::ShowStackToolWindow()
     ImGui::PopFont()
   end
 end
