@@ -6,7 +6,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set SDL2_VERSION=2.0.16
+set SDL2_VERSION=2.0.18
 
 curl -O https://www.libsdl.org/release/SDL2-%SDL2_VERSION%.zip
 powershell -Command Expand-Archive -Force SDL2-%SDL2_VERSION%.zip

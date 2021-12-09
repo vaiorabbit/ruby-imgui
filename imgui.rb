@@ -1280,10 +1280,11 @@ class ImGuiIO < FFI::Struct
     :MouseClickedTime, [:double, 5],
     :MouseClicked, [:bool, 5],
     :MouseDoubleClicked, [:bool, 5],
+    :MouseClickedCount, [:ushort, 5],
+    :MouseClickedLastCount, [:ushort, 5],
     :MouseReleased, [:bool, 5],
     :MouseDownOwned, [:bool, 5],
     :MouseDownOwnedUnlessPopupClose, [:bool, 5],
-    :MouseDownWasDoubleClick, [:bool, 5],
     :MouseDownDuration, [:float, 5],
     :MouseDownDurationPrev, [:float, 5],
     :MouseDragMaxDistanceAbs, [ImVec2.by_value, 5],
@@ -1722,7 +1723,6 @@ module ImGui
       :igBulletText,
       :igButton,
       :igCalcItemWidth,
-      :igCalcListClipping,
       :igCalcTextSize,
       :igCaptureKeyboardFromApp,
       :igCaptureMouseFromApp,
@@ -1817,6 +1817,7 @@ module ImGui
       :igGetKeyIndex,
       :igGetKeyPressedAmount,
       :igGetMainViewport,
+      :igGetMouseClickedCount,
       :igGetMouseCursor,
       :igGetMouseDragDelta,
       :igGetMousePos,
@@ -2213,7 +2214,6 @@ module ImGui
       :igBulletText => [:pointer, :varargs],
       :igButton => [:pointer, ImVec2.by_value],
       :igCalcItemWidth => [],
-      :igCalcListClipping => [:int, :float, :pointer, :pointer],
       :igCalcTextSize => [:pointer, :pointer, :pointer, :bool, :float],
       :igCaptureKeyboardFromApp => [:bool],
       :igCaptureMouseFromApp => [:bool],
@@ -2308,6 +2308,7 @@ module ImGui
       :igGetKeyIndex => [:int],
       :igGetKeyPressedAmount => [:int, :float, :float],
       :igGetMainViewport => [],
+      :igGetMouseClickedCount => [:int],
       :igGetMouseCursor => [],
       :igGetMouseDragDelta => [:pointer, :int, :float],
       :igGetMousePos => [:pointer],
@@ -2704,7 +2705,6 @@ module ImGui
       :igBulletText => :void,
       :igButton => :bool,
       :igCalcItemWidth => :float,
-      :igCalcListClipping => :void,
       :igCalcTextSize => :void,
       :igCaptureKeyboardFromApp => :void,
       :igCaptureMouseFromApp => :void,
@@ -2799,6 +2799,7 @@ module ImGui
       :igGetKeyIndex => :int,
       :igGetKeyPressedAmount => :int,
       :igGetMainViewport => :pointer,
+      :igGetMouseClickedCount => :int,
       :igGetMouseCursor => :int,
       :igGetMouseDragDelta => :void,
       :igGetMousePos => :void,
@@ -3215,12 +3216,6 @@ module ImGui
   # ret: float
   def self.CalcItemWidth()
     igCalcItemWidth()
-  end
-
-  # arg: items_count(int), items_height(float), out_items_display_start(int*), out_items_display_end(int*)
-  # ret: void
-  def self.CalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
-    igCalcListClipping(items_count, items_height, out_items_display_start, out_items_display_end)
   end
 
   # arg: text(const char*), text_end(const char*), hide_text_after_double_hash(bool), wrap_width(float)
@@ -3761,6 +3756,12 @@ module ImGui
   # ret: pointer
   def self.GetMainViewport()
     igGetMainViewport()
+  end
+
+  # arg: button(ImGuiMouseButton)
+  # ret: int
+  def self.GetMouseClickedCount(button)
+    igGetMouseClickedCount(button)
   end
 
   # ret: int
