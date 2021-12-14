@@ -43,8 +43,9 @@ module ImGui
     return true
   end
 
-  def self.ImplSDLRenderer_Shutdown(renderer)
-    ImGui_ImplSDLRenderer_DestroyDeviceObjects()
+  def self.ImplSDLRenderer_Shutdown()
+    ImplSDLRenderer_DestroyDeviceObjects()
+    io = ImGuiIO.new(ImGui::GetIO())
     io[:BackendRendererName] = nil
     io[:BackendPlatformUserData] = nil
     @@g_BackendPlatformUserData = nil
@@ -75,8 +76,6 @@ module ImGui
     # to SDL_RenderGeometryRaw() by that scale factor. In that case we don't want to be also scaling it ourselves here.
     rsx = FFI::MemoryPointer.new :float
     rsy = FFI::MemoryPointer.new :float
-    # rsx.write_float(1.0)
-    # rsy.write_float(1.0)
     SDL_RenderGetScale(bd[:SDLRenderer], rsx, rsy)
     render_scale = ImVec2.create(0, 0)
     render_scale[:x] = (rsx.read_float() == 1.0) ? draw_data[:FramebufferScale][:x] : 1.0
@@ -103,8 +102,8 @@ module ImGui
     # Render command lists
     ImplSDLRenderer_SetupRenderState()
     draw_data[:CmdListsCount].times do |n|
-      cmd_list = ImDrawList.new((draw_data[:CmdLists].pointer + 8 * n).read_pointer) # 8 == const ImDrawList*
-      vtx_buffer = cmd_list[:VtxBuffer][:Data] # ImDrawVert.new(cmd_list[:VtxBuffer][:Data]) # const ImDrawVert*
+      cmd_list = ImDrawList.new((draw_data[:CmdLists].pointer + FFI.type_size(:pointer) * n).read_pointer)
+      vtx_buffer = cmd_list[:VtxBuffer][:Data] # const ImDrawVert*
       idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
 
       cmd_list[:CmdBuffer][:Size].times do |cmd_i|
@@ -120,7 +119,6 @@ module ImGui
           #   pcmd[:UserCallback](cmd_list, pcmd)
           # end
         else
-          # pp "#{pcmd[:ClipRect][:x]} #{pcmd[:ClipRect][:y]} #{pcmd[:ClipRect][:z]} #{pcmd[:ClipRect][:w]}"
           clip_min = ImVec2.create((pcmd[:ClipRect][:x] - clip_off[:x]) * clip_scale[:x], (pcmd[:ClipRect][:y] - clip_off[:y]) * clip_scale[:y])
           clip_max = ImVec2.create((pcmd[:ClipRect][:z] - clip_off[:x]) * clip_scale[:x], (pcmd[:ClipRect][:w] - clip_off[:y]) * clip_scale[:y])
 
@@ -135,24 +133,19 @@ module ImGui
           r[:y] = clip_min[:y].to_i
           r[:w] = (clip_max[:x] - clip_min[:x]).to_i
           r[:h] = (clip_max[:y] - clip_min[:y]).to_i
-#          pp "#{clip_min[:x]}, #{clip_min[:y]}, #{clip_max[:x]}, #{clip_max[:y]}"
+
           SDL_RenderSetClipRect(bd[:SDLRenderer], r.to_ptr)
-#          pp "#{r[:x]}, #{r[:y]}, #{r[:w]}, #{r[:h]}"
-#          vtx = ImDrawVert.new(vtx_buffer + pcmd[:VtxOffset])
-          xy = vtx_buffer + pcmd[:VtxOffset] + ImDrawVert.offset_of(:pos)
-          uv = vtx_buffer + pcmd[:VtxOffset] + ImDrawVert.offset_of(:uv)
-          color = vtx_buffer + pcmd[:VtxOffset] + ImDrawVert.offset_of(:col)
-          # pp uv.read_array_of_float(2)
-          # pp color.read_uint.to_s(16)
-          # pp pcmd[:ElemCount]
-          # Bind texture, Draw
-          # tex = SDL_Texture.new(pcmd[:TextureId])
+
+          xy = vtx_buffer + (pcmd[:VtxOffset] + ImDrawVert.offset_of(:pos))
+          uv = vtx_buffer + (pcmd[:VtxOffset] + ImDrawVert.offset_of(:uv))
+          color = vtx_buffer + (pcmd[:VtxOffset] + ImDrawVert.offset_of(:col))
+
           SDL_RenderGeometryRaw(bd[:SDLRenderer], pcmd[:TextureId],
                                 xy, ImDrawVert.size,
                                 color, ImDrawVert.size,
                                 uv, ImDrawVert.size,
                                 cmd_list[:VtxBuffer][:Size] - pcmd[:VtxOffset],
-                                idx_buffer + pcmd[:IdxOffset], pcmd[:ElemCount], FFI.type_size(:ImDrawIdx)) # FFI.type_size(:ImDrawIdx) == FFI::Type::UINT16.size
+                                idx_buffer + FFI.type_size(:ImDrawIdx) * pcmd[:IdxOffset], pcmd[:ElemCount], FFI.type_size(:ImDrawIdx)) # FFI.type_size(:ImDrawIdx) == FFI::Type::UINT16.size
 
           # Restore modified SDL_Renderer state
           SDL_RenderSetViewport(bd[:SDLRenderer], oldViewport)
@@ -179,9 +172,8 @@ module ImGui
       SDL_Log("error creating texture")
       return false
     end
-    #SDL_UpdateTexture(bd[:FontTexture], nil, pixels.read_pointer, 4 * width.read_int)
-    raw_pixels = pixels.read_pointer
-    SDL_UpdateTexture(bd[:FontTexture], nil, raw_pixels, 4 * width.read_int)
+
+    SDL_UpdateTexture(bd[:FontTexture], nil, pixels.read_pointer, 4 * width.read_int)
     SDL_SetTextureBlendMode(bd[:FontTexture], SDL_BLENDMODE_BLEND)
 
     # Store our identifier
@@ -194,7 +186,7 @@ module ImGui
     io = ImGuiIO.new(ImGui::GetIO())
     bd = ImGui_ImplSDLRenderer_GetBackendData()
     if bd[:FontTexture] != nil
-      io[:Fonts].SetTexID(0)
+      io[:Fonts].SetTexID(nil)
       SDL_DestroyTexture(bd[:FontTexture])
       bd[:FontTexture] = nil
     end
@@ -205,7 +197,7 @@ module ImGui
   end
 
   def self.ImplSDLRenderer_DestroyDeviceObjects()
-    ImGui_ImplSDLRenderer_DestroyFontsTexture()
+    ImGui::ImplSDLRenderer_DestroyFontsTexture()
   end
 
 end

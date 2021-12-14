@@ -38,12 +38,15 @@ if __FILE__ == $0
               end
   ImGui.load_lib($lib_path)
 
+  # Windows
+  # SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d11")
+
   success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER)
   exit if success < 0
 
   # Setup window
-  window_flags = (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE)# | SDL_WINDOW_ALLOW_HIGHDPI)
-  window = SDL_CreateWindow("Ruby-ImGui (SDL2+SDL_Renderer)", 0, 0, WINDOW_W, WINDOW_H, window_flags)
+  window_flags = (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)
+  window = SDL_CreateWindow("Ruby-ImGui (SDL2+SDL_Renderer)", 64, 64, WINDOW_W, WINDOW_H, window_flags)
 
   # Setup SDL_Renderer instance
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)
@@ -101,7 +104,7 @@ if __FILE__ == $0
     ImGui::NewFrame()
 
     ImGui::ShowDemoWindow()
-=begin
+
     ImGuiDemo::ShowAboutWindow(nil)
 
     # See https://github.com/ffi/ffi/wiki/Structs
@@ -133,7 +136,7 @@ if __FILE__ == $0
       end
       ImGui::EndTabBar()
     end
-=end
+
     ImGui::Render()
     SDL_SetRenderDrawColor(renderer, (0.45 * 255).to_i, (0.55 * 255).to_i, (0.60 * 255).to_i, (1.0 * 255).to_i)
     SDL_RenderClear(renderer)
