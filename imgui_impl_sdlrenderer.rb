@@ -14,29 +14,27 @@ module ImGui
   def self.ImGui_ImplSDLRenderer_GetBackendData()
     if ImGui::GetCurrentContext() != nil
       io = ImGuiIO.new(ImGui::GetIO())
-      instance = ImGui_ImplSDLRenderer_Data.new(io[:BackendPlatformUserData])
+      instance = ImGui_ImplSDLRenderer_Data.new(io[:BackendRendererUserData])
       return instance
     else
       return nil
     end
   end
 
-  @@g_Window = nil # SDL_Window*
-  @@g_Time = 0.0 # UInt64
-  @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_sdlrenderer")
-  @@g_BackendPlatformUserData = nil
+  @@g_BackendRendererName = FFI::MemoryPointer.from_string("imgui_impl_sdlrenderer")
+  @@g_BackendRendererUserData = nil
 
   def self.ImplSDLRenderer_Init(renderer)
     io = ImGuiIO.new(ImGui::GetIO())
 
     # Setup backend capabilities flags
 
-    io[:BackendRendererName] = @@g_BackendPlatformName
+    io[:BackendRendererName] = @@g_BackendRendererName
 
-    @@g_BackendPlatformUserData = ImGui_ImplSDLRenderer_Data.new
-    @@g_BackendPlatformUserData[:SDLRenderer] = renderer
-    @@g_BackendPlatformUserData[:FontTexture] = nil
-    io[:BackendPlatformUserData] = @@g_BackendPlatformUserData
+    @@g_BackendRendererUserData = ImGui_ImplSDLRenderer_Data.new
+    @@g_BackendRendererUserData[:SDLRenderer] = renderer
+    @@g_BackendRendererUserData[:FontTexture] = nil
+    io[:BackendRendererUserData] = @@g_BackendRendererUserData
 
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasVtxOffset # We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
 
@@ -47,8 +45,8 @@ module ImGui
     ImplSDLRenderer_DestroyDeviceObjects()
     io = ImGuiIO.new(ImGui::GetIO())
     io[:BackendRendererName] = nil
-    io[:BackendPlatformUserData] = nil
-    @@g_BackendPlatformUserData = nil
+    io[:BackendRendererUserData] = nil
+    @@g_BackendRendererUserData = nil
   end
 
   # [Internal]

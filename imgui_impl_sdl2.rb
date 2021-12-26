@@ -39,6 +39,7 @@ module ImGui
   KMOD_ALT = SDL2::KMOD_LALT|SDL2::KMOD_RALT
   KMOD_GUI = SDL2::KMOD_LGUI|SDL2::KMOD_RGUI
 
+  # [INTERNAL]
   def self.ImplSDL2_UpdateMousePosAndButtons()
     # Update buttons
     io = ImGuiIO.new(ImGui::GetIO())
@@ -159,7 +160,7 @@ module ImGui
       fb_scale[:y] = display_h.unpack1('L').to_f / h
       io[:DisplayFramebufferScale] = fb_scale
     end
-p
+
     # Setup time step (we don't use SDL_GetTicks() because it is using millisecond resolution)
     frequency = SDL2::SDL_GetPerformanceFrequency()
     current_time = SDL2::SDL_GetPerformanceCounter()
@@ -268,13 +269,23 @@ p
     bd[:MouseCursors][ImGuiMouseCursor_Hand]       = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_HAND)
     bd[:MouseCursors][ImGuiMouseCursor_NotAllowed] = SDL2::SDL_CreateSystemCursor(SDL2::SDL_SYSTEM_CURSOR_NO)
 
+=begin
+#ifdef _WIN32
+    SDL_SysWMinfo info;
+    SDL_VERSION(&info.version);
+    if (SDL_GetWindowWMInfo(window, &info))
+        io.ImeWindowHandle = info.info.win.window;
+#else
+=end
+
+=begin
     sdl_backend = SDL_GetCurrentVideoDriver().read_string
     global_mouse_whitelist = [ "windows", "cocoa", "x11", "DIVE", "VMAN" ]
     bd[:MouseCanUseGlobalState] = false
     global_mouse_whitelist.each do |elem|
       bd[:MouseCanUseGlobalState] = true if sdl_backend == elem
     end
-
+=end
     if defined?(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)
       SDL_SetHint(SDL2::SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1")
     end

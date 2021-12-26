@@ -1,3 +1,8 @@
+2021-12-26  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* (macOS) ImGui 1.86
+	* imgui_impl_sdlrenderer.rb, sample/test_sdl2_sdlrenderer.rb: Temporary fix to render correctly
+
 2021-12-15  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui_impl_sdlrenderer.rb, sample/test_sdl2_sdlrenderer.rb: Added

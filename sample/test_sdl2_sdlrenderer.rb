@@ -45,14 +45,14 @@ if __FILE__ == $0
   exit if success < 0
 
   # Setup window
-  window_flags = (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)
+  window_flags = (SDL_WINDOW_RESIZABLE)# | SDL_WINDOW_ALLOW_HIGHDPI) # [FIXME] Correct wrong clipping problem caused when we enable ALLOW_HIGHDPI
   window = SDL_CreateWindow("Ruby-ImGui (SDL2+SDL_Renderer)", 64, 64, WINDOW_W, WINDOW_H, window_flags)
 
   # Setup SDL_Renderer instance
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)
   if renderer == nil
     SDL_Log("Error creating SDL_Renderer!")
-    return -1
+    exit
   end
 
   japanese_utf8_text = IO.readlines('./jpfont/jpfont.txt').join()
