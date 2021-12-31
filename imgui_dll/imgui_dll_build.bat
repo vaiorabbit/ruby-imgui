@@ -19,8 +19,8 @@ if not exist build (
     mkdir build
 )
 cd build
-%CMAKE_EXE% -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Release -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=gcc ../
-:: %CMAKE_EXE% -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Debug -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=gcc ../
+:: %CMAKE_EXE% -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Release -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=gcc ../
+%CMAKE_EXE% -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Debug -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=gcc ../
 make
 copy imgui.dll ..\..
 popd

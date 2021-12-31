@@ -1,9 +1,7 @@
 # coding: utf-8
 
-require_relative '../imgui'
-require_relative '../imgui_impl_sdlrenderer'
-require_relative '../imgui_impl_sdl2'
-
+require_relative 'util/setup_dll'
+require_relative 'util/setup_sdl2_dll'
 require_relative './about_window'
 
 WINDOW_W = 1280
@@ -12,31 +10,6 @@ WINDOW_H = 720
 include SDL2
 
 if __FILE__ == $0
-
-  $sdl2_path = case RUBY_PLATFORM
-              when /mswin|msys|mingw|cygwin/
-                Dir.pwd + '/' + 'SDL2.dll'
-              when /darwin/
-                sdl2_dylib = Dir.pwd + '/' + 'libSDL2.dylib'
-                File.exist?(sdl2_dylib) ? sdl2_dylib : '/usr/local/lib/libSDL2.dylib'
-              when /linux/
-                '/usr/local/lib/libSDL2.so' # not tested
-              else
-                raise RuntimeError, "test.rb : Unknown OS: #{RUBY_PLATFORM}"
-              end
-  SDL2::load_lib($sdl2_path)
-
-  $lib_path = case RUBY_PLATFORM
-              when /mswin|msys|mingw|cygwin/
-                Dir.pwd + '/../' + 'imgui.dll'
-              when /darwin/
-                '../imgui.dylib'
-              when /linux/
-                '../cimgui_impl_dll/build/imgui.so'
-              else
-                raise RuntimeError, "test.rb : Unknown OS: #{RUBY_PLATFORM}"
-              end
-  ImGui.load_lib($lib_path)
 
   # Windows
   # SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d11")

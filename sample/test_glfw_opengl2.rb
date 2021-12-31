@@ -1,31 +1,7 @@
 # coding: utf-8
-require_relative '../imgui'
-require_relative '../imgui_impl_opengl2'
-require_relative '../imgui_impl_glfw'
-
-require_relative './about_window'
-
-$lib_path = case RUBY_PLATFORM
-            when /mswin|msys|mingw|cygwin/
-              Dir.pwd + '/../' + 'imgui.dll'
-            when /darwin/
-              '../imgui.dylib'
-            when /linux/
-              '../cimgui_impl_dll/build/imgui.so'
-            else
-              raise RuntimeError, "test.rb : Unknown OS: #{RUBY_PLATFORM}"
-            end
-
-OpenGL.load_lib()
-if RUBY_PLATFORM =~ /linux/
-  GLFW.load_lib('libglfw.so', '.')
-else
-  GLFW.load_lib
-end
-ImGui.load_lib($lib_path)
-
-include OpenGL
-include GLFW
+require_relative 'util/setup_dll'
+require_relative 'util/setup_opengl_dll'
+require_relative 'about_window'
 
 errorcb = GLFW::create_callback(:GLFWerrorfun) do |error, desc|
   printf("GLFW error %d: %s\n", error, desc)

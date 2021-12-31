@@ -1,9 +1,7 @@
 # coding: utf-8
-
-require_relative '../imgui'
-require_relative '../imgui_impl_opengl2'
-require_relative '../imgui_impl_sdl2'
-
+require_relative 'util/setup_dll'
+require_relative 'util/setup_opengl_dll'
+require_relative 'util/setup_sdl2_dll'
 require_relative './about_window'
 
 WINDOW_W = 1280
@@ -12,42 +10,6 @@ WINDOW_H = 720
 include SDL2
 
 if __FILE__ == $0
-
-  $sdl2_path = case RUBY_PLATFORM
-              when /mswin|msys|mingw|cygwin/
-                Dir.pwd + '/' + 'SDL2.dll'
-              when /darwin/
-                sdl2_dylib = Dir.pwd + '/' + 'libSDL2.dylib'
-                File.exist?(sdl2_dylib) ? sdl2_dylib : '/usr/local/lib/libSDL2.dylib'
-              when /linux/
-                '/usr/local/lib/libSDL2.so' # not tested
-              else
-                raise RuntimeError, "test.rb : Unknown OS: #{RUBY_PLATFORM}"
-              end
-  SDL2::load_lib($sdl2_path)
-
-  case OpenGL.get_platform
-  when :OPENGL_PLATFORM_WINDOWS
-    OpenGL.load_lib('opengl32.dll', 'C:/Windows/System32')
-  when :OPENGL_PLATFORM_MACOSX
-    OpenGL.load_lib('libGL.dylib', '/System/Library/Frameworks/OpenGL.framework/Libraries')
-  when :OPENGL_PLATFORM_LINUX
-    OpenGL.load_lib()
-  else
-    raise RuntimeError, "Unsupported platform."
-  end
-
-  $lib_path = case RUBY_PLATFORM
-              when /mswin|msys|mingw|cygwin/
-                Dir.pwd + '/../' + 'imgui.dll'
-              when /darwin/
-                '../imgui.dylib'
-              when /linux/
-                '../cimgui_impl_dll/build/imgui.so'
-              else
-                raise RuntimeError, "test.rb : Unknown OS: #{RUBY_PLATFORM}"
-              end
-  ImGui.load_lib($lib_path)
 
   success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER)
   exit if success < 0
