@@ -532,7 +532,7 @@ if __FILE__ == $0
   #
   # Write to actual source code
   #
-  output_path = '../'
+  output_path = '../lib/'
   output_filename = 'imgui.rb'
   File.open(output_path + output_filename, 'wb') do |file|
     #
