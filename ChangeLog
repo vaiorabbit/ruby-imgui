@@ -1,3 +1,9 @@
+2021-12-31  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Added setup_dll.rb etc. for automatic library loading
+	* Changed generator output paths
+	* (Windows) Build binary with the latest ImGui
+
 2021-12-26  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* (macOS) ImGui 1.86
