@@ -1,3 +1,4 @@
+backup/*
 cimgui_impl_dll/build/*
 imgui_dll/*build*
 third_party/SDL2-*
