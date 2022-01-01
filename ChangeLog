@@ -1,3 +1,7 @@
+2022-01-01  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* imgui-bindings.gemspec: Added
+
 2021-12-31  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Added setup_dll.rb etc. for automatic library loading
