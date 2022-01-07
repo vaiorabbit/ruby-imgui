@@ -1,3 +1,7 @@
+2022-01-07  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Use opengl-bindings2
+
 2022-01-01  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui-bindings.gemspec: Added
