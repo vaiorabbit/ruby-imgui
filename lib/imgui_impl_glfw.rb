@@ -27,7 +27,7 @@ module ImGui
       userfunc.call(window, button, action, mods)
     end
 
-    if action == GLFW_PRESS && button >= 0 && button < @@g_MouseJustPressed.size
+    if action == GLFW::PRESS && button >= 0 && button < @@g_MouseJustPressed.size
       @@g_MouseJustPressed[button] = true
     end
   end
@@ -50,14 +50,14 @@ module ImGui
     end
 
     io = ImGuiIO.new(ImGui::GetIO())
-    io[:KeysDown][key] = true if action == GLFW_PRESS
-    io[:KeysDown][key] = false if action == GLFW_RELEASE
+    io[:KeysDown][key] = true if action == GLFW::PRESS
+    io[:KeysDown][key] = false if action == GLFW::RELEASE
 
     # Modifiers are not reliable across systems
-    io[:KeyCtrl] = io[:KeysDown][GLFW_KEY_LEFT_CONTROL] || io[:KeysDown][GLFW_KEY_RIGHT_CONTROL]
-    io[:KeyShift] = io[:KeysDown][GLFW_KEY_LEFT_SHIFT] || io[:KeysDown][GLFW_KEY_RIGHT_SHIFT]
-    io[:KeyAlt] = io[:KeysDown][GLFW_KEY_LEFT_ALT] || io[:KeysDown][GLFW_KEY_RIGHT_ALT]
-    io[:KeySuper] = io[:KeysDown][GLFW_KEY_LEFT_SUPER] || io[:KeysDown][GLFW_KEY_RIGHT_SUPER]
+    io[:KeyCtrl] = io[:KeysDown][GLFW::KEY_LEFT_CONTROL] || io[:KeysDown][GLFW::KEY_RIGHT_CONTROL]
+    io[:KeyShift] = io[:KeysDown][GLFW::KEY_LEFT_SHIFT] || io[:KeysDown][GLFW::KEY_RIGHT_SHIFT]
+    io[:KeyAlt] = io[:KeysDown][GLFW::KEY_LEFT_ALT] || io[:KeysDown][GLFW::KEY_RIGHT_ALT]
+    io[:KeySuper] = io[:KeysDown][GLFW::KEY_LEFT_SUPER] || io[:KeysDown][GLFW::KEY_RIGHT_SUPER]
   end
 
   @@ImGui_ImplGlfw_CursorEnterCallback = GLFW::create_callback(:GLFWcursorenterfun) do |window, entered|
@@ -84,11 +84,11 @@ module ImGui
     io = ImGuiIO.new(ImGui::GetIO())
     io[:MouseDown].size.times do |i|
       # If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
-      io[:MouseDown][i] = (@@g_MouseJustPressed[i] || glfwGetMouseButton(@@g_Window, i) != 0)
+      io[:MouseDown][i] = (@@g_MouseJustPressed[i] || GLFW.GetMouseButton(@@g_Window, i) != 0)
       @@g_MouseJustPressed[i] = false
     end
 
-    focused = glfwGetWindowAttrib(@@g_Window, GLFW_FOCUSED) != 0
+    focused = GLFW.GetWindowAttrib(@@g_Window, GLFW::FOCUSED) != 0
     mouse_window = (@@g_MouseWindow == @@g_Window || focused) ? @@g_Window : nil
 
     # Update mouse position
@@ -97,12 +97,12 @@ module ImGui
     io[:MousePos][:y] = -Float::MAX
     if io[:WantSetMousePos]
       if focused
-        glfwSetCursorPos(@@g_Window, mouse_pos_backup[:x].to_f, mouse_pos_backup[:y].to_f)
+        GLFW.SetCursorPos(@@g_Window, mouse_pos_backup[:x].to_f, mouse_pos_backup[:y].to_f)
       end
     elsif @@g_MouseWindow != nil
       mouse_x = ' ' * 8
       mouse_y = ' ' * 8
-      glfwGetCursorPos(@@g_Window, mouse_x, mouse_y)
+      GLFW.GetCursorPos(@@g_Window, mouse_x, mouse_y)
       io[:MousePos][:x] = mouse_x.unpack1('d')
       io[:MousePos][:y] = mouse_y.unpack1('d')
     end
@@ -110,17 +110,17 @@ module ImGui
 
   def self.ImplGlfw_UpdateMouseCursor()
     io = ImGuiIO.new(ImGui::GetIO())
-    return if ((io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange) || glfwGetInputMode(@@g_Window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+    return if ((io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange) || GLFW.GetInputMode(@@g_Window, GLFW::CURSOR) == GLFW::CURSOR_DISABLED)
 
     imgui_cursor = ImGui::GetMouseCursor()
     if imgui_cursor == ImGuiMouseCursor_None || io[:MouseDrawCursor]
         # Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
-        glfwSetInputMode(@@g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN)
+        GLFW.SetInputMode(@@g_Window, GLFW::CURSOR, GLFW::CURSOR_HIDDEN)
     else
       # Show OS mouse cursor
       # FIXME-PLATFORM: Unfocused windows seems to fail changing the mouse cursor with GLFW 3.2, but 3.3 works here.
-      glfwSetCursor(@@g_Window, @@g_MouseCursors[imgui_cursor] ? @@g_MouseCursors[imgui_cursor] : @@g_MouseCursors[ImGuiMouseCursor_Arrow])
-      glfwSetInputMode(@@g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL)
+      GLFW.SetCursor(@@g_Window, @@g_MouseCursors[imgui_cursor] ? @@g_MouseCursors[imgui_cursor] : @@g_MouseCursors[ImGuiMouseCursor_Arrow])
+      GLFW.SetInputMode(@@g_Window, GLFW::CURSOR, GLFW::CURSOR_NORMAL)
     end
   end
 
@@ -130,7 +130,7 @@ module ImGui
 
   def self.ImplGlfw_Shutdown()
     ImGuiMouseCursor_COUNT.times do |cursor_n|
-      glfwDestroyCursor(@@g_MouseCursors[cursor_n])
+      GLFW.DestroyCursor(@@g_MouseCursors[cursor_n])
       @@g_MouseCursors[cursor_n] = nil
     end
   end
@@ -146,8 +146,8 @@ module ImGui
     h = ' ' * 4
     display_w = ' ' * 4
     display_h = ' ' * 4
-    glfwGetWindowSize(@@g_Window, w, h)
-    glfwGetFramebufferSize(@@g_Window, display_w, display_h)
+    GLFW.GetWindowSize(@@g_Window, w, h)
+    GLFW.GetFramebufferSize(@@g_Window, display_w, display_h)
 
     w = w.unpack1('L')
     h = h.unpack1('L')
@@ -160,7 +160,7 @@ module ImGui
     end
 
     #  Setup time step
-    current_time = glfwGetTime()
+    current_time = GLFW.GetTime()
     io[:DeltaTime] = @@g_Time > 0.0 ? (current_time - @@g_Time).to_f : (1.0/60.0)
     @@g_Time = current_time
 
@@ -181,28 +181,28 @@ module ImGui
     io[:BackendPlatformName] = @@g_BackendPlatformName
 
     # Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
-    io[:KeyMap][ImGuiKey_Tab] = GLFW_KEY_TAB
-    io[:KeyMap][ImGuiKey_LeftArrow] = GLFW_KEY_LEFT
-    io[:KeyMap][ImGuiKey_RightArrow] = GLFW_KEY_RIGHT
-    io[:KeyMap][ImGuiKey_UpArrow] = GLFW_KEY_UP
-    io[:KeyMap][ImGuiKey_DownArrow] = GLFW_KEY_DOWN
-    io[:KeyMap][ImGuiKey_PageUp] = GLFW_KEY_PAGE_UP
-    io[:KeyMap][ImGuiKey_PageDown] = GLFW_KEY_PAGE_DOWN
-    io[:KeyMap][ImGuiKey_Home] = GLFW_KEY_HOME
-    io[:KeyMap][ImGuiKey_End] = GLFW_KEY_END
-    io[:KeyMap][ImGuiKey_Insert] = GLFW_KEY_INSERT
-    io[:KeyMap][ImGuiKey_Delete] = GLFW_KEY_DELETE
-    io[:KeyMap][ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE
-    io[:KeyMap][ImGuiKey_Space] = GLFW_KEY_SPACE
-    io[:KeyMap][ImGuiKey_Enter] = GLFW_KEY_ENTER
-    io[:KeyMap][ImGuiKey_Escape] = GLFW_KEY_ESCAPE
-    io[:KeyMap][ImGuiKey_KeyPadEnter] = GLFW_KEY_KP_ENTER
-    io[:KeyMap][ImGuiKey_A] = GLFW_KEY_A
-    io[:KeyMap][ImGuiKey_C] = GLFW_KEY_C
-    io[:KeyMap][ImGuiKey_V] = GLFW_KEY_V
-    io[:KeyMap][ImGuiKey_X] = GLFW_KEY_X
-    io[:KeyMap][ImGuiKey_Y] = GLFW_KEY_Y
-    io[:KeyMap][ImGuiKey_Z] = GLFW_KEY_Z
+    io[:KeyMap][ImGuiKey_Tab] = GLFW::KEY_TAB
+    io[:KeyMap][ImGuiKey_LeftArrow] = GLFW::KEY_LEFT
+    io[:KeyMap][ImGuiKey_RightArrow] = GLFW::KEY_RIGHT
+    io[:KeyMap][ImGuiKey_UpArrow] = GLFW::KEY_UP
+    io[:KeyMap][ImGuiKey_DownArrow] = GLFW::KEY_DOWN
+    io[:KeyMap][ImGuiKey_PageUp] = GLFW::KEY_PAGE_UP
+    io[:KeyMap][ImGuiKey_PageDown] = GLFW::KEY_PAGE_DOWN
+    io[:KeyMap][ImGuiKey_Home] = GLFW::KEY_HOME
+    io[:KeyMap][ImGuiKey_End] = GLFW::KEY_END
+    io[:KeyMap][ImGuiKey_Insert] = GLFW::KEY_INSERT
+    io[:KeyMap][ImGuiKey_Delete] = GLFW::KEY_DELETE
+    io[:KeyMap][ImGuiKey_Backspace] = GLFW::KEY_BACKSPACE
+    io[:KeyMap][ImGuiKey_Space] = GLFW::KEY_SPACE
+    io[:KeyMap][ImGuiKey_Enter] = GLFW::KEY_ENTER
+    io[:KeyMap][ImGuiKey_Escape] = GLFW::KEY_ESCAPE
+    io[:KeyMap][ImGuiKey_KeyPadEnter] = GLFW::KEY_KP_ENTER
+    io[:KeyMap][ImGuiKey_A] = GLFW::KEY_A
+    io[:KeyMap][ImGuiKey_C] = GLFW::KEY_C
+    io[:KeyMap][ImGuiKey_V] = GLFW::KEY_V
+    io[:KeyMap][ImGuiKey_X] = GLFW::KEY_X
+    io[:KeyMap][ImGuiKey_Y] = GLFW::KEY_Y
+    io[:KeyMap][ImGuiKey_Z] = GLFW::KEY_Z
 
     # [TODO] Support ClipboardText & IME on Windows
     # io.SetClipboardTextFn = ImGui_ImplGlfw_SetClipboardText;
@@ -212,14 +212,14 @@ module ImGui
     # io.ImeWindowHandle = (void*)glfwGetWin32Window(g_Window);
     # #endif
 
-    @@g_MouseCursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR)
-    @@g_MouseCursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR)   # FIXME: GLFW doesn't have this.
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeEW] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR)
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR)  # FIXME: GLFW doesn't have this.
-    @@g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR)  # FIXME: GLFW doesn't have this.
-    @@g_MouseCursors[ImGuiMouseCursor_Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR)
+    @@g_MouseCursors[ImGuiMouseCursor_Arrow] = GLFW.CreateStandardCursor(GLFW::ARROW_CURSOR)
+    @@g_MouseCursors[ImGuiMouseCursor_TextInput] = GLFW.CreateStandardCursor(GLFW::IBEAM_CURSOR)
+    @@g_MouseCursors[ImGuiMouseCursor_ResizeAll] = GLFW.CreateStandardCursor(GLFW::ARROW_CURSOR)   # FIXME: GLFW doesn't have this.
+    @@g_MouseCursors[ImGuiMouseCursor_ResizeNS] = GLFW.CreateStandardCursor(GLFW::VRESIZE_CURSOR)
+    @@g_MouseCursors[ImGuiMouseCursor_ResizeEW] = GLFW.CreateStandardCursor(GLFW::HRESIZE_CURSOR)
+    @@g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = GLFW.CreateStandardCursor(GLFW::ARROW_CURSOR)  # FIXME: GLFW doesn't have this.
+    @@g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = GLFW.CreateStandardCursor(GLFW::ARROW_CURSOR)  # FIXME: GLFW doesn't have this.
+    @@g_MouseCursors[ImGuiMouseCursor_Hand] = GLFW.CreateStandardCursor(GLFW::HAND_CURSOR)
 
     # Chain GLFW callbacks: our callbacks will call the user's previously installed callbacks, if any.
     @@g_PrevUserCallbackMousebutton = nil
@@ -227,11 +227,11 @@ module ImGui
     @@g_PrevUserCallbackKey = nil
     @@g_PrevUserCallbackChar = nil
     if install_callbacks
-      @@g_PrevUserCallbackCursorEnter = glfwSetCursorEnterCallback(window, @@ImGui_ImplGlfw_CursorEnterCallback)
-      @@g_PrevUserCallbackMousebutton = glfwSetMouseButtonCallback(window, @@ImplGlfw_MouseButtonCallback)
-      @@g_PrevUserCallbackScroll = glfwSetScrollCallback(window, @@ImplGlfw_ScrollCallback)
-      @@g_PrevUserCallbackKey = glfwSetKeyCallback(window, @@ImplGlfw_KeyCallback)
-      @@g_PrevUserCallbackChar = glfwSetCharCallback(window, @@ImplGlfw_CharCallback)
+      @@g_PrevUserCallbackCursorEnter = GLFW.SetCursorEnterCallback(window, @@ImGui_ImplGlfw_CursorEnterCallback)
+      @@g_PrevUserCallbackMousebutton = GLFW.SetMouseButtonCallback(window, @@ImplGlfw_MouseButtonCallback)
+      @@g_PrevUserCallbackScroll = GLFW.SetScrollCallback(window, @@ImplGlfw_ScrollCallback)
+      @@g_PrevUserCallbackKey = GLFW.SetKeyCallback(window, @@ImplGlfw_KeyCallback)
+      @@g_PrevUserCallbackChar = GLFW.SetCharCallback(window, @@ImplGlfw_CharCallback)
     end
 
     return true

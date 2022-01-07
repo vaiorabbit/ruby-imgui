@@ -26,6 +26,8 @@ if __FILE__ == $0
   SDL_GL_MakeCurrent(window, gl_context)
   SDL_GL_SetSwapInterval(1) # Enable vsync
 
+  GL.load_lib()
+
   japanese_utf8_text = IO.readlines('./jpfont/jpfont.txt').join()
 
   # Setup Dear ImGui context
@@ -109,9 +111,9 @@ if __FILE__ == $0
     end
 
     ImGui::Render()
-    glViewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)
-    glClearColor(0.45, 0.55, 0.60, 1.00)
-    glClear(GL_COLOR_BUFFER_BIT)
+    GL.Viewport(0, 0, io[:DisplaySize][:x].to_i, io[:DisplaySize][:y].to_i)
+    GL.ClearColor(0.45, 0.55, 0.60, 1.00)
+    GL.Clear(GL::COLOR_BUFFER_BIT)
 
     ImGui::ImplOpenGL2_RenderDrawData(ImGui::GetDrawData())
     SDL_GL_SwapWindow(window)

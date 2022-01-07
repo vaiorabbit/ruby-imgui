@@ -4,8 +4,8 @@ require_relative 'util/setup_opengl_dll'
 require_relative './about_window'
 
 def check_error( desc )
-  e = glGetError()
-  if e != GL_NO_ERROR
+  e = GL.GetError()
+  if e != GL::NO_ERROR
     $stderr.printf "OpenGL error in \"#{desc}\": e=0x%08x\n", e.to_i
     exit
   else
@@ -19,14 +19,16 @@ end
 
 # Press ESC to exit.
 key = GLFW::create_callback(:GLFWkeyfun) do |window, key, scancode, action, mods|
-  if key == GLFW_KEY_ESCAPE && action == GLFW_PRESS
-    glfwSetWindowShouldClose(window, GL_TRUE)
+  if key == GLFW::KEY_ESCAPE && action == GLFW::PRESS
+    GLFW.SetWindowShouldClose(window, GL::TRUE)
   end
 end
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
 
-  if glfwInit() == GL_FALSE
+  GLFW.load_lib(SampleUtil.glfw_library_path)
+
+  if GLFW.Init() == GL::FALSE
     puts("Failed to init GLFW.")
     exit
   end
@@ -42,34 +44,36 @@ if __FILE__ == $0
   versions.each do |version|
     ver_major = version[0]
     ver_minor = version[1]
-    glfwDefaultWindowHints()
-    if OpenGL.get_platform == :OPENGL_PLATFORM_MACOSX
-      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
+    GLFW.DefaultWindowHints()
+    if GL.get_platform == :OPENGL_PLATFORM_MACOSX
+      GLFW.WindowHint(GLFW::OPENGL_FORWARD_COMPAT, GL::TRUE)
     end
     if ver_major >= 4 || (ver_major >= 3 && ver_minor >= 2)
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
+      GLFW.WindowHint(GLFW::OPENGL_PROFILE, GLFW::OPENGL_CORE_PROFILE)
     else
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE)
+      GLFW.WindowHint(GLFW::OPENGL_PROFILE, GLFW::OPENGL_ANY_PROFILE)
     end
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ver_major)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ver_minor)
-    window = glfwCreateWindow(w, h, "Ruby-ImGui (GLFW+OpenGL3)", nil, nil)
+    GLFW.WindowHint(GLFW::CONTEXT_VERSION_MAJOR, ver_major)
+    GLFW.WindowHint(GLFW::CONTEXT_VERSION_MINOR, ver_minor)
+    window = GLFW.CreateWindow(w, h, "Ruby-ImGui (GLFW+OpenGL3)", nil, nil)
     break unless window.null?
   end
 
   if window == 0
-    glfwTerminate()
+    GLFW.Terminate()
     exit()
   end
 
-  glfwSetErrorCallback(errorcb)
+  GLFW.SetErrorCallback(errorcb)
 
 
-  glfwSetKeyCallback( window, key )
+  GLFW.SetKeyCallback( window, key )
 
   # Init
-  glfwMakeContextCurrent( window )
-  glfwSwapInterval(1)
+  GLFW.MakeContextCurrent( window )
+  GLFW.SwapInterval(1)
+
+  GL.load_lib()
 
   japanese_utf8_text = IO.readlines('./jpfont/jpfont.txt').join()
 
@@ -100,8 +104,8 @@ if __FILE__ == $0
   winHeight_buf = ' ' * 8
   fbWidth_buf  = ' ' * 8
   fbHeight_buf = ' ' * 8
-  while glfwWindowShouldClose( window ) == 0
-    glfwPollEvents()
+  while GLFW.WindowShouldClose( window ) == 0
+    GLFW.PollEvents()
 
     ImGui::ImplOpenGL3_NewFrame()
     ImGui::ImplGlfw_NewFrame()
@@ -142,9 +146,9 @@ if __FILE__ == $0
     end
 
     ImGui::Render()
-    glfwGetCursorPos(window, mx_buf, my_buf)
-    glfwGetWindowSize(window, winWidth_buf, winHeight_buf)
-    glfwGetFramebufferSize(window, fbWidth_buf, fbHeight_buf)
+    GLFW.GetCursorPos(window, mx_buf, my_buf)
+    GLFW.GetWindowSize(window, winWidth_buf, winHeight_buf)
+    GLFW.GetFramebufferSize(window, fbWidth_buf, fbHeight_buf)
     mx = mx_buf.unpack('D')[0]
     my = my_buf.unpack('D')[0]
     winWidth = winWidth_buf.unpack('L')[0]
@@ -152,20 +156,20 @@ if __FILE__ == $0
     fbWidth = fbWidth_buf.unpack('L')[0]
     fbHeight = fbHeight_buf.unpack('L')[0]
 
-    glViewport(0, 0, fbWidth, fbHeight)
-    glClearColor(0.45, 0.55, 0.60, 1.00)
-    glClear(GL_COLOR_BUFFER_BIT)
+    GL.Viewport(0, 0, fbWidth, fbHeight)
+    GL.ClearColor(0.45, 0.55, 0.60, 1.00)
+    GL.Clear(GL::COLOR_BUFFER_BIT)
 
     ImGui::ImplOpenGL3_RenderDrawData(ImGui::GetDrawData())
 
-    glfwMakeContextCurrent( window )
-    glfwSwapBuffers( window )
+    GLFW.MakeContextCurrent( window )
+    GLFW.SwapBuffers( window )
   end
 
   ImGui::ImplOpenGL3_Shutdown()
   ImGui::ImplGlfw_Shutdown()
   ImGui::DestroyContext(nil)
 
-  glfwDestroyWindow(window)
-  glfwTerminate()
+  GLFW.DestroyWindow(window)
+  GLFW.Terminate()
 end

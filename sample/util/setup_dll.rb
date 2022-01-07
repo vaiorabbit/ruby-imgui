@@ -10,5 +10,3 @@ when /linux/
 else
   raise RuntimeError, "setup_dll.rb : Unknown OS: #{RUBY_PLATFORM}"
 end
-
-include ImGui

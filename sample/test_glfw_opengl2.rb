@@ -9,34 +9,38 @@ end
 
 # Press ESC to exit.
 key = GLFW::create_callback(:GLFWkeyfun) do |window, key, scancode, action, mods|
-  if key == GLFW_KEY_ESCAPE && action == GLFW_PRESS
-    glfwSetWindowShouldClose(window, GL_TRUE)
+  if key == GLFW::KEY_ESCAPE && action == GLFW::PRESS
+    GLFW.SetWindowShouldClose(window, GL::TRUE)
   end
 end
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
 
-  if glfwInit() == GL_FALSE
+  GLFW.load_lib(SampleUtil.glfw_library_path)
+
+  if GLFW.Init() == GL::FALSE
     puts("Failed to init GLFW.")
     exit
   end
 
-  glfwSetErrorCallback(errorcb)
+  GLFW.SetErrorCallback(errorcb)
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2)
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0)
+  GLFW.WindowHint(GLFW::CONTEXT_VERSION_MAJOR, 2)
+  GLFW.WindowHint(GLFW::CONTEXT_VERSION_MINOR, 0)
 
-  window = glfwCreateWindow(1280, 720, "Ruby-ImGui (GLFW+OpenGL)", nil, nil)
+  window = GLFW.CreateWindow(1280, 720, "Ruby-ImGui (GLFW+OpenGL)", nil, nil)
   if window == 0
-    glfwTerminate()
+    GLFW.Terminate()
     exit
   end
 
-  glfwSetKeyCallback( window, key )
+  GLFW.SetKeyCallback( window, key )
 
   # Init
-  glfwMakeContextCurrent( window )
-  glfwSwapInterval(1)
+  GLFW.MakeContextCurrent( window )
+  GLFW.SwapInterval(1)
+
+  GL.load_lib()
 
   japanese_utf8_text = IO.readlines('./jpfont/jpfont.txt').join()
 
@@ -64,8 +68,8 @@ if __FILE__ == $0
   winHeight_buf = ' ' * 8
   fbWidth_buf  = ' ' * 8
   fbHeight_buf = ' ' * 8
-  while glfwWindowShouldClose( window ) == 0
-    glfwPollEvents()
+  while GLFW.WindowShouldClose( window ) == 0
+    GLFW.PollEvents()
 
     ImGui::ImplOpenGL2_NewFrame()
     ImGui::ImplGlfw_NewFrame()
@@ -105,9 +109,9 @@ if __FILE__ == $0
     end
 
     ImGui::Render()
-    glfwGetCursorPos(window, mx_buf, my_buf)
-    glfwGetWindowSize(window, winWidth_buf, winHeight_buf)
-    glfwGetFramebufferSize(window, fbWidth_buf, fbHeight_buf)
+    GLFW.GetCursorPos(window, mx_buf, my_buf)
+    GLFW.GetWindowSize(window, winWidth_buf, winHeight_buf)
+    GLFW.GetFramebufferSize(window, fbWidth_buf, fbHeight_buf)
     mx = mx_buf.unpack('D')[0]
     my = my_buf.unpack('D')[0]
     winWidth = winWidth_buf.unpack('L')[0]
@@ -115,20 +119,20 @@ if __FILE__ == $0
     fbWidth = fbWidth_buf.unpack('L')[0]
     fbHeight = fbHeight_buf.unpack('L')[0]
 
-    glViewport(0, 0, fbWidth, fbHeight)
-    glClearColor(0.45, 0.55, 0.60, 1.00)
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT)
+    GL.Viewport(0, 0, fbWidth, fbHeight)
+    GL.ClearColor(0.45, 0.55, 0.60, 1.00)
+    GL.Clear(GL::COLOR_BUFFER_BIT|GL::DEPTH_BUFFER_BIT|GL::STENCIL_BUFFER_BIT)
 
     ImGui::ImplOpenGL2_RenderDrawData(ImGui::GetDrawData())
 
-    glfwMakeContextCurrent( window )
-    glfwSwapBuffers( window )
+    GLFW.MakeContextCurrent( window )
+    GLFW.SwapBuffers( window )
   end
 
   ImGui::ImplOpenGL2_Shutdown()
   ImGui::ImplGlfw_Shutdown()
   ImGui::DestroyContext(nil)
 
-  glfwDestroyWindow(window)
-  glfwTerminate()
+  GLFW.DestroyWindow(window)
+  GLFW.Terminate()
 end

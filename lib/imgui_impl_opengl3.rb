@@ -1,12 +1,11 @@
 require 'ffi'
 require 'opengl'
-include OpenGL
 
 require_relative 'imgui'
 
 module ImGui
 
-  @@g_GlVersion = 0 # Extracted at runtime using GL_MAJOR_VERSION, GL_MINOR_VERSION queries.
+  @@g_GlVersion = 0 # Extracted at runtime using GL::MAJOR_VERSION, GL::MINOR_VERSION queries.
   @@g_GlslVersionString = "" # Specified by user or detected based on compile time
   @@g_FontTexture = nil
 
@@ -26,16 +25,16 @@ module ImGui
 
   def self.PrintShaderCompileStatus(handle)
     rvalue = ' ' * 4
-    glGetShaderiv(handle, GL_COMPILE_STATUS, rvalue)
+    GL.GetShaderiv(handle, GL::COMPILE_STATUS, rvalue)
     rvalue = rvalue.unpack1('L')
-    if rvalue == GL_FALSE
+    if rvalue == GL::FALSE
       $stderr.puts "Error in compiling shader"
       log_length = ' ' * 4
-      glGetShaderiv(handle, GL_INFO_LOG_LENGTH, log_length)
+      GL.GetShaderiv(handle, GL::INFO_LOG_LENGTH, log_length)
       log_length = log_length.unpack1('L')
       if log_length > 0
         buf = ' ' * log_length
-        glGetShaderInfoLog(handle, log_length, nil, buf)
+        GL.GetShaderInfoLog(handle, log_length, nil, buf)
         $stderr.puts(buf)
         exit()
       end
@@ -44,16 +43,16 @@ module ImGui
 
   def self.PrintProgramLinkStatus(handle)
     rvalue = ' ' * 4
-    glGetProgramiv(handle, GL_LINK_STATUS, rvalue)
+    GL.GetProgramiv(handle, GL::LINK_STATUS, rvalue)
     rvalue = rvalue.unpack1('L')
-    if rvalue == GL_FALSE
+    if rvalue == GL::FALSE
       $stderr.puts "Error in linking program"
       log_length = ' ' * 4
-      glGetProgramiv(handle, GL_INFO_LOG_LENGTH, log_length)
+      GL.GetProgramiv(handle, GL::INFO_LOG_LENGTH, log_length)
       log_length = log_length.unpack1('L')
       if log_length > 0
         buf = ' ' * log_length
-        glGetProgramInfoLog(handle, log_length, nil, buf)
+        GL.GetProgramInfoLog(handle, log_length, nil, buf)
         $stderr.puts(buf)
         exit()
       end
@@ -62,8 +61,8 @@ module ImGui
 
   def self.ImplOpenGL3_Init(glsl_version = nil)
     major, minor = ' ' * 4, ' ' * 4
-    glGetIntegerv(GL_MAJOR_VERSION, major)
-    glGetIntegerv(GL_MINOR_VERSION, minor)
+    GL.GetIntegerv(GL::MAJOR_VERSION, major)
+    GL.GetIntegerv(GL::MINOR_VERSION, minor)
     major = major.unpack1('L')
     minor = minor.unpack1('L')
     @@g_GlVersion = major * 1000 + minor
@@ -74,7 +73,7 @@ module ImGui
 
     # Ref.: Fix imgui_impl_opengl3 on MacOS
     #       https://github.com/ocornut/imgui/pull/3199
-    if OpenGL.get_platform() == :OPENGL_PLATFORM_MACOSX
+    if GL.get_platform() == :OPENGL_PLATFORM_MACOSX
       glsl_version = "#version 150" if glsl_version == nil
     else
       glsl_version = "#version 130" if glsl_version == nil
@@ -102,34 +101,34 @@ module ImGui
     return if fb_width == 0 || fb_height == 0
 
     #  Backup GL state
-    last_active_texture = ' ' * 4;  glGetIntegerv(GL_ACTIVE_TEXTURE, last_active_texture)
-    last_program = ' ' * 4;  glGetIntegerv(GL_CURRENT_PROGRAM, last_program)
-    last_texture = ' ' * 4;  glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
+    last_active_texture = ' ' * 4;  GL.GetIntegerv(GL::ACTIVE_TEXTURE, last_active_texture)
+    last_program = ' ' * 4;  GL.GetIntegerv(GL::CURRENT_PROGRAM, last_program)
+    last_texture = ' ' * 4;  GL.GetIntegerv(GL::TEXTURE_BINDING_2D, last_texture)
 
-    last_sampler = ' ' * 4;  glGetIntegerv(GL_SAMPLER_BINDING, last_sampler)
-    last_array_buffer = ' ' * 4;  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, last_array_buffer)
-    last_vertex_array_object = ' ' * 4;  glGetIntegerv(GL_VERTEX_ARRAY_BINDING, last_vertex_array_object)
+    last_sampler = ' ' * 4;  GL.GetIntegerv(GL::SAMPLER_BINDING, last_sampler)
+    last_array_buffer = ' ' * 4;  GL.GetIntegerv(GL::ARRAY_BUFFER_BINDING, last_array_buffer)
+    last_vertex_array_object = ' ' * 4;  GL.GetIntegerv(GL::VERTEX_ARRAY_BINDING, last_vertex_array_object)
 
-    last_polygon_mode = ' ' * 8;  glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode)
-    last_viewport = ' ' * 16;  glGetIntegerv(GL_VIEWPORT, last_viewport)
-    last_scissor_box = ' ' * 16;  glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box)
+    last_polygon_mode = ' ' * 8;  GL.GetIntegerv(GL::POLYGON_MODE, last_polygon_mode)
+    last_viewport = ' ' * 16;  GL.GetIntegerv(GL::VIEWPORT, last_viewport)
+    last_scissor_box = ' ' * 16;  GL.GetIntegerv(GL::SCISSOR_BOX, last_scissor_box)
 
-    last_blend_src_rgb = ' ' * 4;  glGetIntegerv(GL_BLEND_SRC_RGB, last_blend_src_rgb)
-    last_blend_dst_rgb = ' ' * 4;  glGetIntegerv(GL_BLEND_DST_RGB, last_blend_dst_rgb)
-    last_blend_src_alpha = ' ' * 4;  glGetIntegerv(GL_BLEND_SRC_ALPHA, last_blend_src_alpha)
-    last_blend_dst_alpha = ' ' * 4;  glGetIntegerv(GL_BLEND_DST_ALPHA, last_blend_dst_alpha)
-    last_blend_equation_rgb = ' ' * 4;  glGetIntegerv(GL_BLEND_EQUATION_RGB, last_blend_equation_rgb)
-    last_blend_equation_alpha = ' ' * 4;  glGetIntegerv(GL_BLEND_EQUATION_ALPHA, last_blend_equation_alpha)
+    last_blend_src_rgb = ' ' * 4;  GL.GetIntegerv(GL::BLEND_SRC_RGB, last_blend_src_rgb)
+    last_blend_dst_rgb = ' ' * 4;  GL.GetIntegerv(GL::BLEND_DST_RGB, last_blend_dst_rgb)
+    last_blend_src_alpha = ' ' * 4;  GL.GetIntegerv(GL::BLEND_SRC_ALPHA, last_blend_src_alpha)
+    last_blend_dst_alpha = ' ' * 4;  GL.GetIntegerv(GL::BLEND_DST_ALPHA, last_blend_dst_alpha)
+    last_blend_equation_rgb = ' ' * 4;  GL.GetIntegerv(GL::BLEND_EQUATION_RGB, last_blend_equation_rgb)
+    last_blend_equation_alpha = ' ' * 4;  GL.GetIntegerv(GL::BLEND_EQUATION_ALPHA, last_blend_equation_alpha)
 
-    last_enable_blend = glIsEnabled(GL_BLEND)
-    last_enable_cull_face = glIsEnabled(GL_CULL_FACE)
-    last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST)
-    last_enable_stencil_test = glIsEnabled(GL_STENCIL_TEST)
-    last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST)
+    last_enable_blend = GL.IsEnabled(GL::BLEND)
+    last_enable_cull_face = GL.IsEnabled(GL::CULL_FACE)
+    last_enable_depth_test = GL.IsEnabled(GL::DEPTH_TEST)
+    last_enable_stencil_test = GL.IsEnabled(GL::STENCIL_TEST)
+    last_enable_scissor_test = GL.IsEnabled(GL::SCISSOR_TEST)
 
     #  Setup desired GL state
     vertex_array_object = ' ' * 4
-    glGenVertexArrays(1, vertex_array_object)
+    GL.GenVertexArrays(1, vertex_array_object)
     vertex_array_object = vertex_array_object.unpack1('L')
     ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object)
 
@@ -145,10 +144,9 @@ module ImGui
       idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
 
       # Upload vertex/index buffers
-      glBufferData(GL_ARRAY_BUFFER, cmd_list[:VtxBuffer][:Size] * ImDrawVert.size, Fiddle::Pointer.new(cmd_list[:VtxBuffer][:Data]), GL_STREAM_DRAW)
+      GL.BufferData(GL::ARRAY_BUFFER, cmd_list[:VtxBuffer][:Size] * ImDrawVert.size, Fiddle::Pointer.new(cmd_list[:VtxBuffer][:Data]), GL::STREAM_DRAW)
       # 2 == ImDrawIdx(:ushort).size
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list[:IdxBuffer][:Size] * 2, Fiddle::Pointer.new(cmd_list[:IdxBuffer][:Data]), GL_STREAM_DRAW) # [TODO] Refer ImGui::ImDrawIdx
-      # glBufferData(GL_ELEMENT_ARRAY_BUFFER, cmd_list[:IdxBuffer][:Size] * ImDrawIdx.size, Fiddle::Pointer.new(cmd_list[:IdxBuffer][:Data]), GL_STREAM_DRAW)
+      GL.BufferData(GL::ELEMENT_ARRAY_BUFFER, cmd_list[:IdxBuffer][:Size] * 2, Fiddle::Pointer.new(cmd_list[:IdxBuffer][:Data]), GL::STREAM_DRAW) # [TODO] Refer ImGui::ImDrawIdx
 
       cmd_list[:CmdBuffer][:Size].times do |cmd_i|
         pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i) # const ImDrawCmd*
@@ -172,19 +170,17 @@ module ImGui
 
           if (clip_rect[:x] < fb_width && clip_rect[:y] < fb_height && clip_rect[:z] >= 0.0 && clip_rect[:w] >= 0.0)
             #  Apply scissor/clipping rectangle
-            glScissor(clip_rect[:x].to_i, (fb_height - clip_rect[:w]).to_i, (clip_rect[:z] - clip_rect[:x]).to_i, (clip_rect[:w] - clip_rect[:y]).to_i)
+            GL.Scissor(clip_rect[:x].to_i, (fb_height - clip_rect[:w]).to_i, (clip_rect[:z] - clip_rect[:x]).to_i, (clip_rect[:w] - clip_rect[:y]).to_i)
 
             #  Bind texture, Draw
-            glBindTexture(GL_TEXTURE_2D, pcmd[:TextureId].address)
+            GL.BindTexture(GL::TEXTURE_2D, pcmd[:TextureId].address)
 
             if @@g_GlVersion >= 3200
               # 2 == ImDrawIdx(:ushort).size
-              glDrawElementsBaseVertex(GL_TRIANGLES, pcmd[:ElemCount], GL_UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2), pcmd[:VtxOffset])
-              # glDrawElementsBaseVertex(GL_TRIANGLES, pcmd[:ElemCount], GL_UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * ImDrawIdx.size), pcmd[:VtxOffset]) # [TODO] Refer ImGui::ImDrawIdx
+              GL.DrawElementsBaseVertex(GL::TRIANGLES, pcmd[:ElemCount], GL::UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2), pcmd[:VtxOffset])
             else
               # 2 == ImDrawIdx(:ushort).size
-              glDrawElements(GL_TRIANGLES, pcmd[:ElemCount], GL_UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2))
-              # glDrawElements(GL_TRIANGLES, pcmd[:ElemCount], GL_UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * ImDrawIdx.size)) # [TODO] Refer ImGui::ImDrawIdx
+              GL.DrawElements(GL::TRIANGLES, pcmd[:ElemCount], GL::UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2))
             end
           end
 
@@ -194,29 +190,29 @@ module ImGui
     end
 
     # Destroy the temporary VAO
-    glDeleteVertexArrays(1, [vertex_array_object].pack('L'))
+    GL.DeleteVertexArrays(1, [vertex_array_object].pack('L'))
 
     #  Restore modified GL state
-    glUseProgram(last_program.unpack1('L'))
-    glBindTexture(GL_TEXTURE_2D, last_texture.unpack1('L'))
-    glBindSampler(0, last_sampler.unpack1('L'))
-    glActiveTexture(last_active_texture.unpack1('L'))
-    glBindVertexArray(last_vertex_array_object.unpack1('L'))
-    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer.unpack1('L'))
-    glBlendEquationSeparate(last_blend_equation_rgb.unpack1('L'), last_blend_equation_alpha.unpack1('L'))
+    GL.UseProgram(last_program.unpack1('L'))
+    GL.BindTexture(GL::TEXTURE_2D, last_texture.unpack1('L'))
+    GL.BindSampler(0, last_sampler.unpack1('L'))
+    GL.ActiveTexture(last_active_texture.unpack1('L'))
+    GL.BindVertexArray(last_vertex_array_object.unpack1('L'))
+    GL.BindBuffer(GL::ARRAY_BUFFER, last_array_buffer.unpack1('L'))
+    GL.BlendEquationSeparate(last_blend_equation_rgb.unpack1('L'), last_blend_equation_alpha.unpack1('L'))
 
-    if last_enable_blend then glEnable(GL_BLEND) else glDisable(GL_BLEND) end
-    if last_enable_cull_face then glEnable(GL_CULL_FACE) else glDisable(GL_CULL_FACE) end
-    if last_enable_depth_test then glEnable(GL_DEPTH_TEST) else glDisable(GL_DEPTH_TEST) end
-    if last_enable_stencil_test then glEnable(GL_STENCIL_TEST) else glDisable(GL_STENCIL_TEST) end
-    if last_enable_scissor_test then glEnable(GL_SCISSOR_TEST) else glDisable(GL_SCISSOR_TEST) end
+    if last_enable_blend then GL.Enable(GL::BLEND) else GL.Disable(GL::BLEND) end
+    if last_enable_cull_face then GL.Enable(GL::CULL_FACE) else GL.Disable(GL::CULL_FACE) end
+    if last_enable_depth_test then GL.Enable(GL::DEPTH_TEST) else GL.Disable(GL::DEPTH_TEST) end
+    if last_enable_stencil_test then GL.Enable(GL::STENCIL_TEST) else GL.Disable(GL::STENCIL_TEST) end
+    if last_enable_scissor_test then GL.Enable(GL::SCISSOR_TEST) else GL.Disable(GL::SCISSOR_TEST) end
 
     last_polygon_mode = last_polygon_mode.unpack('L2')
-    glPolygonMode(GL_FRONT_AND_BACK, last_polygon_mode[0])
+    GL.PolygonMode(GL::FRONT_AND_BACK, last_polygon_mode[0])
     last_viewport = last_viewport.unpack('L4')
-    glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3])
+    GL.Viewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3])
     last_scissor_box = last_scissor_box.unpack('L4')
-    glScissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3])
+    GL.Scissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3])
 
   end
 
@@ -224,18 +220,18 @@ module ImGui
 
   def self.ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object)
     # Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
-    glEnable(GL_BLEND)
-    glBlendEquation(GL_FUNC_ADD)
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
-    glDisable(GL_CULL_FACE)
-    glDisable(GL_DEPTH_TEST)
-    glDisable(GL_STENCIL_TEST)
-    glEnable(GL_SCISSOR_TEST)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) # GL_POLYGON_MODE
+    GL.Enable(GL::BLEND)
+    GL.BlendEquation(GL::FUNC_ADD)
+    GL.BlendFuncSeparate(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA, GL::ONE, GL::ONE_MINUS_SRC_ALPHA)
+    GL.Disable(GL::CULL_FACE)
+    GL.Disable(GL::DEPTH_TEST)
+    GL.Disable(GL::STENCIL_TEST)
+    GL.Enable(GL::SCISSOR_TEST)
+    GL.PolygonMode(GL::FRONT_AND_BACK, GL::FILL) # GL::POLYGON_MODE
 
     # Setup viewport, orthographic projection matrix
     # Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.
-    glViewport(0, 0, fb_width, fb_height)
+    GL.Viewport(0, 0, fb_width, fb_height)
     l = draw_data[:DisplayPos][:x]
     r = draw_data[:DisplayPos][:x] + draw_data[:DisplaySize][:x]
     t = draw_data[:DisplayPos][:y]
@@ -246,25 +242,25 @@ module ImGui
         0.0,         0.0,        -1.0,   0.0,
         (r+l)/(l-r),  (t+b)/(b-t),  0.0,   1.0,
     ]
-    glUseProgram(@@g_ShaderHandle)
-    glUniform1i(@@g_AttribLocationTex, 0)
-    glUniformMatrix4fv(@@g_AttribLocationProjMtx, 1, GL_FALSE, ortho_projection.pack('F16'))
-    # GL_SAMPLER_BINDING
-    glBindSampler(0, 0) # We use combined texture/sampler state. Applications using GL 3.3 may set that otherwise.
+    GL.UseProgram(@@g_ShaderHandle)
+    GL.Uniform1i(@@g_AttribLocationTex, 0)
+    GL.UniformMatrix4fv(@@g_AttribLocationProjMtx, 1, GL::FALSE, ortho_projection.pack('F16'))
+    # GL::SAMPLER_BINDING
+    GL.BindSampler(0, 0) # We use combined texture/sampler state. Applications using GL 3.3 may set that otherwise.
 
-    glBindVertexArray(vertex_array_object)
+    GL.BindVertexArray(vertex_array_object)
 
     # Bind vertex/index buffers and setup attributes for ImDrawVert
-    glBindBuffer(GL_ARRAY_BUFFER, @@g_VboHandle)
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, @@g_ElementsHandle)
+    GL.BindBuffer(GL::ARRAY_BUFFER, @@g_VboHandle)
+    GL.BindBuffer(GL::ELEMENT_ARRAY_BUFFER, @@g_ElementsHandle)
 
-    glEnableVertexAttribArray(@@g_AttribLocationVtxPos)
-    glEnableVertexAttribArray(@@g_AttribLocationVtxUV)
-    glEnableVertexAttribArray(@@g_AttribLocationVtxColor)
+    GL.EnableVertexAttribArray(@@g_AttribLocationVtxPos)
+    GL.EnableVertexAttribArray(@@g_AttribLocationVtxUV)
+    GL.EnableVertexAttribArray(@@g_AttribLocationVtxColor)
 
-    glVertexAttribPointer(@@g_AttribLocationVtxPos,   2, GL_FLOAT,         GL_FALSE, ImDrawVert.size, ImDrawVert.offset_of(:pos))
-    glVertexAttribPointer(@@g_AttribLocationVtxUV,    2, GL_FLOAT,         GL_FALSE, ImDrawVert.size, ImDrawVert.offset_of(:uv))
-    glVertexAttribPointer(@@g_AttribLocationVtxColor, 4, GL_UNSIGNED_BYTE, GL_TRUE,  ImDrawVert.size, ImDrawVert.offset_of(:col))
+    GL.VertexAttribPointer(@@g_AttribLocationVtxPos,   2, GL::FLOAT,         GL::FALSE, ImDrawVert.size, ImDrawVert.offset_of(:pos))
+    GL.VertexAttribPointer(@@g_AttribLocationVtxUV,    2, GL::FLOAT,         GL::FALSE, ImDrawVert.size, ImDrawVert.offset_of(:uv))
+    GL.VertexAttribPointer(@@g_AttribLocationVtxColor, 4, GL::UNSIGNED_BYTE, GL::TRUE,  ImDrawVert.size, ImDrawVert.offset_of(:col))
 
   end
 
@@ -279,31 +275,31 @@ module ImGui
     #  Upload texture to graphics system
     last_texture = ' ' * 4
     @@g_FontTexture = ' ' * 4
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
-    glGenTextures(1, @@g_FontTexture)
-    glBindTexture(GL_TEXTURE_2D, @@g_FontTexture.unpack1('L'))
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0)
+    GL.GetIntegerv(GL::TEXTURE_BINDING_2D, last_texture)
+    GL.GenTextures(1, @@g_FontTexture)
+    GL.BindTexture(GL::TEXTURE_2D, @@g_FontTexture.unpack1('L'))
+    GL.TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_MIN_FILTER, GL::LINEAR)
+    GL.TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_MAG_FILTER, GL::LINEAR)
+    GL.PixelStorei(GL::UNPACK_ROW_LENGTH, 0)
     # Ruby/FFI <-> Fiddle pointer exchange
     # p pixels
     # p pixels.read_pointer
     # p pixels.read_pointer.address.to_s(16)
     pixels_ptr = Fiddle::Pointer.new(pixels.read_pointer.address)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.read_uint, height.read_uint, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels_ptr)
+    GL.TexImage2D(GL::TEXTURE_2D, 0, GL::RGBA, width.read_uint, height.read_uint, 0, GL::RGBA, GL::UNSIGNED_BYTE, pixels_ptr)
 
     #  Store our identifier
     io[:Fonts][:TexID] = @@g_FontTexture.unpack1('L')
 
     #  Restore state
-    glBindTexture(GL_TEXTURE_2D, last_texture.unpack1('L'))
+    GL.BindTexture(GL::TEXTURE_2D, last_texture.unpack1('L'))
 
     return true
   end
 
   def self.ImplOpenGL3_DestroyFontsTexture()
     if @@g_FontTexture != 0
-      glDeleteTextures(1, @@g_FontTexture)
+      GL.DeleteTextures(1, @@g_FontTexture)
       io = ImGuiIO.new(ImGui::GetIO())
       io[:Fonts][:TexID] = 0
       @@g_FontTexture = 0
@@ -313,13 +309,13 @@ module ImGui
   def self.ImplOpenGL3_CreateDeviceObjects()
     # Backup GL state
     last_texture, last_array_buffer = ' ' * 4, ' ' * 4
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, last_array_buffer)
+    GL.GetIntegerv(GL::TEXTURE_BINDING_2D, last_texture)
+    GL.GetIntegerv(GL::ARRAY_BUFFER_BINDING, last_array_buffer)
     last_texture = last_texture.unpack1('L')
     last_array_buffer = last_array_buffer.unpack1('L')
 
     last_vertex_array = ' ' * 4
-    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, last_vertex_array)
+    GL.GetIntegerv(GL::VERTEX_ARRAY_BINDING, last_vertex_array)
     last_vertex_array = last_vertex_array.unpack1('L')
 
     glsl_version = @@g_GlslVersionString.split[1].to_i # == scanf(@@g_GlslVersionString, "#version %d")
@@ -386,7 +382,7 @@ module ImGui
     SRC
 
     fragment_shader_glsl_120 = <<-'SRC'
-    #ifdef GL_ES
+    #ifdef GL::ES
         precision mediump float;
     #endif
     uniform sampler2D Texture;
@@ -443,67 +439,67 @@ module ImGui
                                      end
 
     vertex_shader.prepend(@@g_GlslVersionString + "\n")
-    vert_handle = glCreateShader(GL_VERTEX_SHADER)
-    glShaderSource(vert_handle, 1, [vertex_shader].pack('p'), nil)
-    glCompileShader(vert_handle)
+    vert_handle = GL.CreateShader(GL::VERTEX_SHADER)
+    GL.ShaderSource(vert_handle, 1, [vertex_shader].pack('p'), nil)
+    GL.CompileShader(vert_handle)
     PrintShaderCompileStatus(vert_handle)
 
     fragment_shader.prepend(@@g_GlslVersionString + "\n")
-    frag_handle = glCreateShader(GL_FRAGMENT_SHADER)
-    glShaderSource(frag_handle, 1, [fragment_shader].pack('p'), [fragment_shader.size].pack('I'))
-    glCompileShader(frag_handle)
+    frag_handle = GL.CreateShader(GL::FRAGMENT_SHADER)
+    GL.ShaderSource(frag_handle, 1, [fragment_shader].pack('p'), [fragment_shader.size].pack('I'))
+    GL.CompileShader(frag_handle)
     PrintShaderCompileStatus(frag_handle)
 
-    @@g_ShaderHandle = glCreateProgram()
-    glAttachShader(@@g_ShaderHandle, vert_handle)
-    glAttachShader(@@g_ShaderHandle, frag_handle)
-    glLinkProgram(@@g_ShaderHandle)
+    @@g_ShaderHandle = GL.CreateProgram()
+    GL.AttachShader(@@g_ShaderHandle, vert_handle)
+    GL.AttachShader(@@g_ShaderHandle, frag_handle)
+    GL.LinkProgram(@@g_ShaderHandle)
     PrintProgramLinkStatus(@@g_ShaderHandle)
 
-    glDetachShader(@@g_ShaderHandle, vert_handle)
-    glDetachShader(@@g_ShaderHandle, frag_handle)
-    glDeleteShader(vert_handle)
-    glDeleteShader(frag_handle)
+    GL.DetachShader(@@g_ShaderHandle, vert_handle)
+    GL.DetachShader(@@g_ShaderHandle, frag_handle)
+    GL.DeleteShader(vert_handle)
+    GL.DeleteShader(frag_handle)
 
-    @@g_AttribLocationTex = glGetUniformLocation(@@g_ShaderHandle, "Texture")
-    @@g_AttribLocationProjMtx = glGetUniformLocation(@@g_ShaderHandle, "ProjMtx")
+    @@g_AttribLocationTex = GL.GetUniformLocation(@@g_ShaderHandle, "Texture")
+    @@g_AttribLocationProjMtx = GL.GetUniformLocation(@@g_ShaderHandle, "ProjMtx")
 
-    @@g_AttribLocationVtxPos = glGetAttribLocation(@@g_ShaderHandle, "Position")
-    @@g_AttribLocationVtxUV = glGetAttribLocation(@@g_ShaderHandle, "UV")
-    @@g_AttribLocationVtxColor = glGetAttribLocation(@@g_ShaderHandle, "Color")
+    @@g_AttribLocationVtxPos = GL.GetAttribLocation(@@g_ShaderHandle, "Position")
+    @@g_AttribLocationVtxUV = GL.GetAttribLocation(@@g_ShaderHandle, "UV")
+    @@g_AttribLocationVtxColor = GL.GetAttribLocation(@@g_ShaderHandle, "Color")
 
     # Create buffers
     posBuf = ' ' * 4
-    glGenBuffers(1, posBuf)
-    glBindBuffer(GL_ARRAY_BUFFER, posBuf.unpack('L')[0])
+    GL.GenBuffers(1, posBuf)
+    GL.BindBuffer(GL::ARRAY_BUFFER, posBuf.unpack('L')[0])
 
     @@g_VboHandle, @@g_ElementsHandle = ' ' * 4, ' ' * 4
-    glGenBuffers(1, @@g_VboHandle)
-    glGenBuffers(1, @@g_ElementsHandle)
+    GL.GenBuffers(1, @@g_VboHandle)
+    GL.GenBuffers(1, @@g_ElementsHandle)
     @@g_VboHandle = @@g_VboHandle.unpack1('L')
     @@g_ElementsHandle = @@g_ElementsHandle.unpack1('L')
 
     ImplOpenGL3_CreateFontsTexture()
 
     # Restore modified GL state
-    glBindTexture(GL_TEXTURE_2D, last_texture)
-    glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer)
-    glBindVertexArray(last_vertex_array)
+    GL.BindTexture(GL::TEXTURE_2D, last_texture)
+    GL.BindBuffer(GL::ARRAY_BUFFER, last_array_buffer)
+    GL.BindVertexArray(last_vertex_array)
 
     return true
   end
 
   def self.ImplOpenGL3_DestroyDeviceObjects()
     if @@g_VboHandle != 0
-      glDeleteBuffers(1, [@@g_VboHandle].pack('L'))
+      GL.DeleteBuffers(1, [@@g_VboHandle].pack('L'))
       @@g_VboHandle = 0
     end
     if @@g_ElementsHandle != 0
-      glDeleteBuffers(1, [@@g_ElementsHandle].pack('L'))
+      GL.DeleteBuffers(1, [@@g_ElementsHandle].pack('L'))
       @@g_ElementsHandle = 0
     end
     if @@g_ShaderHandle != 0
-      glDeleteProgram(@@g_ShaderHandle)
+      GL.DeleteProgram(@@g_ShaderHandle)
       @@g_ShaderHandle = 0
     end
 

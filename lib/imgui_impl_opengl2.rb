@@ -1,6 +1,5 @@
 require 'ffi'
 require 'opengl'
-include OpenGL
 
 require_relative 'imgui'
 
@@ -34,18 +33,18 @@ module ImGui
 
     #  Backup GL state
     last_texture = ' ' * 4
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
+    GL.GetIntegerv(GL::TEXTURE_BINDING_2D, last_texture)
     last_polygon_mode = ' ' * 8
-    glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode)
+    GL.GetIntegerv(GL::POLYGON_MODE, last_polygon_mode)
     last_viewport = ' ' * 16
-    glGetIntegerv(GL_VIEWPORT, last_viewport)
+    GL.GetIntegerv(GL::VIEWPORT, last_viewport)
     last_scissor_box = ' ' * 16
-    glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box)
-    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT)
+    GL.GetIntegerv(GL::SCISSOR_BOX, last_scissor_box)
+    GL.PushAttrib(GL::ENABLE_BIT | GL::COLOR_BUFFER_BIT | GL::TRANSFORM_BIT)
     last_shade_model = ' ' * 4
-    glGetIntegerv(GL_SHADE_MODEL, last_shade_model)
+    GL.GetIntegerv(GL::SHADE_MODEL, last_shade_model)
     last_tex_env_mode = ' ' * 4
-    glGetTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, last_tex_env_mode)
+    GL.GetTexEnviv(GL::TEXTURE_ENV, GL::TEXTURE_ENV_MODE, last_tex_env_mode)
 
     #  Setup desired GL state
     ImplOpenGL2_SetupRenderState(draw_data, fb_width, fb_height)
@@ -59,9 +58,9 @@ module ImGui
       cmd_list = ImDrawList.new((draw_data[:CmdLists].pointer + 8 * n).read_pointer) # 8 == const ImDrawList*
       vtx_buffer = ImDrawVert.new(cmd_list[:VtxBuffer][:Data]) # const ImDrawVert*
       idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
-      glVertexPointer(2, GL_FLOAT, ImDrawVert.size,  Fiddle::Pointer.new((cmd_list[:VtxBuffer][:Data] + vtx_buffer.offset_of(:pos))) )
-      glTexCoordPointer(2, GL_FLOAT, ImDrawVert.size,  Fiddle::Pointer.new((cmd_list[:VtxBuffer][:Data] + vtx_buffer.offset_of(:uv))) )
-      glColorPointer(4, GL_UNSIGNED_BYTE, ImDrawVert.size,  Fiddle::Pointer.new((cmd_list[:VtxBuffer][:Data] + vtx_buffer.offset_of(:col))) )
+      GL.VertexPointer(2, GL::FLOAT, ImDrawVert.size,  Fiddle::Pointer.new((cmd_list[:VtxBuffer][:Data] + vtx_buffer.offset_of(:pos))) )
+      GL.TexCoordPointer(2, GL::FLOAT, ImDrawVert.size,  Fiddle::Pointer.new((cmd_list[:VtxBuffer][:Data] + vtx_buffer.offset_of(:uv))) )
+      GL.ColorPointer(4, GL::UNSIGNED_BYTE, ImDrawVert.size,  Fiddle::Pointer.new((cmd_list[:VtxBuffer][:Data] + vtx_buffer.offset_of(:col))) )
 
       cmd_list[:CmdBuffer][:Size].times do |cmd_i|
         pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i) # const ImDrawCmd*
@@ -85,11 +84,11 @@ module ImGui
 
           if (clip_rect[:x] < fb_width && clip_rect[:y] < fb_height && clip_rect[:z] >= 0.0 && clip_rect[:w] >= 0.0)
             #  Apply scissor/clipping rectangle
-            glScissor(clip_rect[:x].to_i, (fb_height - clip_rect[:w]).to_i, (clip_rect[:z] - clip_rect[:x]).to_i, (clip_rect[:w] - clip_rect[:y]).to_i)
+            GL.Scissor(clip_rect[:x].to_i, (fb_height - clip_rect[:w]).to_i, (clip_rect[:z] - clip_rect[:x]).to_i, (clip_rect[:w] - clip_rect[:y]).to_i)
 
             #  Bind texture, Draw
-            glBindTexture(GL_TEXTURE_2D, pcmd[:TextureId].address)
-            glDrawElements(GL_TRIANGLES, pcmd[:ElemCount], GL_UNSIGNED_SHORT, Fiddle::Pointer.new(idx_buffer.address))
+            GL.BindTexture(GL::TEXTURE_2D, pcmd[:TextureId].address)
+            GL.DrawElements(GL::TRIANGLES, pcmd[:ElemCount], GL::UNSIGNED_SHORT, Fiddle::Pointer.new(idx_buffer.address))
           end
 
         end
@@ -98,69 +97,69 @@ module ImGui
     end
 
     #  Restore modified GL state
-    glDisableClientState(GL_COLOR_ARRAY)
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY)
-    glDisableClientState(GL_VERTEX_ARRAY)
-    glBindTexture(GL_TEXTURE_2D, last_texture.unpack1('L'))
-    glMatrixMode(GL_MODELVIEW)
-    glPopMatrix()
-    glMatrixMode(GL_PROJECTION)
-    glPopMatrix()
-    glPopAttrib()
+    GL.DisableClientState(GL::COLOR_ARRAY)
+    GL.DisableClientState(GL::TEXTURE_COORD_ARRAY)
+    GL.DisableClientState(GL::VERTEX_ARRAY)
+    GL.BindTexture(GL::TEXTURE_2D, last_texture.unpack1('L'))
+    GL.MatrixMode(GL::MODELVIEW)
+    GL.PopMatrix()
+    GL.MatrixMode(GL::PROJECTION)
+    GL.PopMatrix()
+    GL.PopAttrib()
     last_polygon_mode = last_polygon_mode.unpack('L2')
-    glPolygonMode(GL_FRONT, last_polygon_mode[0])
-    glPolygonMode(GL_BACK, last_polygon_mode[1])
+    GL.PolygonMode(GL::FRONT, last_polygon_mode[0])
+    GL.PolygonMode(GL::BACK, last_polygon_mode[1])
     last_viewport = last_viewport.unpack('L4')
-    glViewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3])
+    GL.Viewport(last_viewport[0], last_viewport[1], last_viewport[2], last_viewport[3])
     last_scissor_box = last_scissor_box.unpack('L4')
-    glScissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3])
-    glShadeModel(last_shade_model.unpack1('L'))
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, last_tex_env_mode.unpack1('L'))
+    GL.Scissor(last_scissor_box[0], last_scissor_box[1], last_scissor_box[2], last_scissor_box[3])
+    GL.ShadeModel(last_shade_model.unpack1('L'))
+    GL.TexEnvi(GL::TEXTURE_ENV, GL::TEXTURE_ENV_MODE, last_tex_env_mode.unpack1('L'))
   end
 
   # private
 
   def self.ImplOpenGL2_SetupRenderState(draw_data, fb_width, fb_height)
     # Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, vertex/texcoord/color pointers, polygon fill.
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    # glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA) # In order to composite our output buffer we need to preserve alpha
-    glDisable(GL_CULL_FACE)
-    glDisable(GL_STENCIL_TEST)
-    glDisable(GL_DEPTH_TEST)
-    glDisable(GL_LIGHTING)
-    glDisable(GL_COLOR_MATERIAL)
-    glEnable(GL_SCISSOR_TEST)
-    glEnableClientState(GL_VERTEX_ARRAY)
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY)
-    glEnableClientState(GL_COLOR_ARRAY)
-    glDisableClientState(GL_NORMAL_ARRAY)
-    glEnable(GL_TEXTURE_2D)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-    glShadeModel(GL_SMOOTH)
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+    GL.Enable(GL::BLEND)
+    GL.BlendFunc(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA)
+    # GL.BlendFuncSeparate(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA, GL::ONE, GL::ONE_MINUS_SRC_ALPHA) # In order to composite our output buffer we need to preserve alpha
+    GL.Disable(GL::CULL_FACE)
+    GL.Disable(GL::STENCIL_TEST)
+    GL.Disable(GL::DEPTH_TEST)
+    GL.Disable(GL::LIGHTING)
+    GL.Disable(GL::COLOR_MATERIAL)
+    GL.Enable(GL::SCISSOR_TEST)
+    GL.EnableClientState(GL::VERTEX_ARRAY)
+    GL.EnableClientState(GL::TEXTURE_COORD_ARRAY)
+    GL.EnableClientState(GL::COLOR_ARRAY)
+    GL.DisableClientState(GL::NORMAL_ARRAY)
+    GL.Enable(GL::TEXTURE_2D)
+    GL.PolygonMode(GL::FRONT_AND_BACK, GL::FILL)
+    GL.ShadeModel(GL::SMOOTH)
+    GL.TexEnvi(GL::TEXTURE_ENV, GL::TEXTURE_ENV_MODE, GL::MODULATE)
 
     #  If you are using this code with non-legacy OpenGL header/contexts (which you should not, prefer using imgui_impl_opengl3.cpp!!),
     #  you may need to backup/reset/restore other state, e.g. for current shader using the commented lines below.
     #  (DO NOT MODIFY THIS FILE! Add the code in your calling function)
     #    GLint last_program;
-    #    glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+    #    glGetIntegerv(GL::CURRENT_PROGRAM, &last_program);
     #    glUseProgram(0);
     #    ImGui_ImplOpenGL2_RenderDrawData(...);
     #    glUseProgram(last_program)
     #  There are potentially many more states you could need to clear/setup that we can't access from default headers.
-    #  e.g. glBindBuffer(GL_ARRAY_BUFFER, 0), glDisable(GL_TEXTURE_CUBE_MAP).
+    #  e.g. glBindBuffer(GL::ARRAY_BUFFER, 0), glDisable(GL::TEXTURE_CUBE_MAP).
 
     #  Setup viewport, orthographic projection matrix
     #  Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.
-    glViewport(0, 0, fb_width, fb_height)
-    glMatrixMode(GL_PROJECTION)
-    glPushMatrix()
-    glLoadIdentity()
-    glOrtho(draw_data[:DisplayPos][:x], draw_data[:DisplayPos][:x] + draw_data[:DisplaySize][:x], draw_data[:DisplayPos][:y] + draw_data[:DisplaySize][:y], draw_data[:DisplayPos][:y], -1.0, +1.0)
-    glMatrixMode(GL_MODELVIEW)
-    glPushMatrix()
-    glLoadIdentity()
+    GL.Viewport(0, 0, fb_width, fb_height)
+    GL.MatrixMode(GL::PROJECTION)
+    GL.PushMatrix()
+    GL.LoadIdentity()
+    GL.Ortho(draw_data[:DisplayPos][:x], draw_data[:DisplayPos][:x] + draw_data[:DisplaySize][:x], draw_data[:DisplayPos][:y] + draw_data[:DisplaySize][:y], draw_data[:DisplayPos][:y], -1.0, +1.0)
+    GL.MatrixMode(GL::MODELVIEW)
+    GL.PushMatrix()
+    GL.LoadIdentity()
   end
 
   def self.ImplOpenGL2_CreateFontsTexture()
@@ -174,28 +173,28 @@ module ImGui
     #  Upload texture to graphics system
     last_texture = ' ' * 4
     @@g_FontTexture = ' ' * 4
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, last_texture)
-    glGenTextures(1, @@g_FontTexture)
-    glBindTexture(GL_TEXTURE_2D, @@g_FontTexture.unpack1('L'))
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0)
+    GL.GetIntegerv(GL::TEXTURE_BINDING_2D, last_texture)
+    GL.GenTextures(1, @@g_FontTexture)
+    GL.BindTexture(GL::TEXTURE_2D, @@g_FontTexture.unpack1('L'))
+    GL.TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_MIN_FILTER, GL::LINEAR)
+    GL.TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_MAG_FILTER, GL::LINEAR)
+    GL.PixelStorei(GL::UNPACK_ROW_LENGTH, 0)
     # Ruby/FFI <-> Fiddle pointer exchange
     pixels_ptr = Fiddle::Pointer.new(pixels.read_pointer.address)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.read_uint, height.read_uint, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels_ptr)
+    GL.TexImage2D(GL::TEXTURE_2D, 0, GL::RGBA, width.read_uint, height.read_uint, 0, GL::RGBA, GL::UNSIGNED_BYTE, pixels_ptr)
 
     #  Store our identifier
     io[:Fonts][:TexID] = @@g_FontTexture.unpack1('L')
 
     #  Restore state
-    glBindTexture(GL_TEXTURE_2D, last_texture.unpack1('L'))
+    GL.BindTexture(GL::TEXTURE_2D, last_texture.unpack1('L'))
 
     return true
   end
 
   def self.ImplOpenGL2_DestroyFontsTexture()
     if @@g_FontTexture != 0
-      glDeleteTextures(1, @@g_FontTexture)
+      GL.DeleteTextures(1, @@g_FontTexture)
       io = ImGuiIO.new(ImGui::GetIO())
       io[:Fonts][:TexID] = 0
       @@g_FontTexture = 0

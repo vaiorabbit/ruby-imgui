@@ -20,7 +20,7 @@ module ImGuiDemo
 
       cfginfos_frame = ImVec2.create(0, ImGui::GetTextLineHeightWithSpacing() * 18)
       copy_to_clipboard = ImGui::Button("Copy to clipboard")
-      ImGui::BeginChildFrame(ImGui::GetIDStr("cfginfos"), cfginfos_frame, ImGuiWindowFlags_NoMove)
+      ImGui::BeginChildFrame(ImGui::GetID("cfginfos"), cfginfos_frame, ImGuiWindowFlags_NoMove)
       max_depth = -1
       ImGui::LogToClipboard(max_depth) if copy_to_clipboard
 

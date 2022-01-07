@@ -43,6 +43,8 @@ if __FILE__ == $0
   SDL_GL_MakeCurrent(window, gl_context)
   SDL_GL_SetSwapInterval(1) # Enable vsync
 
+  GL.load_lib()
+
   japanese_utf8_text = IO.readlines('./jpfont/jpfont.txt').join()
 
   # Setup Dear ImGui context

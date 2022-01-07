@@ -1,38 +1,36 @@
+require 'opengl'
+require 'glfw'
+
 require_relative '../../lib/imgui_impl_opengl2'
 require_relative '../../lib/imgui_impl_opengl3'
 require_relative '../../lib/imgui_impl_glfw'
 
-def opengl_bindings_gem_available?
-  Gem::Specification.find_by_name('opengl-bindings')
-rescue Gem::LoadError
-  false
-rescue
-  Gem.available?('opengl-bindings')
-end
+module SampleUtil
 
-if opengl_bindings_gem_available?
-  # puts("Loading from Gem system path.")
-  require 'opengl'
-  require 'glfw'
-else
-  # puts("Loaging from local path.")
-  require '../../lib/opengl'
-  require '../../lib/glfw'
-end
+  def self.gl_library_path()
+    case GL.get_platform
+    when :OPENGL_PLATFORM_WINDOWS
+      'C:/Windows/System32/opengl32.dll'
+    when :OPENGL_PLATFORM_MACOSX
+      '/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib'
+    when :OPENGL_PLATFORM_LINUX
+      '/usr/lib/x86_64-linux-gnulibGL.so' # note tested
+    else
+      raise RuntimeError, "Unsupported platform."
+    end
+  end
 
-case OpenGL.get_platform
-when :OPENGL_PLATFORM_WINDOWS
-  OpenGL.load_lib('opengl32.dll', 'C:/Windows/System32')
-  GLFW.load_lib('glfw3.dll', Dir.pwd)
-when :OPENGL_PLATFORM_MACOSX
-  OpenGL.load_lib('libGL.dylib', '/System/Library/Frameworks/OpenGL.framework/Libraries')
-  GLFW.load_lib('libglfw.dylib', Dir.pwd)
-when :OPENGL_PLATFORM_LINUX
-  OpenGL.load_lib('libGL.so', '/usr/lib/x86_64-linux-gnu')
-  GLFW.load_lib('libglfw.so', Dir.pwd)
-else
-  raise RuntimeError, "Unsupported platform."
-end
+  def self.glfw_library_path()
+    case GL.get_platform
+    when :OPENGL_PLATFORM_WINDOWS
+      Dir.pwd + '/glfw3.dll'
+    when :OPENGL_PLATFORM_MACOSX
+      './libglfw.dylib'
+    when :OPENGL_PLATFORM_LINUX
+      '/usr/lib/x86_64-linux-gnu/libglfw.so' # not testeda
+    else
+      raise RuntimeError, "Unsupported platform."
+    end
+  end
 
-include OpenGL
-include GLFW
+end
