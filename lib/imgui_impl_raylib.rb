@@ -21,17 +21,17 @@ module ImGui
 
     # Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
     if io[:WantSetMousePos]
-      SetMousePosition(io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
+      Raylib.SetMousePosition(io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
     else
       io[:MousePos][:x] = -Float::MAX
       io[:MousePos][:y] = -Float::MAX
     end
 
-    io[:MouseDown][0] = IsMouseButtonDown(Raylib::MOUSE_BUTTON_LEFT)
-    io[:MouseDown][1] = IsMouseButtonDown(Raylib::MOUSE_BUTTON_MIDDLE)
-    io[:MouseDown][2] = IsMouseButtonDown(Raylib::MOUSE_BUTTON_RIGHT)
+    io[:MouseDown][0] = Raylib.IsMouseButtonDown(Raylib::MOUSE_BUTTON_LEFT)
+    io[:MouseDown][1] = Raylib.IsMouseButtonDown(Raylib::MOUSE_BUTTON_MIDDLE)
+    io[:MouseDown][2] = Raylib.IsMouseButtonDown(Raylib::MOUSE_BUTTON_RIGHT)
 
-    mouse_pos = GetMousePosition()
+    mouse_pos = Raylib.GetMousePosition()
     io[:MousePos][:x] = mouse_pos[:x]
     io[:MousePos][:y] = mouse_pos[:y]
   end
@@ -42,9 +42,9 @@ module ImGui
     return if (io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange)
 
     if io[:MouseDrawCursor] || ImGui::GetMouseCursor() == ImGuiMouseCursor_None
-      HideCursor() # Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
+      Raylib.HideCursor() # Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
     else
-      ShowCursor() # Show OS mouse cursor
+      Raylib.ShowCursor() # Show OS mouse cursor
     end
   end
 
@@ -63,11 +63,11 @@ module ImGui
     end
 
     #  Setup display size (every frame to accommodate for window resizing)
-    io[:DisplaySize][:x] = GetScreenWidth()
-    io[:DisplaySize][:y] = GetScreenHeight()
+    io[:DisplaySize][:x] = Raylib.GetScreenWidth()
+    io[:DisplaySize][:y] = Raylib.GetScreenHeight()
 
     # Setup time step
-    current_time = GetTime()
+    current_time = Raylib.GetTime()
 
     io[:DeltaTime] = @@g_Time > 0 ? (current_time - @@g_Time).to_f : 1.0 / 60.0
     @@g_Time = current_time
@@ -75,7 +75,7 @@ module ImGui
     ImplRaylib_UpdateMousePosAndButtons()
     ImplRaylib_UpdateMouseCursor()
 
-    wheel_y = GetMouseWheelMove()
+    wheel_y = Raylib.GetMouseWheelMove()
     io[:MouseWheel] += 1 if wheel_y > 0
     io[:MouseWheel] -= 1 if wheel_y < 0
     io[:MouseWheelH] = 0 # [TODO] Get wheel tilt from Raylib
@@ -204,14 +204,14 @@ module ImGui
   def self.ImplRaylib_ProcessKeyboard()
     io = ImGuiIO.new(ImGui::GetIO())
 
-    io[:KeyShift] = IsKeyDown(Raylib::KEY_RIGHT_SHIFT) || IsKeyDown(Raylib::KEY_LEFT_SHIFT)
-    io[:KeyCtrl] = IsKeyDown(Raylib::KEY_RIGHT_CONTROL) || IsKeyDown(Raylib::KEY_LEFT_CONTROL)
-    io[:KeyAlt] = IsKeyDown(Raylib::KEY_RIGHT_ALT) || IsKeyDown(Raylib::KEY_LEFT_ALT)
-    io[:KeySuper] = IsKeyDown(Raylib::KEY_RIGHT_SUPER) || IsKeyDown(Raylib::KEY_LEFT_SUPER) # [TODO] io.KeySuper = false on _WIN32
+    io[:KeyShift] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_SHIFT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SHIFT)
+    io[:KeyCtrl] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_CONTROL) || Raylib.IsKeyDown(Raylib::KEY_LEFT_CONTROL)
+    io[:KeyAlt] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_ALT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_ALT)
+    io[:KeySuper] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_SUPER) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SUPER) # [TODO] io.KeySuper = false on _WIN32
 
-    KEY_IDS.each { |key| io[:KeysDown][key] = Raylib::IsKeyDown(key) }
+    KEY_IDS.each { |key| io[:KeysDown][key] = Raylib.IsKeyDown(key) }
 
-    keyPressed = Raylib::GetKeyPressed()
+    keyPressed = Raylib.GetKeyPressed()
     io.AddInputCharacter(keyPressed) if keyPressed > 0
 
     return true
@@ -253,7 +253,7 @@ module ImGui
 
     # [TODO] Support ClipboardText
 
-    mouse_pos = GetMousePosition()
+    mouse_pos = Raylib.GetMousePosition()
     io[:MousePos][:x] = mouse_pos[:x]
     io[:MousePos][:y] = mouse_pos[:y]
 
@@ -262,14 +262,14 @@ module ImGui
 
   # [INTERNAL]
   def self.set_vertex(xy, uv, color)
-    rlColor4ub(color[0], color[1], color[2], color[3])
-    rlTexCoord2f(uv[0], uv[1])
-    rlVertex2f(xy[0], xy[1])
+    Raylib.rlColor4ub(color[0], color[1], color[2], color[3])
+    Raylib.rlTexCoord2f(uv[0], uv[1])
+    Raylib.rlVertex2f(xy[0], xy[1])
   end
 
   def self.ImplRaylib_RenderDrawData(draw_data_raw)
     draw_data = ImDrawData.new(draw_data_raw)
-    rlDisableBackfaceCulling()
+    Raylib.rlDisableBackfaceCulling()
 
     clip_offset = draw_data[:DisplayPos]
     draw_data[:CmdListsCount].times do |n|
@@ -290,15 +290,15 @@ module ImGui
           rect_w = rect_max_x - rect_min_x
           rect_h = rect_max_y - rect_min_y
 
-          BeginScissorMode(rect_min_x, rect_min_y, rect_w, rect_h)
+          Raylib.BeginScissorMode(rect_min_x, rect_min_y, rect_w, rect_h)
 
           # Render triangles
           indices = idx_buffer + FFI.type_size(:ImDrawIdx) * pcmd[:IdxOffset]
           vertices = vtx_buffer + ImDrawVert.size * pcmd[:VtxOffset]
           0.step(pcmd[:ElemCount] - 3, 3) do |i|
-            rlPushMatrix()
-              rlBegin(RL_TRIANGLES)
-                rlSetTexture(pcmd[:TextureId].read_uint32)
+            Raylib.rlPushMatrix()
+              Raylib.rlBegin(Raylib::RL_TRIANGLES)
+                Raylib.rlSetTexture(pcmd[:TextureId].read_uint32)
 
                 index = indices.get_array_of_uint16(i * FFI::type_size(:ImDrawIdx), 3)
 
@@ -320,15 +320,15 @@ module ImGui
                 color = vertices + (base_offset + ImDrawVert.offset_of(:col))
                 set_vertex(xy.read_array_of_float(2), uv.read_array_of_float(2), color.read_array_of_uint8(4))
 
-                rlSetTexture(0)
-              rlEnd()
-            rlPopMatrix()
+                Raylib.rlSetTexture(0)
+              Raylib.rlEnd()
+            Raylib.rlPopMatrix()
           end
-          EndScissorMode()
+          Raylib.EndScissorMode()
         end
       end
     end
-    rlEnableBackfaceCulling()
+    Raylib.rlEnableBackfaceCulling()
   end
 
 end
