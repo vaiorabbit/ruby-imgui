@@ -1,3 +1,7 @@
+2022-01-08  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* imgui_impl_raylib.rb: Added. Use this with Ruby raylib-bindings ( https://github.com/vaiorabbit/raylib-bindings )
+
 2022-01-07  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Use opengl-bindings2
