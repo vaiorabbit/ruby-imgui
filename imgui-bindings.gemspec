@@ -2,22 +2,24 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-Gem::Specification.new do |gem|
-  gem.name          = "imgui-bindings"
-  gem.version       = "0.0.2"
-  gem.authors       = ["vaiorabbit"]
-  gem.email         = ["vaiorabbit@gmail.com"]
-  gem.summary       = %q{Bindings for Dear ImGui}
-  gem.homepage      = "https://github.com/vaiorabbit/ruby-imgui"
-  gem.require_paths = ["lib"]
-  gem.license       = "Zlib"
-  gem.description   = <<-DESC
-Ruby bindings for Dear ImGui.
+Gem::Specification.new do |spec|
+  spec.name          = "imgui-bindings"
+  spec.version       = "0.0.2"
+  spec.authors       = ["vaiorabbit"]
+  spec.email         = ["vaiorabbit@gmail.com"]
+  spec.summary       = %q{Bindings for Dear ImGui}
+  spec.homepage      = "https://github.com/vaiorabbit/ruby-imgui"
+  spec.require_paths = ["lib"]
+  spec.license       = "Zlib"
+  spec.description   = <<-DESC
+Ruby bindings for Dear ImGui ( https://github.com/ocornut/imgui ).
   DESC
 
-  gem.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = '>= 2.6.0'
 
-  gem.files = Dir.glob("lib/*.rb") +
-              Dir.glob("lib/*.dll") + Dir.glob("lib/*.dylib") +
-              ["README.md", "LICENSE.txt", "ChangeLog"]
+  spec.add_runtime_dependency 'ffi', '~> 1.15'
+  spec.add_runtime_dependency 'opengl-bindings2', '~> 2'
+
+  spec.files = Dir.glob("lib/*") +
+               ["README.md", "LICENSE.txt", "ChangeLog"]
 end
