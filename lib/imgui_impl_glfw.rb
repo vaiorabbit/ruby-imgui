@@ -23,7 +23,7 @@ module ImGui
 
   @@ImplGlfw_MouseButtonCallback = GLFW::create_callback(:GLFWmousebuttonfun) do |window, button, action, mods|
     unless @@g_PrevUserCallbackMousebutton.null?
-      userfunc = Fiddle::Function.new(@@g_PrevUserCallbackMousebutton, GLFWmousebuttonfun_cb_args, GLFWmousebuttonfun_cb_retval)
+      userfunc = Fiddle::Function.new(@@g_PrevUserCallbackMousebutton, GLFW::GLFWmousebuttonfun_cb_args, GLFW::GLFWmousebuttonfun_cb_retval)
       userfunc.call(window, button, action, mods)
     end
 
@@ -34,7 +34,7 @@ module ImGui
 
   @@ImplGlfw_ScrollCallback = GLFW::create_callback(:GLFWscrollfun) do |window, xoffset, yoffset|
     unless @@g_PrevUserCallbackScroll.null?
-      userfunc = Fiddle::Function.new(@@g_PrevUserCallbackScroll, GLFWscrollfun_cb_args, GLFWscrollfun_cb_retval)
+      userfunc = Fiddle::Function.new(@@g_PrevUserCallbackScroll, GLFW::GLFWscrollfun_cb_args, GLFW::GLFWscrollfun_cb_retval)
       userfunc.call(window, xoffset, yoffset)
     end
 
@@ -45,7 +45,7 @@ module ImGui
 
   @@ImplGlfw_KeyCallback = GLFW::create_callback(:GLFWkeyfun) do |window, key, scancode, action, mods|
     unless @@g_PrevUserCallbackKey.null?
-      userfunc = Fiddle::Function.new(@@g_PrevUserCallbackKey, GLFWkeyfun_cb_args, GLFWkeyfun_cb_retval)
+      userfunc = Fiddle::Function.new(@@g_PrevUserCallbackKey, GLFW::GLFWkeyfun_cb_args, GLFW::GLFWkeyfun_cb_retval)
       userfunc.call(window, key, scancode, action, mods)
     end
 
@@ -62,7 +62,7 @@ module ImGui
 
   @@ImGui_ImplGlfw_CursorEnterCallback = GLFW::create_callback(:GLFWcursorenterfun) do |window, entered|
      unless @@g_PrevUserCallbackCursorEnter.null?
-       userfunc = Fiddle::Function.new(@@g_PrevUserCallbackCursorEnter, GLFWcursorenterfun_cb_args, GLFWcursorenterfun_cb_retval)
+       userfunc = Fiddle::Function.new(@@g_PrevUserCallbackCursorEnter, GLFW::GLFWcursorenterfun_cb_args, GLFW::GLFWcursorenterfun_cb_retval)
        userfunc.call(window, entered)
      end
 
