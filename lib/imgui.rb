@@ -304,29 +304,146 @@ ImGuiKeyModFlags_Alt = 4 # 1 << 2
 ImGuiKeyModFlags_Super = 8 # 1 << 3
 
 # ImGuiKey_
-ImGuiKey_Tab = 0 # 0
-ImGuiKey_LeftArrow = 1 # 1
-ImGuiKey_RightArrow = 2 # 2
-ImGuiKey_UpArrow = 3 # 3
-ImGuiKey_DownArrow = 4 # 4
-ImGuiKey_PageUp = 5 # 5
-ImGuiKey_PageDown = 6 # 6
-ImGuiKey_Home = 7 # 7
-ImGuiKey_End = 8 # 8
-ImGuiKey_Insert = 9 # 9
-ImGuiKey_Delete = 10 # 10
-ImGuiKey_Backspace = 11 # 11
-ImGuiKey_Space = 12 # 12
-ImGuiKey_Enter = 13 # 13
-ImGuiKey_Escape = 14 # 14
-ImGuiKey_KeyPadEnter = 15 # 15
-ImGuiKey_A = 16 # 16
-ImGuiKey_C = 17 # 17
-ImGuiKey_V = 18 # 18
-ImGuiKey_X = 19 # 19
-ImGuiKey_Y = 20 # 20
-ImGuiKey_Z = 21 # 21
-ImGuiKey_COUNT = 22 # 22
+ImGuiKey_None = 0 # 0
+ImGuiKey_Tab = 512 # 512
+ImGuiKey_LeftArrow = 513 # 513
+ImGuiKey_RightArrow = 514 # 514
+ImGuiKey_UpArrow = 515 # 515
+ImGuiKey_DownArrow = 516 # 516
+ImGuiKey_PageUp = 517 # 517
+ImGuiKey_PageDown = 518 # 518
+ImGuiKey_Home = 519 # 519
+ImGuiKey_End = 520 # 520
+ImGuiKey_Insert = 521 # 521
+ImGuiKey_Delete = 522 # 522
+ImGuiKey_Backspace = 523 # 523
+ImGuiKey_Space = 524 # 524
+ImGuiKey_Enter = 525 # 525
+ImGuiKey_Escape = 526 # 526
+ImGuiKey_LeftCtrl = 527 # 527
+ImGuiKey_LeftShift = 528 # 528
+ImGuiKey_LeftAlt = 529 # 529
+ImGuiKey_LeftSuper = 530 # 530
+ImGuiKey_RightCtrl = 531 # 531
+ImGuiKey_RightShift = 532 # 532
+ImGuiKey_RightAlt = 533 # 533
+ImGuiKey_RightSuper = 534 # 534
+ImGuiKey_Menu = 535 # 535
+ImGuiKey_0 = 536 # 536
+ImGuiKey_1 = 537 # 537
+ImGuiKey_2 = 538 # 538
+ImGuiKey_3 = 539 # 539
+ImGuiKey_4 = 540 # 540
+ImGuiKey_5 = 541 # 541
+ImGuiKey_6 = 542 # 542
+ImGuiKey_7 = 543 # 543
+ImGuiKey_8 = 544 # 544
+ImGuiKey_9 = 545 # 545
+ImGuiKey_A = 546 # 546
+ImGuiKey_B = 547 # 547
+ImGuiKey_C = 548 # 548
+ImGuiKey_D = 549 # 549
+ImGuiKey_E = 550 # 550
+ImGuiKey_F = 551 # 551
+ImGuiKey_G = 552 # 552
+ImGuiKey_H = 553 # 553
+ImGuiKey_I = 554 # 554
+ImGuiKey_J = 555 # 555
+ImGuiKey_K = 556 # 556
+ImGuiKey_L = 557 # 557
+ImGuiKey_M = 558 # 558
+ImGuiKey_N = 559 # 559
+ImGuiKey_O = 560 # 560
+ImGuiKey_P = 561 # 561
+ImGuiKey_Q = 562 # 562
+ImGuiKey_R = 563 # 563
+ImGuiKey_S = 564 # 564
+ImGuiKey_T = 565 # 565
+ImGuiKey_U = 566 # 566
+ImGuiKey_V = 567 # 567
+ImGuiKey_W = 568 # 568
+ImGuiKey_X = 569 # 569
+ImGuiKey_Y = 570 # 570
+ImGuiKey_Z = 571 # 571
+ImGuiKey_F1 = 572 # 572
+ImGuiKey_F2 = 573 # 573
+ImGuiKey_F3 = 574 # 574
+ImGuiKey_F4 = 575 # 575
+ImGuiKey_F5 = 576 # 576
+ImGuiKey_F6 = 577 # 577
+ImGuiKey_F7 = 578 # 578
+ImGuiKey_F8 = 579 # 579
+ImGuiKey_F9 = 580 # 580
+ImGuiKey_F10 = 581 # 581
+ImGuiKey_F11 = 582 # 582
+ImGuiKey_F12 = 583 # 583
+ImGuiKey_Apostrophe = 584 # 584
+ImGuiKey_Comma = 585 # 585
+ImGuiKey_Minus = 586 # 586
+ImGuiKey_Period = 587 # 587
+ImGuiKey_Slash = 588 # 588
+ImGuiKey_Semicolon = 589 # 589
+ImGuiKey_Equal = 590 # 590
+ImGuiKey_LeftBracket = 591 # 591
+ImGuiKey_Backslash = 592 # 592
+ImGuiKey_RightBracket = 593 # 593
+ImGuiKey_GraveAccent = 594 # 594
+ImGuiKey_CapsLock = 595 # 595
+ImGuiKey_ScrollLock = 596 # 596
+ImGuiKey_NumLock = 597 # 597
+ImGuiKey_PrintScreen = 598 # 598
+ImGuiKey_Pause = 599 # 599
+ImGuiKey_Keypad0 = 600 # 600
+ImGuiKey_Keypad1 = 601 # 601
+ImGuiKey_Keypad2 = 602 # 602
+ImGuiKey_Keypad3 = 603 # 603
+ImGuiKey_Keypad4 = 604 # 604
+ImGuiKey_Keypad5 = 605 # 605
+ImGuiKey_Keypad6 = 606 # 606
+ImGuiKey_Keypad7 = 607 # 607
+ImGuiKey_Keypad8 = 608 # 608
+ImGuiKey_Keypad9 = 609 # 609
+ImGuiKey_KeypadDecimal = 610 # 610
+ImGuiKey_KeypadDivide = 611 # 611
+ImGuiKey_KeypadMultiply = 612 # 612
+ImGuiKey_KeypadSubtract = 613 # 613
+ImGuiKey_KeypadAdd = 614 # 614
+ImGuiKey_KeypadEnter = 615 # 615
+ImGuiKey_KeypadEqual = 616 # 616
+ImGuiKey_GamepadStart = 617 # 617
+ImGuiKey_GamepadBack = 618 # 618
+ImGuiKey_GamepadFaceUp = 619 # 619
+ImGuiKey_GamepadFaceDown = 620 # 620
+ImGuiKey_GamepadFaceLeft = 621 # 621
+ImGuiKey_GamepadFaceRight = 622 # 622
+ImGuiKey_GamepadDpadUp = 623 # 623
+ImGuiKey_GamepadDpadDown = 624 # 624
+ImGuiKey_GamepadDpadLeft = 625 # 625
+ImGuiKey_GamepadDpadRight = 626 # 626
+ImGuiKey_GamepadL1 = 627 # 627
+ImGuiKey_GamepadR1 = 628 # 628
+ImGuiKey_GamepadL2 = 629 # 629
+ImGuiKey_GamepadR2 = 630 # 630
+ImGuiKey_GamepadL3 = 631 # 631
+ImGuiKey_GamepadR3 = 632 # 632
+ImGuiKey_GamepadLStickUp = 633 # 633
+ImGuiKey_GamepadLStickDown = 634 # 634
+ImGuiKey_GamepadLStickLeft = 635 # 635
+ImGuiKey_GamepadLStickRight = 636 # 636
+ImGuiKey_GamepadRStickUp = 637 # 637
+ImGuiKey_GamepadRStickDown = 638 # 638
+ImGuiKey_GamepadRStickLeft = 639 # 639
+ImGuiKey_GamepadRStickRight = 640 # 640
+ImGuiKey_ModCtrl = 641 # 641
+ImGuiKey_ModShift = 642 # 642
+ImGuiKey_ModAlt = 643 # 643
+ImGuiKey_ModSuper = 644 # 644
+ImGuiKey_COUNT = 645 # 645
+ImGuiKey_NamedKey_BEGIN = 512 # 512
+ImGuiKey_NamedKey_END = 645 # ImGuiKey_COUNT
+ImGuiKey_NamedKey_COUNT = 133 # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
+ImGuiKey_KeysData_SIZE = 645 # ImGuiKey_COUNT
+ImGuiKey_KeysData_OFFSET = 0 # 0
 
 # ImGuiMouseButton_
 ImGuiMouseButton_Left = 0 # 0
@@ -369,7 +486,6 @@ ImGuiNavInput_KeyRight_ = 17 # 17
 ImGuiNavInput_KeyUp_ = 18 # 18
 ImGuiNavInput_KeyDown_ = 19 # 19
 ImGuiNavInput_COUNT = 20 # 20
-ImGuiNavInput_InternalStart_ = 16 # ImGuiNavInput_KeyLeft_
 
 # ImGuiPopupFlags_
 ImGuiPopupFlags_None = 0 # 0
@@ -1079,6 +1195,15 @@ class ImFontAtlas < FFI::Struct
 
 end
 
+class ImGuiKeyData < FFI::Struct
+  layout(
+    :Down, :bool,
+    :DownDuration, :float,
+    :DownDurationPrev, :float,
+    :AnalogValue, :float
+  )
+end
+
 class ImColor < FFI::Struct
   layout(
     :Value, ImVec4.by_value
@@ -1222,7 +1347,6 @@ class ImGuiIO < FFI::Struct
     :MouseDoubleClickTime, :float,
     :MouseDoubleClickMaxDist, :float,
     :MouseDragThreshold, :float,
-    :KeyMap, [:int, 22],
     :KeyRepeatDelay, :float,
     :KeyRepeatRate, :float,
     :UserData, :pointer,
@@ -1233,6 +1357,7 @@ class ImGuiIO < FFI::Struct
     :DisplayFramebufferScale, ImVec2.by_value,
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
+    :ConfigInputTrickleEventQueue, :bool,
     :ConfigInputTextCursorBlink, :bool,
     :ConfigDragClickToInputText, :bool,
     :ConfigWindowsResizeFromEdges, :bool,
@@ -1246,18 +1371,8 @@ class ImGuiIO < FFI::Struct
     :GetClipboardTextFn, :pointer,
     :SetClipboardTextFn, :pointer,
     :ClipboardUserData, :pointer,
-    :ImeSetInputScreenPosFn, :pointer,
-    :ImeWindowHandle, :pointer,
-    :MousePos, ImVec2.by_value,
-    :MouseDown, [:bool, 5],
-    :MouseWheel, :float,
-    :MouseWheelH, :float,
-    :KeyCtrl, :bool,
-    :KeyShift, :bool,
-    :KeyAlt, :bool,
-    :KeySuper, :bool,
-    :KeysDown, [:bool, 512],
-    :NavInputs, [:float, 20],
+    :SetPlatformImeDataFn, :pointer,
+    :_UnusedPadding, :pointer,
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
     :WantTextInput, :bool,
@@ -1272,9 +1387,21 @@ class ImGuiIO < FFI::Struct
     :MetricsActiveWindows, :int,
     :MetricsActiveAllocations, :int,
     :MouseDelta, ImVec2.by_value,
-    :WantCaptureMouseUnlessPopupClose, :bool,
+    :KeyMap, [:int, 645],
+    :KeysDown, [:bool, 512],
+    :MousePos, ImVec2.by_value,
+    :MouseDown, [:bool, 5],
+    :MouseWheel, :float,
+    :MouseWheelH, :float,
+    :KeyCtrl, :bool,
+    :KeyShift, :bool,
+    :KeyAlt, :bool,
+    :KeySuper, :bool,
+    :NavInputs, [:float, 20],
     :KeyMods, :int,
     :KeyModsPrev, :int,
+    :KeysData, [ImGuiKeyData.by_value, 645],
+    :WantCaptureMouseUnlessPopupClose, :bool,
     :MousePosPrev, ImVec2.by_value,
     :MouseClickedPos, [ImVec2.by_value, 5],
     :MouseClickedTime, [:double, 5],
@@ -1287,14 +1414,13 @@ class ImGuiIO < FFI::Struct
     :MouseDownOwnedUnlessPopupClose, [:bool, 5],
     :MouseDownDuration, [:float, 5],
     :MouseDownDurationPrev, [:float, 5],
-    :MouseDragMaxDistanceAbs, [ImVec2.by_value, 5],
     :MouseDragMaxDistanceSqr, [:float, 5],
-    :KeysDownDuration, [:float, 512],
-    :KeysDownDurationPrev, [:float, 512],
     :NavInputsDownDuration, [:float, 20],
     :NavInputsDownDurationPrev, [:float, 20],
     :PenPressure, :float,
     :AppFocusLost, :bool,
+    :BackendUsingLegacyKeyArrays, :char,
+    :BackendUsingLegacyNavInputArray, :bool,
     :InputQueueSurrogate, :ushort,
     :InputQueueCharacters, ImVector.by_value
   )
@@ -1315,6 +1441,26 @@ class ImGuiIO < FFI::Struct
     ImGui::ImGuiIO_AddInputCharactersUTF8(self, str)
   end
 
+  def AddKeyAnalogEvent(key, down, v)
+    ImGui::ImGuiIO_AddKeyAnalogEvent(self, key, down, v)
+  end
+
+  def AddKeyEvent(key, down)
+    ImGui::ImGuiIO_AddKeyEvent(self, key, down)
+  end
+
+  def AddMouseButtonEvent(button, down)
+    ImGui::ImGuiIO_AddMouseButtonEvent(self, button, down)
+  end
+
+  def AddMousePosEvent(x, y)
+    ImGui::ImGuiIO_AddMousePosEvent(self, x, y)
+  end
+
+  def AddMouseWheelEvent(wh_x, wh_y)
+    ImGui::ImGuiIO_AddMouseWheelEvent(self, wh_x, wh_y)
+  end
+
   def ClearInputCharacters()
     ImGui::ImGuiIO_ClearInputCharacters(self)
   end
@@ -1325,6 +1471,10 @@ class ImGuiIO < FFI::Struct
 
   def self.create()
     return ImGuiIO.new(ImGui::ImGuiIO_ImGuiIO())
+  end
+
+  def SetKeyEventNativeData(key, native_keycode, native_scancode, native_legacy_index = -1)
+    ImGui::ImGuiIO_SetKeyEventNativeData(self, key, native_keycode, native_scancode, native_legacy_index)
   end
 
   def destroy()
@@ -1347,6 +1497,14 @@ class ImGuiInputTextCallbackData < FFI::Struct
     :CursorPos, :int,
     :SelectionStart, :int,
     :SelectionEnd, :int
+  )
+end
+
+class ImGuiPlatformImeData < FFI::Struct
+  layout(
+    :WantVisible, :bool,
+    :InputPos, ImVec2.by_value,
+    :InputLineHeight, :float
   )
 end
 
@@ -1506,7 +1664,8 @@ class ImGuiViewport < FFI::Struct
     :Pos, ImVec2.by_value,
     :Size, ImVec2.by_value,
     :WorkPos, ImVec2.by_value,
-    :WorkSize, ImVec2.by_value
+    :WorkSize, ImVec2.by_value,
+    :PlatformHandleRaw, :pointer
   )
 end
 
@@ -1675,9 +1834,15 @@ module ImGui
       :ImGuiIO_AddInputCharacter,
       :ImGuiIO_AddInputCharacterUTF16,
       :ImGuiIO_AddInputCharactersUTF8,
+      :ImGuiIO_AddKeyAnalogEvent,
+      :ImGuiIO_AddKeyEvent,
+      :ImGuiIO_AddMouseButtonEvent,
+      :ImGuiIO_AddMousePosEvent,
+      :ImGuiIO_AddMouseWheelEvent,
       :ImGuiIO_ClearInputCharacters,
       :ImGuiIO_ClearInputKeys,
       :ImGuiIO_ImGuiIO,
+      :ImGuiIO_SetKeyEventNativeData,
       :ImGuiIO_destroy,
       :ImGuiStyle_ImGuiStyle,
       :ImGuiStyle_ScaleAllSizes,
@@ -1815,6 +1980,7 @@ module ImGui
       :igGetItemRectMin,
       :igGetItemRectSize,
       :igGetKeyIndex,
+      :igGetKeyName,
       :igGetKeyPressedAmount,
       :igGetMainViewport,
       :igGetMouseClickedCount,
@@ -2166,9 +2332,15 @@ module ImGui
       :ImGuiIO_AddInputCharacter => [:pointer, :uint],
       :ImGuiIO_AddInputCharacterUTF16 => [:pointer, :ushort],
       :ImGuiIO_AddInputCharactersUTF8 => [:pointer, :pointer],
+      :ImGuiIO_AddKeyAnalogEvent => [:pointer, :int, :bool, :float],
+      :ImGuiIO_AddKeyEvent => [:pointer, :int, :bool],
+      :ImGuiIO_AddMouseButtonEvent => [:pointer, :int, :bool],
+      :ImGuiIO_AddMousePosEvent => [:pointer, :float, :float],
+      :ImGuiIO_AddMouseWheelEvent => [:pointer, :float, :float],
       :ImGuiIO_ClearInputCharacters => [:pointer],
       :ImGuiIO_ClearInputKeys => [:pointer],
       :ImGuiIO_ImGuiIO => [],
+      :ImGuiIO_SetKeyEventNativeData => [:pointer, :int, :int, :int, :int],
       :ImGuiIO_destroy => [:pointer],
       :ImGuiStyle_ImGuiStyle => [],
       :ImGuiStyle_ScaleAllSizes => [:pointer, :float],
@@ -2306,6 +2478,7 @@ module ImGui
       :igGetItemRectMin => [:pointer],
       :igGetItemRectSize => [:pointer],
       :igGetKeyIndex => [:int],
+      :igGetKeyName => [:int],
       :igGetKeyPressedAmount => [:int, :float, :float],
       :igGetMainViewport => [],
       :igGetMouseClickedCount => [:int],
@@ -2657,9 +2830,15 @@ module ImGui
       :ImGuiIO_AddInputCharacter => :void,
       :ImGuiIO_AddInputCharacterUTF16 => :void,
       :ImGuiIO_AddInputCharactersUTF8 => :void,
+      :ImGuiIO_AddKeyAnalogEvent => :void,
+      :ImGuiIO_AddKeyEvent => :void,
+      :ImGuiIO_AddMouseButtonEvent => :void,
+      :ImGuiIO_AddMousePosEvent => :void,
+      :ImGuiIO_AddMouseWheelEvent => :void,
       :ImGuiIO_ClearInputCharacters => :void,
       :ImGuiIO_ClearInputKeys => :void,
       :ImGuiIO_ImGuiIO => :pointer,
+      :ImGuiIO_SetKeyEventNativeData => :void,
       :ImGuiIO_destroy => :void,
       :ImGuiStyle_ImGuiStyle => :pointer,
       :ImGuiStyle_ScaleAllSizes => :void,
@@ -2797,6 +2976,7 @@ module ImGui
       :igGetItemRectMin => :void,
       :igGetItemRectSize => :void,
       :igGetKeyIndex => :int,
+      :igGetKeyName => :pointer,
       :igGetKeyPressedAmount => :int,
       :igGetMainViewport => :pointer,
       :igGetMouseClickedCount => :int,
@@ -3741,16 +3921,22 @@ module ImGui
     return pOut
   end
 
-  # arg: imgui_key(ImGuiKey)
+  # arg: key(ImGuiKey)
   # ret: int
-  def self.GetKeyIndex(imgui_key)
-    igGetKeyIndex(imgui_key)
+  def self.GetKeyIndex(key)
+    igGetKeyIndex(key)
   end
 
-  # arg: key_index(int), repeat_delay(float), rate(float)
+  # arg: key(ImGuiKey)
+  # ret: pointer
+  def self.GetKeyName(key)
+    igGetKeyName(key)
+  end
+
+  # arg: key(ImGuiKey), repeat_delay(float), rate(float)
   # ret: int
-  def self.GetKeyPressedAmount(key_index, repeat_delay, rate)
-    igGetKeyPressedAmount(key_index, repeat_delay, rate)
+  def self.GetKeyPressedAmount(key, repeat_delay, rate)
+    igGetKeyPressedAmount(key, repeat_delay, rate)
   end
 
   # ret: pointer
@@ -4081,22 +4267,22 @@ module ImGui
     igIsItemVisible()
   end
 
-  # arg: user_key_index(int)
+  # arg: key(ImGuiKey)
   # ret: bool
-  def self.IsKeyDown(user_key_index)
-    igIsKeyDown(user_key_index)
+  def self.IsKeyDown(key)
+    igIsKeyDown(key)
   end
 
-  # arg: user_key_index(int), repeat(bool)
+  # arg: key(ImGuiKey), repeat(bool)
   # ret: bool
-  def self.IsKeyPressed(user_key_index, repeat = true)
-    igIsKeyPressed(user_key_index, repeat)
+  def self.IsKeyPressed(key, repeat = true)
+    igIsKeyPressed(key, repeat)
   end
 
-  # arg: user_key_index(int)
+  # arg: key(ImGuiKey)
   # ret: bool
-  def self.IsKeyReleased(user_key_index)
-    igIsKeyReleased(user_key_index)
+  def self.IsKeyReleased(key)
+    igIsKeyReleased(key)
   end
 
   # arg: button(ImGuiMouseButton), repeat(bool)

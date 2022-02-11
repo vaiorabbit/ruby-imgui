@@ -1,3 +1,8 @@
+2022-02-11  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* (macOS) ImGui 1.87
+	* imgui_impl_glfw.rb: Updated to use event API
+
 2022-01-08  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui_impl_raylib.rb: Added. Use this with Ruby raylib-bindings ( https://github.com/vaiorabbit/raylib-bindings )

@@ -27,6 +27,8 @@ module ImGuiBindings
     'unsigned int' => :uint,
     'int32_t' => :int32,
     'uint32_t' => :uint32,
+    'signed long long' => :int64,
+    'unsigned long long' => :uint64,
     'int64_t' => :int64,
     'uint64_t' => :uint64,
     'float' => :float,
