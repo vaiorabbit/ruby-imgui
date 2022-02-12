@@ -6,89 +6,33 @@ require_relative 'imgui'
 
 module ImGui
 
-  @@g_Time = 0.0 # UInt64
   @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_raylib")
+
+  # ImGui::GetCurrentContext().address => ImGui_ImplRaylib_Data
+  @@g_BackendData = Hash.new
+
+  # [INTERNAL]
+  class ImGui_ImplRaylib_Data
+    attr_accessor :time
+
+    def initialize
+      @time = 0.0
+    end
+  end
+
+  # [INTERNAL]
+  def self.ImGui_ImplRaylib_GetBackendData()
+    if ImGui::GetCurrentContext() != nil
+      @@g_BackendData[ImGui::GetCurrentContext().address]
+    else
+      nil
+    end
+  end
 
   # [TODO] Support ClipboardText
   # g_ClipboardTextData
   # ImplRaylib_GetClipboardText
   # ImplRaylib_SetClipboardText
-
-  # [INTERNAL]
-  def self.ImplRaylib_UpdateMousePosAndButtons()
-    # Update buttons
-    io = ImGuiIO.new(ImGui::GetIO())
-
-    # Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
-    if io[:WantSetMousePos]
-      Raylib.SetMousePosition(io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
-    else
-      io[:MousePos][:x] = -Float::MAX
-      io[:MousePos][:y] = -Float::MAX
-    end
-
-    io[:MouseDown][0] = Raylib.IsMouseButtonDown(Raylib::MOUSE_BUTTON_LEFT)
-    io[:MouseDown][1] = Raylib.IsMouseButtonDown(Raylib::MOUSE_BUTTON_MIDDLE)
-    io[:MouseDown][2] = Raylib.IsMouseButtonDown(Raylib::MOUSE_BUTTON_RIGHT)
-
-    mouse_pos = Raylib.GetMousePosition()
-    io[:MousePos][:x] = mouse_pos[:x]
-    io[:MousePos][:y] = mouse_pos[:y]
-  end
-
-  # [INTERNAL]
-  def self.ImplRaylib_UpdateMouseCursor()
-    io = ImGuiIO.new(ImGui::GetIO())
-    return if (io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange)
-
-    if io[:MouseDrawCursor] || ImGui::GetMouseCursor() == ImGuiMouseCursor_None
-      Raylib.HideCursor() # Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
-    else
-      Raylib.ShowCursor() # Show OS mouse cursor
-    end
-  end
-
-  #
-  # [TODO] Support ImplRaylib_UpdateGamepads
-  #
-
-  def self.ImplRaylib_Shutdown()
-  end
-
-  def self.ImplRaylib_NewFrame()
-    io = ImGuiIO.new(ImGui::GetIO())
-
-    unless io[:Fonts].IsBuilt()
-      puts "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame()."
-    end
-
-    #  Setup display size (every frame to accommodate for window resizing)
-    io[:DisplaySize][:x] = Raylib.GetScreenWidth()
-    io[:DisplaySize][:y] = Raylib.GetScreenHeight()
-
-    # Setup time step
-    current_time = Raylib.GetTime()
-
-    io[:DeltaTime] = @@g_Time > 0 ? (current_time - @@g_Time).to_f : 1.0 / 60.0
-    @@g_Time = current_time
-
-    ImplRaylib_UpdateMousePosAndButtons()
-    ImplRaylib_UpdateMouseCursor()
-
-    wheel_y = Raylib.GetMouseWheelMove()
-    io[:MouseWheel] += 1 if wheel_y > 0
-    io[:MouseWheel] -= 1 if wheel_y < 0
-    io[:MouseWheelH] = 0 # [TODO] Get wheel tilt from Raylib
-    io[:MouseWheelH] = 0 # [TODO] Get wheel tilt from Raylib
-
-    # [TODO] update gamepads
-
-    # [NOTE] rlgl does not provide glBlendFuncSeparate wrapper. So we manually set states for ImGui here.
-    #        Ref.: https://github.com/vaiorabbit/ruby-imgui/blob/05e94e6bf1969d3abf12598fef831219dca90247/lib/imgui_impl_opengl3.rb#L227-L234
-    # [TODO] Hide raw OpenGL operation
-    GL.BlendFuncSeparate(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA, GL::ONE, GL::ONE_MINUS_SRC_ALPHA)
-
-  end
 
   KEY_IDS = [
     # Alphanumeric keys
@@ -201,24 +145,201 @@ module ImGui
     Raylib::KEY_KP_EQUAL,      # Key: Keypad =
   ]
 
+  # [INTERNAL]
+  def self.ImGui_ImplRaylib_KeyToImGuiKey(key)
+    case key
+    when Raylib::KEY_TAB then ImGuiKey_Tab
+    when Raylib::KEY_LEFT then ImGuiKey_LeftArrow
+    when Raylib::KEY_RIGHT then ImGuiKey_RightArrow
+    when Raylib::KEY_UP then ImGuiKey_UpArrow
+    when Raylib::KEY_DOWN then ImGuiKey_DownArrow
+    when Raylib::KEY_PAGE_UP then ImGuiKey_PageUp
+    when Raylib::KEY_PAGE_DOWN then ImGuiKey_PageDown
+    when Raylib::KEY_HOME then ImGuiKey_Home
+    when Raylib::KEY_END then ImGuiKey_End
+    when Raylib::KEY_INSERT then ImGuiKey_Insert
+    when Raylib::KEY_DELETE then ImGuiKey_Delete
+    when Raylib::KEY_BACKSPACE then ImGuiKey_Backspace
+    when Raylib::KEY_SPACE then ImGuiKey_Space
+    when Raylib::KEY_ENTER then ImGuiKey_Enter
+    when Raylib::KEY_ESCAPE then ImGuiKey_Escape
+    when Raylib::KEY_APOSTROPHE then ImGuiKey_Apostrophe
+    when Raylib::KEY_COMMA then ImGuiKey_Comma
+    when Raylib::KEY_MINUS then ImGuiKey_Minus
+    when Raylib::KEY_PERIOD then ImGuiKey_Period
+    when Raylib::KEY_SLASH then ImGuiKey_Slash
+    when Raylib::KEY_SEMICOLON then ImGuiKey_Semicolon
+    when Raylib::KEY_EQUAL then ImGuiKey_Equal
+    when Raylib::KEY_LEFT_BRACKET then ImGuiKey_LeftBracket
+    when Raylib::KEY_BACKSLASH then ImGuiKey_Backslash
+    when Raylib::KEY_RIGHT_BRACKET then ImGuiKey_RightBracket
+    when Raylib::KEY_GRAVE then ImGuiKey_GraveAccent
+    when Raylib::KEY_CAPS_LOCK then ImGuiKey_CapsLock
+    when Raylib::KEY_SCROLL_LOCK then ImGuiKey_ScrollLock
+    when Raylib::KEY_NUM_LOCK then ImGuiKey_NumLock
+    when Raylib::KEY_PRINT_SCREEN then ImGuiKey_PrintScreen
+    when Raylib::KEY_PAUSE then ImGuiKey_Pause
+    when Raylib::KEY_KP_0 then ImGuiKey_Keypad0
+    when Raylib::KEY_KP_1 then ImGuiKey_Keypad1
+    when Raylib::KEY_KP_2 then ImGuiKey_Keypad2
+    when Raylib::KEY_KP_3 then ImGuiKey_Keypad3
+    when Raylib::KEY_KP_4 then ImGuiKey_Keypad4
+    when Raylib::KEY_KP_5 then ImGuiKey_Keypad5
+    when Raylib::KEY_KP_6 then ImGuiKey_Keypad6
+    when Raylib::KEY_KP_7 then ImGuiKey_Keypad7
+    when Raylib::KEY_KP_8 then ImGuiKey_Keypad8
+    when Raylib::KEY_KP_9 then ImGuiKey_Keypad9
+    when Raylib::KEY_KP_DECIMAL then ImGuiKey_KeypadDecimal
+    when Raylib::KEY_KP_DIVIDE then ImGuiKey_KeypadDivide
+    when Raylib::KEY_KP_MULTIPLY then ImGuiKey_KeypadMultiply
+    when Raylib::KEY_KP_SUBTRACT then ImGuiKey_KeypadSubtract
+    when Raylib::KEY_KP_ADD then ImGuiKey_KeypadAdd
+    when Raylib::KEY_KP_ENTER then ImGuiKey_KeypadEnter
+    when Raylib::KEY_KP_EQUAL then ImGuiKey_KeypadEqual
+    when Raylib::KEY_LEFT_CONTROL then ImGuiKey_LeftCtrl
+    when Raylib::KEY_LEFT_SHIFT then ImGuiKey_LeftShift
+    when Raylib::KEY_LEFT_ALT then ImGuiKey_LeftAlt
+    when Raylib::KEY_LEFT_SUPER then ImGuiKey_LeftSuper
+    when Raylib::KEY_RIGHT_CONTROL then ImGuiKey_RightCtrl
+    when Raylib::KEY_RIGHT_SHIFT then ImGuiKey_RightShift
+    when Raylib::KEY_RIGHT_ALT then ImGuiKey_RightAlt
+    when Raylib::KEY_RIGHT_SUPER then ImGuiKey_RightSuper
+    when Raylib::KEY_MENU then ImGuiKey_Menu
+    when Raylib::KEY_ZERO then ImGuiKey_0
+    when Raylib::KEY_ONE then ImGuiKey_1
+    when Raylib::KEY_TWO then ImGuiKey_2
+    when Raylib::KEY_THREE then ImGuiKey_3
+    when Raylib::KEY_FOUR then ImGuiKey_4
+    when Raylib::KEY_FIVE then ImGuiKey_5
+    when Raylib::KEY_SIX then ImGuiKey_6
+    when Raylib::KEY_SEVEN then ImGuiKey_7
+    when Raylib::KEY_EIGHT then ImGuiKey_8
+    when Raylib::KEY_NINE then ImGuiKey_9
+    when Raylib::KEY_A then ImGuiKey_A
+    when Raylib::KEY_B then ImGuiKey_B
+    when Raylib::KEY_C then ImGuiKey_C
+    when Raylib::KEY_D then ImGuiKey_D
+    when Raylib::KEY_E then ImGuiKey_E
+    when Raylib::KEY_F then ImGuiKey_F
+    when Raylib::KEY_G then ImGuiKey_G
+    when Raylib::KEY_H then ImGuiKey_H
+    when Raylib::KEY_I then ImGuiKey_I
+    when Raylib::KEY_J then ImGuiKey_J
+    when Raylib::KEY_K then ImGuiKey_K
+    when Raylib::KEY_L then ImGuiKey_L
+    when Raylib::KEY_M then ImGuiKey_M
+    when Raylib::KEY_N then ImGuiKey_N
+    when Raylib::KEY_O then ImGuiKey_O
+    when Raylib::KEY_P then ImGuiKey_P
+    when Raylib::KEY_Q then ImGuiKey_Q
+    when Raylib::KEY_R then ImGuiKey_R
+    when Raylib::KEY_S then ImGuiKey_S
+    when Raylib::KEY_T then ImGuiKey_T
+    when Raylib::KEY_U then ImGuiKey_U
+    when Raylib::KEY_V then ImGuiKey_V
+    when Raylib::KEY_W then ImGuiKey_W
+    when Raylib::KEY_X then ImGuiKey_X
+    when Raylib::KEY_Y then ImGuiKey_Y
+    when Raylib::KEY_Z then ImGuiKey_Z
+    when Raylib::KEY_F1 then ImGuiKey_F1
+    when Raylib::KEY_F2 then ImGuiKey_F2
+    when Raylib::KEY_F3 then ImGuiKey_F3
+    when Raylib::KEY_F4 then ImGuiKey_F4
+    when Raylib::KEY_F5 then ImGuiKey_F5
+    when Raylib::KEY_F6 then ImGuiKey_F6
+    when Raylib::KEY_F7 then ImGuiKey_F7
+    when Raylib::KEY_F8 then ImGuiKey_F8
+    when Raylib::KEY_F9 then ImGuiKey_F9
+    when Raylib::KEY_F10 then ImGuiKey_F10
+    when Raylib::KEY_F11 then ImGuiKey_F11
+    when Raylib::KEY_F12 then ImGuiKey_F12
+    else ImGuiKey_None
+    end
+  end
+
+  # [INTERNAL]
+  def self.ImGui_ImplRaylib_UpdateKeyModifiers()
+    io = ImGuiIO.new(ImGui::GetIO())
+    io.AddKeyEvent(ImGuiKey_ModCtrl, Raylib.IsKeyDown(Raylib::KEY_RIGHT_CONTROL) || Raylib.IsKeyDown(Raylib::KEY_LEFT_CONTROL))
+    io.AddKeyEvent(ImGuiKey_ModShift, Raylib.IsKeyDown(Raylib::KEY_RIGHT_SHIFT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SHIFT))
+    io.AddKeyEvent(ImGuiKey_ModAlt, Raylib.IsKeyDown(Raylib::KEY_RIGHT_ALT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_ALT))
+    io.AddKeyEvent(ImGuiKey_ModSuper, Raylib.IsKeyDown(Raylib::KEY_RIGHT_SUPER) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SUPER))
+  end
+
   def self.ImplRaylib_ProcessKeyboard()
     io = ImGuiIO.new(ImGui::GetIO())
 
-    io[:KeyShift] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_SHIFT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SHIFT)
-    io[:KeyCtrl] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_CONTROL) || Raylib.IsKeyDown(Raylib::KEY_LEFT_CONTROL)
-    io[:KeyAlt] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_ALT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_ALT)
-    io[:KeySuper] = Raylib.IsKeyDown(Raylib::KEY_RIGHT_SUPER) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SUPER) # [TODO] io.KeySuper = false on _WIN32
+    ImGui_ImplRaylib_UpdateKeyModifiers()
 
-    KEY_IDS.each { |key| io[:KeysDown][key] = Raylib.IsKeyDown(key) }
+    KEY_IDS.each do |raylib_key|
+      if Raylib.IsKeyPressed(raylib_key)
+        key = ImGui_ImplRaylib_KeyToImGuiKey(raylib_key)
+        io.AddKeyEvent(key, true)
+      elsif Raylib.IsKeyReleased(raylib_key)
+        key = ImGui_ImplRaylib_KeyToImGuiKey(raylib_key)
+        io.AddKeyEvent(key, false)
+      end
+    end
 
-    keyPressed = Raylib.GetKeyPressed()
-    io.AddInputCharacter(keyPressed) if keyPressed > 0
+    while (charPressed = Raylib.GetCharPressed()) != 0
+      io.AddInputCharacter(charPressed)
+    end
 
     return true
   end
 
+  # [INTERNAL]
+  def self.ImplRaylib_UpdateMouseData()
+    bd = ImGui_ImplRaylib_GetBackendData()
+    io = ImGuiIO.new(ImGui::GetIO())
+
+    # Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
+    if io[:WantSetMousePos]
+      Raylib.SetMousePosition(io[:MousePos][:x].to_i, io[:MousePos][:y].to_i)
+    end
+
+    wheel_move = Raylib.GetMouseWheelMove()
+    wheel_y = if wheel_move > 0
+                1.0
+              elsif wheel_move < 0
+                -1.0
+              else
+                0.0
+              end
+    io.AddMouseWheelEvent(0, wheel_y) # [TODO] Get wheel tilt from Raylib
+
+    [Raylib::MOUSE_BUTTON_LEFT, Raylib::MOUSE_BUTTON_RIGHT, Raylib::MOUSE_BUTTON_MIDDLE].each_with_index do |button, mouse_button|
+      pressed = Raylib.IsMouseButtonPressed(button)
+      released = Raylib.IsMouseButtonReleased(button)
+      if pressed || released
+        io.AddMouseButtonEvent(mouse_button, pressed)
+      end
+    end
+
+    mouse_pos = Raylib.GetMousePosition()
+    io.AddMousePosEvent(mouse_pos[:x].to_f, mouse_pos[:y].to_f)
+  end
+
+  # [INTERNAL]
+  def self.ImplRaylib_UpdateMouseCursor()
+    io = ImGuiIO.new(ImGui::GetIO())
+    return if (io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange)
+
+    if io[:MouseDrawCursor] || ImGui::GetMouseCursor() == ImGuiMouseCursor_None
+      Raylib.HideCursor() # Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
+    else
+      Raylib.ShowCursor() # Show OS mouse cursor
+    end
+  end
+
+  #
+  # [TODO] Support ImplRaylib_UpdateGamepads
+  #
+
   def self.ImplRaylib_Init()
-    @@g_Time = 0
+    # Setup backend capabilities flags
+    bd = ImGui_ImplRaylib_Data.new
+    @@g_BackendData[ImGui::GetCurrentContext().address] = bd
 
     io = ImGuiIO.new(ImGui::GetIO())
 
@@ -227,37 +348,42 @@ module ImGui
     io[:BackendFlags] |= ImGuiBackendFlags_HasMouseCursors # We can honor GetMouseCursor() values (optional)
     io[:BackendFlags] |= ImGuiBackendFlags_HasSetMousePos  # We can honor io.WantSetMousePos requests (optional, rarely used)
 
-    # Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
-    io[:KeyMap][ImGuiKey_Tab] = Raylib::KEY_TAB
-    io[:KeyMap][ImGuiKey_LeftArrow] = Raylib::KEY_LEFT
-    io[:KeyMap][ImGuiKey_RightArrow] = Raylib::KEY_RIGHT
-    io[:KeyMap][ImGuiKey_UpArrow] = Raylib::KEY_UP
-    io[:KeyMap][ImGuiKey_DownArrow] = Raylib::KEY_DOWN
-    io[:KeyMap][ImGuiKey_PageUp] = Raylib::KEY_PAGE_UP
-    io[:KeyMap][ImGuiKey_PageDown] = Raylib::KEY_PAGE_DOWN
-    io[:KeyMap][ImGuiKey_Home] = Raylib::KEY_HOME
-    io[:KeyMap][ImGuiKey_End] = Raylib::KEY_END
-    io[:KeyMap][ImGuiKey_Insert] = Raylib::KEY_INSERT
-    io[:KeyMap][ImGuiKey_Delete] = Raylib::KEY_DELETE
-    io[:KeyMap][ImGuiKey_Backspace] = Raylib::KEY_BACKSPACE
-    io[:KeyMap][ImGuiKey_Space] = Raylib::KEY_SPACE
-    io[:KeyMap][ImGuiKey_Enter] = Raylib::KEY_ENTER
-    io[:KeyMap][ImGuiKey_Escape] = Raylib::KEY_ESCAPE
-    io[:KeyMap][ImGuiKey_KeyPadEnter] = Raylib::KEY_KP_ENTER
-    io[:KeyMap][ImGuiKey_A] = Raylib::KEY_A
-    io[:KeyMap][ImGuiKey_C] = Raylib::KEY_C
-    io[:KeyMap][ImGuiKey_V] = Raylib::KEY_V
-    io[:KeyMap][ImGuiKey_X] = Raylib::KEY_X
-    io[:KeyMap][ImGuiKey_Y] = Raylib::KEY_Y
-    io[:KeyMap][ImGuiKey_Z] = Raylib::KEY_Z
-
-    # [TODO] Support ClipboardText
-
-    mouse_pos = Raylib.GetMousePosition()
-    io[:MousePos][:x] = mouse_pos[:x]
-    io[:MousePos][:y] = mouse_pos[:y]
+    bd.time = 0.0
 
     return true
+  end
+
+  def self.ImplRaylib_Shutdown()
+    io = ImGuiIO.new(ImGui::GetIO())
+    io[:BackendPlatformName] = nil
+    io[:BackendPlatformUserData] = nil
+    @@g_BackendData[ImGui::GetCurrentContext()] = nil
+  end
+
+  def self.ImplRaylib_NewFrame()
+    bd = ImGui_ImplRaylib_GetBackendData()
+    io = ImGuiIO.new(ImGui::GetIO())
+
+    #  Setup display size (every frame to accommodate for window resizing)
+    io[:DisplaySize][:x] = Raylib.GetScreenWidth()
+    io[:DisplaySize][:y] = Raylib.GetScreenHeight()
+
+    # Setup time step
+    current_time = Raylib.GetTime()
+
+    io[:DeltaTime] = bd.time > 0 ? (current_time - bd.time).to_f : 1.0 / 60.0
+    bd.time = current_time
+
+    ImplRaylib_ProcessKeyboard()
+    ImplRaylib_UpdateMouseData()
+    ImplRaylib_UpdateMouseCursor()
+
+    # [TODO] update gamepads
+
+    # [NOTE] rlgl does not provide glBlendFuncSeparate wrapper. So we manually set states for ImGui here.
+    #        Ref.: https://github.com/vaiorabbit/ruby-imgui/blob/05e94e6bf1969d3abf12598fef831219dca90247/lib/imgui_impl_opengl3.rb#L227-L234
+    # [TODO] Hide raw OpenGL operation
+    GL.BlendFuncSeparate(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA, GL::ONE, GL::ONE_MINUS_SRC_ALPHA)
   end
 
   # [INTERNAL]

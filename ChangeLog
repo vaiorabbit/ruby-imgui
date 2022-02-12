@@ -2,6 +2,7 @@
 
 	* imgui_impl_sdl2.rb: Updated to use event API
 	* imgui_impl_sdlrenderer.rb: Updated to use new API
+	* imgui_impl_raylib.rb: Updated to use event API
 
 2022-02-11  vaiorabbit  <http://twitter.com/vaiorabbit>
 
