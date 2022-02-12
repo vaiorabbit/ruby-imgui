@@ -7,24 +7,23 @@ require_relative './about_window'
 WINDOW_W = 1280
 WINDOW_H = 720
 
-include SDL2
-
 if __FILE__ == $0
 
-  success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER)
+  success = SDL.Init(SDL::INIT_VIDEO | SDL::INIT_TIMER | SDL::INIT_GAMECONTROLLER)
   exit if success < 0
 
   # Setup window
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24)
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8)
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2)
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2)
-  window_flags = (SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI)
-  window = SDL_CreateWindow("Ruby-ImGui (SDL2+OpenGL)", 0, 0, WINDOW_W, WINDOW_H, window_flags)
-  gl_context = SDL_GL_CreateContext(window)
-  SDL_GL_MakeCurrent(window, gl_context)
-  SDL_GL_SetSwapInterval(1) # Enable vsync
+  SDL.GL_SetAttribute(SDL::GL_DOUBLEBUFFER, 1)
+  SDL.GL_SetAttribute(SDL::GL_DEPTH_SIZE, 24)
+  SDL.GL_SetAttribute(SDL::GL_STENCIL_SIZE, 8)
+  SDL.GL_SetAttribute(SDL::GL_CONTEXT_MAJOR_VERSION, 2)
+  SDL.GL_SetAttribute(SDL::GL_CONTEXT_MINOR_VERSION, 2)
+  window_flags = (SDL::WINDOW_OPENGL | SDL::WINDOW_RESIZABLE | SDL::WINDOW_ALLOW_HIGHDPI)
+  window = SDL.CreateWindow("Ruby-ImGui (SDL2+OpenGL)", 0, 0, WINDOW_W, WINDOW_H, window_flags)
+
+  gl_context = SDL.GL_CreateContext(window)
+  SDL.GL_MakeCurrent(window, gl_context)
+  SDL.GL_SetSwapInterval(1) # Enable vsync
 
   GL.load_lib()
 
@@ -49,23 +48,23 @@ if __FILE__ == $0
   ImGui::StyleColorsDark()
 
   # Setup Platform/Renderer bindings
-  ImGui::ImplSDL2_Init(window)
+  ImGui::ImplSDL2_Init(window, nil)
   ImGui::ImplOpenGL2_Init()
 
-  event = SDL_Event.new
+  event = SDL::Event.new
   done = false
   until done
-    while SDL_PollEvent(event) != 0
+    while SDL.PollEvent(event) != 0
       ImGui::ImplSDL2_ProcessEvent(event)
-      done = true if event[:type] == SDL_QUIT
+      done = true if event[:type] == SDL::QUIT
 
       # 'type' and 'timestamp' are common members for all SDL Event structs.
       event_type = event[:common][:type]
       event_timestamp = event[:common][:timestamp]
       # puts "Event : type=0x#{event_type.to_s(16)}, timestamp=#{event_timestamp}"
       case event_type
-      when SDL_KEYDOWN
-        if event[:key][:keysym][:sym] == SDLK_ESCAPE
+      when SDL::KEYDOWN
+        if event[:key][:keysym][:sym] == SDL::SDLK_ESCAPE
           done = true
         end
       end
@@ -116,14 +115,14 @@ if __FILE__ == $0
     GL.Clear(GL::COLOR_BUFFER_BIT)
 
     ImGui::ImplOpenGL2_RenderDrawData(ImGui::GetDrawData())
-    SDL_GL_SwapWindow(window)
+    SDL.GL_SwapWindow(window)
   end
 
   ImGui::ImplOpenGL2_Shutdown()
   ImGui::ImplSDL2_Shutdown()
   ImGui::DestroyContext(nil)
 
-  SDL_GL_DeleteContext(gl_context)
-  SDL_DestroyWindow(window)
-  SDL_Quit()
+  SDL.GL_DeleteContext(gl_context)
+  SDL.DestroyWindow(window)
+  SDL.Quit()
 end
