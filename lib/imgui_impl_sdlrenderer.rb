@@ -55,8 +55,8 @@ module ImGui
 
     # Clear out any viewports and cliprect set by the user
     # FIXME: Technically speaking there are lots of other things we could backup/setup/restore during our render process.
-    SDL_RenderSetViewport(bd[:SDLRenderer], nil)
-    SDL_RenderSetClipRect(bd[:SDLRenderer], nil)
+    SDL.RenderSetViewport(bd[:SDLRenderer], nil)
+    SDL.RenderSetClipRect(bd[:SDLRenderer], nil)
   end
 
   def self.ImplSDLRenderer_NewFrame()
@@ -74,7 +74,7 @@ module ImGui
     # to SDL_RenderGeometryRaw() by that scale factor. In that case we don't want to be also scaling it ourselves here.
     rsx = FFI::MemoryPointer.new :float
     rsy = FFI::MemoryPointer.new :float
-    SDL_RenderGetScale(bd[:SDLRenderer], rsx, rsy)
+    SDL.RenderGetScale(bd[:SDLRenderer], rsx, rsy)
     render_scale = ImVec2.create(0, 0)
     render_scale[:x] = (rsx.read_float() == 1.0) ? draw_data[:FramebufferScale][:x] : 1.0
     render_scale[:y] = (rsy.read_float() == 1.0) ? draw_data[:FramebufferScale][:y] : 1.0
@@ -85,13 +85,13 @@ module ImGui
     return if fb_width == 0 || fb_height == 0
 
     # Backup SDL_Renderer state that will be modified to restore it afterwards
-    oldViewport = SDL_Rect.new
+    oldViewport = SDL::Rect.new
     oldClipEnabled = FFI::MemoryPointer.new :bool
-    oldClipRect = SDL_Rect.new
+    oldClipRect = SDL::Rect.new
 
-    oldClipEnabled = (SDL_RenderIsClipEnabled(bd[:SDLRenderer]) == SDL_TRUE)
-    SDL_RenderGetViewport(bd[:SDLRenderer], oldViewport)
-    SDL_RenderGetClipRect(bd[:SDLRenderer], oldClipRect)
+    oldClipEnabled = (SDL.RenderIsClipEnabled(bd[:SDLRenderer]) == SDL::TRUE)
+    SDL.RenderGetViewport(bd[:SDLRenderer], oldViewport)
+    SDL.RenderGetClipRect(bd[:SDLRenderer], oldClipRect)
 
     # Will project scissor/clipping rectangles into framebuffer space
     clip_off = draw_data[:DisplayPos] # (0,0) unless using multi-viewports
@@ -126,19 +126,19 @@ module ImGui
           clip_max[:y] = fb_height.to_f if clip_max[:y] > fb_height
           next if (clip_max[:x] <= clip_min[:x] || clip_max[:y] <= clip_min[:y])
 
-          r = SDL_Rect.new
+          r = SDL::Rect.new
           r[:x] = clip_min[:x].to_i
           r[:y] = clip_min[:y].to_i
           r[:w] = (clip_max[:x] - clip_min[:x]).to_i
           r[:h] = (clip_max[:y] - clip_min[:y]).to_i
 
-          SDL_RenderSetClipRect(bd[:SDLRenderer], r.to_ptr)
+          SDL.RenderSetClipRect(bd[:SDLRenderer], r.to_ptr)
 
           xy = vtx_buffer + (pcmd[:VtxOffset] + ImDrawVert.offset_of(:pos))
           uv = vtx_buffer + (pcmd[:VtxOffset] + ImDrawVert.offset_of(:uv))
           color = vtx_buffer + (pcmd[:VtxOffset] + ImDrawVert.offset_of(:col))
 
-          SDL_RenderGeometryRaw(bd[:SDLRenderer], pcmd[:TextureId],
+          SDL.RenderGeometryRaw(bd[:SDLRenderer], pcmd[:TextureId],
                                 xy, ImDrawVert.size,
                                 color, ImDrawVert.size,
                                 uv, ImDrawVert.size,
@@ -146,8 +146,8 @@ module ImGui
                                 idx_buffer + FFI.type_size(:ImDrawIdx) * pcmd[:IdxOffset], pcmd[:ElemCount], FFI.type_size(:ImDrawIdx)) # FFI.type_size(:ImDrawIdx) == FFI::Type::UINT16.size
 
           # Restore modified SDL_Renderer state
-          SDL_RenderSetViewport(bd[:SDLRenderer], oldViewport)
-          SDL_RenderSetClipRect(bd[:SDLRenderer], oldClipEnabled ? oldClipRect : nil)
+          SDL.RenderSetViewport(bd[:SDLRenderer], oldViewport)
+          SDL.RenderSetClipRect(bd[:SDLRenderer], oldClipEnabled ? oldClipRect : nil)
         end
       end
     end
@@ -165,14 +165,14 @@ module ImGui
     io[:Fonts].GetTexDataAsRGBA32(pixels, width, height, nil)   #  Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
     # Upload texture to graphics system
-    bd[:FontTexture] = SDL_CreateTexture(bd[:SDLRenderer], SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, width.read_int, height.read_int)
+    bd[:FontTexture] = SDL.CreateTexture(bd[:SDLRenderer], SDL::PIXELFORMAT_RGBA32, SDL::TEXTUREACCESS_STATIC, width.read_int, height.read_int)
     if bd[:FontTexture] == nil
-      SDL_Log("error creating texture")
+      SDL.Log("error creating texture")
       return false
     end
 
-    SDL_UpdateTexture(bd[:FontTexture], nil, pixels.read_pointer, 4 * width.read_int)
-    SDL_SetTextureBlendMode(bd[:FontTexture], SDL_BLENDMODE_BLEND)
+    SDL.UpdateTexture(bd[:FontTexture], nil, pixels.read_pointer, 4 * width.read_int)
+    SDL.SetTextureBlendMode(bd[:FontTexture], SDL::BLENDMODE_BLEND)
 
     # Store our identifier
     io[:Fonts].SetTexID(bd[:FontTexture])
@@ -185,7 +185,7 @@ module ImGui
     bd = ImGui_ImplSDLRenderer_GetBackendData()
     if bd[:FontTexture] != nil
       io[:Fonts].SetTexID(nil)
-      SDL_DestroyTexture(bd[:FontTexture])
+      SDL.DestroyTexture(bd[:FontTexture])
       bd[:FontTexture] = nil
     end
   end

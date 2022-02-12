@@ -7,24 +7,22 @@ require_relative './about_window'
 WINDOW_W = 1280
 WINDOW_H = 720
 
-include SDL2
-
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
 
   # Windows
   # SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d11")
 
-  success = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER)
+  success = SDL.Init(SDL::INIT_VIDEO | SDL::INIT_TIMER | SDL::INIT_GAMECONTROLLER)
   exit if success < 0
 
   # Setup window
-  window_flags = (SDL_WINDOW_RESIZABLE)# | SDL_WINDOW_ALLOW_HIGHDPI) # [FIXME] Correct wrong clipping problem caused when we enable ALLOW_HIGHDPI
-  window = SDL_CreateWindow("Ruby-ImGui (SDL2+SDL_Renderer)", 64, 64, WINDOW_W, WINDOW_H, window_flags)
+  window_flags = (SDL::WINDOW_RESIZABLE)# | SDL::WINDOW_ALLOW_HIGHDPI) # [FIXME] Correct wrong clipping problem caused when we enable ALLOW_HIGHDPI
+  window = SDL.CreateWindow("Ruby-ImGui (SDL2+SDL_Renderer)", 64, 64, WINDOW_W, WINDOW_H, window_flags)
 
   # Setup SDL_Renderer instance
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED)
+  renderer = SDL.CreateRenderer(window, -1, SDL::RENDERER_PRESENTVSYNC | SDL::RENDERER_ACCELERATED)
   if renderer == nil
-    SDL_Log("Error creating SDL_Renderer!")
+    SDL.Log("Error creating SDL_Renderer!")
     exit
   end
 
@@ -49,23 +47,23 @@ if __FILE__ == $0
   ImGui::StyleColorsDark()
 
   # Setup Platform/Renderer bindings
-  ImGui::ImplSDL2_Init(window)
+  ImGui::ImplSDL2_Init(window, nil)
   ImGui::ImplSDLRenderer_Init(renderer)
 
-  event = SDL_Event.new
+  event = SDL::Event.new
   done = false
   until done
-    while SDL_PollEvent(event) != 0
+    while SDL.PollEvent(event) != 0
       ImGui::ImplSDL2_ProcessEvent(event)
-      done = true if event[:type] == SDL_QUIT
+      done = true if event[:type] == SDL::QUIT
 
       # 'type' and 'timestamp' are common members for all SDL Event structs.
       event_type = event[:common][:type]
       event_timestamp = event[:common][:timestamp]
       # puts "Event : type=0x#{event_type.to_s(16)}, timestamp=#{event_timestamp}"
       case event_type
-      when SDL_KEYDOWN
-        if event[:key][:keysym][:sym] == SDLK_ESCAPE
+      when SDL::KEYDOWN
+        if event[:key][:keysym][:sym] == SDL::SDLK_ESCAPE
           done = true
         end
       end
@@ -111,17 +109,17 @@ if __FILE__ == $0
     end
 
     ImGui::Render()
-    SDL_SetRenderDrawColor(renderer, (0.45 * 255).to_i, (0.55 * 255).to_i, (0.60 * 255).to_i, (1.0 * 255).to_i)
-    SDL_RenderClear(renderer)
+    SDL.SetRenderDrawColor(renderer, (0.45 * 255).to_i, (0.55 * 255).to_i, (0.60 * 255).to_i, (1.0 * 255).to_i)
+    SDL.RenderClear(renderer)
     ImGui::ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData())
-    SDL_RenderPresent(renderer)
+    SDL.RenderPresent(renderer)
   end
 
   ImGui::ImplSDLRenderer_Shutdown()
   ImGui::ImplSDL2_Shutdown()
   ImGui::DestroyContext(nil)
 
-  SDL_DestroyRenderer(renderer)
-  SDL_DestroyWindow(window)
-  SDL_Quit()
+  SDL.DestroyRenderer(renderer)
+  SDL.DestroyWindow(window)
+  SDL.Quit()
 end
