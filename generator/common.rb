@@ -39,6 +39,15 @@ module ImGuiBindings
     'void *' => :pointer,
     'size_t' => :size_t,
     '...' => :varargs,
+
+    'ImS8' => :char,
+    'ImU8' => :uchar,
+    'ImS16' => :short,
+    'ImU16' => :ushort,
+    'ImS32' => :int,
+    'ImU32' => :uint,
+    'ImS64' => :int64,
+    'ImU64' => :uint64,
   }
 
   @@imGuiToCTypeMap = nil
@@ -83,6 +92,7 @@ module ImGuiBindings
 
           arg_strs = raw_args.split(",")                              # e.g.) arg_strs = ["const ImDrawList* parent_list", "const ImDrawCmd* cmd"]
           arg_strs.each do |arg_str|
+            arg_str = "varargs varargs" if arg_str == "..."
             arg_str.gsub!(/const[ ]+/, '')                            # e.g.) arg_str = "ImDrawList* parent_list"
             elems = arg_str.split(" ")                                # e.g.) elems = ["ImDrawList*", "parent_list"]
             elems.pop                                                 # e.g.) elems = ["ImDrawList*"]
@@ -105,8 +115,21 @@ module ImGuiBindings
       end
     end
 
-    @@imGuiToCTypeMap = type_map
+    # Some internal enums don't have accompanying typedefs, so define corresponding type_map entry manually
+    internal_enums_without_typedef = [
+      'ImGuiContextHookType',
+      'ImGuiPopupPositionPolicy',
+      'ImGuiInputReadMode',
+      'ImGuiAxis',
+      'ImGuiLogType',
+      'ImGuiPlotType',
+      'ImGuiNavLayer',
+    ]
+    internal_enums_without_typedef.each do |imgui_type_name|
+      type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: :int, callback_signature: nil)
+    end
 
+    @@imGuiToCTypeMap = type_map
     return type_map
   end
 
@@ -127,7 +150,8 @@ module ImGuiBindings
                         else
                           m['name']
                         end
-          member = ImGuiStructMemberEntry.new(name: member_name, type_str: m['type'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
+          is_callback = m['type'].include?('(*)')
+          member = ImGuiStructMemberEntry.new(name: member_name, type_str: is_callback ? 'void*' : m['type'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
           if member.is_array
             member.size = m['size'].to_i
             member.name.gsub!(/\[[\w\+]+\]/,'')

@@ -425,7 +425,6 @@ module Generator
                           typedefs_map[type_name][0] # e.g.) ImVec2, ImVec4
                         end
                       else
-                        pp type_name
                         type_name # bool
                       end
           if has_bool
@@ -509,6 +508,13 @@ if __FILE__ == $PROGRAM_NAME
   ]
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
 
+  omit_typedefs = [
+    'ImBitArrayForNamedKeys',
+  ]
+  typedefs_map.delete_if {|key, value|
+    omit_typedefs.include?(key)
+  }
+
   # end-user API only
   funcs_base_map.delete_if {|func|
     !(func.name.start_with?('ig') ||
@@ -582,6 +588,16 @@ require 'ffi'
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == struct.name }
       Generator.write_struct(out, struct, methods, typedefs_map)
     end
+
+    # define template struct 'ImBitArrayForNamedKeys' manually
+    out.write(<<-EOS)
+class ImBitArrayForNamedKeys < FFI::Struct
+  layout(
+    :Storage, [:uint, (ImGuiKey_NamedKey_COUNT + 31) >> 5]
+  )
+end
+
+    EOS
 
     # define shorthand initializer for ImVec2 and ImVec4
     # - See https://github.com/ffi/ffi/wiki/Structs
