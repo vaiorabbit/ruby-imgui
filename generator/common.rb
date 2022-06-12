@@ -1,6 +1,8 @@
 require 'ffi'
 require 'json'
 
+ImGuiCallbackArgEntry = Struct.new( :name, :is_primitive, keyword_init: true )
+
 ImGuiTypedefMapEntry = Struct.new( :name, :type, :callback_signature, keyword_init: true )
 
 ImGuiStructMemberEntry = Struct.new( :name, :type, :type_str, :is_array, :size, keyword_init: true )
@@ -92,15 +94,19 @@ module ImGuiBindings
 
           arg_strs = raw_args.split(",")                              # e.g.) arg_strs = ["const ImDrawList* parent_list", "const ImDrawCmd* cmd"]
           arg_strs.each do |arg_str|
-            arg_str = "varargs varargs" if arg_str == "..."
-            arg_str.gsub!(/const[ ]+/, '')                            # e.g.) arg_str = "ImDrawList* parent_list"
-            elems = arg_str.split(" ")                                # e.g.) elems = ["ImDrawList*", "parent_list"]
-            elems.pop                                                 # e.g.) elems = ["ImDrawList*"]
-            raise RuntimeError if elems.length != 1
-            arg_type_str = elems[0].gsub(/\*/, '')                    # e.g.) arg_type_str = "ImDrawList"
-            arg_type_sym = get_ffi_type(arg_type_str)
-            arg_type_sym = arg_type_str.to_sym if arg_type_sym == nil # e.g.) arg_type_sym = :ImDrawList
-            args << arg_type_sym
+            if arg_str == "..."
+              args << ImGuiCallbackArgEntry.new(name: ":varargs", is_primitive: false)
+            else
+              arg_str.gsub!(/const[ ]+/, '')                            # e.g.) arg_str = "ImDrawList* parent_list"
+              elems = arg_str.split(" ")                                # e.g.) elems = ["ImDrawList*", "parent_list"]
+              elems.pop                                                 # e.g.) elems = ["ImDrawList*"]
+              raise RuntimeError if elems.length != 1
+              arg_type_str = elems[0].gsub(/\*/, '')                    # e.g.) arg_type_str = "ImDrawList"
+              arg_type_sym = get_ffi_type(arg_type_str)
+              is_primitive = (arg_type_sym != nil)
+              arg_type_sym = arg_type_str.to_sym unless is_primitive    # e.g.) arg_type_sym = :ImDrawList
+              args << ImGuiCallbackArgEntry.new(name: arg_type_sym, is_primitive: is_primitive)
+            end
           end
           ###
 

@@ -313,7 +313,11 @@ module Generator
 
   def self.write_callback_signature(out, typedef)
     return if typedef[1].callback_signature == nil
-    out.write("callback :#{typedef[1].name}, [#{typedef[1].callback_signature[1].join(', ')}], :#{typedef[1].callback_signature[0]}\n")
+    args = []
+    typedef[1].callback_signature[1].each do |entry|
+      args << (entry.is_primitive ? ":" + entry.name.to_s : entry.name)
+    end
+    out.write("callback :#{typedef[1].name}, [#{args.join(', ')}], :#{typedef[1].callback_signature[0]}\n")
   end
 
   def self.write_module_method(out, func)
