@@ -2,6 +2,7 @@ require 'ffi'
 require 'json'
 
 ImGuiCallbackArgEntry = Struct.new( :name, :is_primitive, keyword_init: true )
+ImGuiCallbackSignature = Struct.new( :retval, :args, keyword_init: true )
 
 ImGuiTypedefMapEntry = Struct.new( :name, :type, :callback_signature, keyword_init: true )
 
@@ -112,7 +113,7 @@ module ImGuiBindings
 
           # [NOTE] Register as a new ImGui to C type by specifing 'type: imgui_type_name.to_sym'
           # type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: imgui_type_name.to_sym, callback_signature: [ret, args])
-          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: [ret, args])
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: ImGuiCallbackSignature.new(retval: ret, args: args))
           next
         end
 
@@ -157,7 +158,11 @@ module ImGuiBindings
                           m['name']
                         end
           is_callback = m['type'].include?('(*)')
-          member = ImGuiStructMemberEntry.new(name: member_name, type_str: is_callback ? 'void*' : m['type'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
+          member_type = get_ffi_type(m['type'])
+          if member_type == nil
+            puts "[WARNING] build_struct_map : underlying type of #{m['type']} is unknown"
+          end
+          member = ImGuiStructMemberEntry.new(name: member_name, type_str: is_callback ? 'void*' : m['type'], type: member_type, is_array: m.has_key?('size'))
           if member.is_array
             member.size = m['size'].to_i
             member.name.gsub!(/\[[\w\+]+\]/,'')

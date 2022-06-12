@@ -96,8 +96,9 @@ module Generator
   end
 
   def self.write_typedef(out, typedef)
-    return if typedef[1].callback_signature != nil
-    out.write("FFI.typedef :#{typedef[1].type}, :#{typedef[0]}\n") # typedef[1].class == ImGuiTypedefMapEntry
+    if typedef.callback_signature == nil && typedef.type.to_s != typedef.name
+      out.write("FFI.typedef :#{typedef.type}, :#{typedef.name}\n")
+    end
   end
 
   def self.write_struct_method(out, func)
@@ -312,12 +313,12 @@ module Generator
   end
 
   def self.write_callback_signature(out, typedef)
-    return if typedef[1].callback_signature == nil
+    return if typedef.callback_signature == nil
     args = []
-    typedef[1].callback_signature[1].each do |entry|
+    typedef.callback_signature.args.each do |entry|
       args << (entry.is_primitive ? ":" + entry.name.to_s : entry.name)
     end
-    out.write("callback :#{typedef[1].name}, [#{args.join(', ')}], :#{typedef[1].callback_signature[0]}\n")
+    out.write("callback :#{typedef.name}, [#{args.join(', ')}], :#{typedef.callback_signature.retval}\n")
   end
 
   def self.write_module_method(out, func)
@@ -563,10 +564,8 @@ require 'ffi'
     #
     # Typedefs
     #
-    typedefs_map.each do |typedef|
-      if typedef[0] != typedef[1].type.to_s
-        Generator.write_typedef(out, typedef)
-      end
+    typedefs_map.each_pair do |name, typedef|
+      Generator.write_typedef(out, typedef)
     end
     out.newline
 
@@ -667,7 +666,7 @@ end
 
     out.push_indent
     # callback
-    typedefs_map.each do |typedef|
+    typedefs_map.each do |name, typedef|
       Generator.write_callback_signature(out, typedef)
     end
     out.newline
