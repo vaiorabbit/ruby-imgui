@@ -68,24 +68,26 @@ module ImGuiBindings
       json.keys.each do |imgui_type_name|
         next if IgnoredTypedefs.include?(imgui_type_name)
 
+        underlying_type_str = json[imgui_type_name]
+
         # Resolve ImWchar : Now ImWchar is a typedef of ImWchar16 or ImWchar32 (v1.76 ~)
         # https://github.com/cimgui/cimgui/commit/f84d9c43015742dc5ad4434da92c5e1a99254d27#diff-2e9752529db931d99aade39734631cd0L70
         if imgui_type_name == "ImWchar"
-          imwchar_type = json[imgui_type_name] # "ImWchar16" or "ImWchar32"
+          imwchar_type = underlying_type_str # "ImWchar16" or "ImWchar32"
           type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imwchar_type]), callback_signature: nil)
           next
         end
 
         # Resolve Callback
         if imgui_type_name.end_with?("Callback")
-          # json[imgui_type_name] contans the signture of callback function (e.g.: "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd);")
+          # underlying_type_str contans the signture of callback function (e.g.: "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd);")
           # Keep this information in 'callback_signature:' for later use
 
           ### Analyze signature of callback / TODO fragile code. need maintainance ###
           ret = nil
           args = []
 
-          raw_callback_str = json[imgui_type_name]                    # e.g.) raw_callback_str = "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd)"
+          raw_callback_str = underlying_type_str                    # e.g.) raw_callback_str = "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd)"
           match_data = /(.+)\(\*\)\((.+)\)/.match(raw_callback_str)
           ret_type_str, raw_args = match_data[1], match_data[2]       # e.g.) ret_type_str="void", raw_args="const ImDrawList* parent_list,const ImDrawCmd* cmd"
 
@@ -113,14 +115,20 @@ module ImGuiBindings
 
           # [NOTE] Register as a new ImGui to C type by specifing 'type: imgui_type_name.to_sym'
           # type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: imgui_type_name.to_sym, callback_signature: [ret, args])
-          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: ImGuiCallbackSignature.new(retval: ret, args: args))
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(underlying_type_str), callback_signature: ImGuiCallbackSignature.new(retval: ret, args: args))
           next
         end
 
-        # Resolve other types into the symbols of their names
-        type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: nil)
+        if underlying_type_str.start_with?('struct ')
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: imgui_type_name.to_sym, callback_signature: nil)
+        else
+          # Resolve other types into the symbols of their names
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(underlying_type_str), callback_signature: nil)
+        end
       end
     end
+
+    type_map['ImBitArrayForNamedKeys'] = ImGuiTypedefMapEntry.new(name: 'ImBitArrayForNamedKeys', type: :ImBitArrayForNamedKeys, callback_signature: nil)
 
     # Some internal enums don't have accompanying typedefs, so define corresponding type_map entry manually
     internal_enums_without_typedef = [
@@ -131,6 +139,9 @@ module ImGuiBindings
       'ImGuiLogType',
       'ImGuiPlotType',
       'ImGuiNavLayer',
+      'ImGuiInputSource',
+      'ImGuiDockNodeState',
+      'ImGuiInputEventType',
     ]
     internal_enums_without_typedef.each do |imgui_type_name|
       type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: :int, callback_signature: nil)
@@ -206,6 +217,39 @@ module ImGuiBindings
     ]
     structs << struct_pair_stub
 
+    # TODO ImPool, etc.
+
+    # ImChunkStream stub
+    structs.delete_if {|struct| struct.name == "ImChunkStream"}
+    struct_imchunkstream_stub = ImGuiStructMapEntry.new
+    struct_imchunkstream_stub.name = 'ImChunkStream'
+    struct_imchunkstream_stub.members = [
+      ImGuiStructMemberEntry.new(name: 'Buf', type_str: 'ImVector', type: :ImVector, is_array: false, size: 0),
+    ]
+    structs << struct_imchunkstream_stub
+
+    # ImPool stub
+    structs.delete_if {|struct| struct.name == "ImPool"}
+    struct_impool_stub = ImGuiStructMapEntry.new
+    struct_impool_stub.name = 'ImPool'
+    struct_impool_stub.members = [
+      ImGuiStructMemberEntry.new(name: 'Buf', type_str: 'ImVector', type: :ImVector, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Map', type_str: 'ImGuiStorage', type: :ImGuiStorage, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'FreeIdx', type_str: :int, type: :ImPoolIdx, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'AliveCount', type_str: :int, type: :ImPoolIdx, is_array: false, size: 0),
+    ]
+    structs << struct_impool_stub
+
+    # ImSpan stub
+    structs.delete_if {|struct| struct.name == "ImSpan"}
+    struct_imspan_stub = ImGuiStructMapEntry.new
+    struct_imspan_stub.name = 'ImSpan'
+    struct_imspan_stub.members = [
+      ImGuiStructMemberEntry.new(name: 'Data', type_str: 'T*', type: :pointer, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'DataEnd', type_str: 'T*', type: :pointer, is_array: false, size: 0),
+    ]
+    structs << struct_impool_stub
+
     return structs
   end
 
@@ -246,6 +290,15 @@ module ImGuiBindings
     end
     if type_name.include?('Pair')
       return :Pair # stub
+    end
+    if type_name.include?('ImChunkStream')
+      return :ImChunkStream # stub
+    end
+    if type_name.include?('ImPool')
+      return :ImPool # stub
+    end
+    if type_name.include?('ImSpan')
+      return :ImSpan # stub
     end
 
     if @@imGuiToCTypeMap != nil && @@imGuiToCTypeMap.has_key?(type_name)

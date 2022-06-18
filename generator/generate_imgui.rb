@@ -504,7 +504,7 @@ if __FILE__ == $PROGRAM_NAME
     'ImGuiOnceUponAFrame',
     'ImGuiPayload',
   # 'ImGuiSizeCallbackData',
-    'ImGuiStorage',
+  # 'ImGuiStorage',
     'ImGuiTextBuffer',
   # 'ImGuiTextFilter',
     'TextRange',
