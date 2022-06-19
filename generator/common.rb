@@ -7,7 +7,7 @@ ImGuiCallbackSignature = Struct.new( :retval, :args, keyword_init: true )
 ImGuiTypedefMapEntry = Struct.new( :name, :type, :callback_signature, keyword_init: true )
 
 ImGuiStructMemberEntry = Struct.new( :name, :type, :type_str, :is_array, :size, keyword_init: true )
-ImGuiStructMapEntry = Struct.new( :name, :members, keyword_init: true )
+ImGuiStructMapEntry = Struct.new( :name, :members, :is_union, keyword_init: true )
 
 ImGuiEnumValEntry = Struct.new( :name, :value, :original, keyword_init: true )
 ImGuiEnumMapEntry = Struct.new( :name, :members, keyword_init: true )
@@ -197,27 +197,64 @@ module ImGuiBindings
     ]
     structs << struct_imvector_stub
 
-    # substutite ImGuiStoragePair (a structure with unnamed union member) with stub
-    # "ImGuiStoragePair": [
-    #   {
-    #     "name": "key",
-    #     "type": "ImGuiID"
-    #   },
-    #   {
-    #     "name": "",
-    #     "type": "union { int val_i; float val_f; void* val_p;}"
-    #   }
-    # ],
+    # substitute ImGuiStoragePair (a structure with unnamed union member) with stub
+    union_pair_content = ImGuiStructMapEntry.new(name: 'ImGuiStoragePairUnionContent', members: [], is_union: true)
+    union_pair_content.members = [
+      ImGuiStructMemberEntry.new(name: 'val_i', type_str: 'int', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'val_f', type_str: 'float', type: :float, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'val_p', type_str: 'void*', type: :pointer, is_array: false, size: 0),
+    ]
+    structs << union_pair_content
+
     structs.delete_if {|struct| struct.name == "ImGuiStoragePair"}
     struct_pair_stub = ImGuiStructMapEntry.new
     struct_pair_stub.name = 'ImGuiStoragePair'
     struct_pair_stub.members = [
       ImGuiStructMemberEntry.new(name: 'key', type_str: 'unsinged int', type: :uint, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'val_p', type_str: '', type: :pointer, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'content', type_str: 'ImGuiStoragePairUnionContent', type: :ImGuiStoragePairUnionContent, is_array: false, size: 0),
     ]
     structs << struct_pair_stub
 
-    # TODO ImPool, etc.
+    # substitute ImGuiInputEvent (a structure with unnamed union member) with stub
+    union_inputevent_content = ImGuiStructMapEntry.new(name: 'ImGuiInputEventUnionContent', members: [], is_union: true)
+    union_inputevent_content.members = [
+      ImGuiStructMemberEntry.new(name: 'MousePos', type_str: 'ImGuiInputEventMousePos', type: :ImGuiInputEventMousePos, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'MouseWheel', type_str: 'ImGuiInputEventMouseWheel', type: :ImGuiInputEventMouseWheel, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'MouseButton', type_str: 'ImGuiInputEventMouseButton', type: :ImGuiInputEventMouseButton, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'MouseViewport', type_str: 'ImGuiInputEventMouseViewport', type: :ImGuiInputEventMouseViewport, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Key', type_str: 'ImGuiInputEventKey', type: :ImGuiInputEventKey, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Text', type_str: 'ImGuiInputEventText', type: :ImGuiInputEventText, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'AppFocused', type_str: 'ImGuiInputEventAppFocused', type: :ImGuiInputEventAppFocused, is_array: false, size: 0),
+    ]
+    structs << union_inputevent_content
+
+    structs.delete_if {|struct| struct.name == "ImGuiInputEvent"}
+    struct_inputevent_stub = ImGuiStructMapEntry.new
+    struct_inputevent_stub.name = 'ImGuiInputEvent'
+    struct_inputevent_stub.members = [
+      ImGuiStructMemberEntry.new(name: 'Type', type_str: 'ImGuiInputEventType', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'Source', type_str: 'ImGuiInputSource', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'content', type_str: 'ImGuiInputEventUnionContent', type: :ImGuiInputEventUnionContent, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'AddedByTestEngine', type_str: 'bool', type: :bool, is_array: false, size: 0),
+    ]
+    structs << struct_inputevent_stub
+
+    # substitute ImGuiStyleMod (a structure with unnamed union member) with stub
+    union_stylemod_content = ImGuiStructMapEntry.new(name: 'ImGuiStyleModUnionContent', members: [], is_union: true)
+    union_stylemod_content.members = [
+      ImGuiStructMemberEntry.new(name: 'BakcupInt', type_str: 'int', type: :int, is_array: true, size: 2),
+      ImGuiStructMemberEntry.new(name: 'BakcupFloat', type_str: 'float', type: :float, is_array: true, size: 2),
+    ]
+    structs << union_stylemod_content
+
+    structs.delete_if {|struct| struct.name == "ImGuiStyleMod"}
+    struct_stylemod_stub = ImGuiStructMapEntry.new
+    struct_stylemod_stub.name = 'ImGuiStyleMod'
+    struct_stylemod_stub.members = [
+      ImGuiStructMemberEntry.new(name: 'VarIdx', type_str: 'ImGuiStyleVar', type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'content', type_str: 'ImGuiStyleModUnionContent', type: :ImGuiStyleModUnionContent, is_array: false, size: 0),
+    ]
+    structs << struct_stylemod_stub
 
     # ImChunkStream stub
     structs.delete_if {|struct| struct.name == "ImChunkStream"}

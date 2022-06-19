@@ -155,7 +155,7 @@ module Generator
   end
 
   def self.write_struct(out, struct, methods, typedefs_map)
-    out.write("class #{struct.name} < FFI::Struct\n")
+    out.write("class #{struct.name} < #{struct.is_union ? "FFI::Union" : "FFI::Struct"}\n")
     out.push_indent
     # write member layout
     out.write("layout(\n")
