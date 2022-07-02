@@ -1,6 +1,8 @@
 Project(imgui)
 cmake_minimum_required(VERSION 3.0)
 
+set (CMAKE_CXX_STANDARD 11)
+
 include_directories( ${CMAKE_CURRENT_LIST_DIR}/../cimgui )
 include_directories( ${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui )
 include_directories(.)

@@ -25,9 +25,9 @@ FFI.typedef :int, :ImGuiHoveredFlags
 FFI.typedef :uint, :ImGuiID
 FFI.typedef :int, :ImGuiInputTextFlags
 FFI.typedef :int, :ImGuiKey
-FFI.typedef :int, :ImGuiKeyModFlags
 FFI.typedef :pointer, :ImGuiMemAllocFunc
 FFI.typedef :pointer, :ImGuiMemFreeFunc
+FFI.typedef :int, :ImGuiModFlags
 FFI.typedef :int, :ImGuiMouseButton
 FFI.typedef :int, :ImGuiMouseCursor
 FFI.typedef :int, :ImGuiNavInput
@@ -270,6 +270,7 @@ ImGuiHoveredFlags_AllowWhenBlockedByPopup = 32 # 1 << 5
 ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 128 # 1 << 7
 ImGuiHoveredFlags_AllowWhenOverlapped = 256 # 1 << 8
 ImGuiHoveredFlags_AllowWhenDisabled = 512 # 1 << 9
+ImGuiHoveredFlags_NoNavOverride = 1024 # 1 << 10
 ImGuiHoveredFlags_RectOnly = 416 # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
 ImGuiHoveredFlags_RootAndChildWindows = 3 # ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows
 
@@ -295,13 +296,6 @@ ImGuiInputTextFlags_NoUndoRedo = 65536 # 1 << 16
 ImGuiInputTextFlags_CharsScientific = 131072 # 1 << 17
 ImGuiInputTextFlags_CallbackResize = 262144 # 1 << 18
 ImGuiInputTextFlags_CallbackEdit = 524288 # 1 << 19
-
-# ImGuiKeyModFlags_
-ImGuiKeyModFlags_None = 0 # 0
-ImGuiKeyModFlags_Ctrl = 1 # 1 << 0
-ImGuiKeyModFlags_Shift = 2 # 1 << 1
-ImGuiKeyModFlags_Alt = 4 # 1 << 2
-ImGuiKeyModFlags_Super = 8 # 1 << 3
 
 # ImGuiKey_
 ImGuiKey_None = 0 # 0
@@ -444,6 +438,13 @@ ImGuiKey_NamedKey_END = 645 # ImGuiKey_COUNT
 ImGuiKey_NamedKey_COUNT = 133 # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
 ImGuiKey_KeysData_SIZE = 645 # ImGuiKey_COUNT
 ImGuiKey_KeysData_OFFSET = 0 # 0
+
+# ImGuiModFlags_
+ImGuiModFlags_None = 0 # 0
+ImGuiModFlags_Ctrl = 1 # 1 << 0
+ImGuiModFlags_Shift = 2 # 1 << 1
+ImGuiModFlags_Alt = 4 # 1 << 2
+ImGuiModFlags_Super = 8 # 1 << 3
 
 # ImGuiMouseButton_
 ImGuiMouseButton_Left = 0 # 0
@@ -1388,7 +1389,7 @@ class ImGuiIO < FFI::Struct
     :MetricsActiveAllocations, :int,
     :MouseDelta, ImVec2.by_value,
     :KeyMap, [:int, 645],
-    :KeysDown, [:bool, 512],
+    :KeysDown, [:bool, 645],
     :MousePos, ImVec2.by_value,
     :MouseDown, [:bool, 5],
     :MouseWheel, :float,
@@ -1399,7 +1400,6 @@ class ImGuiIO < FFI::Struct
     :KeySuper, :bool,
     :NavInputs, [:float, 20],
     :KeyMods, :int,
-    :KeyModsPrev, :int,
     :KeysData, [ImGuiKeyData.by_value, 645],
     :WantCaptureMouseUnlessPopupClose, :bool,
     :MousePosPrev, ImVec2.by_value,
@@ -1419,6 +1419,7 @@ class ImGuiIO < FFI::Struct
     :NavInputsDownDurationPrev, [:float, 20],
     :PenPressure, :float,
     :AppFocusLost, :bool,
+    :AppAcceptingEvents, :bool,
     :BackendUsingLegacyKeyArrays, :char,
     :BackendUsingLegacyNavInputArray, :bool,
     :InputQueueSurrogate, :ushort,
@@ -1471,6 +1472,10 @@ class ImGuiIO < FFI::Struct
 
   def self.create()
     return ImGuiIO.new(ImGui::ImGuiIO_ImGuiIO())
+  end
+
+  def SetAppAcceptingEvents(accepting_events)
+    ImGui::ImGuiIO_SetAppAcceptingEvents(self, accepting_events)
   end
 
   def SetKeyEventNativeData(key, native_keycode, native_scancode, native_legacy_index = -1)
@@ -1842,6 +1847,7 @@ module ImGui
       :ImGuiIO_ClearInputCharacters,
       :ImGuiIO_ClearInputKeys,
       :ImGuiIO_ImGuiIO,
+      :ImGuiIO_SetAppAcceptingEvents,
       :ImGuiIO_SetKeyEventNativeData,
       :ImGuiIO_destroy,
       :ImGuiStyle_ImGuiStyle,
@@ -1889,8 +1895,6 @@ module ImGui
       :igButton,
       :igCalcItemWidth,
       :igCalcTextSize,
-      :igCaptureKeyboardFromApp,
-      :igCaptureMouseFromApp,
       :igCheckbox,
       :igCheckboxFlags_IntPtr,
       :igCheckboxFlags_UintPtr,
@@ -1912,6 +1916,7 @@ module ImGui
       :igCombo_FnBoolPtr,
       :igCreateContext,
       :igDebugCheckVersionAndDataLayout,
+      :igDebugTextEncoding,
       :igDestroyContext,
       :igDragFloat,
       :igDragFloat2,
@@ -2131,6 +2136,8 @@ module ImGui
       :igSetItemDefaultFocus,
       :igSetKeyboardFocusHere,
       :igSetMouseCursor,
+      :igSetNextFrameWantCaptureKeyboard,
+      :igSetNextFrameWantCaptureMouse,
       :igSetNextItemOpen,
       :igSetNextItemWidth,
       :igSetNextWindowBgAlpha,
@@ -2159,6 +2166,7 @@ module ImGui
       :igSetWindowSize_Vec2,
       :igSetWindowSize_Str,
       :igShowAboutWindow,
+      :igShowDebugLogWindow,
       :igShowDemoWindow,
       :igShowFontSelector,
       :igShowMetricsWindow,
@@ -2340,6 +2348,7 @@ module ImGui
       :ImGuiIO_ClearInputCharacters => [:pointer],
       :ImGuiIO_ClearInputKeys => [:pointer],
       :ImGuiIO_ImGuiIO => [],
+      :ImGuiIO_SetAppAcceptingEvents => [:pointer, :bool],
       :ImGuiIO_SetKeyEventNativeData => [:pointer, :int, :int, :int, :int],
       :ImGuiIO_destroy => [:pointer],
       :ImGuiStyle_ImGuiStyle => [],
@@ -2387,8 +2396,6 @@ module ImGui
       :igButton => [:pointer, ImVec2.by_value],
       :igCalcItemWidth => [],
       :igCalcTextSize => [:pointer, :pointer, :pointer, :bool, :float],
-      :igCaptureKeyboardFromApp => [:bool],
-      :igCaptureMouseFromApp => [:bool],
       :igCheckbox => [:pointer, :pointer],
       :igCheckboxFlags_IntPtr => [:pointer, :pointer, :int],
       :igCheckboxFlags_UintPtr => [:pointer, :pointer, :uint],
@@ -2410,6 +2417,7 @@ module ImGui
       :igCombo_FnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
       :igCreateContext => [:pointer],
       :igDebugCheckVersionAndDataLayout => [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t],
+      :igDebugTextEncoding => [:pointer],
       :igDestroyContext => [:pointer],
       :igDragFloat => [:pointer, :pointer, :float, :float, :float, :pointer, :int],
       :igDragFloat2 => [:pointer, :pointer, :float, :float, :float, :pointer, :int],
@@ -2629,6 +2637,8 @@ module ImGui
       :igSetItemDefaultFocus => [],
       :igSetKeyboardFocusHere => [:int],
       :igSetMouseCursor => [:int],
+      :igSetNextFrameWantCaptureKeyboard => [:bool],
+      :igSetNextFrameWantCaptureMouse => [:bool],
       :igSetNextItemOpen => [:bool, :int],
       :igSetNextItemWidth => [:float],
       :igSetNextWindowBgAlpha => [:float],
@@ -2657,6 +2667,7 @@ module ImGui
       :igSetWindowSize_Vec2 => [ImVec2.by_value, :int],
       :igSetWindowSize_Str => [:pointer, ImVec2.by_value, :int],
       :igShowAboutWindow => [:pointer],
+      :igShowDebugLogWindow => [:pointer],
       :igShowDemoWindow => [:pointer],
       :igShowFontSelector => [:pointer],
       :igShowMetricsWindow => [:pointer],
@@ -2838,6 +2849,7 @@ module ImGui
       :ImGuiIO_ClearInputCharacters => :void,
       :ImGuiIO_ClearInputKeys => :void,
       :ImGuiIO_ImGuiIO => :pointer,
+      :ImGuiIO_SetAppAcceptingEvents => :void,
       :ImGuiIO_SetKeyEventNativeData => :void,
       :ImGuiIO_destroy => :void,
       :ImGuiStyle_ImGuiStyle => :pointer,
@@ -2885,8 +2897,6 @@ module ImGui
       :igButton => :bool,
       :igCalcItemWidth => :float,
       :igCalcTextSize => :void,
-      :igCaptureKeyboardFromApp => :void,
-      :igCaptureMouseFromApp => :void,
       :igCheckbox => :bool,
       :igCheckboxFlags_IntPtr => :bool,
       :igCheckboxFlags_UintPtr => :bool,
@@ -2908,6 +2918,7 @@ module ImGui
       :igCombo_FnBoolPtr => :bool,
       :igCreateContext => :pointer,
       :igDebugCheckVersionAndDataLayout => :bool,
+      :igDebugTextEncoding => :void,
       :igDestroyContext => :void,
       :igDragFloat => :bool,
       :igDragFloat2 => :bool,
@@ -3127,6 +3138,8 @@ module ImGui
       :igSetItemDefaultFocus => :void,
       :igSetKeyboardFocusHere => :void,
       :igSetMouseCursor => :void,
+      :igSetNextFrameWantCaptureKeyboard => :void,
+      :igSetNextFrameWantCaptureMouse => :void,
       :igSetNextItemOpen => :void,
       :igSetNextItemWidth => :void,
       :igSetNextWindowBgAlpha => :void,
@@ -3155,6 +3168,7 @@ module ImGui
       :igSetWindowSize_Vec2 => :void,
       :igSetWindowSize_Str => :void,
       :igShowAboutWindow => :void,
+      :igShowDebugLogWindow => :void,
       :igShowDemoWindow => :void,
       :igShowFontSelector => :void,
       :igShowMetricsWindow => :void,
@@ -3406,18 +3420,6 @@ module ImGui
     return pOut
   end
 
-  # arg: want_capture_keyboard_value(bool)
-  # ret: void
-  def self.CaptureKeyboardFromApp(want_capture_keyboard_value = true)
-    igCaptureKeyboardFromApp(want_capture_keyboard_value)
-  end
-
-  # arg: want_capture_mouse_value(bool)
-  # ret: void
-  def self.CaptureMouseFromApp(want_capture_mouse_value = true)
-    igCaptureMouseFromApp(want_capture_mouse_value)
-  end
-
   # arg: label(const char*), v(bool*)
   # ret: bool
   def self.Checkbox(label, v)
@@ -3543,6 +3545,12 @@ module ImGui
   # ret: bool
   def self.DebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
     igDebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
+  end
+
+  # arg: text(const char*)
+  # ret: void
+  def self.DebugTextEncoding(text)
+    igDebugTextEncoding(text)
   end
 
   # arg: ctx(ImGuiContext*)
@@ -4795,6 +4803,18 @@ module ImGui
     igSetMouseCursor(cursor_type)
   end
 
+  # arg: want_capture_keyboard(bool)
+  # ret: void
+  def self.SetNextFrameWantCaptureKeyboard(want_capture_keyboard)
+    igSetNextFrameWantCaptureKeyboard(want_capture_keyboard)
+  end
+
+  # arg: want_capture_mouse(bool)
+  # ret: void
+  def self.SetNextFrameWantCaptureMouse(want_capture_mouse)
+    igSetNextFrameWantCaptureMouse(want_capture_mouse)
+  end
+
   # arg: is_open(bool), cond(ImGuiCond)
   # ret: void
   def self.SetNextItemOpen(is_open, cond = 0)
@@ -4959,6 +4979,12 @@ module ImGui
   # ret: void
   def self.ShowAboutWindow(p_open = nil)
     igShowAboutWindow(p_open)
+  end
+
+  # arg: p_open(bool*)
+  # ret: void
+  def self.ShowDebugLogWindow(p_open = nil)
+    igShowDebugLogWindow(p_open)
   end
 
   # arg: p_open(bool*)

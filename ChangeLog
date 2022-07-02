@@ -1,3 +1,7 @@
+2022-07-02  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* (macOS) ImGui 1.88
+
 2022-02-12  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* imgui_impl_sdl2.rb: Updated to use event API
