@@ -18,8 +18,9 @@
             *   ~~ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [x64-mingw32]~~
             *   ~~ruby 2.7.1p83 (2020-03-31 revision a0c7c23c9c) [x64-mingw32]~~
         *   [macOS]
+            *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [arm64-darwin21]
             *   ruby 3.1.0p0 (2021-12-25 revision fb4df44d16) [arm64-darwin20]
-            *   ruby 3.0.2p107 (2021-07-07 revision 0db68f0233) [arm64-darwin20]
+            *   ~~ruby 3.0.2p107 (2021-07-07 revision 0db68f0233) [arm64-darwin20]~~
             *   ~~ruby 3.0.1p64 (2021-04-05 revision 0fb782ee38) [arm64-darwin20]~~
             *   ~~ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [arm64-darwin20]~~
             *   ~~ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]~~
