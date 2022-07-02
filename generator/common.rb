@@ -287,6 +287,19 @@ module ImGuiBindings
     ]
     structs << struct_impool_stub
 
+    # Tweak to resolve cross-referencing problem between ImDrawData (ImGuiViewport* OwnerViewport) and ImGuiViewport (ImDrawData* DrawData)
+    structs.each do |struct|
+      if struct.name == 'ImGuiViewport'
+        struct.members.each do |member|
+          if member.name == 'DrawData'
+            member.type_str = 'void*'
+            member.type = :pointer
+          end
+        end
+        break
+      end
+    end
+
     return structs
   end
 

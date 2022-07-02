@@ -9,7 +9,9 @@ require 'ffi'
 FFI.typedef :int, :ImDrawFlags
 FFI.typedef :ushort, :ImDrawIdx
 FFI.typedef :int, :ImDrawListFlags
+FFI.typedef :pointer, :ImFileHandle
 FFI.typedef :int, :ImFontAtlasFlags
+FFI.typedef :int, :ImGuiActivateFlags
 FFI.typedef :int, :ImGuiBackendFlags
 FFI.typedef :int, :ImGuiButtonFlags
 FFI.typedef :int, :ImGuiCol
@@ -17,22 +19,35 @@ FFI.typedef :int, :ImGuiColorEditFlags
 FFI.typedef :int, :ImGuiComboFlags
 FFI.typedef :int, :ImGuiCond
 FFI.typedef :int, :ImGuiConfigFlags
+FFI.typedef :int, :ImGuiDataAuthority
 FFI.typedef :int, :ImGuiDataType
 FFI.typedef :int, :ImGuiDir
+FFI.typedef :int, :ImGuiDockNodeFlags
 FFI.typedef :int, :ImGuiDragDropFlags
 FFI.typedef :int, :ImGuiFocusedFlags
 FFI.typedef :int, :ImGuiHoveredFlags
 FFI.typedef :uint, :ImGuiID
 FFI.typedef :int, :ImGuiInputTextFlags
+FFI.typedef :int, :ImGuiItemFlags
+FFI.typedef :int, :ImGuiItemStatusFlags
 FFI.typedef :int, :ImGuiKey
 FFI.typedef :int, :ImGuiKeyModFlags
+FFI.typedef :int, :ImGuiLayoutType
 FFI.typedef :pointer, :ImGuiMemAllocFunc
 FFI.typedef :pointer, :ImGuiMemFreeFunc
 FFI.typedef :int, :ImGuiMouseButton
 FFI.typedef :int, :ImGuiMouseCursor
+FFI.typedef :int, :ImGuiNavDirSourceFlags
+FFI.typedef :int, :ImGuiNavHighlightFlags
 FFI.typedef :int, :ImGuiNavInput
+FFI.typedef :int, :ImGuiNavMoveFlags
+FFI.typedef :int, :ImGuiNextItemDataFlags
+FFI.typedef :int, :ImGuiNextWindowDataFlags
+FFI.typedef :int, :ImGuiOldColumnFlags
 FFI.typedef :int, :ImGuiPopupFlags
+FFI.typedef :int, :ImGuiScrollFlags
 FFI.typedef :int, :ImGuiSelectableFlags
+FFI.typedef :int, :ImGuiSeparatorFlags
 FFI.typedef :int, :ImGuiSliderFlags
 FFI.typedef :int, :ImGuiSortDirection
 FFI.typedef :int, :ImGuiStyleVar
@@ -40,11 +55,16 @@ FFI.typedef :int, :ImGuiTabBarFlags
 FFI.typedef :int, :ImGuiTabItemFlags
 FFI.typedef :int, :ImGuiTableBgTarget
 FFI.typedef :int, :ImGuiTableColumnFlags
+FFI.typedef :char, :ImGuiTableColumnIdx
+FFI.typedef :uchar, :ImGuiTableDrawChannelIdx
 FFI.typedef :int, :ImGuiTableFlags
 FFI.typedef :int, :ImGuiTableRowFlags
+FFI.typedef :int, :ImGuiTextFlags
+FFI.typedef :int, :ImGuiTooltipFlags
 FFI.typedef :int, :ImGuiTreeNodeFlags
 FFI.typedef :int, :ImGuiViewportFlags
 FFI.typedef :int, :ImGuiWindowFlags
+FFI.typedef :int, :ImPoolIdx
 FFI.typedef :short, :ImS16
 FFI.typedef :int, :ImS32
 FFI.typedef :int64, :ImS64
@@ -57,6 +77,16 @@ FFI.typedef :uchar, :ImU8
 FFI.typedef :ushort, :ImWchar
 FFI.typedef :ushort, :ImWchar16
 FFI.typedef :uint, :ImWchar32
+FFI.typedef :int, :ImGuiContextHookType
+FFI.typedef :int, :ImGuiPopupPositionPolicy
+FFI.typedef :int, :ImGuiInputReadMode
+FFI.typedef :int, :ImGuiAxis
+FFI.typedef :int, :ImGuiLogType
+FFI.typedef :int, :ImGuiPlotType
+FFI.typedef :int, :ImGuiNavLayer
+FFI.typedef :int, :ImGuiInputSource
+FFI.typedef :int, :ImGuiDockNodeState
+FFI.typedef :int, :ImGuiInputEventType
 
 # ImDrawFlags_
 ImDrawFlags_None = 0 # 0
@@ -87,12 +117,45 @@ ImFontAtlasFlags_NoPowerOfTwoHeight = 1 # 1 << 0
 ImFontAtlasFlags_NoMouseCursors = 2 # 1 << 1
 ImFontAtlasFlags_NoBakedLines = 4 # 1 << 2
 
+# ImGuiActivateFlags_
+ImGuiActivateFlags_None = 0 # 0
+ImGuiActivateFlags_PreferInput = 1 # 1 << 0
+ImGuiActivateFlags_PreferTweak = 2 # 1 << 1
+ImGuiActivateFlags_TryToPreserveState = 4 # 1 << 2
+
+# ImGuiAxis
+ImGuiAxis_None = -1 # -1
+ImGuiAxis_X = 0 # 0
+ImGuiAxis_Y = 1 # 1
+
 # ImGuiBackendFlags_
 ImGuiBackendFlags_None = 0 # 0
 ImGuiBackendFlags_HasGamepad = 1 # 1 << 0
 ImGuiBackendFlags_HasMouseCursors = 2 # 1 << 1
 ImGuiBackendFlags_HasSetMousePos = 4 # 1 << 2
 ImGuiBackendFlags_RendererHasVtxOffset = 8 # 1 << 3
+ImGuiBackendFlags_PlatformHasViewports = 1024 # 1 << 10
+ImGuiBackendFlags_HasMouseHoveredViewport = 2048 # 1 << 11
+ImGuiBackendFlags_RendererHasViewports = 4096 # 1 << 12
+
+# ImGuiButtonFlagsPrivate_
+ImGuiButtonFlags_PressedOnClick = 16 # 1 << 4
+ImGuiButtonFlags_PressedOnClickRelease = 32 # 1 << 5
+ImGuiButtonFlags_PressedOnClickReleaseAnywhere = 64 # 1 << 6
+ImGuiButtonFlags_PressedOnRelease = 128 # 1 << 7
+ImGuiButtonFlags_PressedOnDoubleClick = 256 # 1 << 8
+ImGuiButtonFlags_PressedOnDragDropHold = 512 # 1 << 9
+ImGuiButtonFlags_Repeat = 1024 # 1 << 10
+ImGuiButtonFlags_FlattenChildren = 2048 # 1 << 11
+ImGuiButtonFlags_AllowItemOverlap = 4096 # 1 << 12
+ImGuiButtonFlags_DontClosePopups = 8192 # 1 << 13
+ImGuiButtonFlags_AlignTextBaseLine = 32768 # 1 << 15
+ImGuiButtonFlags_NoKeyModifiers = 65536 # 1 << 16
+ImGuiButtonFlags_NoHoldingActiveId = 131072 # 1 << 17
+ImGuiButtonFlags_NoNavFocus = 262144 # 1 << 18
+ImGuiButtonFlags_NoHoveredOnFocus = 524288 # 1 << 19
+ImGuiButtonFlags_PressedOnMask_ = 1008 # ImGuiButtonFlags_PressedOnClick | ImGuiButtonFlags_PressedOnClickRelease | ImGuiButtonFlags_PressedOnClickReleaseAnywhere | ImGuiButtonFlags_PressedOnRelease | ImGuiButtonFlags_PressedOnDoubleClick | ImGuiButtonFlags_PressedOnDragDropHold
+ImGuiButtonFlags_PressedOnDefault_ = 32 # ImGuiButtonFlags_PressedOnClickRelease
 
 # ImGuiButtonFlags_
 ImGuiButtonFlags_None = 0 # 0
@@ -141,22 +204,24 @@ ImGuiCol_TabHovered = 34 # 34
 ImGuiCol_TabActive = 35 # 35
 ImGuiCol_TabUnfocused = 36 # 36
 ImGuiCol_TabUnfocusedActive = 37 # 37
-ImGuiCol_PlotLines = 38 # 38
-ImGuiCol_PlotLinesHovered = 39 # 39
-ImGuiCol_PlotHistogram = 40 # 40
-ImGuiCol_PlotHistogramHovered = 41 # 41
-ImGuiCol_TableHeaderBg = 42 # 42
-ImGuiCol_TableBorderStrong = 43 # 43
-ImGuiCol_TableBorderLight = 44 # 44
-ImGuiCol_TableRowBg = 45 # 45
-ImGuiCol_TableRowBgAlt = 46 # 46
-ImGuiCol_TextSelectedBg = 47 # 47
-ImGuiCol_DragDropTarget = 48 # 48
-ImGuiCol_NavHighlight = 49 # 49
-ImGuiCol_NavWindowingHighlight = 50 # 50
-ImGuiCol_NavWindowingDimBg = 51 # 51
-ImGuiCol_ModalWindowDimBg = 52 # 52
-ImGuiCol_COUNT = 53 # 53
+ImGuiCol_DockingPreview = 38 # 38
+ImGuiCol_DockingEmptyBg = 39 # 39
+ImGuiCol_PlotLines = 40 # 40
+ImGuiCol_PlotLinesHovered = 41 # 41
+ImGuiCol_PlotHistogram = 42 # 42
+ImGuiCol_PlotHistogramHovered = 43 # 43
+ImGuiCol_TableHeaderBg = 44 # 44
+ImGuiCol_TableBorderStrong = 45 # 45
+ImGuiCol_TableBorderLight = 46 # 46
+ImGuiCol_TableRowBg = 47 # 47
+ImGuiCol_TableRowBgAlt = 48 # 48
+ImGuiCol_TextSelectedBg = 49 # 49
+ImGuiCol_DragDropTarget = 50 # 50
+ImGuiCol_NavHighlight = 51 # 51
+ImGuiCol_NavWindowingHighlight = 52 # 52
+ImGuiCol_NavWindowingDimBg = 53 # 53
+ImGuiCol_ModalWindowDimBg = 54 # 54
+ImGuiCol_COUNT = 55 # 55
 
 # ImGuiColorEditFlags_
 ImGuiColorEditFlags_None = 0 # 0
@@ -189,6 +254,9 @@ ImGuiColorEditFlags_DataTypeMask_ = 25165824 # ImGuiColorEditFlags_Uint8 | ImGui
 ImGuiColorEditFlags_PickerMask_ = 100663296 # ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_PickerHueBar
 ImGuiColorEditFlags_InputMask_ = 402653184 # ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_InputHSV
 
+# ImGuiComboFlagsPrivate_
+ImGuiComboFlags_CustomPreview = 1048576 # 1 << 20
+
 # ImGuiComboFlags_
 ImGuiComboFlags_None = 0 # 0
 ImGuiComboFlags_PopupAlignLeft = 1 # 1 << 0
@@ -215,8 +283,32 @@ ImGuiConfigFlags_NavEnableSetMousePos = 4 # 1 << 2
 ImGuiConfigFlags_NavNoCaptureKeyboard = 8 # 1 << 3
 ImGuiConfigFlags_NoMouse = 16 # 1 << 4
 ImGuiConfigFlags_NoMouseCursorChange = 32 # 1 << 5
+ImGuiConfigFlags_DockingEnable = 64 # 1 << 6
+ImGuiConfigFlags_ViewportsEnable = 1024 # 1 << 10
+ImGuiConfigFlags_DpiEnableScaleViewports = 16384 # 1 << 14
+ImGuiConfigFlags_DpiEnableScaleFonts = 32768 # 1 << 15
 ImGuiConfigFlags_IsSRGB = 1048576 # 1 << 20
 ImGuiConfigFlags_IsTouchScreen = 2097152 # 1 << 21
+
+# ImGuiContextHookType
+ImGuiContextHookType_NewFramePre = 0 # 0
+ImGuiContextHookType_NewFramePost = 1 # 1
+ImGuiContextHookType_EndFramePre = 2 # 2
+ImGuiContextHookType_EndFramePost = 3 # 3
+ImGuiContextHookType_RenderPre = 4 # 4
+ImGuiContextHookType_RenderPost = 5 # 5
+ImGuiContextHookType_Shutdown = 6 # 6
+ImGuiContextHookType_PendingRemoval_ = 7 # 7
+
+# ImGuiDataAuthority_
+ImGuiDataAuthority_Auto = 0 # 0
+ImGuiDataAuthority_DockNode = 1 # 1
+ImGuiDataAuthority_Window = 2 # 2
+
+# ImGuiDataTypePrivate_
+ImGuiDataType_String = 11 # ImGuiDataType_COUNT + 1
+ImGuiDataType_Pointer = 12 # ImGuiDataType_COUNT + 1+1
+ImGuiDataType_ID = 13 # ImGuiDataType_COUNT + 1+1+1
 
 # ImGuiDataType_
 ImGuiDataType_S8 = 0 # 0
@@ -239,6 +331,42 @@ ImGuiDir_Up = 2 # 2
 ImGuiDir_Down = 3 # 3
 ImGuiDir_COUNT = 4 # 4
 
+# ImGuiDockNodeFlagsPrivate_
+ImGuiDockNodeFlags_DockSpace = 1024 # 1 << 10
+ImGuiDockNodeFlags_CentralNode = 2048 # 1 << 11
+ImGuiDockNodeFlags_NoTabBar = 4096 # 1 << 12
+ImGuiDockNodeFlags_HiddenTabBar = 8192 # 1 << 13
+ImGuiDockNodeFlags_NoWindowMenuButton = 16384 # 1 << 14
+ImGuiDockNodeFlags_NoCloseButton = 32768 # 1 << 15
+ImGuiDockNodeFlags_NoDocking = 65536 # 1 << 16
+ImGuiDockNodeFlags_NoDockingSplitMe = 131072 # 1 << 17
+ImGuiDockNodeFlags_NoDockingSplitOther = 262144 # 1 << 18
+ImGuiDockNodeFlags_NoDockingOverMe = 524288 # 1 << 19
+ImGuiDockNodeFlags_NoDockingOverOther = 1048576 # 1 << 20
+ImGuiDockNodeFlags_NoDockingOverEmpty = 2097152 # 1 << 21
+ImGuiDockNodeFlags_NoResizeX = 4194304 # 1 << 22
+ImGuiDockNodeFlags_NoResizeY = 8388608 # 1 << 23
+ImGuiDockNodeFlags_SharedFlagsInheritMask_ = -1 # ~0
+ImGuiDockNodeFlags_NoResizeFlagsMask_ = 12582944 # ImGuiDockNodeFlags_NoResize | ImGuiDockNodeFlags_NoResizeX | ImGuiDockNodeFlags_NoResizeY
+ImGuiDockNodeFlags_LocalFlagsMask_ = 12713072 # ImGuiDockNodeFlags_NoSplit | ImGuiDockNodeFlags_NoResizeFlagsMask_ | ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_DockSpace | ImGuiDockNodeFlags_CentralNode | ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoWindowMenuButton | ImGuiDockNodeFlags_NoCloseButton | ImGuiDockNodeFlags_NoDocking
+ImGuiDockNodeFlags_LocalFlagsTransferMask_ = 12712048 # ImGuiDockNodeFlags_LocalFlagsMask_ & ~ImGuiDockNodeFlags_DockSpace
+ImGuiDockNodeFlags_SavedFlagsMask_ = 12712992 # ImGuiDockNodeFlags_NoResizeFlagsMask_ | ImGuiDockNodeFlags_DockSpace | ImGuiDockNodeFlags_CentralNode | ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_HiddenTabBar | ImGuiDockNodeFlags_NoWindowMenuButton | ImGuiDockNodeFlags_NoCloseButton | ImGuiDockNodeFlags_NoDocking
+
+# ImGuiDockNodeFlags_
+ImGuiDockNodeFlags_None = 0 # 0
+ImGuiDockNodeFlags_KeepAliveOnly = 1 # 1 << 0
+ImGuiDockNodeFlags_NoDockingInCentralNode = 4 # 1 << 2
+ImGuiDockNodeFlags_PassthruCentralNode = 8 # 1 << 3
+ImGuiDockNodeFlags_NoSplit = 16 # 1 << 4
+ImGuiDockNodeFlags_NoResize = 32 # 1 << 5
+ImGuiDockNodeFlags_AutoHideTabBar = 64 # 1 << 6
+
+# ImGuiDockNodeState
+ImGuiDockNodeState_Unknown = 0 # 0
+ImGuiDockNodeState_HostWindowHiddenBecauseSingleWindow = 1 # 1
+ImGuiDockNodeState_HostWindowHiddenBecauseWindowsAreResizing = 2 # 2
+ImGuiDockNodeState_HostWindowVisible = 3 # 3
+
 # ImGuiDragDropFlags_
 ImGuiDragDropFlags_None = 0 # 0
 ImGuiDragDropFlags_SourceNoPreviewTooltip = 1 # 1 << 0
@@ -258,6 +386,7 @@ ImGuiFocusedFlags_ChildWindows = 1 # 1 << 0
 ImGuiFocusedFlags_RootWindow = 2 # 1 << 1
 ImGuiFocusedFlags_AnyWindow = 4 # 1 << 2
 ImGuiFocusedFlags_NoPopupHierarchy = 8 # 1 << 3
+ImGuiFocusedFlags_DockHierarchy = 16 # 1 << 4
 ImGuiFocusedFlags_RootAndChildWindows = 3 # ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_ChildWindows
 
 # ImGuiHoveredFlags_
@@ -266,12 +395,46 @@ ImGuiHoveredFlags_ChildWindows = 1 # 1 << 0
 ImGuiHoveredFlags_RootWindow = 2 # 1 << 1
 ImGuiHoveredFlags_AnyWindow = 4 # 1 << 2
 ImGuiHoveredFlags_NoPopupHierarchy = 8 # 1 << 3
+ImGuiHoveredFlags_DockHierarchy = 16 # 1 << 4
 ImGuiHoveredFlags_AllowWhenBlockedByPopup = 32 # 1 << 5
 ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 128 # 1 << 7
 ImGuiHoveredFlags_AllowWhenOverlapped = 256 # 1 << 8
 ImGuiHoveredFlags_AllowWhenDisabled = 512 # 1 << 9
 ImGuiHoveredFlags_RectOnly = 416 # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
 ImGuiHoveredFlags_RootAndChildWindows = 3 # ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows
+
+# ImGuiInputEventType
+ImGuiInputEventType_None = 0 # 0
+ImGuiInputEventType_MousePos = 1 # 1
+ImGuiInputEventType_MouseWheel = 2 # 2
+ImGuiInputEventType_MouseButton = 3 # 3
+ImGuiInputEventType_MouseViewport = 4 # 4
+ImGuiInputEventType_Key = 5 # 5
+ImGuiInputEventType_Char = 6 # 6
+ImGuiInputEventType_Focus = 7 # 7
+ImGuiInputEventType_COUNT = 8 # 8
+
+# ImGuiInputReadMode
+ImGuiInputReadMode_Down = 0 # 0
+ImGuiInputReadMode_Pressed = 1 # 1
+ImGuiInputReadMode_Released = 2 # 2
+ImGuiInputReadMode_Repeat = 3 # 3
+ImGuiInputReadMode_RepeatSlow = 4 # 4
+ImGuiInputReadMode_RepeatFast = 5 # 5
+
+# ImGuiInputSource
+ImGuiInputSource_None = 0 # 0
+ImGuiInputSource_Mouse = 1 # 1
+ImGuiInputSource_Keyboard = 2 # 2
+ImGuiInputSource_Gamepad = 3 # 3
+ImGuiInputSource_Clipboard = 4 # 4
+ImGuiInputSource_Nav = 5 # 5
+ImGuiInputSource_COUNT = 6 # 6
+
+# ImGuiInputTextFlagsPrivate_
+ImGuiInputTextFlags_Multiline = 67108864 # 1 << 26
+ImGuiInputTextFlags_NoMarkEdited = 134217728 # 1 << 27
+ImGuiInputTextFlags_MergedItem = 268435456 # 1 << 28
 
 # ImGuiInputTextFlags_
 ImGuiInputTextFlags_None = 0 # 0
@@ -296,12 +459,42 @@ ImGuiInputTextFlags_CharsScientific = 131072 # 1 << 17
 ImGuiInputTextFlags_CallbackResize = 262144 # 1 << 18
 ImGuiInputTextFlags_CallbackEdit = 524288 # 1 << 19
 
+# ImGuiItemFlags_
+ImGuiItemFlags_None = 0 # 0
+ImGuiItemFlags_NoTabStop = 1 # 1 << 0
+ImGuiItemFlags_ButtonRepeat = 2 # 1 << 1
+ImGuiItemFlags_Disabled = 4 # 1 << 2
+ImGuiItemFlags_NoNav = 8 # 1 << 3
+ImGuiItemFlags_NoNavDefaultFocus = 16 # 1 << 4
+ImGuiItemFlags_SelectableDontClosePopup = 32 # 1 << 5
+ImGuiItemFlags_MixedValue = 64 # 1 << 6
+ImGuiItemFlags_ReadOnly = 128 # 1 << 7
+ImGuiItemFlags_Inputable = 256 # 1 << 8
+
+# ImGuiItemStatusFlags_
+ImGuiItemStatusFlags_None = 0 # 0
+ImGuiItemStatusFlags_HoveredRect = 1 # 1 << 0
+ImGuiItemStatusFlags_HasDisplayRect = 2 # 1 << 1
+ImGuiItemStatusFlags_Edited = 4 # 1 << 2
+ImGuiItemStatusFlags_ToggledSelection = 8 # 1 << 3
+ImGuiItemStatusFlags_ToggledOpen = 16 # 1 << 4
+ImGuiItemStatusFlags_HasDeactivated = 32 # 1 << 5
+ImGuiItemStatusFlags_Deactivated = 64 # 1 << 6
+ImGuiItemStatusFlags_HoveredWindow = 128 # 1 << 7
+ImGuiItemStatusFlags_FocusedByTabbing = 256 # 1 << 8
+
 # ImGuiKeyModFlags_
 ImGuiKeyModFlags_None = 0 # 0
 ImGuiKeyModFlags_Ctrl = 1 # 1 << 0
 ImGuiKeyModFlags_Shift = 2 # 1 << 1
 ImGuiKeyModFlags_Alt = 4 # 1 << 2
 ImGuiKeyModFlags_Super = 8 # 1 << 3
+
+# ImGuiKeyPrivate_
+ImGuiKey_LegacyNativeKey_BEGIN = 0 # 0
+ImGuiKey_LegacyNativeKey_END = 512 # 512
+ImGuiKey_Gamepad_BEGIN = 617 # ImGuiKey_GamepadStart
+ImGuiKey_Gamepad_END = 641 # ImGuiKey_GamepadRStickRight + 1
 
 # ImGuiKey_
 ImGuiKey_None = 0 # 0
@@ -445,6 +638,17 @@ ImGuiKey_NamedKey_COUNT = 133 # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
 ImGuiKey_KeysData_SIZE = 645 # ImGuiKey_COUNT
 ImGuiKey_KeysData_OFFSET = 0 # 0
 
+# ImGuiLayoutType_
+ImGuiLayoutType_Horizontal = 0 # 0
+ImGuiLayoutType_Vertical = 1 # 1
+
+# ImGuiLogType
+ImGuiLogType_None = 0 # 0
+ImGuiLogType_TTY = 1 # 1
+ImGuiLogType_File = 2 # 2
+ImGuiLogType_Buffer = 3 # 3
+ImGuiLogType_Clipboard = 4 # 4
+
 # ImGuiMouseButton_
 ImGuiMouseButton_Left = 0 # 0
 ImGuiMouseButton_Right = 1 # 1
@@ -463,6 +667,20 @@ ImGuiMouseCursor_ResizeNWSE = 6 # 6
 ImGuiMouseCursor_Hand = 7 # 7
 ImGuiMouseCursor_NotAllowed = 8 # 8
 ImGuiMouseCursor_COUNT = 9 # 9
+
+# ImGuiNavDirSourceFlags_
+ImGuiNavDirSourceFlags_None = 0 # 0
+ImGuiNavDirSourceFlags_RawKeyboard = 1 # 1 << 0
+ImGuiNavDirSourceFlags_Keyboard = 2 # 1 << 1
+ImGuiNavDirSourceFlags_PadDPad = 4 # 1 << 2
+ImGuiNavDirSourceFlags_PadLStick = 8 # 1 << 3
+
+# ImGuiNavHighlightFlags_
+ImGuiNavHighlightFlags_None = 0 # 0
+ImGuiNavHighlightFlags_TypeDefault = 1 # 1 << 0
+ImGuiNavHighlightFlags_TypeThin = 2 # 1 << 1
+ImGuiNavHighlightFlags_AlwaysDraw = 4 # 1 << 2
+ImGuiNavHighlightFlags_NoRounding = 8 # 1 << 3
 
 # ImGuiNavInput_
 ImGuiNavInput_Activate = 0 # 0
@@ -487,6 +705,58 @@ ImGuiNavInput_KeyUp_ = 18 # 18
 ImGuiNavInput_KeyDown_ = 19 # 19
 ImGuiNavInput_COUNT = 20 # 20
 
+# ImGuiNavLayer
+ImGuiNavLayer_Main = 0 # 0
+ImGuiNavLayer_Menu = 1 # 1
+ImGuiNavLayer_COUNT = 2 # 2
+
+# ImGuiNavMoveFlags_
+ImGuiNavMoveFlags_None = 0 # 0
+ImGuiNavMoveFlags_LoopX = 1 # 1 << 0
+ImGuiNavMoveFlags_LoopY = 2 # 1 << 1
+ImGuiNavMoveFlags_WrapX = 4 # 1 << 2
+ImGuiNavMoveFlags_WrapY = 8 # 1 << 3
+ImGuiNavMoveFlags_AllowCurrentNavId = 16 # 1 << 4
+ImGuiNavMoveFlags_AlsoScoreVisibleSet = 32 # 1 << 5
+ImGuiNavMoveFlags_ScrollToEdgeY = 64 # 1 << 6
+ImGuiNavMoveFlags_Forwarded = 128 # 1 << 7
+ImGuiNavMoveFlags_DebugNoResult = 256 # 1 << 8
+ImGuiNavMoveFlags_FocusApi = 512 # 1 << 9
+ImGuiNavMoveFlags_Tabbing = 1024 # 1 << 10
+ImGuiNavMoveFlags_Activate = 2048 # 1 << 11
+ImGuiNavMoveFlags_DontSetNavHighlight = 4096 # 1 << 12
+
+# ImGuiNextItemDataFlags_
+ImGuiNextItemDataFlags_None = 0 # 0
+ImGuiNextItemDataFlags_HasWidth = 1 # 1 << 0
+ImGuiNextItemDataFlags_HasOpen = 2 # 1 << 1
+
+# ImGuiNextWindowDataFlags_
+ImGuiNextWindowDataFlags_None = 0 # 0
+ImGuiNextWindowDataFlags_HasPos = 1 # 1 << 0
+ImGuiNextWindowDataFlags_HasSize = 2 # 1 << 1
+ImGuiNextWindowDataFlags_HasContentSize = 4 # 1 << 2
+ImGuiNextWindowDataFlags_HasCollapsed = 8 # 1 << 3
+ImGuiNextWindowDataFlags_HasSizeConstraint = 16 # 1 << 4
+ImGuiNextWindowDataFlags_HasFocus = 32 # 1 << 5
+ImGuiNextWindowDataFlags_HasBgAlpha = 64 # 1 << 6
+ImGuiNextWindowDataFlags_HasScroll = 128 # 1 << 7
+ImGuiNextWindowDataFlags_HasViewport = 256 # 1 << 8
+ImGuiNextWindowDataFlags_HasDock = 512 # 1 << 9
+ImGuiNextWindowDataFlags_HasWindowClass = 1024 # 1 << 10
+
+# ImGuiOldColumnFlags_
+ImGuiOldColumnFlags_None = 0 # 0
+ImGuiOldColumnFlags_NoBorder = 1 # 1 << 0
+ImGuiOldColumnFlags_NoResize = 2 # 1 << 1
+ImGuiOldColumnFlags_NoPreserveWidths = 4 # 1 << 2
+ImGuiOldColumnFlags_NoForceWithinWindow = 8 # 1 << 3
+ImGuiOldColumnFlags_GrowParentContentsSize = 16 # 1 << 4
+
+# ImGuiPlotType
+ImGuiPlotType_Lines = 0 # 0
+ImGuiPlotType_Histogram = 1 # 1
+
 # ImGuiPopupFlags_
 ImGuiPopupFlags_None = 0 # 0
 ImGuiPopupFlags_MouseButtonLeft = 0 # 0
@@ -500,6 +770,33 @@ ImGuiPopupFlags_AnyPopupId = 128 # 1 << 7
 ImGuiPopupFlags_AnyPopupLevel = 256 # 1 << 8
 ImGuiPopupFlags_AnyPopup = 384 # ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel
 
+# ImGuiPopupPositionPolicy
+ImGuiPopupPositionPolicy_Default = 0 # 0
+ImGuiPopupPositionPolicy_ComboBox = 1 # 1
+ImGuiPopupPositionPolicy_Tooltip = 2 # 2
+
+# ImGuiScrollFlags_
+ImGuiScrollFlags_None = 0 # 0
+ImGuiScrollFlags_KeepVisibleEdgeX = 1 # 1 << 0
+ImGuiScrollFlags_KeepVisibleEdgeY = 2 # 1 << 1
+ImGuiScrollFlags_KeepVisibleCenterX = 4 # 1 << 2
+ImGuiScrollFlags_KeepVisibleCenterY = 8 # 1 << 3
+ImGuiScrollFlags_AlwaysCenterX = 16 # 1 << 4
+ImGuiScrollFlags_AlwaysCenterY = 32 # 1 << 5
+ImGuiScrollFlags_NoScrollParent = 64 # 1 << 6
+ImGuiScrollFlags_MaskX_ = 21 # ImGuiScrollFlags_KeepVisibleEdgeX | ImGuiScrollFlags_KeepVisibleCenterX | ImGuiScrollFlags_AlwaysCenterX
+ImGuiScrollFlags_MaskY_ = 42 # ImGuiScrollFlags_KeepVisibleEdgeY | ImGuiScrollFlags_KeepVisibleCenterY | ImGuiScrollFlags_AlwaysCenterY
+
+# ImGuiSelectableFlagsPrivate_
+ImGuiSelectableFlags_NoHoldingActiveID = 1048576 # 1 << 20
+ImGuiSelectableFlags_SelectOnNav = 2097152 # 1 << 21
+ImGuiSelectableFlags_SelectOnClick = 4194304 # 1 << 22
+ImGuiSelectableFlags_SelectOnRelease = 8388608 # 1 << 23
+ImGuiSelectableFlags_SpanAvailWidth = 16777216 # 1 << 24
+ImGuiSelectableFlags_DrawHoveredWhenHeld = 33554432 # 1 << 25
+ImGuiSelectableFlags_SetNavIdOnHover = 67108864 # 1 << 26
+ImGuiSelectableFlags_NoPadWithHalfSpacing = 134217728 # 1 << 27
+
 # ImGuiSelectableFlags_
 ImGuiSelectableFlags_None = 0 # 0
 ImGuiSelectableFlags_DontClosePopups = 1 # 1 << 0
@@ -507,6 +804,16 @@ ImGuiSelectableFlags_SpanAllColumns = 2 # 1 << 1
 ImGuiSelectableFlags_AllowDoubleClick = 4 # 1 << 2
 ImGuiSelectableFlags_Disabled = 8 # 1 << 3
 ImGuiSelectableFlags_AllowItemOverlap = 16 # 1 << 4
+
+# ImGuiSeparatorFlags_
+ImGuiSeparatorFlags_None = 0 # 0
+ImGuiSeparatorFlags_Horizontal = 1 # 1 << 0
+ImGuiSeparatorFlags_Vertical = 2 # 1 << 1
+ImGuiSeparatorFlags_SpanAllColumns = 4 # 1 << 2
+
+# ImGuiSliderFlagsPrivate_
+ImGuiSliderFlags_Vertical = 1048576 # 1 << 20
+ImGuiSliderFlags_ReadOnly = 2097152 # 1 << 21
 
 # ImGuiSliderFlags_
 ImGuiSliderFlags_None = 0 # 0
@@ -549,6 +856,11 @@ ImGuiStyleVar_ButtonTextAlign = 23 # 23
 ImGuiStyleVar_SelectableTextAlign = 24 # 24
 ImGuiStyleVar_COUNT = 25 # 25
 
+# ImGuiTabBarFlagsPrivate_
+ImGuiTabBarFlags_DockNode = 1048576 # 1 << 20
+ImGuiTabBarFlags_IsFocused = 2097152 # 1 << 21
+ImGuiTabBarFlags_SaveSettings = 4194304 # 1 << 22
+
 # ImGuiTabBarFlags_
 ImGuiTabBarFlags_None = 0 # 0
 ImGuiTabBarFlags_Reorderable = 1 # 1 << 0
@@ -561,6 +873,13 @@ ImGuiTabBarFlags_FittingPolicyResizeDown = 64 # 1 << 6
 ImGuiTabBarFlags_FittingPolicyScroll = 128 # 1 << 7
 ImGuiTabBarFlags_FittingPolicyMask_ = 192 # ImGuiTabBarFlags_FittingPolicyResizeDown | ImGuiTabBarFlags_FittingPolicyScroll
 ImGuiTabBarFlags_FittingPolicyDefault_ = 64 # ImGuiTabBarFlags_FittingPolicyResizeDown
+
+# ImGuiTabItemFlagsPrivate_
+ImGuiTabItemFlags_SectionMask_ = 192 # ImGuiTabItemFlags_Leading | ImGuiTabItemFlags_Trailing
+ImGuiTabItemFlags_NoCloseButton = 1048576 # 1 << 20
+ImGuiTabItemFlags_Button = 2097152 # 1 << 21
+ImGuiTabItemFlags_Unsorted = 4194304 # 1 << 22
+ImGuiTabItemFlags_Preview = 8388608 # 1 << 23
 
 # ImGuiTabItemFlags_
 ImGuiTabItemFlags_None = 0 # 0
@@ -650,6 +969,17 @@ ImGuiTableFlags_SizingMask_ = 57344 # ImGuiTableFlags_SizingFixedFit | ImGuiTabl
 ImGuiTableRowFlags_None = 0 # 0
 ImGuiTableRowFlags_Headers = 1 # 1 << 0
 
+# ImGuiTextFlags_
+ImGuiTextFlags_None = 0 # 0
+ImGuiTextFlags_NoWidthForLargeClippedText = 1 # 1 << 0
+
+# ImGuiTooltipFlags_
+ImGuiTooltipFlags_None = 0 # 0
+ImGuiTooltipFlags_OverridePreviousTooltip = 1 # 1 << 0
+
+# ImGuiTreeNodeFlagsPrivate_
+ImGuiTreeNodeFlags_ClipLabelForTrailingButton = 1048576 # 1 << 20
+
 # ImGuiTreeNodeFlags_
 ImGuiTreeNodeFlags_None = 0 # 0
 ImGuiTreeNodeFlags_Selected = 1 # 1 << 0
@@ -673,6 +1003,25 @@ ImGuiViewportFlags_None = 0 # 0
 ImGuiViewportFlags_IsPlatformWindow = 1 # 1 << 0
 ImGuiViewportFlags_IsPlatformMonitor = 2 # 1 << 1
 ImGuiViewportFlags_OwnedByApp = 4 # 1 << 2
+ImGuiViewportFlags_NoDecoration = 8 # 1 << 3
+ImGuiViewportFlags_NoTaskBarIcon = 16 # 1 << 4
+ImGuiViewportFlags_NoFocusOnAppearing = 32 # 1 << 5
+ImGuiViewportFlags_NoFocusOnClick = 64 # 1 << 6
+ImGuiViewportFlags_NoInputs = 128 # 1 << 7
+ImGuiViewportFlags_NoRendererClear = 256 # 1 << 8
+ImGuiViewportFlags_TopMost = 512 # 1 << 9
+ImGuiViewportFlags_Minimized = 1024 # 1 << 10
+ImGuiViewportFlags_NoAutoMerge = 2048 # 1 << 11
+ImGuiViewportFlags_CanHostOtherWindows = 4096 # 1 << 12
+
+# ImGuiWindowDockStyleCol
+ImGuiWindowDockStyleCol_Text = 0 # 0
+ImGuiWindowDockStyleCol_Tab = 1 # 1
+ImGuiWindowDockStyleCol_TabHovered = 2 # 2
+ImGuiWindowDockStyleCol_TabActive = 3 # 3
+ImGuiWindowDockStyleCol_TabUnfocused = 4 # 4
+ImGuiWindowDockStyleCol_TabUnfocusedActive = 5 # 5
+ImGuiWindowDockStyleCol_COUNT = 6 # 6
 
 # ImGuiWindowFlags_
 ImGuiWindowFlags_None = 0 # 0
@@ -696,6 +1045,7 @@ ImGuiWindowFlags_AlwaysUseWindowPadding = 65536 # 1 << 16
 ImGuiWindowFlags_NoNavInputs = 262144 # 1 << 18
 ImGuiWindowFlags_NoNavFocus = 524288 # 1 << 19
 ImGuiWindowFlags_UnsavedDocument = 1048576 # 1 << 20
+ImGuiWindowFlags_NoDocking = 2097152 # 1 << 21
 ImGuiWindowFlags_NoNav = 786432 # ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
 ImGuiWindowFlags_NoDecoration = 43 # ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse
 ImGuiWindowFlags_NoInputs = 786944 # ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
@@ -705,6 +1055,7 @@ ImGuiWindowFlags_Tooltip = 33554432 # 1 << 25
 ImGuiWindowFlags_Popup = 67108864 # 1 << 26
 ImGuiWindowFlags_Modal = 134217728 # 1 << 27
 ImGuiWindowFlags_ChildMenu = 268435456 # 1 << 28
+ImGuiWindowFlags_DockNodeHost = 536870912 # 1 << 29
 
 
 class ImVec2 < FFI::Struct
@@ -1204,22 +1555,51 @@ class ImGuiKeyData < FFI::Struct
   )
 end
 
-class ImColor < FFI::Struct
+class ImGuiViewport < FFI::Struct
   layout(
-    :Value, ImVec4.by_value
+    :ID, :uint,
+    :Flags, :int,
+    :Pos, ImVec2.by_value,
+    :Size, ImVec2.by_value,
+    :WorkPos, ImVec2.by_value,
+    :WorkSize, ImVec2.by_value,
+    :DpiScale, :float,
+    :ParentViewportId, :uint,
+    :DrawData, :pointer,
+    :RendererUserData, :pointer,
+    :PlatformUserData, :pointer,
+    :PlatformHandle, :pointer,
+    :PlatformHandleRaw, :pointer,
+    :PlatformRequestMove, :bool,
+    :PlatformRequestResize, :bool,
+    :PlatformRequestClose, :bool
   )
 end
 
-class ImDrawData < FFI::Struct
+class ImGuiViewportP < FFI::Struct
   layout(
-    :Valid, :bool,
-    :CmdListsCount, :int,
-    :TotalIdxCount, :int,
-    :TotalVtxCount, :int,
-    :CmdLists, ImDrawList.ptr,
-    :DisplayPos, ImVec2.by_value,
-    :DisplaySize, ImVec2.by_value,
-    :FramebufferScale, ImVec2.by_value
+    :_ImGuiViewport, ImGuiViewport.by_value,
+    :Idx, :int,
+    :LastFrameActive, :int,
+    :LastFrontMostStampCount, :int,
+    :LastNameHash, :uint,
+    :LastPos, ImVec2.by_value,
+    :Alpha, :float,
+    :LastAlpha, :float,
+    :PlatformMonitor, :short,
+    :PlatformWindowCreated, :bool,
+    :Window, ImGuiWindow.ptr,
+    :DrawListsLastFrame, [:int, 2],
+    :DrawLists, [:pointer, 2],
+    :DrawDataP, ImDrawData.by_value,
+    :DrawDataBuilder, ImDrawDataBuilder.by_value,
+    :LastPlatformPos, ImVec2.by_value,
+    :LastPlatformSize, ImVec2.by_value,
+    :LastRendererSize, ImVec2.by_value,
+    :WorkOffsetMin, ImVec2.by_value,
+    :WorkOffsetMax, ImVec2.by_value,
+    :BuildWorkOffsetMin, ImVec2.by_value,
+    :BuildWorkOffsetMax, ImVec2.by_value
   )
 end
 
@@ -1246,6 +1626,445 @@ class ImFont < FFI::Struct
   )
 end
 
+class ImRect < FFI::Struct
+  layout(
+    :Min, ImVec2.by_value,
+    :Max, ImVec2.by_value
+  )
+end
+
+class ImGuiIO < FFI::Struct
+  layout(
+    :ConfigFlags, :int,
+    :BackendFlags, :int,
+    :DisplaySize, ImVec2.by_value,
+    :DeltaTime, :float,
+    :IniSavingRate, :float,
+    :IniFilename, :pointer,
+    :LogFilename, :pointer,
+    :MouseDoubleClickTime, :float,
+    :MouseDoubleClickMaxDist, :float,
+    :MouseDragThreshold, :float,
+    :KeyRepeatDelay, :float,
+    :KeyRepeatRate, :float,
+    :UserData, :pointer,
+    :Fonts, ImFontAtlas.ptr,
+    :FontGlobalScale, :float,
+    :FontAllowUserScaling, :bool,
+    :FontDefault, ImFont.ptr,
+    :DisplayFramebufferScale, ImVec2.by_value,
+    :ConfigDockingNoSplit, :bool,
+    :ConfigDockingWithShift, :bool,
+    :ConfigDockingAlwaysTabBar, :bool,
+    :ConfigDockingTransparentPayload, :bool,
+    :ConfigViewportsNoAutoMerge, :bool,
+    :ConfigViewportsNoTaskBarIcon, :bool,
+    :ConfigViewportsNoDecoration, :bool,
+    :ConfigViewportsNoDefaultParent, :bool,
+    :MouseDrawCursor, :bool,
+    :ConfigMacOSXBehaviors, :bool,
+    :ConfigInputTrickleEventQueue, :bool,
+    :ConfigInputTextCursorBlink, :bool,
+    :ConfigDragClickToInputText, :bool,
+    :ConfigWindowsResizeFromEdges, :bool,
+    :ConfigWindowsMoveFromTitleBarOnly, :bool,
+    :ConfigMemoryCompactTimer, :float,
+    :BackendPlatformName, :pointer,
+    :BackendRendererName, :pointer,
+    :BackendPlatformUserData, :pointer,
+    :BackendRendererUserData, :pointer,
+    :BackendLanguageUserData, :pointer,
+    :GetClipboardTextFn, :pointer,
+    :SetClipboardTextFn, :pointer,
+    :ClipboardUserData, :pointer,
+    :SetPlatformImeDataFn, :pointer,
+    :_UnusedPadding, :pointer,
+    :WantCaptureMouse, :bool,
+    :WantCaptureKeyboard, :bool,
+    :WantTextInput, :bool,
+    :WantSetMousePos, :bool,
+    :WantSaveIniSettings, :bool,
+    :NavActive, :bool,
+    :NavVisible, :bool,
+    :Framerate, :float,
+    :MetricsRenderVertices, :int,
+    :MetricsRenderIndices, :int,
+    :MetricsRenderWindows, :int,
+    :MetricsActiveWindows, :int,
+    :MetricsActiveAllocations, :int,
+    :MouseDelta, ImVec2.by_value,
+    :KeyMap, [:int, 645],
+    :KeysDown, [:bool, 512],
+    :MousePos, ImVec2.by_value,
+    :MouseDown, [:bool, 5],
+    :MouseWheel, :float,
+    :MouseWheelH, :float,
+    :MouseHoveredViewport, :uint,
+    :KeyCtrl, :bool,
+    :KeyShift, :bool,
+    :KeyAlt, :bool,
+    :KeySuper, :bool,
+    :NavInputs, [:float, 20],
+    :KeyMods, :int,
+    :KeyModsPrev, :int,
+    :KeysData, [ImGuiKeyData.by_value, 645],
+    :WantCaptureMouseUnlessPopupClose, :bool,
+    :MousePosPrev, ImVec2.by_value,
+    :MouseClickedPos, [ImVec2.by_value, 5],
+    :MouseClickedTime, [:double, 5],
+    :MouseClicked, [:bool, 5],
+    :MouseDoubleClicked, [:bool, 5],
+    :MouseClickedCount, [:ushort, 5],
+    :MouseClickedLastCount, [:ushort, 5],
+    :MouseReleased, [:bool, 5],
+    :MouseDownOwned, [:bool, 5],
+    :MouseDownOwnedUnlessPopupClose, [:bool, 5],
+    :MouseDownDuration, [:float, 5],
+    :MouseDownDurationPrev, [:float, 5],
+    :MouseDragMaxDistanceAbs, [ImVec2.by_value, 5],
+    :MouseDragMaxDistanceSqr, [:float, 5],
+    :NavInputsDownDuration, [:float, 20],
+    :NavInputsDownDurationPrev, [:float, 20],
+    :PenPressure, :float,
+    :AppFocusLost, :bool,
+    :BackendUsingLegacyKeyArrays, :char,
+    :BackendUsingLegacyNavInputArray, :bool,
+    :InputQueueSurrogate, :ushort,
+    :InputQueueCharacters, ImVector.by_value
+  )
+
+  def AddFocusEvent(focused)
+    ImGui::ImGuiIO_AddFocusEvent(self, focused)
+  end
+
+  def AddInputCharacter(c)
+    ImGui::ImGuiIO_AddInputCharacter(self, c)
+  end
+
+  def AddInputCharacterUTF16(c)
+    ImGui::ImGuiIO_AddInputCharacterUTF16(self, c)
+  end
+
+  def AddInputCharactersUTF8(str)
+    ImGui::ImGuiIO_AddInputCharactersUTF8(self, str)
+  end
+
+  def AddKeyAnalogEvent(key, down, v)
+    ImGui::ImGuiIO_AddKeyAnalogEvent(self, key, down, v)
+  end
+
+  def AddKeyEvent(key, down)
+    ImGui::ImGuiIO_AddKeyEvent(self, key, down)
+  end
+
+  def AddMouseButtonEvent(button, down)
+    ImGui::ImGuiIO_AddMouseButtonEvent(self, button, down)
+  end
+
+  def AddMousePosEvent(x, y)
+    ImGui::ImGuiIO_AddMousePosEvent(self, x, y)
+  end
+
+  def AddMouseViewportEvent(id)
+    ImGui::ImGuiIO_AddMouseViewportEvent(self, id)
+  end
+
+  def AddMouseWheelEvent(wh_x, wh_y)
+    ImGui::ImGuiIO_AddMouseWheelEvent(self, wh_x, wh_y)
+  end
+
+  def ClearInputCharacters()
+    ImGui::ImGuiIO_ClearInputCharacters(self)
+  end
+
+  def ClearInputKeys()
+    ImGui::ImGuiIO_ClearInputKeys(self)
+  end
+
+  def self.create()
+    return ImGuiIO.new(ImGui::ImGuiIO_ImGuiIO())
+  end
+
+  def SetKeyEventNativeData(key, native_keycode, native_scancode, native_legacy_index = -1)
+    ImGui::ImGuiIO_SetKeyEventNativeData(self, key, native_keycode, native_scancode, native_legacy_index)
+  end
+
+  def destroy()
+    ImGui::ImGuiIO_destroy(self)
+  end
+
+end
+
+class ImGuiPlatformIO < FFI::Struct
+  layout(
+    :Platform_CreateWindow, :pointer,
+    :Platform_DestroyWindow, :pointer,
+    :Platform_ShowWindow, :pointer,
+    :Platform_SetWindowPos, :pointer,
+    :Platform_GetWindowPos, :pointer,
+    :Platform_SetWindowSize, :pointer,
+    :Platform_GetWindowSize, :pointer,
+    :Platform_SetWindowFocus, :pointer,
+    :Platform_GetWindowFocus, :pointer,
+    :Platform_GetWindowMinimized, :pointer,
+    :Platform_SetWindowTitle, :pointer,
+    :Platform_SetWindowAlpha, :pointer,
+    :Platform_UpdateWindow, :pointer,
+    :Platform_RenderWindow, :pointer,
+    :Platform_SwapBuffers, :pointer,
+    :Platform_GetWindowDpiScale, :pointer,
+    :Platform_OnChangedViewport, :pointer,
+    :Platform_CreateVkSurface, :pointer,
+    :Renderer_CreateWindow, :pointer,
+    :Renderer_DestroyWindow, :pointer,
+    :Renderer_SetWindowSize, :pointer,
+    :Renderer_RenderWindow, :pointer,
+    :Renderer_SwapBuffers, :pointer,
+    :Monitors, ImVector.by_value,
+    :Viewports, ImVector.by_value
+  )
+end
+
+class ImGuiStyle < FFI::Struct
+  layout(
+    :Alpha, :float,
+    :DisabledAlpha, :float,
+    :WindowPadding, ImVec2.by_value,
+    :WindowRounding, :float,
+    :WindowBorderSize, :float,
+    :WindowMinSize, ImVec2.by_value,
+    :WindowTitleAlign, ImVec2.by_value,
+    :WindowMenuButtonPosition, :int,
+    :ChildRounding, :float,
+    :ChildBorderSize, :float,
+    :PopupRounding, :float,
+    :PopupBorderSize, :float,
+    :FramePadding, ImVec2.by_value,
+    :FrameRounding, :float,
+    :FrameBorderSize, :float,
+    :ItemSpacing, ImVec2.by_value,
+    :ItemInnerSpacing, ImVec2.by_value,
+    :CellPadding, ImVec2.by_value,
+    :TouchExtraPadding, ImVec2.by_value,
+    :IndentSpacing, :float,
+    :ColumnsMinSpacing, :float,
+    :ScrollbarSize, :float,
+    :ScrollbarRounding, :float,
+    :GrabMinSize, :float,
+    :GrabRounding, :float,
+    :LogSliderDeadzone, :float,
+    :TabRounding, :float,
+    :TabBorderSize, :float,
+    :TabMinWidthForCloseButton, :float,
+    :ColorButtonPosition, :int,
+    :ButtonTextAlign, ImVec2.by_value,
+    :SelectableTextAlign, ImVec2.by_value,
+    :DisplayWindowPadding, ImVec2.by_value,
+    :DisplaySafeAreaPadding, ImVec2.by_value,
+    :MouseCursorScale, :float,
+    :AntiAliasedLines, :bool,
+    :AntiAliasedLinesUseTex, :bool,
+    :AntiAliasedFill, :bool,
+    :CurveTessellationTol, :float,
+    :CircleTessellationMaxError, :float,
+    :Colors, [ImVec4.by_value, 55]
+  )
+
+  def self.create()
+    return ImGuiStyle.new(ImGui::ImGuiStyle_ImGuiStyle())
+  end
+
+  def ScaleAllSizes(scale_factor)
+    ImGui::ImGuiStyle_ScaleAllSizes(self, scale_factor)
+  end
+
+  def destroy()
+    ImGui::ImGuiStyle_destroy(self)
+  end
+
+end
+
+class ImGuiStorage < FFI::Struct
+  layout(
+    :Data, ImVector.by_value
+  )
+end
+
+class ImGuiWindowClass < FFI::Struct
+  layout(
+    :ClassId, :uint,
+    :ParentViewportId, :uint,
+    :ViewportFlagsOverrideSet, :int,
+    :ViewportFlagsOverrideClear, :int,
+    :TabItemFlagsOverrideSet, :int,
+    :DockNodeFlagsOverrideSet, :int,
+    :DockingAlwaysTabBar, :bool,
+    :DockingAllowUnclassed, :bool
+  )
+end
+
+class ImGuiWindow < FFI::Struct
+  layout(
+    :Name, :pointer,
+    :ID, :uint,
+    :Flags, :int,
+    :FlagsPreviousFrame, :int,
+    :WindowClass, ImGuiWindowClass.by_value,
+    :Viewport, ImGuiViewportP.ptr,
+    :ViewportId, :uint,
+    :ViewportPos, ImVec2.by_value,
+    :ViewportAllowPlatformMonitorExtend, :int,
+    :Pos, ImVec2.by_value,
+    :Size, ImVec2.by_value,
+    :SizeFull, ImVec2.by_value,
+    :ContentSize, ImVec2.by_value,
+    :ContentSizeIdeal, ImVec2.by_value,
+    :ContentSizeExplicit, ImVec2.by_value,
+    :WindowPadding, ImVec2.by_value,
+    :WindowRounding, :float,
+    :WindowBorderSize, :float,
+    :NameBufLen, :int,
+    :MoveId, :uint,
+    :TabId, :uint,
+    :ChildId, :uint,
+    :Scroll, ImVec2.by_value,
+    :ScrollMax, ImVec2.by_value,
+    :ScrollTarget, ImVec2.by_value,
+    :ScrollTargetCenterRatio, ImVec2.by_value,
+    :ScrollTargetEdgeSnapDist, ImVec2.by_value,
+    :ScrollbarSizes, ImVec2.by_value,
+    :ScrollbarX, :bool,
+    :ScrollbarY, :bool,
+    :ViewportOwned, :bool,
+    :Active, :bool,
+    :WasActive, :bool,
+    :WriteAccessed, :bool,
+    :Collapsed, :bool,
+    :WantCollapseToggle, :bool,
+    :SkipItems, :bool,
+    :Appearing, :bool,
+    :Hidden, :bool,
+    :IsFallbackWindow, :bool,
+    :IsExplicitChild, :bool,
+    :HasCloseButton, :bool,
+    :ResizeBorderHeld, :char,
+    :BeginCount, :short,
+    :BeginOrderWithinParent, :short,
+    :BeginOrderWithinContext, :short,
+    :FocusOrder, :short,
+    :PopupId, :uint,
+    :AutoFitFramesX, :char,
+    :AutoFitFramesY, :char,
+    :AutoFitChildAxises, :char,
+    :AutoFitOnlyGrows, :bool,
+    :AutoPosLastDirection, :int,
+    :HiddenFramesCanSkipItems, :char,
+    :HiddenFramesCannotSkipItems, :char,
+    :HiddenFramesForRenderOnly, :char,
+    :DisableInputsFrames, :char,
+    :SetWindowPosAllowFlags, :int,
+    :SetWindowSizeAllowFlags, :int,
+    :SetWindowCollapsedAllowFlags, :int,
+    :SetWindowDockAllowFlags, :int,
+    :SetWindowPosVal, ImVec2.by_value,
+    :SetWindowPosPivot, ImVec2.by_value,
+    :IDStack, ImVector.by_value,
+    :DC, ImGuiWindowTempData.by_value,
+    :OuterRectClipped, ImRect.by_value,
+    :InnerRect, ImRect.by_value,
+    :InnerClipRect, ImRect.by_value,
+    :WorkRect, ImRect.by_value,
+    :ParentWorkRect, ImRect.by_value,
+    :ClipRect, ImRect.by_value,
+    :ContentRegionRect, ImRect.by_value,
+    :HitTestHoleSize, ImVec2ih.by_value,
+    :HitTestHoleOffset, ImVec2ih.by_value,
+    :LastFrameActive, :int,
+    :LastFrameJustFocused, :int,
+    :LastTimeActive, :float,
+    :ItemWidthDefault, :float,
+    :StateStorage, ImGuiStorage.by_value,
+    :ColumnsStorage, ImVector.by_value,
+    :FontWindowScale, :float,
+    :FontDpiScale, :float,
+    :SettingsOffset, :int,
+    :DrawList, ImDrawList.ptr,
+    :DrawListInst, ImDrawList.by_value,
+    :ParentWindow, ImGuiWindow.ptr,
+    :ParentWindowInBeginStack, ImGuiWindow.ptr,
+    :RootWindow, ImGuiWindow.ptr,
+    :RootWindowPopupTree, ImGuiWindow.ptr,
+    :RootWindowDockTree, ImGuiWindow.ptr,
+    :RootWindowForTitleBarHighlight, ImGuiWindow.ptr,
+    :RootWindowForNav, ImGuiWindow.ptr,
+    :NavLastChildNavWindow, ImGuiWindow.ptr,
+    :NavLastIds, [:uint, 2],
+    :NavRectRel, [ImRect.by_value, 2],
+    :MemoryDrawListIdxCapacity, :int,
+    :MemoryDrawListVtxCapacity, :int,
+    :MemoryCompacted, :bool,
+    :DockIsActive, :bool,
+    :DockNodeIsVisible, :bool,
+    :DockTabIsVisible, :bool,
+    :DockTabWantClose, :bool,
+    :DockOrder, :short,
+    :DockStyle, ImGuiWindowDockStyle.by_value,
+    :DockNode, ImGuiDockNode.ptr,
+    :DockNodeAsHost, ImGuiDockNode.ptr,
+    :DockId, :uint,
+    :DockTabItemStatusFlags, :int,
+    :DockTabItemRect, ImRect.by_value
+  )
+end
+
+class ImBitVector < FFI::Struct
+  layout(
+    :Storage, ImVector.by_value
+  )
+end
+
+class ImColor < FFI::Struct
+  layout(
+    :Value, ImVec4.by_value
+  )
+end
+
+class ImDrawData < FFI::Struct
+  layout(
+    :Valid, :bool,
+    :CmdListsCount, :int,
+    :TotalIdxCount, :int,
+    :TotalVtxCount, :int,
+    :CmdLists, ImDrawList.ptr,
+    :DisplayPos, ImVec2.by_value,
+    :DisplaySize, ImVec2.by_value,
+    :FramebufferScale, ImVec2.by_value,
+    :OwnerViewport, ImGuiViewport.ptr
+  )
+end
+
+class ImDrawDataBuilder < FFI::Struct
+  layout(
+    :Layers, [ImVector.by_value, 2]
+  )
+end
+
+class ImDrawListSharedData < FFI::Struct
+  layout(
+    :TexUvWhitePixel, ImVec2.by_value,
+    :Font, ImFont.ptr,
+    :FontSize, :float,
+    :CurveTessellationTol, :float,
+    :CircleSegmentMaxError, :float,
+    :ClipRectFullscreen, ImVec4.by_value,
+    :InitialFlags, :int,
+    :ArcFastVtx, [ImVec2.by_value, 48],
+    :ArcFastRadiusCutoff, :float,
+    :CircleSegmentCounts, [:uchar, 64],
+    :TexUvLines, :pointer
+  )
+end
+
 class ImFontAtlasCustomRect < FFI::Struct
   layout(
     :Width, :ushort,
@@ -1256,6 +2075,12 @@ class ImFontAtlasCustomRect < FFI::Struct
     :GlyphAdvanceX, :float,
     :GlyphOffset, ImVec2.by_value,
     :Font, ImFont.ptr
+  )
+end
+
+class ImFontBuilderIO < FFI::Struct
+  layout(
+    :FontBuilder_Build, :pointer
   )
 end
 
@@ -1335,152 +2160,399 @@ class ImFontGlyphRangesBuilder < FFI::Struct
 
 end
 
-class ImGuiIO < FFI::Struct
+class ImGuiColorMod < FFI::Struct
   layout(
-    :ConfigFlags, :int,
-    :BackendFlags, :int,
-    :DisplaySize, ImVec2.by_value,
-    :DeltaTime, :float,
-    :IniSavingRate, :float,
-    :IniFilename, :pointer,
-    :LogFilename, :pointer,
-    :MouseDoubleClickTime, :float,
-    :MouseDoubleClickMaxDist, :float,
-    :MouseDragThreshold, :float,
-    :KeyRepeatDelay, :float,
-    :KeyRepeatRate, :float,
-    :UserData, :pointer,
-    :Fonts, ImFontAtlas.ptr,
-    :FontGlobalScale, :float,
-    :FontAllowUserScaling, :bool,
-    :FontDefault, ImFont.ptr,
-    :DisplayFramebufferScale, ImVec2.by_value,
-    :MouseDrawCursor, :bool,
-    :ConfigMacOSXBehaviors, :bool,
-    :ConfigInputTrickleEventQueue, :bool,
-    :ConfigInputTextCursorBlink, :bool,
-    :ConfigDragClickToInputText, :bool,
-    :ConfigWindowsResizeFromEdges, :bool,
-    :ConfigWindowsMoveFromTitleBarOnly, :bool,
-    :ConfigMemoryCompactTimer, :float,
-    :BackendPlatformName, :pointer,
-    :BackendRendererName, :pointer,
-    :BackendPlatformUserData, :pointer,
-    :BackendRendererUserData, :pointer,
-    :BackendLanguageUserData, :pointer,
-    :GetClipboardTextFn, :pointer,
-    :SetClipboardTextFn, :pointer,
-    :ClipboardUserData, :pointer,
-    :SetPlatformImeDataFn, :pointer,
-    :_UnusedPadding, :pointer,
-    :WantCaptureMouse, :bool,
-    :WantCaptureKeyboard, :bool,
-    :WantTextInput, :bool,
-    :WantSetMousePos, :bool,
-    :WantSaveIniSettings, :bool,
-    :NavActive, :bool,
-    :NavVisible, :bool,
-    :Framerate, :float,
-    :MetricsRenderVertices, :int,
-    :MetricsRenderIndices, :int,
-    :MetricsRenderWindows, :int,
-    :MetricsActiveWindows, :int,
-    :MetricsActiveAllocations, :int,
-    :MouseDelta, ImVec2.by_value,
-    :KeyMap, [:int, 645],
-    :KeysDown, [:bool, 512],
-    :MousePos, ImVec2.by_value,
-    :MouseDown, [:bool, 5],
-    :MouseWheel, :float,
-    :MouseWheelH, :float,
-    :KeyCtrl, :bool,
-    :KeyShift, :bool,
-    :KeyAlt, :bool,
-    :KeySuper, :bool,
-    :NavInputs, [:float, 20],
-    :KeyMods, :int,
-    :KeyModsPrev, :int,
-    :KeysData, [ImGuiKeyData.by_value, 645],
-    :WantCaptureMouseUnlessPopupClose, :bool,
-    :MousePosPrev, ImVec2.by_value,
-    :MouseClickedPos, [ImVec2.by_value, 5],
-    :MouseClickedTime, [:double, 5],
-    :MouseClicked, [:bool, 5],
-    :MouseDoubleClicked, [:bool, 5],
-    :MouseClickedCount, [:ushort, 5],
-    :MouseClickedLastCount, [:ushort, 5],
-    :MouseReleased, [:bool, 5],
-    :MouseDownOwned, [:bool, 5],
-    :MouseDownOwnedUnlessPopupClose, [:bool, 5],
-    :MouseDownDuration, [:float, 5],
-    :MouseDownDurationPrev, [:float, 5],
-    :MouseDragMaxDistanceSqr, [:float, 5],
-    :NavInputsDownDuration, [:float, 20],
-    :NavInputsDownDurationPrev, [:float, 20],
-    :PenPressure, :float,
-    :AppFocusLost, :bool,
-    :BackendUsingLegacyKeyArrays, :char,
-    :BackendUsingLegacyNavInputArray, :bool,
-    :InputQueueSurrogate, :ushort,
-    :InputQueueCharacters, ImVector.by_value
+    :Col, :int,
+    :BackupValue, ImVec4.by_value
   )
+end
 
-  def AddFocusEvent(focused)
-    ImGui::ImGuiIO_AddFocusEvent(self, focused)
-  end
+class ImGuiComboPreviewData < FFI::Struct
+  layout(
+    :PreviewRect, ImRect.by_value,
+    :BackupCursorPos, ImVec2.by_value,
+    :BackupCursorMaxPos, ImVec2.by_value,
+    :BackupCursorPosPrevLine, ImVec2.by_value,
+    :BackupPrevLineTextBaseOffset, :float,
+    :BackupLayout, :int
+  )
+end
 
-  def AddInputCharacter(c)
-    ImGui::ImGuiIO_AddInputCharacter(self, c)
-  end
+class ImGuiContext < FFI::Struct
+  layout(
+    :Initialized, :bool,
+    :FontAtlasOwnedByContext, :bool,
+    :IO, ImGuiIO.by_value,
+    :PlatformIO, ImGuiPlatformIO.by_value,
+    :InputEventsQueue, ImVector.by_value,
+    :InputEventsTrail, ImVector.by_value,
+    :Style, ImGuiStyle.by_value,
+    :ConfigFlagsCurrFrame, :int,
+    :ConfigFlagsLastFrame, :int,
+    :Font, ImFont.ptr,
+    :FontSize, :float,
+    :FontBaseSize, :float,
+    :DrawListSharedData, ImDrawListSharedData.by_value,
+    :Time, :double,
+    :FrameCount, :int,
+    :FrameCountEnded, :int,
+    :FrameCountPlatformEnded, :int,
+    :FrameCountRendered, :int,
+    :WithinFrameScope, :bool,
+    :WithinFrameScopeWithImplicitWindow, :bool,
+    :WithinEndChild, :bool,
+    :GcCompactAll, :bool,
+    :TestEngineHookItems, :bool,
+    :TestEngine, :pointer,
+    :Windows, ImVector.by_value,
+    :WindowsFocusOrder, ImVector.by_value,
+    :WindowsTempSortBuffer, ImVector.by_value,
+    :CurrentWindowStack, ImVector.by_value,
+    :WindowsById, ImGuiStorage.by_value,
+    :WindowsActiveCount, :int,
+    :WindowsHoverPadding, ImVec2.by_value,
+    :CurrentWindow, ImGuiWindow.ptr,
+    :HoveredWindow, ImGuiWindow.ptr,
+    :HoveredWindowUnderMovingWindow, ImGuiWindow.ptr,
+    :HoveredDockNode, ImGuiDockNode.ptr,
+    :MovingWindow, ImGuiWindow.ptr,
+    :WheelingWindow, ImGuiWindow.ptr,
+    :WheelingWindowRefMousePos, ImVec2.by_value,
+    :WheelingWindowTimer, :float,
+    :DebugHookIdInfo, :uint,
+    :HoveredId, :uint,
+    :HoveredIdPreviousFrame, :uint,
+    :HoveredIdAllowOverlap, :bool,
+    :HoveredIdUsingMouseWheel, :bool,
+    :HoveredIdPreviousFrameUsingMouseWheel, :bool,
+    :HoveredIdDisabled, :bool,
+    :HoveredIdTimer, :float,
+    :HoveredIdNotActiveTimer, :float,
+    :ActiveId, :uint,
+    :ActiveIdIsAlive, :uint,
+    :ActiveIdTimer, :float,
+    :ActiveIdIsJustActivated, :bool,
+    :ActiveIdAllowOverlap, :bool,
+    :ActiveIdNoClearOnFocusLoss, :bool,
+    :ActiveIdHasBeenPressedBefore, :bool,
+    :ActiveIdHasBeenEditedBefore, :bool,
+    :ActiveIdHasBeenEditedThisFrame, :bool,
+    :ActiveIdUsingMouseWheel, :bool,
+    :ActiveIdUsingNavDirMask, :uint,
+    :ActiveIdUsingNavInputMask, :uint,
+    :ActiveIdUsingKeyInputMask, ImBitArrayForNamedKeys.by_value,
+    :ActiveIdClickOffset, ImVec2.by_value,
+    :ActiveIdWindow, ImGuiWindow.ptr,
+    :ActiveIdSource, :int,
+    :ActiveIdMouseButton, :int,
+    :ActiveIdPreviousFrame, :uint,
+    :ActiveIdPreviousFrameIsAlive, :bool,
+    :ActiveIdPreviousFrameHasBeenEditedBefore, :bool,
+    :ActiveIdPreviousFrameWindow, ImGuiWindow.ptr,
+    :LastActiveId, :uint,
+    :LastActiveIdTimer, :float,
+    :CurrentItemFlags, :int,
+    :NextItemData, ImGuiNextItemData.by_value,
+    :LastItemData, ImGuiLastItemData.by_value,
+    :NextWindowData, ImGuiNextWindowData.by_value,
+    :ColorStack, ImVector.by_value,
+    :StyleVarStack, ImVector.by_value,
+    :FontStack, ImVector.by_value,
+    :FocusScopeStack, ImVector.by_value,
+    :ItemFlagsStack, ImVector.by_value,
+    :GroupStack, ImVector.by_value,
+    :OpenPopupStack, ImVector.by_value,
+    :BeginPopupStack, ImVector.by_value,
+    :BeginMenuCount, :int,
+    :Viewports, ImVector.by_value,
+    :CurrentDpiScale, :float,
+    :CurrentViewport, ImGuiViewportP.ptr,
+    :MouseViewport, ImGuiViewportP.ptr,
+    :MouseLastHoveredViewport, ImGuiViewportP.ptr,
+    :PlatformLastFocusedViewportId, :uint,
+    :FallbackMonitor, ImGuiPlatformMonitor.by_value,
+    :ViewportFrontMostStampCount, :int,
+    :NavWindow, ImGuiWindow.ptr,
+    :NavId, :uint,
+    :NavFocusScopeId, :uint,
+    :NavActivateId, :uint,
+    :NavActivateDownId, :uint,
+    :NavActivatePressedId, :uint,
+    :NavActivateInputId, :uint,
+    :NavActivateFlags, :int,
+    :NavJustMovedToId, :uint,
+    :NavJustMovedToFocusScopeId, :uint,
+    :NavJustMovedToKeyMods, :int,
+    :NavNextActivateId, :uint,
+    :NavNextActivateFlags, :int,
+    :NavInputSource, :int,
+    :NavLayer, :int,
+    :NavIdIsAlive, :bool,
+    :NavMousePosDirty, :bool,
+    :NavDisableHighlight, :bool,
+    :NavDisableMouseHover, :bool,
+    :NavAnyRequest, :bool,
+    :NavInitRequest, :bool,
+    :NavInitRequestFromMove, :bool,
+    :NavInitResultId, :uint,
+    :NavInitResultRectRel, ImRect.by_value,
+    :NavMoveSubmitted, :bool,
+    :NavMoveScoringItems, :bool,
+    :NavMoveForwardToNextFrame, :bool,
+    :NavMoveFlags, :int,
+    :NavMoveScrollFlags, :int,
+    :NavMoveKeyMods, :int,
+    :NavMoveDir, :int,
+    :NavMoveDirForDebug, :int,
+    :NavMoveClipDir, :int,
+    :NavScoringRect, ImRect.by_value,
+    :NavScoringNoClipRect, ImRect.by_value,
+    :NavScoringDebugCount, :int,
+    :NavTabbingDir, :int,
+    :NavTabbingCounter, :int,
+    :NavMoveResultLocal, ImGuiNavItemData.by_value,
+    :NavMoveResultLocalVisible, ImGuiNavItemData.by_value,
+    :NavMoveResultOther, ImGuiNavItemData.by_value,
+    :NavTabbingResultFirst, ImGuiNavItemData.by_value,
+    :NavWindowingTarget, ImGuiWindow.ptr,
+    :NavWindowingTargetAnim, ImGuiWindow.ptr,
+    :NavWindowingListWindow, ImGuiWindow.ptr,
+    :NavWindowingTimer, :float,
+    :NavWindowingHighlightAlpha, :float,
+    :NavWindowingToggleLayer, :bool,
+    :DimBgRatio, :float,
+    :MouseCursor, :int,
+    :DragDropActive, :bool,
+    :DragDropWithinSource, :bool,
+    :DragDropWithinTarget, :bool,
+    :DragDropSourceFlags, :int,
+    :DragDropSourceFrameCount, :int,
+    :DragDropMouseButton, :int,
+    :DragDropPayload, ImGuiPayload.by_value,
+    :DragDropTargetRect, ImRect.by_value,
+    :DragDropTargetId, :uint,
+    :DragDropAcceptFlags, :int,
+    :DragDropAcceptIdCurrRectSurface, :float,
+    :DragDropAcceptIdCurr, :uint,
+    :DragDropAcceptIdPrev, :uint,
+    :DragDropAcceptFrameCount, :int,
+    :DragDropHoldJustPressedId, :uint,
+    :DragDropPayloadBufHeap, ImVector.by_value,
+    :DragDropPayloadBufLocal, [:uchar, 16],
+    :ClipperTempDataStacked, :int,
+    :ClipperTempData, ImVector.by_value,
+    :CurrentTable, ImGuiTable.ptr,
+    :TablesTempDataStacked, :int,
+    :TablesTempData, ImVector.by_value,
+    :Tables, ImPool.by_value,
+    :TablesLastTimeActive, ImVector.by_value,
+    :DrawChannelsTempMergeBuffer, ImVector.by_value,
+    :CurrentTabBar, ImGuiTabBar.ptr,
+    :TabBars, ImPool.by_value,
+    :CurrentTabBarStack, ImVector.by_value,
+    :ShrinkWidthBuffer, ImVector.by_value,
+    :MouseLastValidPos, ImVec2.by_value,
+    :InputTextState, ImGuiInputTextState.by_value,
+    :InputTextPasswordFont, ImFont.by_value,
+    :TempInputId, :uint,
+    :ColorEditOptions, :int,
+    :ColorEditLastHue, :float,
+    :ColorEditLastSat, :float,
+    :ColorEditLastColor, :uint,
+    :ColorPickerRef, ImVec4.by_value,
+    :ComboPreviewData, ImGuiComboPreviewData.by_value,
+    :SliderCurrentAccum, :float,
+    :SliderCurrentAccumDirty, :bool,
+    :DragCurrentAccumDirty, :bool,
+    :DragCurrentAccum, :float,
+    :DragSpeedDefaultRatio, :float,
+    :ScrollbarClickDeltaToGrabCenter, :float,
+    :DisabledAlphaBackup, :float,
+    :DisabledStackSize, :short,
+    :TooltipOverrideCount, :short,
+    :TooltipSlowDelay, :float,
+    :ClipboardHandlerData, ImVector.by_value,
+    :MenusIdSubmittedThisFrame, ImVector.by_value,
+    :PlatformImeData, ImGuiPlatformImeData.by_value,
+    :PlatformImeDataPrev, ImGuiPlatformImeData.by_value,
+    :PlatformImeViewport, :uint,
+    :PlatformLocaleDecimalPoint, :char,
+    :DockContext, ImGuiDockContext.by_value,
+    :SettingsLoaded, :bool,
+    :SettingsDirtyTimer, :float,
+    :SettingsIniData, ImGuiTextBuffer.by_value,
+    :SettingsHandlers, ImVector.by_value,
+    :SettingsWindows, ImChunkStream.by_value,
+    :SettingsTables, ImChunkStream.by_value,
+    :Hooks, ImVector.by_value,
+    :HookIdNext, :uint,
+    :LogEnabled, :bool,
+    :LogType, :int,
+    :LogFile, :pointer,
+    :LogBuffer, ImGuiTextBuffer.by_value,
+    :LogNextPrefix, :pointer,
+    :LogNextSuffix, :pointer,
+    :LogLinePosY, :float,
+    :LogLineFirstItem, :bool,
+    :LogDepthRef, :int,
+    :LogDepthToExpand, :int,
+    :LogDepthToExpandDefault, :int,
+    :DebugItemPickerActive, :bool,
+    :DebugItemPickerBreakId, :uint,
+    :DebugMetricsConfig, ImGuiMetricsConfig.by_value,
+    :DebugStackTool, ImGuiStackTool.by_value,
+    :FramerateSecPerFrame, [:float, 120],
+    :FramerateSecPerFrameIdx, :int,
+    :FramerateSecPerFrameCount, :int,
+    :FramerateSecPerFrameAccum, :float,
+    :WantCaptureMouseNextFrame, :int,
+    :WantCaptureKeyboardNextFrame, :int,
+    :WantTextInputNextFrame, :int,
+    :TempBuffer, [:char, 3073]
+  )
+end
 
-  def AddInputCharacterUTF16(c)
-    ImGui::ImGuiIO_AddInputCharacterUTF16(self, c)
-  end
+class ImGuiContextHook < FFI::Struct
+  layout(
+    :HookId, :uint,
+    :Type, :int,
+    :Owner, :uint,
+    :Callback, :pointer,
+    :UserData, :pointer
+  )
+end
 
-  def AddInputCharactersUTF8(str)
-    ImGui::ImGuiIO_AddInputCharactersUTF8(self, str)
-  end
+class ImGuiDataTypeInfo < FFI::Struct
+  layout(
+    :Size, :size_t,
+    :Name, :pointer,
+    :PrintFmt, :pointer,
+    :ScanFmt, :pointer
+  )
+end
 
-  def AddKeyAnalogEvent(key, down, v)
-    ImGui::ImGuiIO_AddKeyAnalogEvent(self, key, down, v)
-  end
+class ImGuiDataTypeTempStorage < FFI::Struct
+  layout(
+    :Data, [:uchar, 8]
+  )
+end
 
-  def AddKeyEvent(key, down)
-    ImGui::ImGuiIO_AddKeyEvent(self, key, down)
-  end
+class ImGuiDockContext < FFI::Struct
+  layout(
+    :Nodes, ImGuiStorage.by_value,
+    :Requests, ImVector.by_value,
+    :NodesSettings, ImVector.by_value,
+    :WantFullRebuild, :bool
+  )
+end
 
-  def AddMouseButtonEvent(button, down)
-    ImGui::ImGuiIO_AddMouseButtonEvent(self, button, down)
-  end
+class ImGuiDockNode < FFI::Struct
+  layout(
+    :ID, :uint,
+    :SharedFlags, :int,
+    :LocalFlags, :int,
+    :LocalFlagsInWindows, :int,
+    :MergedFlags, :int,
+    :State, :int,
+    :ParentNode, ImGuiDockNode.ptr,
+    :ChildNodes, [:pointer, 2],
+    :Windows, ImVector.by_value,
+    :TabBar, ImGuiTabBar.ptr,
+    :Pos, ImVec2.by_value,
+    :Size, ImVec2.by_value,
+    :SizeRef, ImVec2.by_value,
+    :SplitAxis, :int,
+    :WindowClass, ImGuiWindowClass.by_value,
+    :LastBgColor, :uint,
+    :HostWindow, ImGuiWindow.ptr,
+    :VisibleWindow, ImGuiWindow.ptr,
+    :CentralNode, ImGuiDockNode.ptr,
+    :OnlyNodeWithWindows, ImGuiDockNode.ptr,
+    :CountNodeWithWindows, :int,
+    :LastFrameAlive, :int,
+    :LastFrameActive, :int,
+    :LastFrameFocused, :int,
+    :LastFocusedNodeId, :uint,
+    :SelectedTabId, :uint,
+    :WantCloseTabId, :uint,
+    :AuthorityForPos, :int,
+    :AuthorityForSize, :int,
+    :AuthorityForViewport, :int,
+    :IsVisible, :bool,
+    :IsFocused, :bool,
+    :IsBgDrawnThisFrame, :bool,
+    :HasCloseButton, :bool,
+    :HasWindowMenuButton, :bool,
+    :HasCentralNodeChild, :bool,
+    :WantCloseAll, :bool,
+    :WantLockSizeOnce, :bool,
+    :WantMouseMove, :bool,
+    :WantHiddenTabBarUpdate, :bool,
+    :WantHiddenTabBarToggle, :bool
+  )
+end
 
-  def AddMousePosEvent(x, y)
-    ImGui::ImGuiIO_AddMousePosEvent(self, x, y)
-  end
+class ImGuiGroupData < FFI::Struct
+  layout(
+    :WindowID, :uint,
+    :BackupCursorPos, ImVec2.by_value,
+    :BackupCursorMaxPos, ImVec2.by_value,
+    :BackupIndent, ImVec1.by_value,
+    :BackupGroupOffset, ImVec1.by_value,
+    :BackupCurrLineSize, ImVec2.by_value,
+    :BackupCurrLineTextBaseOffset, :float,
+    :BackupActiveIdIsAlive, :uint,
+    :BackupActiveIdPreviousFrameIsAlive, :bool,
+    :BackupHoveredIdIsAlive, :bool,
+    :EmitItem, :bool
+  )
+end
 
-  def AddMouseWheelEvent(wh_x, wh_y)
-    ImGui::ImGuiIO_AddMouseWheelEvent(self, wh_x, wh_y)
-  end
+class ImGuiInputEventAppFocused < FFI::Struct
+  layout(
+    :Focused, :bool
+  )
+end
 
-  def ClearInputCharacters()
-    ImGui::ImGuiIO_ClearInputCharacters(self)
-  end
+class ImGuiInputEventKey < FFI::Struct
+  layout(
+    :Key, :int,
+    :Down, :bool,
+    :AnalogValue, :float
+  )
+end
 
-  def ClearInputKeys()
-    ImGui::ImGuiIO_ClearInputKeys(self)
-  end
+class ImGuiInputEventMouseButton < FFI::Struct
+  layout(
+    :Button, :int,
+    :Down, :bool
+  )
+end
 
-  def self.create()
-    return ImGuiIO.new(ImGui::ImGuiIO_ImGuiIO())
-  end
+class ImGuiInputEventMousePos < FFI::Struct
+  layout(
+    :PosX, :float,
+    :PosY, :float
+  )
+end
 
-  def SetKeyEventNativeData(key, native_keycode, native_scancode, native_legacy_index = -1)
-    ImGui::ImGuiIO_SetKeyEventNativeData(self, key, native_keycode, native_scancode, native_legacy_index)
-  end
+class ImGuiInputEventMouseViewport < FFI::Struct
+  layout(
+    :HoveredViewportID, :uint
+  )
+end
 
-  def destroy()
-    ImGui::ImGuiIO_destroy(self)
-  end
+class ImGuiInputEventMouseWheel < FFI::Struct
+  layout(
+    :WheelX, :float,
+    :WheelY, :float
+  )
+end
 
+class ImGuiInputEventText < FFI::Struct
+  layout(
+    :Char, :uint
+  )
 end
 
 class ImGuiInputTextCallbackData < FFI::Struct
@@ -1500,11 +2572,218 @@ class ImGuiInputTextCallbackData < FFI::Struct
   )
 end
 
+class ImGuiInputTextState < FFI::Struct
+  layout(
+    :ID, :uint,
+    :CurLenW, :int,
+    :CurLenA, :int,
+    :TextW, ImVector.by_value,
+    :TextA, ImVector.by_value,
+    :InitialTextA, ImVector.by_value,
+    :TextAIsValid, :bool,
+    :BufCapacityA, :int,
+    :ScrollX, :float,
+    :Stb, :STB_TexteditState,
+    :CursorAnim, :float,
+    :CursorFollow, :bool,
+    :SelectedAllMouseLock, :bool,
+    :Edited, :bool,
+    :Flags, :int
+  )
+end
+
+class ImGuiLastItemData < FFI::Struct
+  layout(
+    :ID, :uint,
+    :InFlags, :int,
+    :StatusFlags, :int,
+    :Rect, ImRect.by_value,
+    :NavRect, ImRect.by_value,
+    :DisplayRect, ImRect.by_value
+  )
+end
+
+class ImGuiListClipperData < FFI::Struct
+  layout(
+    :ListClipper, ImGuiListClipper.ptr,
+    :LossynessOffset, :float,
+    :StepNo, :int,
+    :ItemsFrozen, :int,
+    :Ranges, ImVector.by_value
+  )
+end
+
+class ImGuiListClipperRange < FFI::Struct
+  layout(
+    :Min, :int,
+    :Max, :int,
+    :PosToIndexConvert, :bool,
+    :PosToIndexOffsetMin, :char,
+    :PosToIndexOffsetMax, :char
+  )
+end
+
+class ImGuiMenuColumns < FFI::Struct
+  layout(
+    :TotalWidth, :uint,
+    :NextTotalWidth, :uint,
+    :Spacing, :ushort,
+    :OffsetIcon, :ushort,
+    :OffsetLabel, :ushort,
+    :OffsetShortcut, :ushort,
+    :OffsetMark, :ushort,
+    :Widths, [:ushort, 4]
+  )
+end
+
+class ImGuiMetricsConfig < FFI::Struct
+  layout(
+    :ShowStackTool, :bool,
+    :ShowWindowsRects, :bool,
+    :ShowWindowsBeginOrder, :bool,
+    :ShowTablesRects, :bool,
+    :ShowDrawCmdMesh, :bool,
+    :ShowDrawCmdBoundingBoxes, :bool,
+    :ShowDockingNodes, :bool,
+    :ShowWindowsRectsType, :int,
+    :ShowTablesRectsType, :int
+  )
+end
+
+class ImGuiNavItemData < FFI::Struct
+  layout(
+    :Window, ImGuiWindow.ptr,
+    :ID, :uint,
+    :FocusScopeId, :uint,
+    :RectRel, ImRect.by_value,
+    :InFlags, :int,
+    :DistBox, :float,
+    :DistCenter, :float,
+    :DistAxial, :float
+  )
+end
+
+class ImGuiNextItemData < FFI::Struct
+  layout(
+    :Flags, :int,
+    :Width, :float,
+    :FocusScopeId, :uint,
+    :OpenCond, :int,
+    :OpenVal, :bool
+  )
+end
+
+class ImGuiNextWindowData < FFI::Struct
+  layout(
+    :Flags, :int,
+    :PosCond, :int,
+    :SizeCond, :int,
+    :CollapsedCond, :int,
+    :DockCond, :int,
+    :PosVal, ImVec2.by_value,
+    :PosPivotVal, ImVec2.by_value,
+    :SizeVal, ImVec2.by_value,
+    :ContentSizeVal, ImVec2.by_value,
+    :ScrollVal, ImVec2.by_value,
+    :PosUndock, :bool,
+    :CollapsedVal, :bool,
+    :SizeConstraintRect, ImRect.by_value,
+    :SizeCallback, :pointer,
+    :SizeCallbackUserData, :pointer,
+    :BgAlphaVal, :float,
+    :ViewportId, :uint,
+    :DockId, :uint,
+    :WindowClass, ImGuiWindowClass.by_value,
+    :MenuBarOffsetMinVal, ImVec2.by_value
+  )
+end
+
+class ImGuiOldColumnData < FFI::Struct
+  layout(
+    :OffsetNorm, :float,
+    :OffsetNormBeforeResize, :float,
+    :Flags, :int,
+    :ClipRect, ImRect.by_value
+  )
+end
+
+class ImGuiOldColumns < FFI::Struct
+  layout(
+    :ID, :uint,
+    :Flags, :int,
+    :IsFirstFrame, :bool,
+    :IsBeingResized, :bool,
+    :Current, :int,
+    :Count, :int,
+    :OffMinX, :float,
+    :OffMaxX, :float,
+    :LineMinY, :float,
+    :LineMaxY, :float,
+    :HostCursorPosY, :float,
+    :HostCursorMaxPosX, :float,
+    :HostInitialClipRect, ImRect.by_value,
+    :HostBackupClipRect, ImRect.by_value,
+    :HostBackupParentWorkRect, ImRect.by_value,
+    :Columns, ImVector.by_value,
+    :Splitter, ImDrawListSplitter.by_value
+  )
+end
+
 class ImGuiPlatformImeData < FFI::Struct
   layout(
     :WantVisible, :bool,
     :InputPos, ImVec2.by_value,
     :InputLineHeight, :float
+  )
+end
+
+class ImGuiPlatformMonitor < FFI::Struct
+  layout(
+    :MainPos, ImVec2.by_value,
+    :MainSize, ImVec2.by_value,
+    :WorkPos, ImVec2.by_value,
+    :WorkSize, ImVec2.by_value,
+    :DpiScale, :float
+  )
+end
+
+class ImGuiPopupData < FFI::Struct
+  layout(
+    :PopupId, :uint,
+    :Window, ImGuiWindow.ptr,
+    :SourceWindow, ImGuiWindow.ptr,
+    :OpenFrameCount, :int,
+    :OpenParentId, :uint,
+    :OpenPopupPos, ImVec2.by_value,
+    :OpenMousePos, ImVec2.by_value
+  )
+end
+
+class ImGuiPtrOrIndex < FFI::Struct
+  layout(
+    :Ptr, :pointer,
+    :Index, :int
+  )
+end
+
+class ImGuiSettingsHandler < FFI::Struct
+  layout(
+    :TypeName, :pointer,
+    :TypeHash, :uint,
+    :ClearAllFn, :pointer,
+    :ReadInitFn, :pointer,
+    :ReadOpenFn, :pointer,
+    :ReadLineFn, :pointer,
+    :ApplyAllFn, :pointer,
+    :WriteAllFn, :pointer,
+    :UserData, :pointer
+  )
+end
+
+class ImGuiShrinkWidthItem < FFI::Struct
+  layout(
+    :Index, :int,
+    :Width, :float
   )
 end
 
@@ -1517,63 +2796,263 @@ class ImGuiSizeCallbackData < FFI::Struct
   )
 end
 
-class ImGuiStyle < FFI::Struct
+class ImGuiStackLevelInfo < FFI::Struct
   layout(
-    :Alpha, :float,
-    :DisabledAlpha, :float,
-    :WindowPadding, ImVec2.by_value,
-    :WindowRounding, :float,
-    :WindowBorderSize, :float,
-    :WindowMinSize, ImVec2.by_value,
-    :WindowTitleAlign, ImVec2.by_value,
-    :WindowMenuButtonPosition, :int,
-    :ChildRounding, :float,
-    :ChildBorderSize, :float,
-    :PopupRounding, :float,
-    :PopupBorderSize, :float,
-    :FramePadding, ImVec2.by_value,
-    :FrameRounding, :float,
-    :FrameBorderSize, :float,
-    :ItemSpacing, ImVec2.by_value,
-    :ItemInnerSpacing, ImVec2.by_value,
-    :CellPadding, ImVec2.by_value,
-    :TouchExtraPadding, ImVec2.by_value,
-    :IndentSpacing, :float,
-    :ColumnsMinSpacing, :float,
-    :ScrollbarSize, :float,
-    :ScrollbarRounding, :float,
-    :GrabMinSize, :float,
-    :GrabRounding, :float,
-    :LogSliderDeadzone, :float,
-    :TabRounding, :float,
-    :TabBorderSize, :float,
-    :TabMinWidthForCloseButton, :float,
-    :ColorButtonPosition, :int,
-    :ButtonTextAlign, ImVec2.by_value,
-    :SelectableTextAlign, ImVec2.by_value,
-    :DisplayWindowPadding, ImVec2.by_value,
-    :DisplaySafeAreaPadding, ImVec2.by_value,
-    :MouseCursorScale, :float,
-    :AntiAliasedLines, :bool,
-    :AntiAliasedLinesUseTex, :bool,
-    :AntiAliasedFill, :bool,
-    :CurveTessellationTol, :float,
-    :CircleTessellationMaxError, :float,
-    :Colors, [ImVec4.by_value, 53]
+    :ID, :uint,
+    :QueryFrameCount, :char,
+    :QuerySuccess, :bool,
+    :Desc, [:char, 58]
   )
+end
 
-  def self.create()
-    return ImGuiStyle.new(ImGui::ImGuiStyle_ImGuiStyle())
-  end
+class ImGuiStackSizes < FFI::Struct
+  layout(
+    :SizeOfIDStack, :short,
+    :SizeOfColorStack, :short,
+    :SizeOfStyleVarStack, :short,
+    :SizeOfFontStack, :short,
+    :SizeOfFocusScopeStack, :short,
+    :SizeOfGroupStack, :short,
+    :SizeOfItemFlagsStack, :short,
+    :SizeOfBeginPopupStack, :short,
+    :SizeOfDisabledStack, :short
+  )
+end
 
-  def ScaleAllSizes(scale_factor)
-    ImGui::ImGuiStyle_ScaleAllSizes(self, scale_factor)
-  end
+class ImGuiStackTool < FFI::Struct
+  layout(
+    :LastActiveFrame, :int,
+    :StackLevel, :int,
+    :QueryId, :uint,
+    :Results, ImVector.by_value
+  )
+end
 
-  def destroy()
-    ImGui::ImGuiStyle_destroy(self)
-  end
+class ImGuiTabBar < FFI::Struct
+  layout(
+    :Tabs, ImVector.by_value,
+    :Flags, :int,
+    :ID, :uint,
+    :SelectedTabId, :uint,
+    :NextSelectedTabId, :uint,
+    :VisibleTabId, :uint,
+    :CurrFrameVisible, :int,
+    :PrevFrameVisible, :int,
+    :BarRect, ImRect.by_value,
+    :CurrTabsContentsHeight, :float,
+    :PrevTabsContentsHeight, :float,
+    :WidthAllTabs, :float,
+    :WidthAllTabsIdeal, :float,
+    :ScrollingAnim, :float,
+    :ScrollingTarget, :float,
+    :ScrollingTargetDistToVisibility, :float,
+    :ScrollingSpeed, :float,
+    :ScrollingRectMinX, :float,
+    :ScrollingRectMaxX, :float,
+    :ReorderRequestTabId, :uint,
+    :ReorderRequestOffset, :short,
+    :BeginCount, :char,
+    :WantLayout, :bool,
+    :VisibleTabWasSubmitted, :bool,
+    :TabsAddedNew, :bool,
+    :TabsActiveCount, :short,
+    :LastTabItemIdx, :short,
+    :ItemSpacingY, :float,
+    :FramePadding, ImVec2.by_value,
+    :BackupCursorPos, ImVec2.by_value,
+    :TabsNames, ImGuiTextBuffer.by_value
+  )
+end
 
+class ImGuiTabItem < FFI::Struct
+  layout(
+    :ID, :uint,
+    :Flags, :int,
+    :Window, ImGuiWindow.ptr,
+    :LastFrameVisible, :int,
+    :LastFrameSelected, :int,
+    :Offset, :float,
+    :Width, :float,
+    :ContentWidth, :float,
+    :NameOffset, :int,
+    :BeginOrder, :short,
+    :IndexDuringLayout, :short,
+    :WantClose, :bool
+  )
+end
+
+class ImGuiTable < FFI::Struct
+  layout(
+    :ID, :uint,
+    :Flags, :int,
+    :RawData, :pointer,
+    :TempData, ImGuiTableTempData.ptr,
+    :Columns, ImSpan.by_value,
+    :DisplayOrderToIndex, ImSpan.by_value,
+    :RowCellData, ImSpan.by_value,
+    :EnabledMaskByDisplayOrder, :uint64,
+    :EnabledMaskByIndex, :uint64,
+    :VisibleMaskByIndex, :uint64,
+    :RequestOutputMaskByIndex, :uint64,
+    :SettingsLoadedFlags, :int,
+    :SettingsOffset, :int,
+    :LastFrameActive, :int,
+    :ColumnsCount, :int,
+    :CurrentRow, :int,
+    :CurrentColumn, :int,
+    :InstanceCurrent, :short,
+    :InstanceInteracted, :short,
+    :RowPosY1, :float,
+    :RowPosY2, :float,
+    :RowMinHeight, :float,
+    :RowTextBaseline, :float,
+    :RowIndentOffsetX, :float,
+    :RowFlags, :int,
+    :LastRowFlags, :int,
+    :RowBgColorCounter, :int,
+    :RowBgColor, [:uint, 2],
+    :BorderColorStrong, :uint,
+    :BorderColorLight, :uint,
+    :BorderX1, :float,
+    :BorderX2, :float,
+    :HostIndentX, :float,
+    :MinColumnWidth, :float,
+    :OuterPaddingX, :float,
+    :CellPaddingX, :float,
+    :CellPaddingY, :float,
+    :CellSpacingX1, :float,
+    :CellSpacingX2, :float,
+    :LastOuterHeight, :float,
+    :LastFirstRowHeight, :float,
+    :InnerWidth, :float,
+    :ColumnsGivenWidth, :float,
+    :ColumnsAutoFitWidth, :float,
+    :ResizedColumnNextWidth, :float,
+    :ResizeLockMinContentsX2, :float,
+    :RefScale, :float,
+    :OuterRect, ImRect.by_value,
+    :InnerRect, ImRect.by_value,
+    :WorkRect, ImRect.by_value,
+    :InnerClipRect, ImRect.by_value,
+    :BgClipRect, ImRect.by_value,
+    :Bg0ClipRectForDrawCmd, ImRect.by_value,
+    :Bg2ClipRectForDrawCmd, ImRect.by_value,
+    :HostClipRect, ImRect.by_value,
+    :HostBackupInnerClipRect, ImRect.by_value,
+    :OuterWindow, ImGuiWindow.ptr,
+    :InnerWindow, ImGuiWindow.ptr,
+    :ColumnsNames, ImGuiTextBuffer.by_value,
+    :DrawSplitter, ImDrawListSplitter.ptr,
+    :SortSpecsSingle, ImGuiTableColumnSortSpecs.by_value,
+    :SortSpecsMulti, ImVector.by_value,
+    :SortSpecs, ImGuiTableSortSpecs.by_value,
+    :SortSpecsCount, :char,
+    :ColumnsEnabledCount, :char,
+    :ColumnsEnabledFixedCount, :char,
+    :DeclColumnsCount, :char,
+    :HoveredColumnBody, :char,
+    :HoveredColumnBorder, :char,
+    :AutoFitSingleColumn, :char,
+    :ResizedColumn, :char,
+    :LastResizedColumn, :char,
+    :HeldHeaderColumn, :char,
+    :ReorderColumn, :char,
+    :ReorderColumnDir, :char,
+    :LeftMostEnabledColumn, :char,
+    :RightMostEnabledColumn, :char,
+    :LeftMostStretchedColumn, :char,
+    :RightMostStretchedColumn, :char,
+    :ContextPopupColumn, :char,
+    :FreezeRowsRequest, :char,
+    :FreezeRowsCount, :char,
+    :FreezeColumnsRequest, :char,
+    :FreezeColumnsCount, :char,
+    :RowCellDataCurrent, :char,
+    :DummyDrawChannel, :uchar,
+    :Bg2DrawChannelCurrent, :uchar,
+    :Bg2DrawChannelUnfrozen, :uchar,
+    :IsLayoutLocked, :bool,
+    :IsInsideRow, :bool,
+    :IsInitializing, :bool,
+    :IsSortSpecsDirty, :bool,
+    :IsUsingHeaders, :bool,
+    :IsContextPopupOpen, :bool,
+    :IsSettingsRequestLoad, :bool,
+    :IsSettingsDirty, :bool,
+    :IsDefaultDisplayOrder, :bool,
+    :IsResetAllRequest, :bool,
+    :IsResetDisplayOrderRequest, :bool,
+    :IsUnfrozenRows, :bool,
+    :IsDefaultSizingPolicy, :bool,
+    :MemoryCompacted, :bool,
+    :HostSkipItems, :bool
+  )
+end
+
+class ImGuiTableCellData < FFI::Struct
+  layout(
+    :BgColor, :uint,
+    :Column, :char
+  )
+end
+
+class ImGuiTableColumn < FFI::Struct
+  layout(
+    :Flags, :int,
+    :WidthGiven, :float,
+    :MinX, :float,
+    :MaxX, :float,
+    :WidthRequest, :float,
+    :WidthAuto, :float,
+    :StretchWeight, :float,
+    :InitStretchWeightOrWidth, :float,
+    :ClipRect, ImRect.by_value,
+    :UserID, :uint,
+    :WorkMinX, :float,
+    :WorkMaxX, :float,
+    :ItemWidth, :float,
+    :ContentMaxXFrozen, :float,
+    :ContentMaxXUnfrozen, :float,
+    :ContentMaxXHeadersUsed, :float,
+    :ContentMaxXHeadersIdeal, :float,
+    :NameOffset, :short,
+    :DisplayOrder, :char,
+    :IndexWithinEnabledSet, :char,
+    :PrevEnabledColumn, :char,
+    :NextEnabledColumn, :char,
+    :SortOrder, :char,
+    :DrawChannelCurrent, :uchar,
+    :DrawChannelFrozen, :uchar,
+    :DrawChannelUnfrozen, :uchar,
+    :IsEnabled, :bool,
+    :IsUserEnabled, :bool,
+    :IsUserEnabledNextFrame, :bool,
+    :IsVisibleX, :bool,
+    :IsVisibleY, :bool,
+    :IsRequestOutput, :bool,
+    :IsSkipItems, :bool,
+    :IsPreserveWidthAuto, :bool,
+    :NavLayerCurrent, :char,
+    :AutoFitQueue, :uchar,
+    :CannotSkipItemsQueue, :uchar,
+    :SortDirection, :uchar,
+    :SortDirectionsAvailCount, :uchar,
+    :SortDirectionsAvailMask, :uchar,
+    :SortDirectionsAvailList, :uchar
+  )
+end
+
+class ImGuiTableColumnSettings < FFI::Struct
+  layout(
+    :WidthOrWeight, :float,
+    :UserID, :uint,
+    :Index, :char,
+    :DisplayOrder, :char,
+    :SortOrder, :char,
+    :SortDirection, :uchar,
+    :IsEnabled, :uchar,
+    :IsStretch, :uchar
+  )
 end
 
 class ImGuiTableColumnSortSpecs < FFI::Struct
@@ -1585,11 +3064,39 @@ class ImGuiTableColumnSortSpecs < FFI::Struct
   )
 end
 
+class ImGuiTableSettings < FFI::Struct
+  layout(
+    :ID, :uint,
+    :SaveFlags, :int,
+    :RefScale, :float,
+    :ColumnsCount, :char,
+    :ColumnsCountMax, :char,
+    :WantApply, :bool
+  )
+end
+
 class ImGuiTableSortSpecs < FFI::Struct
   layout(
     :Specs, :pointer,
     :SpecsCount, :int,
     :SpecsDirty, :bool
+  )
+end
+
+class ImGuiTableTempData < FFI::Struct
+  layout(
+    :TableIndex, :int,
+    :LastTimeActive, :float,
+    :UserOuterSize, ImVec2.by_value,
+    :DrawSplitter, ImDrawListSplitter.by_value,
+    :HostBackupWorkRect, ImRect.by_value,
+    :HostBackupParentWorkRect, ImRect.by_value,
+    :HostBackupPrevLineSize, ImVec2.by_value,
+    :HostBackupCurrLineSize, ImVec2.by_value,
+    :HostBackupCursorMaxPos, ImVec2.by_value,
+    :HostBackupColumnsOffset, ImVec1.by_value,
+    :HostBackupItemWidth, :float,
+    :HostBackupItemWidthStackSize, :int
   )
 end
 
@@ -1658,21 +3165,214 @@ class ImGuiTextRange < FFI::Struct
 
 end
 
-class ImGuiViewport < FFI::Struct
+class ImGuiWindowDockStyle < FFI::Struct
   layout(
-    :Flags, :int,
-    :Pos, ImVec2.by_value,
-    :Size, ImVec2.by_value,
-    :WorkPos, ImVec2.by_value,
-    :WorkSize, ImVec2.by_value,
-    :PlatformHandleRaw, :pointer
+    :Colors, [:uint, 6]
+  )
+end
+
+class ImGuiWindowSettings < FFI::Struct
+  layout(
+    :ID, :uint,
+    :Pos, ImVec2ih.by_value,
+    :Size, ImVec2ih.by_value,
+    :ViewportPos, ImVec2ih.by_value,
+    :ViewportId, :uint,
+    :DockId, :uint,
+    :ClassId, :uint,
+    :DockOrder, :short,
+    :Collapsed, :bool,
+    :WantApply, :bool
+  )
+end
+
+class ImGuiWindowStackData < FFI::Struct
+  layout(
+    :Window, ImGuiWindow.ptr,
+    :ParentLastItemDataBackup, ImGuiLastItemData.by_value,
+    :StackSizesOnBegin, ImGuiStackSizes.by_value
+  )
+end
+
+class ImGuiWindowTempData < FFI::Struct
+  layout(
+    :CursorPos, ImVec2.by_value,
+    :CursorPosPrevLine, ImVec2.by_value,
+    :CursorStartPos, ImVec2.by_value,
+    :CursorMaxPos, ImVec2.by_value,
+    :IdealMaxPos, ImVec2.by_value,
+    :CurrLineSize, ImVec2.by_value,
+    :PrevLineSize, ImVec2.by_value,
+    :CurrLineTextBaseOffset, :float,
+    :PrevLineTextBaseOffset, :float,
+    :Indent, ImVec1.by_value,
+    :ColumnsOffset, ImVec1.by_value,
+    :GroupOffset, ImVec1.by_value,
+    :CursorStartPosLossyness, ImVec2.by_value,
+    :NavLayerCurrent, :int,
+    :NavLayersActiveMask, :short,
+    :NavLayersActiveMaskNext, :short,
+    :NavFocusScopeIdCurrent, :uint,
+    :NavHideHighlightOneFrame, :bool,
+    :NavHasScroll, :bool,
+    :MenuBarAppending, :bool,
+    :MenuBarOffset, ImVec2.by_value,
+    :MenuColumns, ImGuiMenuColumns.by_value,
+    :TreeDepth, :int,
+    :TreeJumpToParentOnPopMask, :uint,
+    :ChildWindows, ImVector.by_value,
+    :StateStorage, ImGuiStorage.ptr,
+    :CurrentColumns, ImGuiOldColumns.ptr,
+    :CurrentTableIdx, :int,
+    :LayoutType, :int,
+    :ParentLayoutType, :int,
+    :ItemWidth, :float,
+    :TextWrapPos, :float,
+    :ItemWidthStack, ImVector.by_value,
+    :TextWrapPosStack, ImVector.by_value
+  )
+end
+
+class ImVec1 < FFI::Struct
+  layout(
+    :x, :float
+  )
+end
+
+class ImVec2ih < FFI::Struct
+  layout(
+    :x, :short,
+    :y, :short
+  )
+end
+
+class STB_TexteditState < FFI::Struct
+  layout(
+    :cursor, :int,
+    :select_start, :int,
+    :select_end, :int,
+    :insert_mode, :uchar,
+    :row_count_per_page, :int,
+    :cursor_at_end_of_line, :uchar,
+    :initialized, :uchar,
+    :has_preferred_x, :uchar,
+    :single_line, :uchar,
+    :padding1, :uchar,
+    :padding2, :uchar,
+    :padding3, :uchar,
+    :preferred_x, :float,
+    :undostate, :StbUndoState
+  )
+end
+
+class StbTexteditRow < FFI::Struct
+  layout(
+    :x0, :float,
+    :x1, :float,
+    :baseline_y_delta, :float,
+    :ymin, :float,
+    :ymax, :float,
+    :num_chars, :int
+  )
+end
+
+class StbUndoRecord < FFI::Struct
+  layout(
+    :where, :int,
+    :insert_length, :int,
+    :delete_length, :int,
+    :char_storage, :int
+  )
+end
+
+class StbUndoState < FFI::Struct
+  layout(
+    :undo_rec, [:StbUndoRecord, 99],
+    :undo_char, [:ushort, 999],
+    :undo_point, :short,
+    :redo_point, :short,
+    :undo_char_point, :int,
+    :redo_char_point, :int
+  )
+end
+
+class ImGuiStoragePairUnionContent < FFI::Union
+  layout(
+    :val_i, :int,
+    :val_f, :float,
+    :val_p, :pointer
   )
 end
 
 class ImGuiStoragePair < FFI::Struct
   layout(
     :key, :uint,
-    :val_p, :pointer
+    :content, ImGuiStoragePairUnionContent.by_value
+  )
+end
+
+class ImGuiInputEventUnionContent < FFI::Union
+  layout(
+    :MousePos, ImGuiInputEventMousePos.by_value,
+    :MouseWheel, ImGuiInputEventMouseWheel.by_value,
+    :MouseButton, ImGuiInputEventMouseButton.by_value,
+    :MouseViewport, ImGuiInputEventMouseViewport.by_value,
+    :Key, ImGuiInputEventKey.by_value,
+    :Text, ImGuiInputEventText.by_value,
+    :AppFocused, ImGuiInputEventAppFocused.by_value
+  )
+end
+
+class ImGuiInputEvent < FFI::Struct
+  layout(
+    :Type, :int,
+    :Source, :int,
+    :content, ImGuiInputEventUnionContent.by_value,
+    :AddedByTestEngine, :bool
+  )
+end
+
+class ImGuiStyleModUnionContent < FFI::Union
+  layout(
+    :BakcupInt, [:int, 2],
+    :BakcupFloat, [:float, 2]
+  )
+end
+
+class ImGuiStyleMod < FFI::Struct
+  layout(
+    :VarIdx, :int,
+    :content, ImGuiStyleModUnionContent.by_value
+  )
+end
+
+class ImChunkStream < FFI::Struct
+  layout(
+    :Buf, ImVector.by_value
+  )
+end
+
+class ImPool < FFI::Struct
+  layout(
+    :Buf, ImVector.by_value,
+    :Map, ImGuiStorage.by_value,
+    :FreeIdx, ImPoolIdx.by_value,
+    :AliveCount, ImPoolIdx.by_value
+  )
+end
+
+class ImPool < FFI::Struct
+  layout(
+    :Buf, ImVector.by_value,
+    :Map, ImGuiStorage.by_value,
+    :FreeIdx, ImPoolIdx.by_value,
+    :AliveCount, ImPoolIdx.by_value
+  )
+end
+
+class ImBitArrayForNamedKeys < FFI::Struct
+  layout(
+    :Storage, [:uint, (ImGuiKey_NamedKey_COUNT + 31) >> 5]
   )
 end
 
@@ -1721,6 +3421,8 @@ module ImGui
 
   def self.import_symbols(output_error = false)
     callback :ImDrawCallback, [ImDrawList, ImDrawCmd], :void
+    callback :ImGuiContextHookCallback, [ImGuiContext, ImGuiContextHook], :void
+    callback :ImGuiErrorLogCallback, [:void, :char, :varargs], :void
     callback :ImGuiInputTextCallback, [ImGuiInputTextCallbackData], :int
     callback :ImGuiSizeCallback, [ImGuiSizeCallbackData], :void
 
@@ -1838,6 +3540,7 @@ module ImGui
       :ImGuiIO_AddKeyEvent,
       :ImGuiIO_AddMouseButtonEvent,
       :ImGuiIO_AddMousePosEvent,
+      :ImGuiIO_AddMouseViewportEvent,
       :ImGuiIO_AddMouseWheelEvent,
       :ImGuiIO_ClearInputCharacters,
       :ImGuiIO_ClearInputKeys,
@@ -1860,41 +3563,80 @@ module ImGui
       :ImGuiTextRange_empty,
       :ImGuiTextRange_split,
       :igAcceptDragDropPayload,
+      :igActivateItem,
+      :igAddContextHook,
       :igAlignTextToFramePadding,
       :igArrowButton,
+      :igArrowButtonEx,
       :igBegin,
       :igBeginChild_Str,
       :igBeginChild_ID,
+      :igBeginChildEx,
       :igBeginChildFrame,
+      :igBeginColumns,
       :igBeginCombo,
+      :igBeginComboPopup,
+      :igBeginComboPreview,
       :igBeginDisabled,
+      :igBeginDockableDragDropSource,
+      :igBeginDockableDragDropTarget,
+      :igBeginDocked,
       :igBeginDragDropSource,
       :igBeginDragDropTarget,
+      :igBeginDragDropTargetCustom,
       :igBeginGroup,
       :igBeginListBox,
       :igBeginMainMenuBar,
       :igBeginMenu,
       :igBeginMenuBar,
+      :igBeginMenuEx,
       :igBeginPopup,
       :igBeginPopupContextItem,
       :igBeginPopupContextVoid,
       :igBeginPopupContextWindow,
+      :igBeginPopupEx,
       :igBeginPopupModal,
       :igBeginTabBar,
+      :igBeginTabBarEx,
       :igBeginTabItem,
       :igBeginTable,
+      :igBeginTableEx,
       :igBeginTooltip,
+      :igBeginTooltipEx,
+      :igBeginViewportSideBar,
+      :igBringWindowToDisplayBack,
+      :igBringWindowToDisplayBehind,
+      :igBringWindowToDisplayFront,
+      :igBringWindowToFocusFront,
       :igBullet,
       :igBulletText,
       :igButton,
+      :igButtonBehavior,
+      :igButtonEx,
+      :igCalcItemSize,
       :igCalcItemWidth,
+      :igCalcRoundingFlagsForRectInRect,
       :igCalcTextSize,
+      :igCalcTypematicRepeatAmount,
+      :igCalcWindowNextAutoFitSize,
+      :igCalcWrapWidthForPos,
+      :igCallContextHooks,
       :igCaptureKeyboardFromApp,
       :igCaptureMouseFromApp,
       :igCheckbox,
       :igCheckboxFlags_IntPtr,
       :igCheckboxFlags_UintPtr,
+      :igCheckboxFlags_S64Ptr,
+      :igCheckboxFlags_U64Ptr,
+      :igClearActiveID,
+      :igClearDragDrop,
+      :igClearIniSettings,
+      :igCloseButton,
       :igCloseCurrentPopup,
+      :igClosePopupToLevel,
+      :igClosePopupsExceptModals,
+      :igClosePopupsOverWindow,
+      :igCollapseButton,
       :igCollapsingHeader_TreeNodeFlags,
       :igCollapsingHeader_BoolPtr,
       :igColorButton,
@@ -1904,15 +3646,80 @@ module ImGui
       :igColorConvertU32ToFloat4,
       :igColorEdit3,
       :igColorEdit4,
+      :igColorEditOptionsPopup,
       :igColorPicker3,
       :igColorPicker4,
+      :igColorPickerOptionsPopup,
+      :igColorTooltip,
       :igColumns,
       :igCombo_Str_arr,
       :igCombo_Str,
       :igCombo_FnBoolPtr,
       :igCreateContext,
+      :igCreateNewWindowSettings,
+      :igDataTypeApplyFromText,
+      :igDataTypeApplyOp,
+      :igDataTypeClamp,
+      :igDataTypeCompare,
+      :igDataTypeFormatString,
+      :igDataTypeGetInfo,
       :igDebugCheckVersionAndDataLayout,
+      :igDebugDrawItemRect,
+      :igDebugHookIdInfo,
+      :igDebugNodeColumns,
+      :igDebugNodeDockNode,
+      :igDebugNodeDrawCmdShowMeshAndBoundingBox,
+      :igDebugNodeDrawList,
+      :igDebugNodeFont,
+      :igDebugNodeStorage,
+      :igDebugNodeTabBar,
+      :igDebugNodeTable,
+      :igDebugNodeTableSettings,
+      :igDebugNodeViewport,
+      :igDebugNodeWindow,
+      :igDebugNodeWindowSettings,
+      :igDebugNodeWindowsList,
+      :igDebugNodeWindowsListByBeginStackParent,
+      :igDebugRenderViewportThumbnail,
+      :igDebugStartItemPicker,
       :igDestroyContext,
+      :igDestroyPlatformWindow,
+      :igDestroyPlatformWindows,
+      :igDockBuilderAddNode,
+      :igDockBuilderCopyDockSpace,
+      :igDockBuilderCopyNode,
+      :igDockBuilderCopyWindowSettings,
+      :igDockBuilderDockWindow,
+      :igDockBuilderFinish,
+      :igDockBuilderGetCentralNode,
+      :igDockBuilderGetNode,
+      :igDockBuilderRemoveNode,
+      :igDockBuilderRemoveNodeChildNodes,
+      :igDockBuilderRemoveNodeDockedWindows,
+      :igDockBuilderSetNodePos,
+      :igDockBuilderSetNodeSize,
+      :igDockBuilderSplitNode,
+      :igDockContextCalcDropPosForDocking,
+      :igDockContextClearNodes,
+      :igDockContextEndFrame,
+      :igDockContextGenNodeID,
+      :igDockContextInitialize,
+      :igDockContextNewFrameUpdateDocking,
+      :igDockContextNewFrameUpdateUndocking,
+      :igDockContextQueueDock,
+      :igDockContextQueueUndockNode,
+      :igDockContextQueueUndockWindow,
+      :igDockContextRebuildNodes,
+      :igDockContextShutdown,
+      :igDockNodeBeginAmendTabBar,
+      :igDockNodeEndAmendTabBar,
+      :igDockNodeGetDepth,
+      :igDockNodeGetRootNode,
+      :igDockNodeGetWindowMenuButtonId,
+      :igDockNodeIsInHierarchyOf,
+      :igDockSpace,
+      :igDockSpaceOverViewport,
+      :igDragBehavior,
       :igDragFloat,
       :igDragFloat2,
       :igDragFloat3,
@@ -1929,7 +3736,9 @@ module ImGui
       :igEnd,
       :igEndChild,
       :igEndChildFrame,
+      :igEndColumns,
       :igEndCombo,
+      :igEndComboPreview,
       :igEndDisabled,
       :igEndDragDropSource,
       :igEndDragDropTarget,
@@ -1944,50 +3753,99 @@ module ImGui
       :igEndTabItem,
       :igEndTable,
       :igEndTooltip,
+      :igErrorCheckEndFrameRecover,
+      :igErrorCheckEndWindowRecover,
+      :igFindBestWindowPosForPopup,
+      :igFindBestWindowPosForPopupEx,
+      :igFindBottomMostVisibleWindowWithinBeginStack,
+      :igFindHoveredViewportFromPlatformWindowStack,
+      :igFindOrCreateColumns,
+      :igFindOrCreateWindowSettings,
+      :igFindRenderedTextEnd,
+      :igFindSettingsHandler,
+      :igFindViewportByID,
+      :igFindViewportByPlatformHandle,
+      :igFindWindowByID,
+      :igFindWindowByName,
+      :igFindWindowDisplayIndex,
+      :igFindWindowSettings,
+      :igFocusTopMostWindowUnderOne,
+      :igFocusWindow,
+      :igGcAwakeTransientWindowBuffers,
+      :igGcCompactTransientMiscBuffers,
+      :igGcCompactTransientWindowBuffers,
+      :igGetActiveID,
       :igGetAllocatorFunctions,
-      :igGetBackgroundDrawList,
+      :igGetBackgroundDrawList_Nil,
+      :igGetBackgroundDrawList_ViewportPtr,
       :igGetClipboardText,
       :igGetColorU32_Col,
       :igGetColorU32_Vec4,
       :igGetColorU32_U32,
       :igGetColumnIndex,
+      :igGetColumnNormFromOffset,
       :igGetColumnOffset,
+      :igGetColumnOffsetFromNorm,
       :igGetColumnWidth,
       :igGetColumnsCount,
+      :igGetColumnsID,
       :igGetContentRegionAvail,
       :igGetContentRegionMax,
+      :igGetContentRegionMaxAbs,
       :igGetCurrentContext,
+      :igGetCurrentTable,
+      :igGetCurrentWindow,
+      :igGetCurrentWindowRead,
       :igGetCursorPos,
       :igGetCursorPosX,
       :igGetCursorPosY,
       :igGetCursorScreenPos,
       :igGetCursorStartPos,
+      :igGetDefaultFont,
       :igGetDragDropPayload,
       :igGetDrawData,
       :igGetDrawListSharedData,
+      :igGetFocusID,
+      :igGetFocusScope,
+      :igGetFocusedFocusScope,
       :igGetFont,
       :igGetFontSize,
       :igGetFontTexUvWhitePixel,
-      :igGetForegroundDrawList,
+      :igGetForegroundDrawList_Nil,
+      :igGetForegroundDrawList_ViewportPtr,
+      :igGetForegroundDrawList_WindowPtr,
       :igGetFrameCount,
       :igGetFrameHeight,
       :igGetFrameHeightWithSpacing,
+      :igGetHoveredID,
       :igGetID_Str,
       :igGetID_StrStr,
       :igGetID_Ptr,
+      :igGetIDWithSeed,
       :igGetIO,
+      :igGetInputTextState,
+      :igGetItemFlags,
+      :igGetItemID,
       :igGetItemRectMax,
       :igGetItemRectMin,
       :igGetItemRectSize,
+      :igGetItemStatusFlags,
+      :igGetKeyData,
       :igGetKeyIndex,
       :igGetKeyName,
       :igGetKeyPressedAmount,
       :igGetMainViewport,
+      :igGetMergedKeyModFlags,
       :igGetMouseClickedCount,
       :igGetMouseCursor,
       :igGetMouseDragDelta,
       :igGetMousePos,
       :igGetMousePosOnOpeningCurrentPopup,
+      :igGetNavInputAmount,
+      :igGetNavInputAmount2d,
+      :igGetNavInputName,
+      :igGetPlatformIO,
+      :igGetPopupAllowedExtentRect,
       :igGetScrollMaxX,
       :igGetScrollMaxY,
       :igGetScrollX,
@@ -1999,18 +3857,125 @@ module ImGui
       :igGetTextLineHeight,
       :igGetTextLineHeightWithSpacing,
       :igGetTime,
+      :igGetTopMostAndVisiblePopupModal,
+      :igGetTopMostPopupModal,
       :igGetTreeNodeToLabelSpacing,
       :igGetVersion,
+      :igGetViewportPlatformMonitor,
+      :igGetWindowAlwaysWantOwnTabBar,
       :igGetWindowContentRegionMax,
       :igGetWindowContentRegionMin,
+      :igGetWindowDockID,
+      :igGetWindowDockNode,
+      :igGetWindowDpiScale,
       :igGetWindowDrawList,
       :igGetWindowHeight,
       :igGetWindowPos,
+      :igGetWindowResizeBorderID,
+      :igGetWindowResizeCornerID,
+      :igGetWindowScrollbarID,
+      :igGetWindowScrollbarRect,
       :igGetWindowSize,
+      :igGetWindowViewport,
       :igGetWindowWidth,
+      :igImAbs_Int,
+      :igImAbs_Float,
+      :igImAbs_double,
+      :igImAlphaBlendColors,
+      :igImBezierCubicCalc,
+      :igImBezierCubicClosestPoint,
+      :igImBezierCubicClosestPointCasteljau,
+      :igImBezierQuadraticCalc,
+      :igImBitArrayClearBit,
+      :igImBitArraySetBit,
+      :igImBitArraySetBitRange,
+      :igImBitArrayTestBit,
+      :igImCharIsBlankA,
+      :igImCharIsBlankW,
+      :igImClamp,
+      :igImDot,
+      :igImFileClose,
+      :igImFileGetSize,
+      :igImFileLoadToMemory,
+      :igImFileOpen,
+      :igImFileRead,
+      :igImFileWrite,
+      :igImFloor_Float,
+      :igImFloor_Vec2,
+      :igImFloorSigned_Float,
+      :igImFloorSigned_Vec2,
+      :igImFontAtlasBuildFinish,
+      :igImFontAtlasBuildInit,
+      :igImFontAtlasBuildMultiplyCalcLookupTable,
+      :igImFontAtlasBuildMultiplyRectAlpha8,
+      :igImFontAtlasBuildPackCustomRects,
+      :igImFontAtlasBuildRender32bppRectFromString,
+      :igImFontAtlasBuildRender8bppRectFromString,
+      :igImFontAtlasBuildSetupFont,
+      :igImFontAtlasGetBuilderForStbTruetype,
+      :igImFormatString,
+      :igImGetDirQuadrantFromDelta,
+      :igImHashData,
+      :igImHashStr,
+      :igImInvLength,
+      :igImIsFloatAboveGuaranteedIntegerPrecision,
+      :igImIsPowerOfTwo_Int,
+      :igImIsPowerOfTwo_U64,
+      :igImLengthSqr_Vec2,
+      :igImLengthSqr_Vec4,
+      :igImLerp_Vec2Float,
+      :igImLerp_Vec2Vec2,
+      :igImLerp_Vec4,
+      :igImLineClosestPoint,
+      :igImLinearSweep,
+      :igImLog_Float,
+      :igImLog_double,
+      :igImMax,
+      :igImMin,
+      :igImModPositive,
+      :igImMul,
+      :igImParseFormatFindEnd,
+      :igImParseFormatFindStart,
+      :igImParseFormatPrecision,
+      :igImParseFormatTrimDecorations,
+      :igImPow_Float,
+      :igImPow_double,
+      :igImQsort,
+      :igImRotate,
+      :igImRsqrt_Float,
+      :igImRsqrt_double,
+      :igImSaturate,
+      :igImSign_Float,
+      :igImSign_double,
+      :igImStrSkipBlank,
+      :igImStrTrimBlanks,
+      :igImStrbolW,
+      :igImStrchrRange,
+      :igImStrdup,
+      :igImStrdupcpy,
+      :igImStreolRange,
+      :igImStricmp,
+      :igImStristr,
+      :igImStrlenW,
+      :igImStrncpy,
+      :igImStrnicmp,
+      :igImTextCharFromUtf8,
+      :igImTextCharToUtf8,
+      :igImTextCountCharsFromUtf8,
+      :igImTextCountUtf8BytesFromChar,
+      :igImTextCountUtf8BytesFromStr,
+      :igImTextStrFromUtf8,
+      :igImTextStrToUtf8,
+      :igImTriangleArea,
+      :igImTriangleBarycentricCoords,
+      :igImTriangleClosestPoint,
+      :igImTriangleContainsPoint,
+      :igImUpperPowerOfTwo,
       :igImage,
       :igImageButton,
+      :igImageButtonEx,
       :igIndent,
+      :igInitialize,
       :igInputDouble,
       :igInputFloat,
       :igInputFloat2,
@@ -2023,13 +3988,20 @@ module ImGui
       :igInputScalar,
       :igInputScalarN,
       :igInputText,
+      :igInputTextEx,
       :igInputTextMultiline,
       :igInputTextWithHint,
       :igInvisibleButton,
+      :igIsActiveIdUsingKey,
+      :igIsActiveIdUsingNavDir,
+      :igIsActiveIdUsingNavInput,
       :igIsAnyItemActive,
       :igIsAnyItemFocused,
       :igIsAnyItemHovered,
       :igIsAnyMouseDown,
+      :igIsClippedEx,
+      :igIsDragDropPayloadBeingAccepted,
+      :igIsGamepadKey,
       :igIsItemActivated,
       :igIsItemActive,
       :igIsItemClicked,
@@ -2039,45 +4011,82 @@ module ImGui
       :igIsItemFocused,
       :igIsItemHovered,
       :igIsItemToggledOpen,
+      :igIsItemToggledSelection,
       :igIsItemVisible,
       :igIsKeyDown,
       :igIsKeyPressed,
+      :igIsKeyPressedMap,
       :igIsKeyReleased,
+      :igIsLegacyKey,
       :igIsMouseClicked,
       :igIsMouseDoubleClicked,
       :igIsMouseDown,
+      :igIsMouseDragPastThreshold,
       :igIsMouseDragging,
       :igIsMouseHoveringRect,
       :igIsMousePosValid,
       :igIsMouseReleased,
-      :igIsPopupOpen,
+      :igIsNamedKey,
+      :igIsNavInputDown,
+      :igIsNavInputTest,
+      :igIsPopupOpen_Str,
+      :igIsPopupOpen_ID,
       :igIsRectVisible_Nil,
       :igIsRectVisible_Vec2,
+      :igIsWindowAbove,
       :igIsWindowAppearing,
+      :igIsWindowChildOf,
       :igIsWindowCollapsed,
+      :igIsWindowDocked,
       :igIsWindowFocused,
       :igIsWindowHovered,
+      :igIsWindowNavFocusable,
+      :igIsWindowWithinBeginStackOf,
+      :igItemAdd,
+      :igItemHoverable,
+      :igItemSize_Vec2,
+      :igItemSize_Rect,
+      :igKeepAliveID,
       :igLabelText,
       :igListBox_Str_arr,
       :igListBox_FnBoolPtr,
       :igLoadIniSettingsFromDisk,
       :igLoadIniSettingsFromMemory,
+      :igLogBegin,
       :igLogButtons,
       :igLogFinish,
+      :igLogRenderedText,
+      :igLogSetNextTextDecoration,
       :igLogText,
+      :igLogToBuffer,
       :igLogToClipboard,
       :igLogToFile,
       :igLogToTTY,
+      :igMarkIniSettingsDirty_Nil,
+      :igMarkIniSettingsDirty_WindowPtr,
+      :igMarkItemEdited,
       :igMemAlloc,
       :igMemFree,
       :igMenuItem_Bool,
       :igMenuItem_BoolPtr,
+      :igMenuItemEx,
+      :igNavInitRequestApplyResult,
+      :igNavInitWindow,
+      :igNavMoveRequestApplyResult,
+      :igNavMoveRequestButNoResultYet,
+      :igNavMoveRequestCancel,
+      :igNavMoveRequestForward,
+      :igNavMoveRequestResolveWithLastItem,
+      :igNavMoveRequestSubmit,
+      :igNavMoveRequestTryWrapping,
       :igNewFrame,
       :igNewLine,
       :igNextColumn,
       :igOpenPopup_Str,
       :igOpenPopup_ID,
+      :igOpenPopupEx,
       :igOpenPopupOnItemClick,
+      :igPlotEx,
       :igPlotHistogram_FloatPtr,
       :igPlotHistogram_FnFloatPtr,
       :igPlotLines_FloatPtr,
@@ -2085,8 +4094,11 @@ module ImGui
       :igPopAllowKeyboardFocus,
       :igPopButtonRepeat,
       :igPopClipRect,
+      :igPopColumnsBackground,
+      :igPopFocusScope,
       :igPopFont,
       :igPopID,
+      :igPopItemFlag,
       :igPopItemWidth,
       :igPopStyleColor,
       :igPopStyleVar,
@@ -2095,12 +4107,18 @@ module ImGui
       :igPushAllowKeyboardFocus,
       :igPushButtonRepeat,
       :igPushClipRect,
+      :igPushColumnClipRect,
+      :igPushColumnsBackground,
+      :igPushFocusScope,
       :igPushFont,
       :igPushID_Str,
       :igPushID_StrStr,
       :igPushID_Ptr,
       :igPushID_Int,
+      :igPushItemFlag,
       :igPushItemWidth,
+      :igPushMultiItemsWidths,
+      :igPushOverrideID,
       :igPushStyleColor_U32,
       :igPushStyleColor_Vec4,
       :igPushStyleVar_Float,
@@ -2108,65 +4126,122 @@ module ImGui
       :igPushTextWrapPos,
       :igRadioButton_Bool,
       :igRadioButton_IntPtr,
+      :igRemoveContextHook,
       :igRender,
+      :igRenderArrow,
+      :igRenderArrowDockMenu,
+      :igRenderArrowPointingAt,
+      :igRenderBullet,
+      :igRenderCheckMark,
+      :igRenderColorRectWithAlphaCheckerboard,
+      :igRenderFrame,
+      :igRenderFrameBorder,
+      :igRenderMouseCursor,
+      :igRenderNavHighlight,
+      :igRenderPlatformWindowsDefault,
+      :igRenderRectFilledRangeH,
+      :igRenderRectFilledWithHole,
+      :igRenderText,
+      :igRenderTextClipped,
+      :igRenderTextClippedEx,
+      :igRenderTextEllipsis,
+      :igRenderTextWrapped,
       :igResetMouseDragDelta,
       :igSameLine,
       :igSaveIniSettingsToDisk,
       :igSaveIniSettingsToMemory,
+      :igScaleWindowsInViewport,
+      :igScrollToBringRectIntoView,
+      :igScrollToItem,
+      :igScrollToRect,
+      :igScrollToRectEx,
+      :igScrollbar,
+      :igScrollbarEx,
       :igSelectable_Bool,
       :igSelectable_BoolPtr,
       :igSeparator,
+      :igSeparatorEx,
+      :igSetActiveID,
+      :igSetActiveIdUsingKey,
+      :igSetActiveIdUsingNavAndKeys,
       :igSetAllocatorFunctions,
       :igSetClipboardText,
       :igSetColorEditOptions,
       :igSetColumnOffset,
       :igSetColumnWidth,
       :igSetCurrentContext,
+      :igSetCurrentFont,
+      :igSetCurrentViewport,
       :igSetCursorPos,
       :igSetCursorPosX,
       :igSetCursorPosY,
       :igSetCursorScreenPos,
       :igSetDragDropPayload,
+      :igSetFocusID,
+      :igSetHoveredID,
       :igSetItemAllowOverlap,
       :igSetItemDefaultFocus,
+      :igSetItemUsingMouseWheel,
       :igSetKeyboardFocusHere,
+      :igSetLastItemData,
       :igSetMouseCursor,
+      :igSetNavID,
       :igSetNextItemOpen,
       :igSetNextItemWidth,
       :igSetNextWindowBgAlpha,
+      :igSetNextWindowClass,
       :igSetNextWindowCollapsed,
       :igSetNextWindowContentSize,
+      :igSetNextWindowDockID,
       :igSetNextWindowFocus,
       :igSetNextWindowPos,
+      :igSetNextWindowScroll,
       :igSetNextWindowSize,
       :igSetNextWindowSizeConstraints,
-      :igSetScrollFromPosX,
-      :igSetScrollFromPosY,
+      :igSetNextWindowViewport,
+      :igSetScrollFromPosX_Float,
+      :igSetScrollFromPosX_WindowPtr,
+      :igSetScrollFromPosY_Float,
+      :igSetScrollFromPosY_WindowPtr,
       :igSetScrollHereX,
       :igSetScrollHereY,
-      :igSetScrollX,
-      :igSetScrollY,
+      :igSetScrollX_Float,
+      :igSetScrollX_WindowPtr,
+      :igSetScrollY_Float,
+      :igSetScrollY_WindowPtr,
       :igSetStateStorage,
       :igSetTabItemClosed,
       :igSetTooltip,
+      :igSetWindowClipRectBeforeSetChannel,
       :igSetWindowCollapsed_Bool,
       :igSetWindowCollapsed_Str,
+      :igSetWindowCollapsed_WindowPtr,
+      :igSetWindowDock,
       :igSetWindowFocus_Nil,
       :igSetWindowFocus_Str,
       :igSetWindowFontScale,
+      :igSetWindowHitTestHole,
       :igSetWindowPos_Vec2,
       :igSetWindowPos_Str,
+      :igSetWindowPos_WindowPtr,
       :igSetWindowSize_Vec2,
       :igSetWindowSize_Str,
+      :igSetWindowSize_WindowPtr,
+      :igShadeVertsLinearColorGradientKeepAlpha,
+      :igShadeVertsLinearUV,
       :igShowAboutWindow,
       :igShowDemoWindow,
+      :igShowFontAtlas,
       :igShowFontSelector,
       :igShowMetricsWindow,
       :igShowStackToolWindow,
       :igShowStyleEditor,
       :igShowStyleSelector,
       :igShowUserGuide,
+      :igShrinkWidths,
+      :igShutdown,
       :igSliderAngle,
+      :igSliderBehavior,
       :igSliderFloat,
       :igSliderFloat2,
       :igSliderFloat3,
@@ -2179,40 +4254,112 @@ module ImGui
       :igSliderScalarN,
       :igSmallButton,
       :igSpacing,
+      :igSplitterBehavior,
+      :igStartMouseMovingWindow,
+      :igStartMouseMovingWindowOrNode,
       :igStyleColorsClassic,
       :igStyleColorsDark,
       :igStyleColorsLight,
+      :igTabBarAddTab,
+      :igTabBarCloseTab,
+      :igTabBarFindMostRecentlySelectedTabForActiveWindow,
+      :igTabBarFindTabByID,
+      :igTabBarProcessReorder,
+      :igTabBarQueueReorder,
+      :igTabBarQueueReorderFromMousePos,
+      :igTabBarRemoveTab,
+      :igTabItemBackground,
       :igTabItemButton,
+      :igTabItemCalcSize,
+      :igTabItemEx,
+      :igTabItemLabelAndCloseButton,
+      :igTableBeginApplyRequests,
+      :igTableBeginCell,
+      :igTableBeginInitMemory,
+      :igTableBeginRow,
+      :igTableDrawBorders,
+      :igTableDrawContextMenu,
+      :igTableEndCell,
+      :igTableEndRow,
+      :igTableFindByID,
+      :igTableFixColumnSortDirection,
+      :igTableGcCompactSettings,
+      :igTableGcCompactTransientBuffers_TablePtr,
+      :igTableGcCompactTransientBuffers_TableTempDataPtr,
+      :igTableGetBoundSettings,
+      :igTableGetCellBgRect,
       :igTableGetColumnCount,
       :igTableGetColumnFlags,
       :igTableGetColumnIndex,
-      :igTableGetColumnName,
+      :igTableGetColumnName_Int,
+      :igTableGetColumnName_TablePtr,
+      :igTableGetColumnNextSortDirection,
+      :igTableGetColumnResizeID,
+      :igTableGetColumnWidthAuto,
+      :igTableGetHeaderRowHeight,
+      :igTableGetHoveredColumn,
+      :igTableGetMaxColumnWidth,
       :igTableGetRowIndex,
       :igTableGetSortSpecs,
       :igTableHeader,
       :igTableHeadersRow,
+      :igTableLoadSettings,
+      :igTableMergeDrawChannels,
       :igTableNextColumn,
       :igTableNextRow,
+      :igTableOpenContextMenu,
+      :igTablePopBackgroundChannel,
+      :igTablePushBackgroundChannel,
+      :igTableRemove,
+      :igTableResetSettings,
+      :igTableSaveSettings,
       :igTableSetBgColor,
       :igTableSetColumnEnabled,
       :igTableSetColumnIndex,
+      :igTableSetColumnSortDirection,
+      :igTableSetColumnWidth,
+      :igTableSetColumnWidthAutoAll,
+      :igTableSetColumnWidthAutoSingle,
+      :igTableSettingsCreate,
+      :igTableSettingsFindByID,
+      :igTableSettingsInstallHandler,
       :igTableSetupColumn,
+      :igTableSetupDrawChannels,
       :igTableSetupScrollFreeze,
+      :igTableSortSpecsBuild,
+      :igTableSortSpecsSanitize,
+      :igTableUpdateBorders,
+      :igTableUpdateColumnsWeightFromWidth,
+      :igTableUpdateLayout,
+      :igTempInputIsActive,
+      :igTempInputScalar,
+      :igTempInputText,
       :igText,
       :igTextColored,
       :igTextDisabled,
+      :igTextEx,
       :igTextUnformatted,
       :igTextWrapped,
+      :igTranslateWindowsInViewport,
       :igTreeNode_Str,
       :igTreeNode_StrStr,
       :igTreeNode_Ptr,
+      :igTreeNodeBehavior,
+      :igTreeNodeBehaviorIsOpen,
       :igTreeNodeEx_Str,
       :igTreeNodeEx_StrStr,
       :igTreeNodeEx_Ptr,
       :igTreePop,
       :igTreePush_Str,
       :igTreePush_Ptr,
+      :igTreePushOverrideID,
       :igUnindent,
+      :igUpdateHoveredWindowAndCaptureFlags,
+      :igUpdateInputEvents,
+      :igUpdateMouseMovingWindowEndFrame,
+      :igUpdateMouseMovingWindowNewFrame,
+      :igUpdatePlatformWindows,
+      :igUpdateWindowParentAndRootLinks,
       :igVSliderFloat,
       :igVSliderInt,
       :igVSliderScalar,
@@ -2220,6 +4367,8 @@ module ImGui
       :igValue_Int,
       :igValue_Uint,
       :igValue_Float,
+      :igWindowRectAbsToRel,
+      :igWindowRectRelToAbs,
     ]
 
     args = {
@@ -2336,6 +4485,7 @@ module ImGui
       :ImGuiIO_AddKeyEvent => [:pointer, :int, :bool],
       :ImGuiIO_AddMouseButtonEvent => [:pointer, :int, :bool],
       :ImGuiIO_AddMousePosEvent => [:pointer, :float, :float],
+      :ImGuiIO_AddMouseViewportEvent => [:pointer, :uint],
       :ImGuiIO_AddMouseWheelEvent => [:pointer, :float, :float],
       :ImGuiIO_ClearInputCharacters => [:pointer],
       :ImGuiIO_ClearInputKeys => [:pointer],
@@ -2358,41 +4508,80 @@ module ImGui
       :ImGuiTextRange_empty => [:pointer],
       :ImGuiTextRange_split => [:pointer, :char, :pointer],
       :igAcceptDragDropPayload => [:pointer, :int],
+      :igActivateItem => [:uint],
+      :igAddContextHook => [:pointer, :pointer],
       :igAlignTextToFramePadding => [],
       :igArrowButton => [:pointer, :int],
+      :igArrowButtonEx => [:pointer, :int, ImVec2.by_value, :int],
       :igBegin => [:pointer, :pointer, :int],
       :igBeginChild_Str => [:pointer, ImVec2.by_value, :bool, :int],
       :igBeginChild_ID => [:uint, ImVec2.by_value, :bool, :int],
+      :igBeginChildEx => [:pointer, :uint, ImVec2.by_value, :bool, :int],
       :igBeginChildFrame => [:uint, ImVec2.by_value, :int],
+      :igBeginColumns => [:pointer, :int, :int],
       :igBeginCombo => [:pointer, :pointer, :int],
+      :igBeginComboPopup => [:uint, ImRect.by_value, :int],
+      :igBeginComboPreview => [],
       :igBeginDisabled => [:bool],
+      :igBeginDockableDragDropSource => [:pointer],
+      :igBeginDockableDragDropTarget => [:pointer],
+      :igBeginDocked => [:pointer, :pointer],
       :igBeginDragDropSource => [:int],
       :igBeginDragDropTarget => [],
+      :igBeginDragDropTargetCustom => [ImRect.by_value, :uint],
       :igBeginGroup => [],
       :igBeginListBox => [:pointer, ImVec2.by_value],
       :igBeginMainMenuBar => [],
       :igBeginMenu => [:pointer, :bool],
       :igBeginMenuBar => [],
+      :igBeginMenuEx => [:pointer, :pointer, :bool],
       :igBeginPopup => [:pointer, :int],
       :igBeginPopupContextItem => [:pointer, :int],
       :igBeginPopupContextVoid => [:pointer, :int],
       :igBeginPopupContextWindow => [:pointer, :int],
+      :igBeginPopupEx => [:uint, :int],
       :igBeginPopupModal => [:pointer, :pointer, :int],
       :igBeginTabBar => [:pointer, :int],
+      :igBeginTabBarEx => [:pointer, ImRect.by_value, :int, :pointer],
       :igBeginTabItem => [:pointer, :pointer, :int],
       :igBeginTable => [:pointer, :int, :int, ImVec2.by_value, :float],
+      :igBeginTableEx => [:pointer, :uint, :int, :int, ImVec2.by_value, :float],
       :igBeginTooltip => [],
+      :igBeginTooltipEx => [:int, :int],
+      :igBeginViewportSideBar => [:pointer, :pointer, :int, :float, :int],
+      :igBringWindowToDisplayBack => [:pointer],
+      :igBringWindowToDisplayBehind => [:pointer, :pointer],
+      :igBringWindowToDisplayFront => [:pointer],
+      :igBringWindowToFocusFront => [:pointer],
       :igBullet => [],
       :igBulletText => [:pointer, :varargs],
       :igButton => [:pointer, ImVec2.by_value],
+      :igButtonBehavior => [ImRect.by_value, :uint, :pointer, :pointer, :int],
+      :igButtonEx => [:pointer, ImVec2.by_value, :int],
+      :igCalcItemSize => [:pointer, ImVec2.by_value, :float, :float],
       :igCalcItemWidth => [],
+      :igCalcRoundingFlagsForRectInRect => [ImRect.by_value, ImRect.by_value, :float],
       :igCalcTextSize => [:pointer, :pointer, :pointer, :bool, :float],
+      :igCalcTypematicRepeatAmount => [:float, :float, :float, :float],
+      :igCalcWindowNextAutoFitSize => [:pointer, :pointer],
+      :igCalcWrapWidthForPos => [ImVec2.by_value, :float],
+      :igCallContextHooks => [:pointer, :int],
       :igCaptureKeyboardFromApp => [:bool],
       :igCaptureMouseFromApp => [:bool],
       :igCheckbox => [:pointer, :pointer],
       :igCheckboxFlags_IntPtr => [:pointer, :pointer, :int],
       :igCheckboxFlags_UintPtr => [:pointer, :pointer, :uint],
+      :igCheckboxFlags_S64Ptr => [:pointer, :pointer, :int64],
+      :igCheckboxFlags_U64Ptr => [:pointer, :pointer, :uint64],
+      :igClearActiveID => [],
+      :igClearDragDrop => [],
+      :igClearIniSettings => [],
+      :igCloseButton => [:uint, ImVec2.by_value],
       :igCloseCurrentPopup => [],
+      :igClosePopupToLevel => [:int, :bool],
+      :igClosePopupsExceptModals => [],
+      :igClosePopupsOverWindow => [:pointer, :bool],
+      :igCollapseButton => [:uint, ImVec2.by_value, :pointer],
       :igCollapsingHeader_TreeNodeFlags => [:pointer, :int],
       :igCollapsingHeader_BoolPtr => [:pointer, :pointer, :int],
       :igColorButton => [:pointer, ImVec4.by_value, :int, ImVec2.by_value],
@@ -2402,15 +4591,80 @@ module ImGui
       :igColorConvertU32ToFloat4 => [:pointer, :uint],
       :igColorEdit3 => [:pointer, :pointer, :int],
       :igColorEdit4 => [:pointer, :pointer, :int],
+      :igColorEditOptionsPopup => [:pointer, :int],
       :igColorPicker3 => [:pointer, :pointer, :int],
       :igColorPicker4 => [:pointer, :pointer, :int, :pointer],
+      :igColorPickerOptionsPopup => [:pointer, :int],
+      :igColorTooltip => [:pointer, :pointer, :int],
       :igColumns => [:int, :pointer, :bool],
       :igCombo_Str_arr => [:pointer, :pointer, :pointer, :int, :int],
       :igCombo_Str => [:pointer, :pointer, :pointer, :int],
       :igCombo_FnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
       :igCreateContext => [:pointer],
+      :igCreateNewWindowSettings => [:pointer],
+      :igDataTypeApplyFromText => [:pointer, :int, :pointer, :pointer],
+      :igDataTypeApplyOp => [:int, :int, :pointer, :pointer, :pointer],
+      :igDataTypeClamp => [:int, :pointer, :pointer, :pointer],
+      :igDataTypeCompare => [:int, :pointer, :pointer],
+      :igDataTypeFormatString => [:pointer, :int, :int, :pointer, :pointer],
+      :igDataTypeGetInfo => [:int],
       :igDebugCheckVersionAndDataLayout => [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t],
+      :igDebugDrawItemRect => [:uint],
+      :igDebugHookIdInfo => [:uint, :int, :pointer, :pointer],
+      :igDebugNodeColumns => [:pointer],
+      :igDebugNodeDockNode => [:pointer, :pointer],
+      :igDebugNodeDrawCmdShowMeshAndBoundingBox => [:pointer, :pointer, :pointer, :bool, :bool],
+      :igDebugNodeDrawList => [:pointer, :pointer, :pointer, :pointer],
+      :igDebugNodeFont => [:pointer],
+      :igDebugNodeStorage => [:pointer, :pointer],
+      :igDebugNodeTabBar => [:pointer, :pointer],
+      :igDebugNodeTable => [:pointer],
+      :igDebugNodeTableSettings => [:pointer],
+      :igDebugNodeViewport => [:pointer],
+      :igDebugNodeWindow => [:pointer, :pointer],
+      :igDebugNodeWindowSettings => [:pointer],
+      :igDebugNodeWindowsList => [:pointer, :pointer],
+      :igDebugNodeWindowsListByBeginStackParent => [:pointer, :int, :pointer],
+      :igDebugRenderViewportThumbnail => [:pointer, :pointer, ImRect.by_value],
+      :igDebugStartItemPicker => [],
       :igDestroyContext => [:pointer],
+      :igDestroyPlatformWindow => [:pointer],
+      :igDestroyPlatformWindows => [],
+      :igDockBuilderAddNode => [:uint, :int],
+      :igDockBuilderCopyDockSpace => [:uint, :uint, :pointer],
+      :igDockBuilderCopyNode => [:uint, :uint, :pointer],
+      :igDockBuilderCopyWindowSettings => [:pointer, :pointer],
+      :igDockBuilderDockWindow => [:pointer, :uint],
+      :igDockBuilderFinish => [:uint],
+      :igDockBuilderGetCentralNode => [:uint],
+      :igDockBuilderGetNode => [:uint],
+      :igDockBuilderRemoveNode => [:uint],
+      :igDockBuilderRemoveNodeChildNodes => [:uint],
+      :igDockBuilderRemoveNodeDockedWindows => [:uint, :bool],
+      :igDockBuilderSetNodePos => [:uint, ImVec2.by_value],
+      :igDockBuilderSetNodeSize => [:uint, ImVec2.by_value],
+      :igDockBuilderSplitNode => [:uint, :int, :float, :pointer, :pointer],
+      :igDockContextCalcDropPosForDocking => [:pointer, :pointer, :pointer, :int, :bool, :pointer],
+      :igDockContextClearNodes => [:pointer, :uint, :bool],
+      :igDockContextEndFrame => [:pointer],
+      :igDockContextGenNodeID => [:pointer],
+      :igDockContextInitialize => [:pointer],
+      :igDockContextNewFrameUpdateDocking => [:pointer],
+      :igDockContextNewFrameUpdateUndocking => [:pointer],
+      :igDockContextQueueDock => [:pointer, :pointer, :pointer, :pointer, :int, :float, :bool],
+      :igDockContextQueueUndockNode => [:pointer, :pointer],
+      :igDockContextQueueUndockWindow => [:pointer, :pointer],
+      :igDockContextRebuildNodes => [:pointer],
+      :igDockContextShutdown => [:pointer],
+      :igDockNodeBeginAmendTabBar => [:pointer],
+      :igDockNodeEndAmendTabBar => [],
+      :igDockNodeGetDepth => [:pointer],
+      :igDockNodeGetRootNode => [:pointer],
+      :igDockNodeGetWindowMenuButtonId => [:pointer],
+      :igDockNodeIsInHierarchyOf => [:pointer, :pointer],
+      :igDockSpace => [:uint, ImVec2.by_value, :int, :pointer],
+      :igDockSpaceOverViewport => [:pointer, :int, :pointer],
+      :igDragBehavior => [:uint, :int, :pointer, :float, :pointer, :pointer, :pointer, :int],
       :igDragFloat => [:pointer, :pointer, :float, :float, :float, :pointer, :int],
       :igDragFloat2 => [:pointer, :pointer, :float, :float, :float, :pointer, :int],
       :igDragFloat3 => [:pointer, :pointer, :float, :float, :float, :pointer, :int],
@@ -2427,7 +4681,9 @@ module ImGui
       :igEnd => [],
       :igEndChild => [],
       :igEndChildFrame => [],
+      :igEndColumns => [],
       :igEndCombo => [],
+      :igEndComboPreview => [],
       :igEndDisabled => [],
       :igEndDragDropSource => [],
       :igEndDragDropTarget => [],
@@ -2442,50 +4698,99 @@ module ImGui
       :igEndTabItem => [],
       :igEndTable => [],
       :igEndTooltip => [],
+      :igErrorCheckEndFrameRecover => [:ImGuiErrorLogCallback, :pointer],
+      :igErrorCheckEndWindowRecover => [:ImGuiErrorLogCallback, :pointer],
+      :igFindBestWindowPosForPopup => [:pointer, :pointer],
+      :igFindBestWindowPosForPopupEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :pointer, ImRect.by_value, ImRect.by_value, :int],
+      :igFindBottomMostVisibleWindowWithinBeginStack => [:pointer],
+      :igFindHoveredViewportFromPlatformWindowStack => [ImVec2.by_value],
+      :igFindOrCreateColumns => [:pointer, :uint],
+      :igFindOrCreateWindowSettings => [:pointer],
+      :igFindRenderedTextEnd => [:pointer, :pointer],
+      :igFindSettingsHandler => [:pointer],
+      :igFindViewportByID => [:uint],
+      :igFindViewportByPlatformHandle => [:pointer],
+      :igFindWindowByID => [:uint],
+      :igFindWindowByName => [:pointer],
+      :igFindWindowDisplayIndex => [:pointer],
+      :igFindWindowSettings => [:uint],
+      :igFocusTopMostWindowUnderOne => [:pointer, :pointer],
+      :igFocusWindow => [:pointer],
+      :igGcAwakeTransientWindowBuffers => [:pointer],
+      :igGcCompactTransientMiscBuffers => [],
+      :igGcCompactTransientWindowBuffers => [:pointer],
+      :igGetActiveID => [],
       :igGetAllocatorFunctions => [:pointer, :pointer, :pointer],
-      :igGetBackgroundDrawList => [],
+      :igGetBackgroundDrawList_Nil => [],
+      :igGetBackgroundDrawList_ViewportPtr => [:pointer],
       :igGetClipboardText => [],
       :igGetColorU32_Col => [:int, :float],
       :igGetColorU32_Vec4 => [ImVec4.by_value],
       :igGetColorU32_U32 => [:uint],
       :igGetColumnIndex => [],
+      :igGetColumnNormFromOffset => [:pointer, :float],
       :igGetColumnOffset => [:int],
+      :igGetColumnOffsetFromNorm => [:pointer, :float],
       :igGetColumnWidth => [:int],
       :igGetColumnsCount => [],
+      :igGetColumnsID => [:pointer, :int],
       :igGetContentRegionAvail => [:pointer],
       :igGetContentRegionMax => [:pointer],
+      :igGetContentRegionMaxAbs => [:pointer],
       :igGetCurrentContext => [],
+      :igGetCurrentTable => [],
+      :igGetCurrentWindow => [],
+      :igGetCurrentWindowRead => [],
       :igGetCursorPos => [:pointer],
       :igGetCursorPosX => [],
       :igGetCursorPosY => [],
       :igGetCursorScreenPos => [:pointer],
       :igGetCursorStartPos => [:pointer],
+      :igGetDefaultFont => [],
       :igGetDragDropPayload => [],
       :igGetDrawData => [],
       :igGetDrawListSharedData => [],
+      :igGetFocusID => [],
+      :igGetFocusScope => [],
+      :igGetFocusedFocusScope => [],
       :igGetFont => [],
       :igGetFontSize => [],
       :igGetFontTexUvWhitePixel => [:pointer],
-      :igGetForegroundDrawList => [],
+      :igGetForegroundDrawList_Nil => [],
+      :igGetForegroundDrawList_ViewportPtr => [:pointer],
+      :igGetForegroundDrawList_WindowPtr => [:pointer],
       :igGetFrameCount => [],
       :igGetFrameHeight => [],
       :igGetFrameHeightWithSpacing => [],
+      :igGetHoveredID => [],
       :igGetID_Str => [:pointer],
       :igGetID_StrStr => [:pointer, :pointer],
       :igGetID_Ptr => [:pointer],
+      :igGetIDWithSeed => [:pointer, :pointer, :uint],
       :igGetIO => [],
+      :igGetInputTextState => [:uint],
+      :igGetItemFlags => [],
+      :igGetItemID => [],
       :igGetItemRectMax => [:pointer],
       :igGetItemRectMin => [:pointer],
       :igGetItemRectSize => [:pointer],
+      :igGetItemStatusFlags => [],
+      :igGetKeyData => [:int],
       :igGetKeyIndex => [:int],
       :igGetKeyName => [:int],
       :igGetKeyPressedAmount => [:int, :float, :float],
       :igGetMainViewport => [],
+      :igGetMergedKeyModFlags => [],
       :igGetMouseClickedCount => [:int],
       :igGetMouseCursor => [],
       :igGetMouseDragDelta => [:pointer, :int, :float],
       :igGetMousePos => [:pointer],
       :igGetMousePosOnOpeningCurrentPopup => [:pointer],
+      :igGetNavInputAmount => [:int, :int],
+      :igGetNavInputAmount2d => [:pointer, :int, :int, :float, :float],
+      :igGetNavInputName => [:int],
+      :igGetPlatformIO => [],
+      :igGetPopupAllowedExtentRect => [:pointer, :pointer],
       :igGetScrollMaxX => [],
       :igGetScrollMaxY => [],
       :igGetScrollX => [],
@@ -2497,18 +4802,125 @@ module ImGui
       :igGetTextLineHeight => [],
       :igGetTextLineHeightWithSpacing => [],
       :igGetTime => [],
+      :igGetTopMostAndVisiblePopupModal => [],
+      :igGetTopMostPopupModal => [],
       :igGetTreeNodeToLabelSpacing => [],
       :igGetVersion => [],
+      :igGetViewportPlatformMonitor => [:pointer],
+      :igGetWindowAlwaysWantOwnTabBar => [:pointer],
       :igGetWindowContentRegionMax => [:pointer],
       :igGetWindowContentRegionMin => [:pointer],
+      :igGetWindowDockID => [],
+      :igGetWindowDockNode => [],
+      :igGetWindowDpiScale => [],
       :igGetWindowDrawList => [],
       :igGetWindowHeight => [],
       :igGetWindowPos => [:pointer],
+      :igGetWindowResizeBorderID => [:pointer, :int],
+      :igGetWindowResizeCornerID => [:pointer, :int],
+      :igGetWindowScrollbarID => [:pointer, :int],
+      :igGetWindowScrollbarRect => [:pointer, :pointer, :int],
       :igGetWindowSize => [:pointer],
+      :igGetWindowViewport => [],
       :igGetWindowWidth => [],
+      :igImAbs_Int => [:int],
+      :igImAbs_Float => [:float],
+      :igImAbs_double => [:double],
+      :igImAlphaBlendColors => [:uint, :uint],
+      :igImBezierCubicCalc => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :float],
+      :igImBezierCubicClosestPoint => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int],
+      :igImBezierCubicClosestPointCasteljau => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :float],
+      :igImBezierQuadraticCalc => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :float],
+      :igImBitArrayClearBit => [:pointer, :int],
+      :igImBitArraySetBit => [:pointer, :int],
+      :igImBitArraySetBitRange => [:pointer, :int, :int],
+      :igImBitArrayTestBit => [:pointer, :int],
+      :igImCharIsBlankA => [:char],
+      :igImCharIsBlankW => [:uint],
+      :igImClamp => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value],
+      :igImDot => [ImVec2.by_value, ImVec2.by_value],
+      :igImFileClose => [:pointer],
+      :igImFileGetSize => [:pointer],
+      :igImFileLoadToMemory => [:pointer, :pointer, :pointer, :int],
+      :igImFileOpen => [:pointer, :pointer],
+      :igImFileRead => [:pointer, :uint64, :uint64, :pointer],
+      :igImFileWrite => [:pointer, :uint64, :uint64, :pointer],
+      :igImFloor_Float => [:float],
+      :igImFloor_Vec2 => [:pointer, ImVec2.by_value],
+      :igImFloorSigned_Float => [:float],
+      :igImFloorSigned_Vec2 => [:pointer, ImVec2.by_value],
+      :igImFontAtlasBuildFinish => [:pointer],
+      :igImFontAtlasBuildInit => [:pointer],
+      :igImFontAtlasBuildMultiplyCalcLookupTable => [:pointer, :float],
+      :igImFontAtlasBuildMultiplyRectAlpha8 => [:pointer, :pointer, :int, :int, :int, :int, :int],
+      :igImFontAtlasBuildPackCustomRects => [:pointer, :pointer],
+      :igImFontAtlasBuildRender32bppRectFromString => [:pointer, :int, :int, :int, :int, :pointer, :char, :uint],
+      :igImFontAtlasBuildRender8bppRectFromString => [:pointer, :int, :int, :int, :int, :pointer, :char, :uchar],
+      :igImFontAtlasBuildSetupFont => [:pointer, :pointer, :pointer, :float, :float],
+      :igImFontAtlasGetBuilderForStbTruetype => [],
+      :igImFormatString => [:pointer, :size_t, :pointer, :varargs],
+      :igImGetDirQuadrantFromDelta => [:float, :float],
+      :igImHashData => [:pointer, :size_t, :uint],
+      :igImHashStr => [:pointer, :size_t, :uint],
+      :igImInvLength => [ImVec2.by_value, :float],
+      :igImIsFloatAboveGuaranteedIntegerPrecision => [:float],
+      :igImIsPowerOfTwo_Int => [:int],
+      :igImIsPowerOfTwo_U64 => [:uint64],
+      :igImLengthSqr_Vec2 => [ImVec2.by_value],
+      :igImLengthSqr_Vec4 => [ImVec4.by_value],
+      :igImLerp_Vec2Float => [:pointer, ImVec2.by_value, ImVec2.by_value, :float],
+      :igImLerp_Vec2Vec2 => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value],
+      :igImLerp_Vec4 => [:pointer, ImVec4.by_value, ImVec4.by_value, :float],
+      :igImLineClosestPoint => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value],
+      :igImLinearSweep => [:float, :float, :float],
+      :igImLog_Float => [:float],
+      :igImLog_double => [:double],
+      :igImMax => [:pointer, ImVec2.by_value, ImVec2.by_value],
+      :igImMin => [:pointer, ImVec2.by_value, ImVec2.by_value],
+      :igImModPositive => [:int, :int],
+      :igImMul => [:pointer, ImVec2.by_value, ImVec2.by_value],
+      :igImParseFormatFindEnd => [:pointer],
+      :igImParseFormatFindStart => [:pointer],
+      :igImParseFormatPrecision => [:pointer, :int],
+      :igImParseFormatTrimDecorations => [:pointer, :pointer, :size_t],
+      :igImPow_Float => [:float, :float],
+      :igImPow_double => [:double, :double],
+      :igImQsort => [:pointer, :size_t, :size_t, :pointer],
+      :igImRotate => [:pointer, ImVec2.by_value, :float, :float],
+      :igImRsqrt_Float => [:float],
+      :igImRsqrt_double => [:double],
+      :igImSaturate => [:float],
+      :igImSign_Float => [:float],
+      :igImSign_double => [:double],
+      :igImStrSkipBlank => [:pointer],
+      :igImStrTrimBlanks => [:pointer],
+      :igImStrbolW => [:pointer, :pointer],
+      :igImStrchrRange => [:pointer, :pointer, :char],
+      :igImStrdup => [:pointer],
+      :igImStrdupcpy => [:pointer, :pointer, :pointer],
+      :igImStreolRange => [:pointer, :pointer],
+      :igImStricmp => [:pointer, :pointer],
+      :igImStristr => [:pointer, :pointer, :pointer, :pointer],
+      :igImStrlenW => [:pointer],
+      :igImStrncpy => [:pointer, :pointer, :size_t],
+      :igImStrnicmp => [:pointer, :pointer, :size_t],
+      :igImTextCharFromUtf8 => [:pointer, :pointer, :pointer],
+      :igImTextCharToUtf8 => [:pointer, :uint],
+      :igImTextCountCharsFromUtf8 => [:pointer, :pointer],
+      :igImTextCountUtf8BytesFromChar => [:pointer, :pointer],
+      :igImTextCountUtf8BytesFromStr => [:pointer, :pointer],
+      :igImTextStrFromUtf8 => [:pointer, :int, :pointer, :pointer, :pointer],
+      :igImTextStrToUtf8 => [:pointer, :int, :pointer, :pointer],
+      :igImTriangleArea => [ImVec2.by_value, ImVec2.by_value, ImVec2.by_value],
+      :igImTriangleBarycentricCoords => [ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :pointer, :pointer, :pointer],
+      :igImTriangleClosestPoint => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value],
+      :igImTriangleContainsPoint => [ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value],
+      :igImUpperPowerOfTwo => [:int],
       :igImage => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value],
       :igImageButton => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int, ImVec4.by_value, ImVec4.by_value],
+      :igImageButtonEx => [:uint, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value],
       :igIndent => [:float],
+      :igInitialize => [:pointer],
       :igInputDouble => [:pointer, :pointer, :double, :double, :pointer, :int],
       :igInputFloat => [:pointer, :pointer, :float, :float, :pointer, :int],
       :igInputFloat2 => [:pointer, :pointer, :pointer, :int],
@@ -2521,13 +4933,20 @@ module ImGui
       :igInputScalar => [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :int],
       :igInputScalarN => [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int],
       :igInputText => [:pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer],
+      :igInputTextEx => [:pointer, :pointer, :pointer, :int, ImVec2.by_value, :int, :ImGuiInputTextCallback, :pointer],
       :igInputTextMultiline => [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :ImGuiInputTextCallback, :pointer],
       :igInputTextWithHint => [:pointer, :pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer],
       :igInvisibleButton => [:pointer, ImVec2.by_value, :int],
+      :igIsActiveIdUsingKey => [:int],
+      :igIsActiveIdUsingNavDir => [:int],
+      :igIsActiveIdUsingNavInput => [:int],
       :igIsAnyItemActive => [],
       :igIsAnyItemFocused => [],
       :igIsAnyItemHovered => [],
       :igIsAnyMouseDown => [],
+      :igIsClippedEx => [ImRect.by_value, :uint],
+      :igIsDragDropPayloadBeingAccepted => [],
+      :igIsGamepadKey => [:int],
       :igIsItemActivated => [],
       :igIsItemActive => [],
       :igIsItemClicked => [:int],
@@ -2537,45 +4956,82 @@ module ImGui
       :igIsItemFocused => [],
       :igIsItemHovered => [:int],
       :igIsItemToggledOpen => [],
+      :igIsItemToggledSelection => [],
       :igIsItemVisible => [],
       :igIsKeyDown => [:int],
       :igIsKeyPressed => [:int, :bool],
+      :igIsKeyPressedMap => [:int, :bool],
       :igIsKeyReleased => [:int],
+      :igIsLegacyKey => [:int],
       :igIsMouseClicked => [:int, :bool],
       :igIsMouseDoubleClicked => [:int],
       :igIsMouseDown => [:int],
+      :igIsMouseDragPastThreshold => [:int, :float],
       :igIsMouseDragging => [:int, :float],
       :igIsMouseHoveringRect => [ImVec2.by_value, ImVec2.by_value, :bool],
       :igIsMousePosValid => [:pointer],
       :igIsMouseReleased => [:int],
-      :igIsPopupOpen => [:pointer, :int],
+      :igIsNamedKey => [:int],
+      :igIsNavInputDown => [:int],
+      :igIsNavInputTest => [:int, :int],
+      :igIsPopupOpen_Str => [:pointer, :int],
+      :igIsPopupOpen_ID => [:uint, :int],
       :igIsRectVisible_Nil => [ImVec2.by_value],
       :igIsRectVisible_Vec2 => [ImVec2.by_value, ImVec2.by_value],
+      :igIsWindowAbove => [:pointer, :pointer],
       :igIsWindowAppearing => [],
+      :igIsWindowChildOf => [:pointer, :pointer, :bool, :bool],
       :igIsWindowCollapsed => [],
+      :igIsWindowDocked => [],
       :igIsWindowFocused => [:int],
       :igIsWindowHovered => [:int],
+      :igIsWindowNavFocusable => [:pointer],
+      :igIsWindowWithinBeginStackOf => [:pointer, :pointer],
+      :igItemAdd => [ImRect.by_value, :uint, :pointer, :int],
+      :igItemHoverable => [ImRect.by_value, :uint],
+      :igItemSize_Vec2 => [ImVec2.by_value, :float],
+      :igItemSize_Rect => [ImRect.by_value, :float],
+      :igKeepAliveID => [:uint],
       :igLabelText => [:pointer, :pointer, :varargs],
       :igListBox_Str_arr => [:pointer, :pointer, :pointer, :int, :int],
       :igListBox_FnBoolPtr => [:pointer, :pointer, :pointer, :pointer, :int, :int],
       :igLoadIniSettingsFromDisk => [:pointer],
       :igLoadIniSettingsFromMemory => [:pointer, :size_t],
+      :igLogBegin => [:int, :int],
       :igLogButtons => [],
       :igLogFinish => [],
+      :igLogRenderedText => [:pointer, :pointer, :pointer],
+      :igLogSetNextTextDecoration => [:pointer, :pointer],
       :igLogText => [:pointer, :varargs],
+      :igLogToBuffer => [:int],
       :igLogToClipboard => [:int],
       :igLogToFile => [:int, :pointer],
       :igLogToTTY => [:int],
+      :igMarkIniSettingsDirty_Nil => [],
+      :igMarkIniSettingsDirty_WindowPtr => [:pointer],
+      :igMarkItemEdited => [:uint],
       :igMemAlloc => [:size_t],
       :igMemFree => [:pointer],
       :igMenuItem_Bool => [:pointer, :pointer, :bool, :bool],
       :igMenuItem_BoolPtr => [:pointer, :pointer, :pointer, :bool],
+      :igMenuItemEx => [:pointer, :pointer, :pointer, :bool, :bool],
+      :igNavInitRequestApplyResult => [],
+      :igNavInitWindow => [:pointer, :bool],
+      :igNavMoveRequestApplyResult => [],
+      :igNavMoveRequestButNoResultYet => [],
+      :igNavMoveRequestCancel => [],
+      :igNavMoveRequestForward => [:int, :int, :int, :int],
+      :igNavMoveRequestResolveWithLastItem => [:pointer],
+      :igNavMoveRequestSubmit => [:int, :int, :int, :int],
+      :igNavMoveRequestTryWrapping => [:pointer, :int],
       :igNewFrame => [],
       :igNewLine => [],
       :igNextColumn => [],
       :igOpenPopup_Str => [:pointer, :int],
       :igOpenPopup_ID => [:uint, :int],
+      :igOpenPopupEx => [:uint, :int],
       :igOpenPopupOnItemClick => [:pointer, :int],
+      :igPlotEx => [:int, :pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
       :igPlotHistogram_FloatPtr => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
       :igPlotHistogram_FnFloatPtr => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
       :igPlotLines_FloatPtr => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
@@ -2583,8 +5039,11 @@ module ImGui
       :igPopAllowKeyboardFocus => [],
       :igPopButtonRepeat => [],
       :igPopClipRect => [],
+      :igPopColumnsBackground => [],
+      :igPopFocusScope => [],
       :igPopFont => [],
       :igPopID => [],
+      :igPopItemFlag => [],
       :igPopItemWidth => [],
       :igPopStyleColor => [:int],
       :igPopStyleVar => [:int],
@@ -2593,12 +5052,18 @@ module ImGui
       :igPushAllowKeyboardFocus => [:bool],
       :igPushButtonRepeat => [:bool],
       :igPushClipRect => [ImVec2.by_value, ImVec2.by_value, :bool],
+      :igPushColumnClipRect => [:int],
+      :igPushColumnsBackground => [],
+      :igPushFocusScope => [:uint],
       :igPushFont => [:pointer],
       :igPushID_Str => [:pointer],
       :igPushID_StrStr => [:pointer, :pointer],
       :igPushID_Ptr => [:pointer],
       :igPushID_Int => [:int],
+      :igPushItemFlag => [:int, :bool],
       :igPushItemWidth => [:float],
+      :igPushMultiItemsWidths => [:int, :float],
+      :igPushOverrideID => [:uint],
       :igPushStyleColor_U32 => [:int, :uint],
       :igPushStyleColor_Vec4 => [:int, ImVec4.by_value],
       :igPushStyleVar_Float => [:int, :float],
@@ -2606,65 +5071,122 @@ module ImGui
       :igPushTextWrapPos => [:float],
       :igRadioButton_Bool => [:pointer, :bool],
       :igRadioButton_IntPtr => [:pointer, :pointer, :int],
+      :igRemoveContextHook => [:pointer, :uint],
       :igRender => [],
+      :igRenderArrow => [:pointer, ImVec2.by_value, :uint, :int, :float],
+      :igRenderArrowDockMenu => [:pointer, ImVec2.by_value, :float, :uint],
+      :igRenderArrowPointingAt => [:pointer, ImVec2.by_value, ImVec2.by_value, :int, :uint],
+      :igRenderBullet => [:pointer, ImVec2.by_value, :uint],
+      :igRenderCheckMark => [:pointer, ImVec2.by_value, :uint, :float],
+      :igRenderColorRectWithAlphaCheckerboard => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, ImVec2.by_value, :float, :int],
+      :igRenderFrame => [ImVec2.by_value, ImVec2.by_value, :uint, :bool, :float],
+      :igRenderFrameBorder => [ImVec2.by_value, ImVec2.by_value, :float],
+      :igRenderMouseCursor => [:pointer, ImVec2.by_value, :float, :int, :uint, :uint, :uint],
+      :igRenderNavHighlight => [ImRect.by_value, :uint, :int],
+      :igRenderPlatformWindowsDefault => [:pointer, :pointer],
+      :igRenderRectFilledRangeH => [:pointer, ImRect.by_value, :uint, :float, :float, :float],
+      :igRenderRectFilledWithHole => [:pointer, ImRect.by_value, ImRect.by_value, :uint, :float],
+      :igRenderText => [ImVec2.by_value, :pointer, :pointer, :bool],
+      :igRenderTextClipped => [ImVec2.by_value, ImVec2.by_value, :pointer, :pointer, :pointer, ImVec2.by_value, :pointer],
+      :igRenderTextClippedEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :pointer, :pointer, :pointer, ImVec2.by_value, :pointer],
+      :igRenderTextEllipsis => [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :float, :pointer, :pointer, :pointer],
+      :igRenderTextWrapped => [ImVec2.by_value, :pointer, :pointer, :float],
       :igResetMouseDragDelta => [:int],
       :igSameLine => [:float, :float],
       :igSaveIniSettingsToDisk => [:pointer],
       :igSaveIniSettingsToMemory => [:pointer],
+      :igScaleWindowsInViewport => [:pointer, :float],
+      :igScrollToBringRectIntoView => [:pointer, ImRect.by_value],
+      :igScrollToItem => [:int],
+      :igScrollToRect => [:pointer, ImRect.by_value, :int],
+      :igScrollToRectEx => [:pointer, :pointer, ImRect.by_value, :int],
+      :igScrollbar => [:int],
+      :igScrollbarEx => [ImRect.by_value, :uint, :int, :pointer, :int64, :int64, :int],
       :igSelectable_Bool => [:pointer, :bool, :int, ImVec2.by_value],
       :igSelectable_BoolPtr => [:pointer, :pointer, :int, ImVec2.by_value],
       :igSeparator => [],
+      :igSeparatorEx => [:int],
+      :igSetActiveID => [:uint, :pointer],
+      :igSetActiveIdUsingKey => [:int],
+      :igSetActiveIdUsingNavAndKeys => [],
       :igSetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :igSetClipboardText => [:pointer],
       :igSetColorEditOptions => [:int],
       :igSetColumnOffset => [:int, :float],
       :igSetColumnWidth => [:int, :float],
       :igSetCurrentContext => [:pointer],
+      :igSetCurrentFont => [:pointer],
+      :igSetCurrentViewport => [:pointer, :pointer],
       :igSetCursorPos => [ImVec2.by_value],
       :igSetCursorPosX => [:float],
       :igSetCursorPosY => [:float],
       :igSetCursorScreenPos => [ImVec2.by_value],
       :igSetDragDropPayload => [:pointer, :pointer, :size_t, :int],
+      :igSetFocusID => [:uint, :pointer],
+      :igSetHoveredID => [:uint],
       :igSetItemAllowOverlap => [],
       :igSetItemDefaultFocus => [],
+      :igSetItemUsingMouseWheel => [],
       :igSetKeyboardFocusHere => [:int],
+      :igSetLastItemData => [:uint, :int, :int, ImRect.by_value],
       :igSetMouseCursor => [:int],
+      :igSetNavID => [:uint, :int, :uint, ImRect.by_value],
       :igSetNextItemOpen => [:bool, :int],
       :igSetNextItemWidth => [:float],
       :igSetNextWindowBgAlpha => [:float],
+      :igSetNextWindowClass => [:pointer],
       :igSetNextWindowCollapsed => [:bool, :int],
       :igSetNextWindowContentSize => [ImVec2.by_value],
+      :igSetNextWindowDockID => [:uint, :int],
       :igSetNextWindowFocus => [],
       :igSetNextWindowPos => [ImVec2.by_value, :int, ImVec2.by_value],
+      :igSetNextWindowScroll => [ImVec2.by_value],
       :igSetNextWindowSize => [ImVec2.by_value, :int],
       :igSetNextWindowSizeConstraints => [ImVec2.by_value, ImVec2.by_value, :ImGuiSizeCallback, :pointer],
-      :igSetScrollFromPosX => [:float, :float],
-      :igSetScrollFromPosY => [:float, :float],
+      :igSetNextWindowViewport => [:uint],
+      :igSetScrollFromPosX_Float => [:float, :float],
+      :igSetScrollFromPosX_WindowPtr => [:pointer, :float, :float],
+      :igSetScrollFromPosY_Float => [:float, :float],
+      :igSetScrollFromPosY_WindowPtr => [:pointer, :float, :float],
       :igSetScrollHereX => [:float],
       :igSetScrollHereY => [:float],
-      :igSetScrollX => [:float],
-      :igSetScrollY => [:float],
+      :igSetScrollX_Float => [:float],
+      :igSetScrollX_WindowPtr => [:pointer, :float],
+      :igSetScrollY_Float => [:float],
+      :igSetScrollY_WindowPtr => [:pointer, :float],
       :igSetStateStorage => [:pointer],
       :igSetTabItemClosed => [:pointer],
       :igSetTooltip => [:pointer, :varargs],
+      :igSetWindowClipRectBeforeSetChannel => [:pointer, ImRect.by_value],
       :igSetWindowCollapsed_Bool => [:bool, :int],
       :igSetWindowCollapsed_Str => [:pointer, :bool, :int],
+      :igSetWindowCollapsed_WindowPtr => [:pointer, :bool, :int],
+      :igSetWindowDock => [:pointer, :uint, :int],
       :igSetWindowFocus_Nil => [],
       :igSetWindowFocus_Str => [:pointer],
       :igSetWindowFontScale => [:float],
+      :igSetWindowHitTestHole => [:pointer, ImVec2.by_value, ImVec2.by_value],
       :igSetWindowPos_Vec2 => [ImVec2.by_value, :int],
       :igSetWindowPos_Str => [:pointer, ImVec2.by_value, :int],
+      :igSetWindowPos_WindowPtr => [:pointer, ImVec2.by_value, :int],
       :igSetWindowSize_Vec2 => [ImVec2.by_value, :int],
       :igSetWindowSize_Str => [:pointer, ImVec2.by_value, :int],
+      :igSetWindowSize_WindowPtr => [:pointer, ImVec2.by_value, :int],
+      :igShadeVertsLinearColorGradientKeepAlpha => [:pointer, :int, :int, ImVec2.by_value, ImVec2.by_value, :uint, :uint],
+      :igShadeVertsLinearUV => [:pointer, :int, :int, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :bool],
       :igShowAboutWindow => [:pointer],
       :igShowDemoWindow => [:pointer],
+      :igShowFontAtlas => [:pointer],
       :igShowFontSelector => [:pointer],
       :igShowMetricsWindow => [:pointer],
       :igShowStackToolWindow => [:pointer],
       :igShowStyleEditor => [:pointer],
       :igShowStyleSelector => [:pointer],
       :igShowUserGuide => [],
+      :igShrinkWidths => [:pointer, :int, :float],
+      :igShutdown => [:pointer],
       :igSliderAngle => [:pointer, :pointer, :float, :float, :pointer, :int],
+      :igSliderBehavior => [ImRect.by_value, :uint, :int, :pointer, :pointer, :pointer, :pointer, :int, :pointer],
       :igSliderFloat => [:pointer, :pointer, :float, :float, :pointer, :int],
       :igSliderFloat2 => [:pointer, :pointer, :float, :float, :pointer, :int],
       :igSliderFloat3 => [:pointer, :pointer, :float, :float, :pointer, :int],
@@ -2677,40 +5199,112 @@ module ImGui
       :igSliderScalarN => [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int],
       :igSmallButton => [:pointer],
       :igSpacing => [],
+      :igSplitterBehavior => [ImRect.by_value, :uint, :int, :pointer, :pointer, :float, :float, :float, :float, :uint],
+      :igStartMouseMovingWindow => [:pointer],
+      :igStartMouseMovingWindowOrNode => [:pointer, :pointer, :bool],
       :igStyleColorsClassic => [:pointer],
       :igStyleColorsDark => [:pointer],
       :igStyleColorsLight => [:pointer],
+      :igTabBarAddTab => [:pointer, :int, :pointer],
+      :igTabBarCloseTab => [:pointer, :pointer],
+      :igTabBarFindMostRecentlySelectedTabForActiveWindow => [:pointer],
+      :igTabBarFindTabByID => [:pointer, :uint],
+      :igTabBarProcessReorder => [:pointer],
+      :igTabBarQueueReorder => [:pointer, :pointer, :int],
+      :igTabBarQueueReorderFromMousePos => [:pointer, :pointer, ImVec2.by_value],
+      :igTabBarRemoveTab => [:pointer, :uint],
+      :igTabItemBackground => [:pointer, ImRect.by_value, :int, :uint],
       :igTabItemButton => [:pointer, :int],
+      :igTabItemCalcSize => [:pointer, :pointer, :bool],
+      :igTabItemEx => [:pointer, :pointer, :pointer, :int, :pointer],
+      :igTabItemLabelAndCloseButton => [:pointer, ImRect.by_value, :int, ImVec2.by_value, :pointer, :uint, :uint, :bool, :pointer, :pointer],
+      :igTableBeginApplyRequests => [:pointer],
+      :igTableBeginCell => [:pointer, :int],
+      :igTableBeginInitMemory => [:pointer, :int],
+      :igTableBeginRow => [:pointer],
+      :igTableDrawBorders => [:pointer],
+      :igTableDrawContextMenu => [:pointer],
+      :igTableEndCell => [:pointer],
+      :igTableEndRow => [:pointer],
+      :igTableFindByID => [:uint],
+      :igTableFixColumnSortDirection => [:pointer, :pointer],
+      :igTableGcCompactSettings => [],
+      :igTableGcCompactTransientBuffers_TablePtr => [:pointer],
+      :igTableGcCompactTransientBuffers_TableTempDataPtr => [:pointer],
+      :igTableGetBoundSettings => [:pointer],
+      :igTableGetCellBgRect => [:pointer, :pointer, :int],
       :igTableGetColumnCount => [],
       :igTableGetColumnFlags => [:int],
       :igTableGetColumnIndex => [],
-      :igTableGetColumnName => [:int],
+      :igTableGetColumnName_Int => [:int],
+      :igTableGetColumnName_TablePtr => [:pointer, :int],
+      :igTableGetColumnNextSortDirection => [:pointer],
+      :igTableGetColumnResizeID => [:pointer, :int, :int],
+      :igTableGetColumnWidthAuto => [:pointer, :pointer],
+      :igTableGetHeaderRowHeight => [],
+      :igTableGetHoveredColumn => [],
+      :igTableGetMaxColumnWidth => [:pointer, :int],
       :igTableGetRowIndex => [],
       :igTableGetSortSpecs => [],
       :igTableHeader => [:pointer],
       :igTableHeadersRow => [],
+      :igTableLoadSettings => [:pointer],
+      :igTableMergeDrawChannels => [:pointer],
       :igTableNextColumn => [],
       :igTableNextRow => [:int, :float],
+      :igTableOpenContextMenu => [:int],
+      :igTablePopBackgroundChannel => [],
+      :igTablePushBackgroundChannel => [],
+      :igTableRemove => [:pointer],
+      :igTableResetSettings => [:pointer],
+      :igTableSaveSettings => [:pointer],
       :igTableSetBgColor => [:int, :uint, :int],
       :igTableSetColumnEnabled => [:int, :bool],
       :igTableSetColumnIndex => [:int],
+      :igTableSetColumnSortDirection => [:int, :int, :bool],
+      :igTableSetColumnWidth => [:int, :float],
+      :igTableSetColumnWidthAutoAll => [:pointer],
+      :igTableSetColumnWidthAutoSingle => [:pointer, :int],
+      :igTableSettingsCreate => [:uint, :int],
+      :igTableSettingsFindByID => [:uint],
+      :igTableSettingsInstallHandler => [:pointer],
       :igTableSetupColumn => [:pointer, :int, :float, :uint],
+      :igTableSetupDrawChannels => [:pointer],
       :igTableSetupScrollFreeze => [:int, :int],
+      :igTableSortSpecsBuild => [:pointer],
+      :igTableSortSpecsSanitize => [:pointer],
+      :igTableUpdateBorders => [:pointer],
+      :igTableUpdateColumnsWeightFromWidth => [:pointer],
+      :igTableUpdateLayout => [:pointer],
+      :igTempInputIsActive => [:uint],
+      :igTempInputScalar => [ImRect.by_value, :uint, :pointer, :int, :pointer, :pointer, :pointer, :pointer],
+      :igTempInputText => [ImRect.by_value, :uint, :pointer, :pointer, :int, :int],
       :igText => [:pointer, :varargs],
       :igTextColored => [ImVec4.by_value, :pointer, :varargs],
       :igTextDisabled => [:pointer, :varargs],
+      :igTextEx => [:pointer, :pointer, :int],
       :igTextUnformatted => [:pointer, :pointer],
       :igTextWrapped => [:pointer, :varargs],
+      :igTranslateWindowsInViewport => [:pointer, ImVec2.by_value, ImVec2.by_value],
       :igTreeNode_Str => [:pointer],
       :igTreeNode_StrStr => [:pointer, :pointer, :varargs],
       :igTreeNode_Ptr => [:pointer, :pointer, :varargs],
+      :igTreeNodeBehavior => [:uint, :int, :pointer, :pointer],
+      :igTreeNodeBehaviorIsOpen => [:uint, :int],
       :igTreeNodeEx_Str => [:pointer, :int],
       :igTreeNodeEx_StrStr => [:pointer, :int, :pointer, :varargs],
       :igTreeNodeEx_Ptr => [:pointer, :int, :pointer, :varargs],
       :igTreePop => [],
       :igTreePush_Str => [:pointer],
       :igTreePush_Ptr => [:pointer],
+      :igTreePushOverrideID => [:uint],
       :igUnindent => [:float],
+      :igUpdateHoveredWindowAndCaptureFlags => [],
+      :igUpdateInputEvents => [:bool],
+      :igUpdateMouseMovingWindowEndFrame => [],
+      :igUpdateMouseMovingWindowNewFrame => [],
+      :igUpdatePlatformWindows => [],
+      :igUpdateWindowParentAndRootLinks => [:pointer, :int, :pointer],
       :igVSliderFloat => [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :int],
       :igVSliderInt => [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer, :int],
       :igVSliderScalar => [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :int],
@@ -2718,6 +5312,8 @@ module ImGui
       :igValue_Int => [:pointer, :int],
       :igValue_Uint => [:pointer, :uint],
       :igValue_Float => [:pointer, :float, :pointer],
+      :igWindowRectAbsToRel => [:pointer, :pointer, ImRect.by_value],
+      :igWindowRectRelToAbs => [:pointer, :pointer, ImRect.by_value],
     }
 
     retvals = {
@@ -2834,6 +5430,7 @@ module ImGui
       :ImGuiIO_AddKeyEvent => :void,
       :ImGuiIO_AddMouseButtonEvent => :void,
       :ImGuiIO_AddMousePosEvent => :void,
+      :ImGuiIO_AddMouseViewportEvent => :void,
       :ImGuiIO_AddMouseWheelEvent => :void,
       :ImGuiIO_ClearInputCharacters => :void,
       :ImGuiIO_ClearInputKeys => :void,
@@ -2856,41 +5453,80 @@ module ImGui
       :ImGuiTextRange_empty => :bool,
       :ImGuiTextRange_split => :void,
       :igAcceptDragDropPayload => :pointer,
+      :igActivateItem => :void,
+      :igAddContextHook => :uint,
       :igAlignTextToFramePadding => :void,
       :igArrowButton => :bool,
+      :igArrowButtonEx => :bool,
       :igBegin => :bool,
       :igBeginChild_Str => :bool,
       :igBeginChild_ID => :bool,
+      :igBeginChildEx => :bool,
       :igBeginChildFrame => :bool,
+      :igBeginColumns => :void,
       :igBeginCombo => :bool,
+      :igBeginComboPopup => :bool,
+      :igBeginComboPreview => :bool,
       :igBeginDisabled => :void,
+      :igBeginDockableDragDropSource => :void,
+      :igBeginDockableDragDropTarget => :void,
+      :igBeginDocked => :void,
       :igBeginDragDropSource => :bool,
       :igBeginDragDropTarget => :bool,
+      :igBeginDragDropTargetCustom => :bool,
       :igBeginGroup => :void,
       :igBeginListBox => :bool,
       :igBeginMainMenuBar => :bool,
       :igBeginMenu => :bool,
       :igBeginMenuBar => :bool,
+      :igBeginMenuEx => :bool,
       :igBeginPopup => :bool,
       :igBeginPopupContextItem => :bool,
       :igBeginPopupContextVoid => :bool,
       :igBeginPopupContextWindow => :bool,
+      :igBeginPopupEx => :bool,
       :igBeginPopupModal => :bool,
       :igBeginTabBar => :bool,
+      :igBeginTabBarEx => :bool,
       :igBeginTabItem => :bool,
       :igBeginTable => :bool,
+      :igBeginTableEx => :bool,
       :igBeginTooltip => :void,
+      :igBeginTooltipEx => :void,
+      :igBeginViewportSideBar => :bool,
+      :igBringWindowToDisplayBack => :void,
+      :igBringWindowToDisplayBehind => :void,
+      :igBringWindowToDisplayFront => :void,
+      :igBringWindowToFocusFront => :void,
       :igBullet => :void,
       :igBulletText => :void,
       :igButton => :bool,
+      :igButtonBehavior => :bool,
+      :igButtonEx => :bool,
+      :igCalcItemSize => :void,
       :igCalcItemWidth => :float,
+      :igCalcRoundingFlagsForRectInRect => :int,
       :igCalcTextSize => :void,
+      :igCalcTypematicRepeatAmount => :int,
+      :igCalcWindowNextAutoFitSize => :void,
+      :igCalcWrapWidthForPos => :float,
+      :igCallContextHooks => :void,
       :igCaptureKeyboardFromApp => :void,
       :igCaptureMouseFromApp => :void,
       :igCheckbox => :bool,
       :igCheckboxFlags_IntPtr => :bool,
       :igCheckboxFlags_UintPtr => :bool,
+      :igCheckboxFlags_S64Ptr => :bool,
+      :igCheckboxFlags_U64Ptr => :bool,
+      :igClearActiveID => :void,
+      :igClearDragDrop => :void,
+      :igClearIniSettings => :void,
+      :igCloseButton => :bool,
       :igCloseCurrentPopup => :void,
+      :igClosePopupToLevel => :void,
+      :igClosePopupsExceptModals => :void,
+      :igClosePopupsOverWindow => :void,
+      :igCollapseButton => :bool,
       :igCollapsingHeader_TreeNodeFlags => :bool,
       :igCollapsingHeader_BoolPtr => :bool,
       :igColorButton => :bool,
@@ -2900,15 +5536,80 @@ module ImGui
       :igColorConvertU32ToFloat4 => :void,
       :igColorEdit3 => :bool,
       :igColorEdit4 => :bool,
+      :igColorEditOptionsPopup => :void,
       :igColorPicker3 => :bool,
       :igColorPicker4 => :bool,
+      :igColorPickerOptionsPopup => :void,
+      :igColorTooltip => :void,
       :igColumns => :void,
       :igCombo_Str_arr => :bool,
       :igCombo_Str => :bool,
       :igCombo_FnBoolPtr => :bool,
       :igCreateContext => :pointer,
+      :igCreateNewWindowSettings => :pointer,
+      :igDataTypeApplyFromText => :bool,
+      :igDataTypeApplyOp => :void,
+      :igDataTypeClamp => :bool,
+      :igDataTypeCompare => :int,
+      :igDataTypeFormatString => :int,
+      :igDataTypeGetInfo => :pointer,
       :igDebugCheckVersionAndDataLayout => :bool,
+      :igDebugDrawItemRect => :void,
+      :igDebugHookIdInfo => :void,
+      :igDebugNodeColumns => :void,
+      :igDebugNodeDockNode => :void,
+      :igDebugNodeDrawCmdShowMeshAndBoundingBox => :void,
+      :igDebugNodeDrawList => :void,
+      :igDebugNodeFont => :void,
+      :igDebugNodeStorage => :void,
+      :igDebugNodeTabBar => :void,
+      :igDebugNodeTable => :void,
+      :igDebugNodeTableSettings => :void,
+      :igDebugNodeViewport => :void,
+      :igDebugNodeWindow => :void,
+      :igDebugNodeWindowSettings => :void,
+      :igDebugNodeWindowsList => :void,
+      :igDebugNodeWindowsListByBeginStackParent => :void,
+      :igDebugRenderViewportThumbnail => :void,
+      :igDebugStartItemPicker => :void,
       :igDestroyContext => :void,
+      :igDestroyPlatformWindow => :void,
+      :igDestroyPlatformWindows => :void,
+      :igDockBuilderAddNode => :uint,
+      :igDockBuilderCopyDockSpace => :void,
+      :igDockBuilderCopyNode => :void,
+      :igDockBuilderCopyWindowSettings => :void,
+      :igDockBuilderDockWindow => :void,
+      :igDockBuilderFinish => :void,
+      :igDockBuilderGetCentralNode => :pointer,
+      :igDockBuilderGetNode => :pointer,
+      :igDockBuilderRemoveNode => :void,
+      :igDockBuilderRemoveNodeChildNodes => :void,
+      :igDockBuilderRemoveNodeDockedWindows => :void,
+      :igDockBuilderSetNodePos => :void,
+      :igDockBuilderSetNodeSize => :void,
+      :igDockBuilderSplitNode => :uint,
+      :igDockContextCalcDropPosForDocking => :bool,
+      :igDockContextClearNodes => :void,
+      :igDockContextEndFrame => :void,
+      :igDockContextGenNodeID => :uint,
+      :igDockContextInitialize => :void,
+      :igDockContextNewFrameUpdateDocking => :void,
+      :igDockContextNewFrameUpdateUndocking => :void,
+      :igDockContextQueueDock => :void,
+      :igDockContextQueueUndockNode => :void,
+      :igDockContextQueueUndockWindow => :void,
+      :igDockContextRebuildNodes => :void,
+      :igDockContextShutdown => :void,
+      :igDockNodeBeginAmendTabBar => :bool,
+      :igDockNodeEndAmendTabBar => :void,
+      :igDockNodeGetDepth => :int,
+      :igDockNodeGetRootNode => :pointer,
+      :igDockNodeGetWindowMenuButtonId => :uint,
+      :igDockNodeIsInHierarchyOf => :bool,
+      :igDockSpace => :uint,
+      :igDockSpaceOverViewport => :uint,
+      :igDragBehavior => :bool,
       :igDragFloat => :bool,
       :igDragFloat2 => :bool,
       :igDragFloat3 => :bool,
@@ -2925,7 +5626,9 @@ module ImGui
       :igEnd => :void,
       :igEndChild => :void,
       :igEndChildFrame => :void,
+      :igEndColumns => :void,
       :igEndCombo => :void,
+      :igEndComboPreview => :void,
       :igEndDisabled => :void,
       :igEndDragDropSource => :void,
       :igEndDragDropTarget => :void,
@@ -2940,50 +5643,99 @@ module ImGui
       :igEndTabItem => :void,
       :igEndTable => :void,
       :igEndTooltip => :void,
+      :igErrorCheckEndFrameRecover => :void,
+      :igErrorCheckEndWindowRecover => :void,
+      :igFindBestWindowPosForPopup => :void,
+      :igFindBestWindowPosForPopupEx => :void,
+      :igFindBottomMostVisibleWindowWithinBeginStack => :pointer,
+      :igFindHoveredViewportFromPlatformWindowStack => :pointer,
+      :igFindOrCreateColumns => :pointer,
+      :igFindOrCreateWindowSettings => :pointer,
+      :igFindRenderedTextEnd => :pointer,
+      :igFindSettingsHandler => :pointer,
+      :igFindViewportByID => :pointer,
+      :igFindViewportByPlatformHandle => :pointer,
+      :igFindWindowByID => :pointer,
+      :igFindWindowByName => :pointer,
+      :igFindWindowDisplayIndex => :int,
+      :igFindWindowSettings => :pointer,
+      :igFocusTopMostWindowUnderOne => :void,
+      :igFocusWindow => :void,
+      :igGcAwakeTransientWindowBuffers => :void,
+      :igGcCompactTransientMiscBuffers => :void,
+      :igGcCompactTransientWindowBuffers => :void,
+      :igGetActiveID => :uint,
       :igGetAllocatorFunctions => :void,
-      :igGetBackgroundDrawList => :pointer,
+      :igGetBackgroundDrawList_Nil => :pointer,
+      :igGetBackgroundDrawList_ViewportPtr => :pointer,
       :igGetClipboardText => :pointer,
       :igGetColorU32_Col => :uint,
       :igGetColorU32_Vec4 => :uint,
       :igGetColorU32_U32 => :uint,
       :igGetColumnIndex => :int,
+      :igGetColumnNormFromOffset => :float,
       :igGetColumnOffset => :float,
+      :igGetColumnOffsetFromNorm => :float,
       :igGetColumnWidth => :float,
       :igGetColumnsCount => :int,
+      :igGetColumnsID => :uint,
       :igGetContentRegionAvail => :void,
       :igGetContentRegionMax => :void,
+      :igGetContentRegionMaxAbs => :void,
       :igGetCurrentContext => :pointer,
+      :igGetCurrentTable => :pointer,
+      :igGetCurrentWindow => :pointer,
+      :igGetCurrentWindowRead => :pointer,
       :igGetCursorPos => :void,
       :igGetCursorPosX => :float,
       :igGetCursorPosY => :float,
       :igGetCursorScreenPos => :void,
       :igGetCursorStartPos => :void,
+      :igGetDefaultFont => :pointer,
       :igGetDragDropPayload => :pointer,
       :igGetDrawData => :pointer,
       :igGetDrawListSharedData => :pointer,
+      :igGetFocusID => :uint,
+      :igGetFocusScope => :uint,
+      :igGetFocusedFocusScope => :uint,
       :igGetFont => :pointer,
       :igGetFontSize => :float,
       :igGetFontTexUvWhitePixel => :void,
-      :igGetForegroundDrawList => :pointer,
+      :igGetForegroundDrawList_Nil => :pointer,
+      :igGetForegroundDrawList_ViewportPtr => :pointer,
+      :igGetForegroundDrawList_WindowPtr => :pointer,
       :igGetFrameCount => :int,
       :igGetFrameHeight => :float,
       :igGetFrameHeightWithSpacing => :float,
+      :igGetHoveredID => :uint,
       :igGetID_Str => :uint,
       :igGetID_StrStr => :uint,
       :igGetID_Ptr => :uint,
+      :igGetIDWithSeed => :uint,
       :igGetIO => :pointer,
+      :igGetInputTextState => :pointer,
+      :igGetItemFlags => :int,
+      :igGetItemID => :uint,
       :igGetItemRectMax => :void,
       :igGetItemRectMin => :void,
       :igGetItemRectSize => :void,
+      :igGetItemStatusFlags => :int,
+      :igGetKeyData => :pointer,
       :igGetKeyIndex => :int,
       :igGetKeyName => :pointer,
       :igGetKeyPressedAmount => :int,
       :igGetMainViewport => :pointer,
+      :igGetMergedKeyModFlags => :int,
       :igGetMouseClickedCount => :int,
       :igGetMouseCursor => :int,
       :igGetMouseDragDelta => :void,
       :igGetMousePos => :void,
       :igGetMousePosOnOpeningCurrentPopup => :void,
+      :igGetNavInputAmount => :float,
+      :igGetNavInputAmount2d => :void,
+      :igGetNavInputName => :pointer,
+      :igGetPlatformIO => :pointer,
+      :igGetPopupAllowedExtentRect => :void,
       :igGetScrollMaxX => :float,
       :igGetScrollMaxY => :float,
       :igGetScrollX => :float,
@@ -2995,18 +5747,125 @@ module ImGui
       :igGetTextLineHeight => :float,
       :igGetTextLineHeightWithSpacing => :float,
       :igGetTime => :double,
+      :igGetTopMostAndVisiblePopupModal => :pointer,
+      :igGetTopMostPopupModal => :pointer,
       :igGetTreeNodeToLabelSpacing => :float,
       :igGetVersion => :pointer,
+      :igGetViewportPlatformMonitor => :pointer,
+      :igGetWindowAlwaysWantOwnTabBar => :bool,
       :igGetWindowContentRegionMax => :void,
       :igGetWindowContentRegionMin => :void,
+      :igGetWindowDockID => :uint,
+      :igGetWindowDockNode => :pointer,
+      :igGetWindowDpiScale => :float,
       :igGetWindowDrawList => :pointer,
       :igGetWindowHeight => :float,
       :igGetWindowPos => :void,
+      :igGetWindowResizeBorderID => :uint,
+      :igGetWindowResizeCornerID => :uint,
+      :igGetWindowScrollbarID => :uint,
+      :igGetWindowScrollbarRect => :void,
       :igGetWindowSize => :void,
+      :igGetWindowViewport => :pointer,
       :igGetWindowWidth => :float,
+      :igImAbs_Int => :int,
+      :igImAbs_Float => :float,
+      :igImAbs_double => :double,
+      :igImAlphaBlendColors => :uint,
+      :igImBezierCubicCalc => :void,
+      :igImBezierCubicClosestPoint => :void,
+      :igImBezierCubicClosestPointCasteljau => :void,
+      :igImBezierQuadraticCalc => :void,
+      :igImBitArrayClearBit => :void,
+      :igImBitArraySetBit => :void,
+      :igImBitArraySetBitRange => :void,
+      :igImBitArrayTestBit => :bool,
+      :igImCharIsBlankA => :bool,
+      :igImCharIsBlankW => :bool,
+      :igImClamp => :void,
+      :igImDot => :float,
+      :igImFileClose => :bool,
+      :igImFileGetSize => :uint64,
+      :igImFileLoadToMemory => :pointer,
+      :igImFileOpen => :pointer,
+      :igImFileRead => :uint64,
+      :igImFileWrite => :uint64,
+      :igImFloor_Float => :float,
+      :igImFloor_Vec2 => :void,
+      :igImFloorSigned_Float => :float,
+      :igImFloorSigned_Vec2 => :void,
+      :igImFontAtlasBuildFinish => :void,
+      :igImFontAtlasBuildInit => :void,
+      :igImFontAtlasBuildMultiplyCalcLookupTable => :void,
+      :igImFontAtlasBuildMultiplyRectAlpha8 => :void,
+      :igImFontAtlasBuildPackCustomRects => :void,
+      :igImFontAtlasBuildRender32bppRectFromString => :void,
+      :igImFontAtlasBuildRender8bppRectFromString => :void,
+      :igImFontAtlasBuildSetupFont => :void,
+      :igImFontAtlasGetBuilderForStbTruetype => :pointer,
+      :igImFormatString => :int,
+      :igImGetDirQuadrantFromDelta => :int,
+      :igImHashData => :uint,
+      :igImHashStr => :uint,
+      :igImInvLength => :float,
+      :igImIsFloatAboveGuaranteedIntegerPrecision => :bool,
+      :igImIsPowerOfTwo_Int => :bool,
+      :igImIsPowerOfTwo_U64 => :bool,
+      :igImLengthSqr_Vec2 => :float,
+      :igImLengthSqr_Vec4 => :float,
+      :igImLerp_Vec2Float => :void,
+      :igImLerp_Vec2Vec2 => :void,
+      :igImLerp_Vec4 => :void,
+      :igImLineClosestPoint => :void,
+      :igImLinearSweep => :float,
+      :igImLog_Float => :float,
+      :igImLog_double => :double,
+      :igImMax => :void,
+      :igImMin => :void,
+      :igImModPositive => :int,
+      :igImMul => :void,
+      :igImParseFormatFindEnd => :pointer,
+      :igImParseFormatFindStart => :pointer,
+      :igImParseFormatPrecision => :int,
+      :igImParseFormatTrimDecorations => :pointer,
+      :igImPow_Float => :float,
+      :igImPow_double => :double,
+      :igImQsort => :void,
+      :igImRotate => :void,
+      :igImRsqrt_Float => :float,
+      :igImRsqrt_double => :double,
+      :igImSaturate => :float,
+      :igImSign_Float => :float,
+      :igImSign_double => :double,
+      :igImStrSkipBlank => :pointer,
+      :igImStrTrimBlanks => :void,
+      :igImStrbolW => :pointer,
+      :igImStrchrRange => :pointer,
+      :igImStrdup => :pointer,
+      :igImStrdupcpy => :pointer,
+      :igImStreolRange => :pointer,
+      :igImStricmp => :int,
+      :igImStristr => :pointer,
+      :igImStrlenW => :int,
+      :igImStrncpy => :void,
+      :igImStrnicmp => :int,
+      :igImTextCharFromUtf8 => :int,
+      :igImTextCharToUtf8 => :pointer,
+      :igImTextCountCharsFromUtf8 => :int,
+      :igImTextCountUtf8BytesFromChar => :int,
+      :igImTextCountUtf8BytesFromStr => :int,
+      :igImTextStrFromUtf8 => :int,
+      :igImTextStrToUtf8 => :int,
+      :igImTriangleArea => :float,
+      :igImTriangleBarycentricCoords => :void,
+      :igImTriangleClosestPoint => :void,
+      :igImTriangleContainsPoint => :bool,
+      :igImUpperPowerOfTwo => :int,
       :igImage => :void,
       :igImageButton => :bool,
+      :igImageButtonEx => :bool,
       :igIndent => :void,
+      :igInitialize => :void,
       :igInputDouble => :bool,
       :igInputFloat => :bool,
       :igInputFloat2 => :bool,
@@ -3019,13 +5878,20 @@ module ImGui
       :igInputScalar => :bool,
       :igInputScalarN => :bool,
       :igInputText => :bool,
+      :igInputTextEx => :bool,
       :igInputTextMultiline => :bool,
       :igInputTextWithHint => :bool,
       :igInvisibleButton => :bool,
+      :igIsActiveIdUsingKey => :bool,
+      :igIsActiveIdUsingNavDir => :bool,
+      :igIsActiveIdUsingNavInput => :bool,
       :igIsAnyItemActive => :bool,
       :igIsAnyItemFocused => :bool,
       :igIsAnyItemHovered => :bool,
       :igIsAnyMouseDown => :bool,
+      :igIsClippedEx => :bool,
+      :igIsDragDropPayloadBeingAccepted => :bool,
+      :igIsGamepadKey => :bool,
       :igIsItemActivated => :bool,
       :igIsItemActive => :bool,
       :igIsItemClicked => :bool,
@@ -3035,45 +5901,82 @@ module ImGui
       :igIsItemFocused => :bool,
       :igIsItemHovered => :bool,
       :igIsItemToggledOpen => :bool,
+      :igIsItemToggledSelection => :bool,
       :igIsItemVisible => :bool,
       :igIsKeyDown => :bool,
       :igIsKeyPressed => :bool,
+      :igIsKeyPressedMap => :bool,
       :igIsKeyReleased => :bool,
+      :igIsLegacyKey => :bool,
       :igIsMouseClicked => :bool,
       :igIsMouseDoubleClicked => :bool,
       :igIsMouseDown => :bool,
+      :igIsMouseDragPastThreshold => :bool,
       :igIsMouseDragging => :bool,
       :igIsMouseHoveringRect => :bool,
       :igIsMousePosValid => :bool,
       :igIsMouseReleased => :bool,
-      :igIsPopupOpen => :bool,
+      :igIsNamedKey => :bool,
+      :igIsNavInputDown => :bool,
+      :igIsNavInputTest => :bool,
+      :igIsPopupOpen_Str => :bool,
+      :igIsPopupOpen_ID => :bool,
       :igIsRectVisible_Nil => :bool,
       :igIsRectVisible_Vec2 => :bool,
+      :igIsWindowAbove => :bool,
       :igIsWindowAppearing => :bool,
+      :igIsWindowChildOf => :bool,
       :igIsWindowCollapsed => :bool,
+      :igIsWindowDocked => :bool,
       :igIsWindowFocused => :bool,
       :igIsWindowHovered => :bool,
+      :igIsWindowNavFocusable => :bool,
+      :igIsWindowWithinBeginStackOf => :bool,
+      :igItemAdd => :bool,
+      :igItemHoverable => :bool,
+      :igItemSize_Vec2 => :void,
+      :igItemSize_Rect => :void,
+      :igKeepAliveID => :void,
       :igLabelText => :void,
       :igListBox_Str_arr => :bool,
       :igListBox_FnBoolPtr => :bool,
       :igLoadIniSettingsFromDisk => :void,
       :igLoadIniSettingsFromMemory => :void,
+      :igLogBegin => :void,
       :igLogButtons => :void,
       :igLogFinish => :void,
+      :igLogRenderedText => :void,
+      :igLogSetNextTextDecoration => :void,
       :igLogText => :void,
+      :igLogToBuffer => :void,
       :igLogToClipboard => :void,
       :igLogToFile => :void,
       :igLogToTTY => :void,
+      :igMarkIniSettingsDirty_Nil => :void,
+      :igMarkIniSettingsDirty_WindowPtr => :void,
+      :igMarkItemEdited => :void,
       :igMemAlloc => :pointer,
       :igMemFree => :void,
       :igMenuItem_Bool => :bool,
       :igMenuItem_BoolPtr => :bool,
+      :igMenuItemEx => :bool,
+      :igNavInitRequestApplyResult => :void,
+      :igNavInitWindow => :void,
+      :igNavMoveRequestApplyResult => :void,
+      :igNavMoveRequestButNoResultYet => :bool,
+      :igNavMoveRequestCancel => :void,
+      :igNavMoveRequestForward => :void,
+      :igNavMoveRequestResolveWithLastItem => :void,
+      :igNavMoveRequestSubmit => :void,
+      :igNavMoveRequestTryWrapping => :void,
       :igNewFrame => :void,
       :igNewLine => :void,
       :igNextColumn => :void,
       :igOpenPopup_Str => :void,
       :igOpenPopup_ID => :void,
+      :igOpenPopupEx => :void,
       :igOpenPopupOnItemClick => :void,
+      :igPlotEx => :int,
       :igPlotHistogram_FloatPtr => :void,
       :igPlotHistogram_FnFloatPtr => :void,
       :igPlotLines_FloatPtr => :void,
@@ -3081,8 +5984,11 @@ module ImGui
       :igPopAllowKeyboardFocus => :void,
       :igPopButtonRepeat => :void,
       :igPopClipRect => :void,
+      :igPopColumnsBackground => :void,
+      :igPopFocusScope => :void,
       :igPopFont => :void,
       :igPopID => :void,
+      :igPopItemFlag => :void,
       :igPopItemWidth => :void,
       :igPopStyleColor => :void,
       :igPopStyleVar => :void,
@@ -3091,12 +5997,18 @@ module ImGui
       :igPushAllowKeyboardFocus => :void,
       :igPushButtonRepeat => :void,
       :igPushClipRect => :void,
+      :igPushColumnClipRect => :void,
+      :igPushColumnsBackground => :void,
+      :igPushFocusScope => :void,
       :igPushFont => :void,
       :igPushID_Str => :void,
       :igPushID_StrStr => :void,
       :igPushID_Ptr => :void,
       :igPushID_Int => :void,
+      :igPushItemFlag => :void,
       :igPushItemWidth => :void,
+      :igPushMultiItemsWidths => :void,
+      :igPushOverrideID => :void,
       :igPushStyleColor_U32 => :void,
       :igPushStyleColor_Vec4 => :void,
       :igPushStyleVar_Float => :void,
@@ -3104,65 +6016,122 @@ module ImGui
       :igPushTextWrapPos => :void,
       :igRadioButton_Bool => :bool,
       :igRadioButton_IntPtr => :bool,
+      :igRemoveContextHook => :void,
       :igRender => :void,
+      :igRenderArrow => :void,
+      :igRenderArrowDockMenu => :void,
+      :igRenderArrowPointingAt => :void,
+      :igRenderBullet => :void,
+      :igRenderCheckMark => :void,
+      :igRenderColorRectWithAlphaCheckerboard => :void,
+      :igRenderFrame => :void,
+      :igRenderFrameBorder => :void,
+      :igRenderMouseCursor => :void,
+      :igRenderNavHighlight => :void,
+      :igRenderPlatformWindowsDefault => :void,
+      :igRenderRectFilledRangeH => :void,
+      :igRenderRectFilledWithHole => :void,
+      :igRenderText => :void,
+      :igRenderTextClipped => :void,
+      :igRenderTextClippedEx => :void,
+      :igRenderTextEllipsis => :void,
+      :igRenderTextWrapped => :void,
       :igResetMouseDragDelta => :void,
       :igSameLine => :void,
       :igSaveIniSettingsToDisk => :void,
       :igSaveIniSettingsToMemory => :pointer,
+      :igScaleWindowsInViewport => :void,
+      :igScrollToBringRectIntoView => :void,
+      :igScrollToItem => :void,
+      :igScrollToRect => :void,
+      :igScrollToRectEx => :void,
+      :igScrollbar => :void,
+      :igScrollbarEx => :bool,
       :igSelectable_Bool => :bool,
       :igSelectable_BoolPtr => :bool,
       :igSeparator => :void,
+      :igSeparatorEx => :void,
+      :igSetActiveID => :void,
+      :igSetActiveIdUsingKey => :void,
+      :igSetActiveIdUsingNavAndKeys => :void,
       :igSetAllocatorFunctions => :void,
       :igSetClipboardText => :void,
       :igSetColorEditOptions => :void,
       :igSetColumnOffset => :void,
       :igSetColumnWidth => :void,
       :igSetCurrentContext => :void,
+      :igSetCurrentFont => :void,
+      :igSetCurrentViewport => :void,
       :igSetCursorPos => :void,
       :igSetCursorPosX => :void,
       :igSetCursorPosY => :void,
       :igSetCursorScreenPos => :void,
       :igSetDragDropPayload => :bool,
+      :igSetFocusID => :void,
+      :igSetHoveredID => :void,
       :igSetItemAllowOverlap => :void,
       :igSetItemDefaultFocus => :void,
+      :igSetItemUsingMouseWheel => :void,
       :igSetKeyboardFocusHere => :void,
+      :igSetLastItemData => :void,
       :igSetMouseCursor => :void,
+      :igSetNavID => :void,
       :igSetNextItemOpen => :void,
       :igSetNextItemWidth => :void,
       :igSetNextWindowBgAlpha => :void,
+      :igSetNextWindowClass => :void,
       :igSetNextWindowCollapsed => :void,
       :igSetNextWindowContentSize => :void,
+      :igSetNextWindowDockID => :void,
       :igSetNextWindowFocus => :void,
       :igSetNextWindowPos => :void,
+      :igSetNextWindowScroll => :void,
       :igSetNextWindowSize => :void,
       :igSetNextWindowSizeConstraints => :void,
-      :igSetScrollFromPosX => :void,
-      :igSetScrollFromPosY => :void,
+      :igSetNextWindowViewport => :void,
+      :igSetScrollFromPosX_Float => :void,
+      :igSetScrollFromPosX_WindowPtr => :void,
+      :igSetScrollFromPosY_Float => :void,
+      :igSetScrollFromPosY_WindowPtr => :void,
       :igSetScrollHereX => :void,
       :igSetScrollHereY => :void,
-      :igSetScrollX => :void,
-      :igSetScrollY => :void,
+      :igSetScrollX_Float => :void,
+      :igSetScrollX_WindowPtr => :void,
+      :igSetScrollY_Float => :void,
+      :igSetScrollY_WindowPtr => :void,
       :igSetStateStorage => :void,
       :igSetTabItemClosed => :void,
       :igSetTooltip => :void,
+      :igSetWindowClipRectBeforeSetChannel => :void,
       :igSetWindowCollapsed_Bool => :void,
       :igSetWindowCollapsed_Str => :void,
+      :igSetWindowCollapsed_WindowPtr => :void,
+      :igSetWindowDock => :void,
       :igSetWindowFocus_Nil => :void,
       :igSetWindowFocus_Str => :void,
       :igSetWindowFontScale => :void,
+      :igSetWindowHitTestHole => :void,
       :igSetWindowPos_Vec2 => :void,
       :igSetWindowPos_Str => :void,
+      :igSetWindowPos_WindowPtr => :void,
       :igSetWindowSize_Vec2 => :void,
       :igSetWindowSize_Str => :void,
+      :igSetWindowSize_WindowPtr => :void,
+      :igShadeVertsLinearColorGradientKeepAlpha => :void,
+      :igShadeVertsLinearUV => :void,
       :igShowAboutWindow => :void,
       :igShowDemoWindow => :void,
+      :igShowFontAtlas => :void,
       :igShowFontSelector => :void,
       :igShowMetricsWindow => :void,
       :igShowStackToolWindow => :void,
       :igShowStyleEditor => :void,
       :igShowStyleSelector => :bool,
       :igShowUserGuide => :void,
+      :igShrinkWidths => :void,
+      :igShutdown => :void,
       :igSliderAngle => :bool,
+      :igSliderBehavior => :bool,
       :igSliderFloat => :bool,
       :igSliderFloat2 => :bool,
       :igSliderFloat3 => :bool,
@@ -3175,40 +6144,112 @@ module ImGui
       :igSliderScalarN => :bool,
       :igSmallButton => :bool,
       :igSpacing => :void,
+      :igSplitterBehavior => :bool,
+      :igStartMouseMovingWindow => :void,
+      :igStartMouseMovingWindowOrNode => :void,
       :igStyleColorsClassic => :void,
       :igStyleColorsDark => :void,
       :igStyleColorsLight => :void,
+      :igTabBarAddTab => :void,
+      :igTabBarCloseTab => :void,
+      :igTabBarFindMostRecentlySelectedTabForActiveWindow => :pointer,
+      :igTabBarFindTabByID => :pointer,
+      :igTabBarProcessReorder => :bool,
+      :igTabBarQueueReorder => :void,
+      :igTabBarQueueReorderFromMousePos => :void,
+      :igTabBarRemoveTab => :void,
+      :igTabItemBackground => :void,
       :igTabItemButton => :bool,
+      :igTabItemCalcSize => :void,
+      :igTabItemEx => :bool,
+      :igTabItemLabelAndCloseButton => :void,
+      :igTableBeginApplyRequests => :void,
+      :igTableBeginCell => :void,
+      :igTableBeginInitMemory => :void,
+      :igTableBeginRow => :void,
+      :igTableDrawBorders => :void,
+      :igTableDrawContextMenu => :void,
+      :igTableEndCell => :void,
+      :igTableEndRow => :void,
+      :igTableFindByID => :pointer,
+      :igTableFixColumnSortDirection => :void,
+      :igTableGcCompactSettings => :void,
+      :igTableGcCompactTransientBuffers_TablePtr => :void,
+      :igTableGcCompactTransientBuffers_TableTempDataPtr => :void,
+      :igTableGetBoundSettings => :pointer,
+      :igTableGetCellBgRect => :void,
       :igTableGetColumnCount => :int,
       :igTableGetColumnFlags => :int,
       :igTableGetColumnIndex => :int,
-      :igTableGetColumnName => :pointer,
+      :igTableGetColumnName_Int => :pointer,
+      :igTableGetColumnName_TablePtr => :pointer,
+      :igTableGetColumnNextSortDirection => :int,
+      :igTableGetColumnResizeID => :uint,
+      :igTableGetColumnWidthAuto => :float,
+      :igTableGetHeaderRowHeight => :float,
+      :igTableGetHoveredColumn => :int,
+      :igTableGetMaxColumnWidth => :float,
       :igTableGetRowIndex => :int,
       :igTableGetSortSpecs => :pointer,
       :igTableHeader => :void,
       :igTableHeadersRow => :void,
+      :igTableLoadSettings => :void,
+      :igTableMergeDrawChannels => :void,
       :igTableNextColumn => :bool,
       :igTableNextRow => :void,
+      :igTableOpenContextMenu => :void,
+      :igTablePopBackgroundChannel => :void,
+      :igTablePushBackgroundChannel => :void,
+      :igTableRemove => :void,
+      :igTableResetSettings => :void,
+      :igTableSaveSettings => :void,
       :igTableSetBgColor => :void,
       :igTableSetColumnEnabled => :void,
       :igTableSetColumnIndex => :bool,
+      :igTableSetColumnSortDirection => :void,
+      :igTableSetColumnWidth => :void,
+      :igTableSetColumnWidthAutoAll => :void,
+      :igTableSetColumnWidthAutoSingle => :void,
+      :igTableSettingsCreate => :pointer,
+      :igTableSettingsFindByID => :pointer,
+      :igTableSettingsInstallHandler => :void,
       :igTableSetupColumn => :void,
+      :igTableSetupDrawChannels => :void,
       :igTableSetupScrollFreeze => :void,
+      :igTableSortSpecsBuild => :void,
+      :igTableSortSpecsSanitize => :void,
+      :igTableUpdateBorders => :void,
+      :igTableUpdateColumnsWeightFromWidth => :void,
+      :igTableUpdateLayout => :void,
+      :igTempInputIsActive => :bool,
+      :igTempInputScalar => :bool,
+      :igTempInputText => :bool,
       :igText => :void,
       :igTextColored => :void,
       :igTextDisabled => :void,
+      :igTextEx => :void,
       :igTextUnformatted => :void,
       :igTextWrapped => :void,
+      :igTranslateWindowsInViewport => :void,
       :igTreeNode_Str => :bool,
       :igTreeNode_StrStr => :bool,
       :igTreeNode_Ptr => :bool,
+      :igTreeNodeBehavior => :bool,
+      :igTreeNodeBehaviorIsOpen => :bool,
       :igTreeNodeEx_Str => :bool,
       :igTreeNodeEx_StrStr => :bool,
       :igTreeNodeEx_Ptr => :bool,
       :igTreePop => :void,
       :igTreePush_Str => :void,
       :igTreePush_Ptr => :void,
+      :igTreePushOverrideID => :void,
       :igUnindent => :void,
+      :igUpdateHoveredWindowAndCaptureFlags => :void,
+      :igUpdateInputEvents => :void,
+      :igUpdateMouseMovingWindowEndFrame => :void,
+      :igUpdateMouseMovingWindowNewFrame => :void,
+      :igUpdatePlatformWindows => :void,
+      :igUpdateWindowParentAndRootLinks => :void,
       :igVSliderFloat => :bool,
       :igVSliderInt => :bool,
       :igVSliderScalar => :bool,
@@ -3216,6 +6257,8 @@ module ImGui
       :igValue_Int => :void,
       :igValue_Uint => :void,
       :igValue_Float => :void,
+      :igWindowRectAbsToRel => :void,
+      :igWindowRectRelToAbs => :void,
     }
 
     symbols.each do |sym|
@@ -3238,6 +6281,18 @@ module ImGui
     igAcceptDragDropPayload(type, flags)
   end
 
+  # arg: id(ImGuiID)
+  # ret: void
+  def self.ActivateItem(id)
+    igActivateItem(id)
+  end
+
+  # arg: context(ImGuiContext*), hook(const ImGuiContextHook*)
+  # ret: uint
+  def self.AddContextHook(context, hook)
+    igAddContextHook(context, hook)
+  end
+
   # ret: void
   def self.AlignTextToFramePadding()
     igAlignTextToFramePadding()
@@ -3247,6 +6302,12 @@ module ImGui
   # ret: bool
   def self.ArrowButton(str_id, dir)
     igArrowButton(str_id, dir)
+  end
+
+  # arg: str_id(const char*), dir(ImGuiDir), size_arg(ImVec2), flags(ImGuiButtonFlags)
+  # ret: bool
+  def self.ArrowButtonEx(str_id, dir, size_arg, flags = 0)
+    igArrowButtonEx(str_id, dir, size_arg, flags)
   end
 
   # arg: name(const char*), p_open(bool*), flags(ImGuiWindowFlags)
@@ -3267,10 +6328,22 @@ module ImGui
     igBeginChild_ID(id, size, border, flags)
   end
 
+  # arg: name(const char*), id(ImGuiID), size_arg(ImVec2), border(bool), flags(ImGuiWindowFlags)
+  # ret: bool
+  def self.BeginChildEx(name, id, size_arg, border, flags)
+    igBeginChildEx(name, id, size_arg, border, flags)
+  end
+
   # arg: id(ImGuiID), size(ImVec2), flags(ImGuiWindowFlags)
   # ret: bool
   def self.BeginChildFrame(id, size, flags = 0)
     igBeginChildFrame(id, size, flags)
+  end
+
+  # arg: str_id(const char*), count(int), flags(ImGuiOldColumnFlags)
+  # ret: void
+  def self.BeginColumns(str_id, count, flags = 0)
+    igBeginColumns(str_id, count, flags)
   end
 
   # arg: label(const char*), preview_value(const char*), flags(ImGuiComboFlags)
@@ -3279,10 +6352,39 @@ module ImGui
     igBeginCombo(label, preview_value, flags)
   end
 
+  # arg: popup_id(ImGuiID), bb(ImRect), flags(ImGuiComboFlags)
+  # ret: bool
+  def self.BeginComboPopup(popup_id, bb, flags)
+    igBeginComboPopup(popup_id, bb, flags)
+  end
+
+  # ret: bool
+  def self.BeginComboPreview()
+    igBeginComboPreview()
+  end
+
   # arg: disabled(bool)
   # ret: void
   def self.BeginDisabled(disabled = true)
     igBeginDisabled(disabled)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.BeginDockableDragDropSource(window)
+    igBeginDockableDragDropSource(window)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.BeginDockableDragDropTarget(window)
+    igBeginDockableDragDropTarget(window)
+  end
+
+  # arg: window(ImGuiWindow*), p_open(bool*)
+  # ret: void
+  def self.BeginDocked(window, p_open)
+    igBeginDocked(window, p_open)
   end
 
   # arg: flags(ImGuiDragDropFlags)
@@ -3294,6 +6396,12 @@ module ImGui
   # ret: bool
   def self.BeginDragDropTarget()
     igBeginDragDropTarget()
+  end
+
+  # arg: bb(ImRect), id(ImGuiID)
+  # ret: bool
+  def self.BeginDragDropTargetCustom(bb, id)
+    igBeginDragDropTargetCustom(bb, id)
   end
 
   # ret: void
@@ -3323,6 +6431,12 @@ module ImGui
     igBeginMenuBar()
   end
 
+  # arg: label(const char*), icon(const char*), enabled(bool)
+  # ret: bool
+  def self.BeginMenuEx(label, icon, enabled = true)
+    igBeginMenuEx(label, icon, enabled)
+  end
+
   # arg: str_id(const char*), flags(ImGuiWindowFlags)
   # ret: bool
   def self.BeginPopup(str_id, flags = 0)
@@ -3347,6 +6461,12 @@ module ImGui
     igBeginPopupContextWindow(str_id, popup_flags)
   end
 
+  # arg: id(ImGuiID), extra_flags(ImGuiWindowFlags)
+  # ret: bool
+  def self.BeginPopupEx(id, extra_flags)
+    igBeginPopupEx(id, extra_flags)
+  end
+
   # arg: name(const char*), p_open(bool*), flags(ImGuiWindowFlags)
   # ret: bool
   def self.BeginPopupModal(name, p_open = nil, flags = 0)
@@ -3357,6 +6477,12 @@ module ImGui
   # ret: bool
   def self.BeginTabBar(str_id, flags = 0)
     igBeginTabBar(str_id, flags)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), bb(ImRect), flags(ImGuiTabBarFlags), dock_node(ImGuiDockNode*)
+  # ret: bool
+  def self.BeginTabBarEx(tab_bar, bb, flags, dock_node)
+    igBeginTabBarEx(tab_bar, bb, flags, dock_node)
   end
 
   # arg: label(const char*), p_open(bool*), flags(ImGuiTabItemFlags)
@@ -3371,9 +6497,51 @@ module ImGui
     igBeginTable(str_id, column, flags, outer_size, inner_width)
   end
 
+  # arg: name(const char*), id(ImGuiID), columns_count(int), flags(ImGuiTableFlags), outer_size(ImVec2), inner_width(float)
+  # ret: bool
+  def self.BeginTableEx(name, id, columns_count, flags = 0, outer_size = ImVec2.create(0,0), inner_width = 0.0)
+    igBeginTableEx(name, id, columns_count, flags, outer_size, inner_width)
+  end
+
   # ret: void
   def self.BeginTooltip()
     igBeginTooltip()
+  end
+
+  # arg: tooltip_flags(ImGuiTooltipFlags), extra_window_flags(ImGuiWindowFlags)
+  # ret: void
+  def self.BeginTooltipEx(tooltip_flags, extra_window_flags)
+    igBeginTooltipEx(tooltip_flags, extra_window_flags)
+  end
+
+  # arg: name(const char*), viewport(ImGuiViewport*), dir(ImGuiDir), size(float), window_flags(ImGuiWindowFlags)
+  # ret: bool
+  def self.BeginViewportSideBar(name, viewport, dir, size, window_flags)
+    igBeginViewportSideBar(name, viewport, dir, size, window_flags)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.BringWindowToDisplayBack(window)
+    igBringWindowToDisplayBack(window)
+  end
+
+  # arg: window(ImGuiWindow*), above_window(ImGuiWindow*)
+  # ret: void
+  def self.BringWindowToDisplayBehind(window, above_window)
+    igBringWindowToDisplayBehind(window, above_window)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.BringWindowToDisplayFront(window)
+    igBringWindowToDisplayFront(window)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.BringWindowToFocusFront(window)
+    igBringWindowToFocusFront(window)
   end
 
   # ret: void
@@ -3393,9 +6561,35 @@ module ImGui
     igButton(label, size)
   end
 
+  # arg: bb(ImRect), id(ImGuiID), out_hovered(bool*), out_held(bool*), flags(ImGuiButtonFlags)
+  # ret: bool
+  def self.ButtonBehavior(bb, id, out_hovered, out_held, flags = 0)
+    igButtonBehavior(bb, id, out_hovered, out_held, flags)
+  end
+
+  # arg: label(const char*), size_arg(ImVec2), flags(ImGuiButtonFlags)
+  # ret: bool
+  def self.ButtonEx(label, size_arg = ImVec2.create(0,0), flags = 0)
+    igButtonEx(label, size_arg, flags)
+  end
+
+  # arg: size(ImVec2), default_w(float), default_h(float)
+  # ret: void
+  def self.CalcItemSize(size, default_w, default_h)
+    pOut = ImVec2.new
+    igCalcItemSize(pOut, size, default_w, default_h)
+    return pOut
+  end
+
   # ret: float
   def self.CalcItemWidth()
     igCalcItemWidth()
+  end
+
+  # arg: r_in(ImRect), r_outer(ImRect), threshold(float)
+  # ret: int
+  def self.CalcRoundingFlagsForRectInRect(r_in, r_outer, threshold)
+    igCalcRoundingFlagsForRectInRect(r_in, r_outer, threshold)
   end
 
   # arg: text(const char*), text_end(const char*), hide_text_after_double_hash(bool), wrap_width(float)
@@ -3404,6 +6598,32 @@ module ImGui
     pOut = ImVec2.new
     igCalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
     return pOut
+  end
+
+  # arg: t0(float), t1(float), repeat_delay(float), repeat_rate(float)
+  # ret: int
+  def self.CalcTypematicRepeatAmount(t0, t1, repeat_delay, repeat_rate)
+    igCalcTypematicRepeatAmount(t0, t1, repeat_delay, repeat_rate)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.CalcWindowNextAutoFitSize(window)
+    pOut = ImVec2.new
+    igCalcWindowNextAutoFitSize(pOut, window)
+    return pOut
+  end
+
+  # arg: pos(ImVec2), wrap_pos_x(float)
+  # ret: float
+  def self.CalcWrapWidthForPos(pos, wrap_pos_x)
+    igCalcWrapWidthForPos(pos, wrap_pos_x)
+  end
+
+  # arg: context(ImGuiContext*), type(ImGuiContextHookType)
+  # ret: void
+  def self.CallContextHooks(context, type)
+    igCallContextHooks(context, type)
   end
 
   # arg: want_capture_keyboard_value(bool)
@@ -3436,9 +6656,65 @@ module ImGui
     igCheckboxFlags_UintPtr(label, flags, flags_value)
   end
 
+  # arg: label(const char*), flags(ImS64*), flags_value(ImS64)
+  # ret: bool
+  def self.CheckboxFlags_S64Ptr(label, flags, flags_value)
+    igCheckboxFlags_S64Ptr(label, flags, flags_value)
+  end
+
+  # arg: label(const char*), flags(ImU64*), flags_value(ImU64)
+  # ret: bool
+  def self.CheckboxFlags_U64Ptr(label, flags, flags_value)
+    igCheckboxFlags_U64Ptr(label, flags, flags_value)
+  end
+
+  # ret: void
+  def self.ClearActiveID()
+    igClearActiveID()
+  end
+
+  # ret: void
+  def self.ClearDragDrop()
+    igClearDragDrop()
+  end
+
+  # ret: void
+  def self.ClearIniSettings()
+    igClearIniSettings()
+  end
+
+  # arg: id(ImGuiID), pos(ImVec2)
+  # ret: bool
+  def self.CloseButton(id, pos)
+    igCloseButton(id, pos)
+  end
+
   # ret: void
   def self.CloseCurrentPopup()
     igCloseCurrentPopup()
+  end
+
+  # arg: remaining(int), restore_focus_to_window_under_popup(bool)
+  # ret: void
+  def self.ClosePopupToLevel(remaining, restore_focus_to_window_under_popup)
+    igClosePopupToLevel(remaining, restore_focus_to_window_under_popup)
+  end
+
+  # ret: void
+  def self.ClosePopupsExceptModals()
+    igClosePopupsExceptModals()
+  end
+
+  # arg: ref_window(ImGuiWindow*), restore_focus_to_window_under_popup(bool)
+  # ret: void
+  def self.ClosePopupsOverWindow(ref_window, restore_focus_to_window_under_popup)
+    igClosePopupsOverWindow(ref_window, restore_focus_to_window_under_popup)
+  end
+
+  # arg: id(ImGuiID), pos(ImVec2), dock_node(ImGuiDockNode*)
+  # ret: bool
+  def self.CollapseButton(id, pos, dock_node)
+    igCollapseButton(id, pos, dock_node)
   end
 
   # arg: label(const char*), flags(ImGuiTreeNodeFlags)
@@ -3497,6 +6773,12 @@ module ImGui
     igColorEdit4(label, col, flags)
   end
 
+  # arg: col(const float*), flags(ImGuiColorEditFlags)
+  # ret: void
+  def self.ColorEditOptionsPopup(col, flags)
+    igColorEditOptionsPopup(col, flags)
+  end
+
   # arg: label(const char*), col(float[3]), flags(ImGuiColorEditFlags)
   # ret: bool
   def self.ColorPicker3(label, col, flags = 0)
@@ -3507,6 +6789,18 @@ module ImGui
   # ret: bool
   def self.ColorPicker4(label, col, flags = 0, ref_col = nil)
     igColorPicker4(label, col, flags, ref_col)
+  end
+
+  # arg: ref_col(const float*), flags(ImGuiColorEditFlags)
+  # ret: void
+  def self.ColorPickerOptionsPopup(ref_col, flags)
+    igColorPickerOptionsPopup(ref_col, flags)
+  end
+
+  # arg: text(const char*), col(const float*), flags(ImGuiColorEditFlags)
+  # ret: void
+  def self.ColorTooltip(text, col, flags)
+    igColorTooltip(text, col, flags)
   end
 
   # arg: count(int), id(const char*), border(bool)
@@ -3539,16 +6833,385 @@ module ImGui
     igCreateContext(shared_font_atlas)
   end
 
+  # arg: name(const char*)
+  # ret: pointer
+  def self.CreateNewWindowSettings(name)
+    igCreateNewWindowSettings(name)
+  end
+
+  # arg: buf(const char*), data_type(ImGuiDataType), p_data(void*), format(const char*)
+  # ret: bool
+  def self.DataTypeApplyFromText(buf, data_type, p_data, format)
+    igDataTypeApplyFromText(buf, data_type, p_data, format)
+  end
+
+  # arg: data_type(ImGuiDataType), op(int), output(void*), arg_1(const void*), arg_2(const void*)
+  # ret: void
+  def self.DataTypeApplyOp(data_type, op, output, arg_1, arg_2)
+    igDataTypeApplyOp(data_type, op, output, arg_1, arg_2)
+  end
+
+  # arg: data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*)
+  # ret: bool
+  def self.DataTypeClamp(data_type, p_data, p_min, p_max)
+    igDataTypeClamp(data_type, p_data, p_min, p_max)
+  end
+
+  # arg: data_type(ImGuiDataType), arg_1(const void*), arg_2(const void*)
+  # ret: int
+  def self.DataTypeCompare(data_type, arg_1, arg_2)
+    igDataTypeCompare(data_type, arg_1, arg_2)
+  end
+
+  # arg: buf(char*), buf_size(int), data_type(ImGuiDataType), p_data(const void*), format(const char*)
+  # ret: int
+  def self.DataTypeFormatString(buf, buf_size, data_type, p_data, format)
+    igDataTypeFormatString(buf, buf_size, data_type, p_data, format)
+  end
+
+  # arg: data_type(ImGuiDataType)
+  # ret: pointer
+  def self.DataTypeGetInfo(data_type)
+    igDataTypeGetInfo(data_type)
+  end
+
   # arg: version_str(const char*), sz_io(size_t), sz_style(size_t), sz_vec2(size_t), sz_vec4(size_t), sz_drawvert(size_t), sz_drawidx(size_t)
   # ret: bool
   def self.DebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
     igDebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
   end
 
+  # arg: col(ImU32)
+  # ret: void
+  def self.DebugDrawItemRect(col = 4278190335)
+    igDebugDrawItemRect(col)
+  end
+
+  # arg: id(ImGuiID), data_type(ImGuiDataType), data_id(const void*), data_id_end(const void*)
+  # ret: void
+  def self.DebugHookIdInfo(id, data_type, data_id, data_id_end)
+    igDebugHookIdInfo(id, data_type, data_id, data_id_end)
+  end
+
+  # arg: columns(ImGuiOldColumns*)
+  # ret: void
+  def self.DebugNodeColumns(columns)
+    igDebugNodeColumns(columns)
+  end
+
+  # arg: node(ImGuiDockNode*), label(const char*)
+  # ret: void
+  def self.DebugNodeDockNode(node, label)
+    igDebugNodeDockNode(node, label)
+  end
+
+  # arg: out_draw_list(ImDrawList*), draw_list(const ImDrawList*), draw_cmd(const ImDrawCmd*), show_mesh(bool), show_aabb(bool)
+  # ret: void
+  def self.DebugNodeDrawCmdShowMeshAndBoundingBox(out_draw_list, draw_list, draw_cmd, show_mesh, show_aabb)
+    igDebugNodeDrawCmdShowMeshAndBoundingBox(out_draw_list, draw_list, draw_cmd, show_mesh, show_aabb)
+  end
+
+  # arg: window(ImGuiWindow*), viewport(ImGuiViewportP*), draw_list(const ImDrawList*), label(const char*)
+  # ret: void
+  def self.DebugNodeDrawList(window, viewport, draw_list, label)
+    igDebugNodeDrawList(window, viewport, draw_list, label)
+  end
+
+  # arg: font(ImFont*)
+  # ret: void
+  def self.DebugNodeFont(font)
+    igDebugNodeFont(font)
+  end
+
+  # arg: storage(ImGuiStorage*), label(const char*)
+  # ret: void
+  def self.DebugNodeStorage(storage, label)
+    igDebugNodeStorage(storage, label)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), label(const char*)
+  # ret: void
+  def self.DebugNodeTabBar(tab_bar, label)
+    igDebugNodeTabBar(tab_bar, label)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.DebugNodeTable(table)
+    igDebugNodeTable(table)
+  end
+
+  # arg: settings(ImGuiTableSettings*)
+  # ret: void
+  def self.DebugNodeTableSettings(settings)
+    igDebugNodeTableSettings(settings)
+  end
+
+  # arg: viewport(ImGuiViewportP*)
+  # ret: void
+  def self.DebugNodeViewport(viewport)
+    igDebugNodeViewport(viewport)
+  end
+
+  # arg: window(ImGuiWindow*), label(const char*)
+  # ret: void
+  def self.DebugNodeWindow(window, label)
+    igDebugNodeWindow(window, label)
+  end
+
+  # arg: settings(ImGuiWindowSettings*)
+  # ret: void
+  def self.DebugNodeWindowSettings(settings)
+    igDebugNodeWindowSettings(settings)
+  end
+
+  # arg: windows(ImVector_ImGuiWindowPtr*), label(const char*)
+  # ret: void
+  def self.DebugNodeWindowsList(windows, label)
+    igDebugNodeWindowsList(windows, label)
+  end
+
+  # arg: windows(ImGuiWindow**), windows_size(int), parent_in_begin_stack(ImGuiWindow*)
+  # ret: void
+  def self.DebugNodeWindowsListByBeginStackParent(windows, windows_size, parent_in_begin_stack)
+    igDebugNodeWindowsListByBeginStackParent(windows, windows_size, parent_in_begin_stack)
+  end
+
+  # arg: draw_list(ImDrawList*), viewport(ImGuiViewportP*), bb(ImRect)
+  # ret: void
+  def self.DebugRenderViewportThumbnail(draw_list, viewport, bb)
+    igDebugRenderViewportThumbnail(draw_list, viewport, bb)
+  end
+
+  # ret: void
+  def self.DebugStartItemPicker()
+    igDebugStartItemPicker()
+  end
+
   # arg: ctx(ImGuiContext*)
   # ret: void
   def self.DestroyContext(ctx = nil)
     igDestroyContext(ctx)
+  end
+
+  # arg: viewport(ImGuiViewportP*)
+  # ret: void
+  def self.DestroyPlatformWindow(viewport)
+    igDestroyPlatformWindow(viewport)
+  end
+
+  # ret: void
+  def self.DestroyPlatformWindows()
+    igDestroyPlatformWindows()
+  end
+
+  # arg: node_id(ImGuiID), flags(ImGuiDockNodeFlags)
+  # ret: uint
+  def self.DockBuilderAddNode(node_id = 0, flags = 0)
+    igDockBuilderAddNode(node_id, flags)
+  end
+
+  # arg: src_dockspace_id(ImGuiID), dst_dockspace_id(ImGuiID), in_window_remap_pairs(ImVector_const_charPtr*)
+  # ret: void
+  def self.DockBuilderCopyDockSpace(src_dockspace_id, dst_dockspace_id, in_window_remap_pairs)
+    igDockBuilderCopyDockSpace(src_dockspace_id, dst_dockspace_id, in_window_remap_pairs)
+  end
+
+  # arg: src_node_id(ImGuiID), dst_node_id(ImGuiID), out_node_remap_pairs(ImVector_ImGuiID*)
+  # ret: void
+  def self.DockBuilderCopyNode(src_node_id, dst_node_id, out_node_remap_pairs)
+    igDockBuilderCopyNode(src_node_id, dst_node_id, out_node_remap_pairs)
+  end
+
+  # arg: src_name(const char*), dst_name(const char*)
+  # ret: void
+  def self.DockBuilderCopyWindowSettings(src_name, dst_name)
+    igDockBuilderCopyWindowSettings(src_name, dst_name)
+  end
+
+  # arg: window_name(const char*), node_id(ImGuiID)
+  # ret: void
+  def self.DockBuilderDockWindow(window_name, node_id)
+    igDockBuilderDockWindow(window_name, node_id)
+  end
+
+  # arg: node_id(ImGuiID)
+  # ret: void
+  def self.DockBuilderFinish(node_id)
+    igDockBuilderFinish(node_id)
+  end
+
+  # arg: node_id(ImGuiID)
+  # ret: pointer
+  def self.DockBuilderGetCentralNode(node_id)
+    igDockBuilderGetCentralNode(node_id)
+  end
+
+  # arg: node_id(ImGuiID)
+  # ret: pointer
+  def self.DockBuilderGetNode(node_id)
+    igDockBuilderGetNode(node_id)
+  end
+
+  # arg: node_id(ImGuiID)
+  # ret: void
+  def self.DockBuilderRemoveNode(node_id)
+    igDockBuilderRemoveNode(node_id)
+  end
+
+  # arg: node_id(ImGuiID)
+  # ret: void
+  def self.DockBuilderRemoveNodeChildNodes(node_id)
+    igDockBuilderRemoveNodeChildNodes(node_id)
+  end
+
+  # arg: node_id(ImGuiID), clear_settings_refs(bool)
+  # ret: void
+  def self.DockBuilderRemoveNodeDockedWindows(node_id, clear_settings_refs = true)
+    igDockBuilderRemoveNodeDockedWindows(node_id, clear_settings_refs)
+  end
+
+  # arg: node_id(ImGuiID), pos(ImVec2)
+  # ret: void
+  def self.DockBuilderSetNodePos(node_id, pos)
+    igDockBuilderSetNodePos(node_id, pos)
+  end
+
+  # arg: node_id(ImGuiID), size(ImVec2)
+  # ret: void
+  def self.DockBuilderSetNodeSize(node_id, size)
+    igDockBuilderSetNodeSize(node_id, size)
+  end
+
+  # arg: node_id(ImGuiID), split_dir(ImGuiDir), size_ratio_for_node_at_dir(float), out_id_at_dir(ImGuiID*), out_id_at_opposite_dir(ImGuiID*)
+  # ret: uint
+  def self.DockBuilderSplitNode(node_id, split_dir, size_ratio_for_node_at_dir, out_id_at_dir, out_id_at_opposite_dir)
+    igDockBuilderSplitNode(node_id, split_dir, size_ratio_for_node_at_dir, out_id_at_dir, out_id_at_opposite_dir)
+  end
+
+  # arg: target(ImGuiWindow*), target_node(ImGuiDockNode*), payload(ImGuiWindow*), split_dir(ImGuiDir), split_outer(bool), out_pos(ImVec2*)
+  # ret: bool
+  def self.DockContextCalcDropPosForDocking(target, target_node, payload, split_dir, split_outer, out_pos)
+    igDockContextCalcDropPosForDocking(target, target_node, payload, split_dir, split_outer, out_pos)
+  end
+
+  # arg: ctx(ImGuiContext*), root_id(ImGuiID), clear_settings_refs(bool)
+  # ret: void
+  def self.DockContextClearNodes(ctx, root_id, clear_settings_refs)
+    igDockContextClearNodes(ctx, root_id, clear_settings_refs)
+  end
+
+  # arg: ctx(ImGuiContext*)
+  # ret: void
+  def self.DockContextEndFrame(ctx)
+    igDockContextEndFrame(ctx)
+  end
+
+  # arg: ctx(ImGuiContext*)
+  # ret: uint
+  def self.DockContextGenNodeID(ctx)
+    igDockContextGenNodeID(ctx)
+  end
+
+  # arg: ctx(ImGuiContext*)
+  # ret: void
+  def self.DockContextInitialize(ctx)
+    igDockContextInitialize(ctx)
+  end
+
+  # arg: ctx(ImGuiContext*)
+  # ret: void
+  def self.DockContextNewFrameUpdateDocking(ctx)
+    igDockContextNewFrameUpdateDocking(ctx)
+  end
+
+  # arg: ctx(ImGuiContext*)
+  # ret: void
+  def self.DockContextNewFrameUpdateUndocking(ctx)
+    igDockContextNewFrameUpdateUndocking(ctx)
+  end
+
+  # arg: ctx(ImGuiContext*), target(ImGuiWindow*), target_node(ImGuiDockNode*), payload(ImGuiWindow*), split_dir(ImGuiDir), split_ratio(float), split_outer(bool)
+  # ret: void
+  def self.DockContextQueueDock(ctx, target, target_node, payload, split_dir, split_ratio, split_outer)
+    igDockContextQueueDock(ctx, target, target_node, payload, split_dir, split_ratio, split_outer)
+  end
+
+  # arg: ctx(ImGuiContext*), node(ImGuiDockNode*)
+  # ret: void
+  def self.DockContextQueueUndockNode(ctx, node)
+    igDockContextQueueUndockNode(ctx, node)
+  end
+
+  # arg: ctx(ImGuiContext*), window(ImGuiWindow*)
+  # ret: void
+  def self.DockContextQueueUndockWindow(ctx, window)
+    igDockContextQueueUndockWindow(ctx, window)
+  end
+
+  # arg: ctx(ImGuiContext*)
+  # ret: void
+  def self.DockContextRebuildNodes(ctx)
+    igDockContextRebuildNodes(ctx)
+  end
+
+  # arg: ctx(ImGuiContext*)
+  # ret: void
+  def self.DockContextShutdown(ctx)
+    igDockContextShutdown(ctx)
+  end
+
+  # arg: node(ImGuiDockNode*)
+  # ret: bool
+  def self.DockNodeBeginAmendTabBar(node)
+    igDockNodeBeginAmendTabBar(node)
+  end
+
+  # ret: void
+  def self.DockNodeEndAmendTabBar()
+    igDockNodeEndAmendTabBar()
+  end
+
+  # arg: node(const ImGuiDockNode*)
+  # ret: int
+  def self.DockNodeGetDepth(node)
+    igDockNodeGetDepth(node)
+  end
+
+  # arg: node(ImGuiDockNode*)
+  # ret: pointer
+  def self.DockNodeGetRootNode(node)
+    igDockNodeGetRootNode(node)
+  end
+
+  # arg: node(const ImGuiDockNode*)
+  # ret: uint
+  def self.DockNodeGetWindowMenuButtonId(node)
+    igDockNodeGetWindowMenuButtonId(node)
+  end
+
+  # arg: node(ImGuiDockNode*), parent(ImGuiDockNode*)
+  # ret: bool
+  def self.DockNodeIsInHierarchyOf(node, parent)
+    igDockNodeIsInHierarchyOf(node, parent)
+  end
+
+  # arg: id(ImGuiID), size(ImVec2), flags(ImGuiDockNodeFlags), window_class(const ImGuiWindowClass*)
+  # ret: uint
+  def self.DockSpace(id, size = ImVec2.create(0,0), flags = 0, window_class = nil)
+    igDockSpace(id, size, flags, window_class)
+  end
+
+  # arg: viewport(const ImGuiViewport*), flags(ImGuiDockNodeFlags), window_class(const ImGuiWindowClass*)
+  # ret: uint
+  def self.DockSpaceOverViewport(viewport = nil, flags = 0, window_class = nil)
+    igDockSpaceOverViewport(viewport, flags, window_class)
+  end
+
+  # arg: id(ImGuiID), data_type(ImGuiDataType), p_v(void*), v_speed(float), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
+  # ret: bool
+  def self.DragBehavior(id, data_type, p_v, v_speed, p_min, p_max, format, flags)
+    igDragBehavior(id, data_type, p_v, v_speed, p_min, p_max, format, flags)
   end
 
   # arg: label(const char*), v(float*), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
@@ -3645,8 +7308,18 @@ module ImGui
   end
 
   # ret: void
+  def self.EndColumns()
+    igEndColumns()
+  end
+
+  # ret: void
   def self.EndCombo()
     igEndCombo()
+  end
+
+  # ret: void
+  def self.EndComboPreview()
+    igEndComboPreview()
   end
 
   # ret: void
@@ -3719,6 +7392,140 @@ module ImGui
     igEndTooltip()
   end
 
+  # arg: log_callback(ImGuiErrorLogCallback), user_data(void*)
+  # ret: void
+  def self.ErrorCheckEndFrameRecover(log_callback, user_data = nil)
+    igErrorCheckEndFrameRecover(log_callback, user_data)
+  end
+
+  # arg: log_callback(ImGuiErrorLogCallback), user_data(void*)
+  # ret: void
+  def self.ErrorCheckEndWindowRecover(log_callback, user_data = nil)
+    igErrorCheckEndWindowRecover(log_callback, user_data)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.FindBestWindowPosForPopup(window)
+    pOut = ImVec2.new
+    igFindBestWindowPosForPopup(pOut, window)
+    return pOut
+  end
+
+  # arg: ref_pos(ImVec2), size(ImVec2), last_dir(ImGuiDir*), r_outer(ImRect), r_avoid(ImRect), policy(ImGuiPopupPositionPolicy)
+  # ret: void
+  def self.FindBestWindowPosForPopupEx(ref_pos, size, last_dir, r_outer, r_avoid, policy)
+    pOut = ImVec2.new
+    igFindBestWindowPosForPopupEx(pOut, ref_pos, size, last_dir, r_outer, r_avoid, policy)
+    return pOut
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: pointer
+  def self.FindBottomMostVisibleWindowWithinBeginStack(window)
+    igFindBottomMostVisibleWindowWithinBeginStack(window)
+  end
+
+  # arg: mouse_platform_pos(ImVec2)
+  # ret: pointer
+  def self.FindHoveredViewportFromPlatformWindowStack(mouse_platform_pos)
+    igFindHoveredViewportFromPlatformWindowStack(mouse_platform_pos)
+  end
+
+  # arg: window(ImGuiWindow*), id(ImGuiID)
+  # ret: pointer
+  def self.FindOrCreateColumns(window, id)
+    igFindOrCreateColumns(window, id)
+  end
+
+  # arg: name(const char*)
+  # ret: pointer
+  def self.FindOrCreateWindowSettings(name)
+    igFindOrCreateWindowSettings(name)
+  end
+
+  # arg: text(const char*), text_end(const char*)
+  # ret: pointer
+  def self.FindRenderedTextEnd(text, text_end = nil)
+    igFindRenderedTextEnd(text, text_end)
+  end
+
+  # arg: type_name(const char*)
+  # ret: pointer
+  def self.FindSettingsHandler(type_name)
+    igFindSettingsHandler(type_name)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.FindViewportByID(id)
+    igFindViewportByID(id)
+  end
+
+  # arg: platform_handle(void*)
+  # ret: pointer
+  def self.FindViewportByPlatformHandle(platform_handle)
+    igFindViewportByPlatformHandle(platform_handle)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.FindWindowByID(id)
+    igFindWindowByID(id)
+  end
+
+  # arg: name(const char*)
+  # ret: pointer
+  def self.FindWindowByName(name)
+    igFindWindowByName(name)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: int
+  def self.FindWindowDisplayIndex(window)
+    igFindWindowDisplayIndex(window)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.FindWindowSettings(id)
+    igFindWindowSettings(id)
+  end
+
+  # arg: under_this_window(ImGuiWindow*), ignore_window(ImGuiWindow*)
+  # ret: void
+  def self.FocusTopMostWindowUnderOne(under_this_window, ignore_window)
+    igFocusTopMostWindowUnderOne(under_this_window, ignore_window)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.FocusWindow(window)
+    igFocusWindow(window)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.GcAwakeTransientWindowBuffers(window)
+    igGcAwakeTransientWindowBuffers(window)
+  end
+
+  # ret: void
+  def self.GcCompactTransientMiscBuffers()
+    igGcCompactTransientMiscBuffers()
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.GcCompactTransientWindowBuffers(window)
+    igGcCompactTransientWindowBuffers(window)
+  end
+
+  # ret: uint
+  def self.GetActiveID()
+    igGetActiveID()
+  end
+
   # arg: p_alloc_func(ImGuiMemAllocFunc*), p_free_func(ImGuiMemFreeFunc*), p_user_data(void**)
   # ret: void
   def self.GetAllocatorFunctions(p_alloc_func, p_free_func, p_user_data)
@@ -3726,8 +7533,14 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetBackgroundDrawList()
-    igGetBackgroundDrawList()
+  def self.GetBackgroundDrawList_Nil()
+    igGetBackgroundDrawList_Nil()
+  end
+
+  # arg: viewport(ImGuiViewport*)
+  # ret: pointer
+  def self.GetBackgroundDrawList_ViewportPtr(viewport)
+    igGetBackgroundDrawList_ViewportPtr(viewport)
   end
 
   # ret: pointer
@@ -3758,10 +7571,22 @@ module ImGui
     igGetColumnIndex()
   end
 
+  # arg: columns(const ImGuiOldColumns*), offset(float)
+  # ret: float
+  def self.GetColumnNormFromOffset(columns, offset)
+    igGetColumnNormFromOffset(columns, offset)
+  end
+
   # arg: column_index(int)
   # ret: float
   def self.GetColumnOffset(column_index = -1)
     igGetColumnOffset(column_index)
+  end
+
+  # arg: columns(const ImGuiOldColumns*), offset_norm(float)
+  # ret: float
+  def self.GetColumnOffsetFromNorm(columns, offset_norm)
+    igGetColumnOffsetFromNorm(columns, offset_norm)
   end
 
   # arg: column_index(int)
@@ -3773,6 +7598,12 @@ module ImGui
   # ret: int
   def self.GetColumnsCount()
     igGetColumnsCount()
+  end
+
+  # arg: str_id(const char*), count(int)
+  # ret: uint
+  def self.GetColumnsID(str_id, count)
+    igGetColumnsID(str_id, count)
   end
 
   # ret: void
@@ -3789,9 +7620,31 @@ module ImGui
     return pOut
   end
 
+  # ret: void
+  def self.GetContentRegionMaxAbs()
+    pOut = ImVec2.new
+    igGetContentRegionMaxAbs(pOut)
+    return pOut
+  end
+
   # ret: pointer
   def self.GetCurrentContext()
     igGetCurrentContext()
+  end
+
+  # ret: pointer
+  def self.GetCurrentTable()
+    igGetCurrentTable()
+  end
+
+  # ret: pointer
+  def self.GetCurrentWindow()
+    igGetCurrentWindow()
+  end
+
+  # ret: pointer
+  def self.GetCurrentWindowRead()
+    igGetCurrentWindowRead()
   end
 
   # ret: void
@@ -3826,6 +7679,11 @@ module ImGui
   end
 
   # ret: pointer
+  def self.GetDefaultFont()
+    igGetDefaultFont()
+  end
+
+  # ret: pointer
   def self.GetDragDropPayload()
     igGetDragDropPayload()
   end
@@ -3838,6 +7696,21 @@ module ImGui
   # ret: pointer
   def self.GetDrawListSharedData()
     igGetDrawListSharedData()
+  end
+
+  # ret: uint
+  def self.GetFocusID()
+    igGetFocusID()
+  end
+
+  # ret: uint
+  def self.GetFocusScope()
+    igGetFocusScope()
+  end
+
+  # ret: uint
+  def self.GetFocusedFocusScope()
+    igGetFocusedFocusScope()
   end
 
   # ret: pointer
@@ -3858,8 +7731,20 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetForegroundDrawList()
-    igGetForegroundDrawList()
+  def self.GetForegroundDrawList_Nil()
+    igGetForegroundDrawList_Nil()
+  end
+
+  # arg: viewport(ImGuiViewport*)
+  # ret: pointer
+  def self.GetForegroundDrawList_ViewportPtr(viewport)
+    igGetForegroundDrawList_ViewportPtr(viewport)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: pointer
+  def self.GetForegroundDrawList_WindowPtr(window)
+    igGetForegroundDrawList_WindowPtr(window)
   end
 
   # ret: int
@@ -3875,6 +7760,11 @@ module ImGui
   # ret: float
   def self.GetFrameHeightWithSpacing()
     igGetFrameHeightWithSpacing()
+  end
+
+  # ret: uint
+  def self.GetHoveredID()
+    igGetHoveredID()
   end
 
   # arg: str_id(const char*)
@@ -3895,9 +7785,31 @@ module ImGui
     igGetID_Ptr(ptr_id)
   end
 
+  # arg: str_id_begin(const char*), str_id_end(const char*), seed(ImGuiID)
+  # ret: uint
+  def self.GetIDWithSeed(str_id_begin, str_id_end, seed)
+    igGetIDWithSeed(str_id_begin, str_id_end, seed)
+  end
+
   # ret: pointer
   def self.GetIO()
     igGetIO()
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.GetInputTextState(id)
+    igGetInputTextState(id)
+  end
+
+  # ret: int
+  def self.GetItemFlags()
+    igGetItemFlags()
+  end
+
+  # ret: uint
+  def self.GetItemID()
+    igGetItemID()
   end
 
   # ret: void
@@ -3921,6 +7833,17 @@ module ImGui
     return pOut
   end
 
+  # ret: int
+  def self.GetItemStatusFlags()
+    igGetItemStatusFlags()
+  end
+
+  # arg: key(ImGuiKey)
+  # ret: pointer
+  def self.GetKeyData(key)
+    igGetKeyData(key)
+  end
+
   # arg: key(ImGuiKey)
   # ret: int
   def self.GetKeyIndex(key)
@@ -3942,6 +7865,11 @@ module ImGui
   # ret: pointer
   def self.GetMainViewport()
     igGetMainViewport()
+  end
+
+  # ret: int
+  def self.GetMergedKeyModFlags()
+    igGetMergedKeyModFlags()
   end
 
   # arg: button(ImGuiMouseButton)
@@ -3974,6 +7902,39 @@ module ImGui
   def self.GetMousePosOnOpeningCurrentPopup()
     pOut = ImVec2.new
     igGetMousePosOnOpeningCurrentPopup(pOut)
+    return pOut
+  end
+
+  # arg: n(ImGuiNavInput), mode(ImGuiInputReadMode)
+  # ret: float
+  def self.GetNavInputAmount(n, mode)
+    igGetNavInputAmount(n, mode)
+  end
+
+  # arg: dir_sources(ImGuiNavDirSourceFlags), mode(ImGuiInputReadMode), slow_factor(float), fast_factor(float)
+  # ret: void
+  def self.GetNavInputAmount2d(dir_sources, mode, slow_factor = 0.0, fast_factor = 0.0)
+    pOut = ImVec2.new
+    igGetNavInputAmount2d(pOut, dir_sources, mode, slow_factor, fast_factor)
+    return pOut
+  end
+
+  # arg: n(ImGuiNavInput)
+  # ret: pointer
+  def self.GetNavInputName(n)
+    igGetNavInputName(n)
+  end
+
+  # ret: pointer
+  def self.GetPlatformIO()
+    igGetPlatformIO()
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.GetPopupAllowedExtentRect(window)
+    pOut = ImRect.new
+    igGetPopupAllowedExtentRect(pOut, window)
     return pOut
   end
 
@@ -4034,6 +7995,16 @@ module ImGui
     igGetTime()
   end
 
+  # ret: pointer
+  def self.GetTopMostAndVisiblePopupModal()
+    igGetTopMostAndVisiblePopupModal()
+  end
+
+  # ret: pointer
+  def self.GetTopMostPopupModal()
+    igGetTopMostPopupModal()
+  end
+
   # ret: float
   def self.GetTreeNodeToLabelSpacing()
     igGetTreeNodeToLabelSpacing()
@@ -4042,6 +8013,18 @@ module ImGui
   # ret: pointer
   def self.GetVersion()
     igGetVersion()
+  end
+
+  # arg: viewport(ImGuiViewport*)
+  # ret: pointer
+  def self.GetViewportPlatformMonitor(viewport)
+    igGetViewportPlatformMonitor(viewport)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: bool
+  def self.GetWindowAlwaysWantOwnTabBar(window)
+    igGetWindowAlwaysWantOwnTabBar(window)
   end
 
   # ret: void
@@ -4056,6 +8039,21 @@ module ImGui
     pOut = ImVec2.new
     igGetWindowContentRegionMin(pOut)
     return pOut
+  end
+
+  # ret: uint
+  def self.GetWindowDockID()
+    igGetWindowDockID()
+  end
+
+  # ret: pointer
+  def self.GetWindowDockNode()
+    igGetWindowDockNode()
+  end
+
+  # ret: float
+  def self.GetWindowDpiScale()
+    igGetWindowDpiScale()
   end
 
   # ret: pointer
@@ -4075,6 +8073,32 @@ module ImGui
     return pOut
   end
 
+  # arg: window(ImGuiWindow*), dir(ImGuiDir)
+  # ret: uint
+  def self.GetWindowResizeBorderID(window, dir)
+    igGetWindowResizeBorderID(window, dir)
+  end
+
+  # arg: window(ImGuiWindow*), n(int)
+  # ret: uint
+  def self.GetWindowResizeCornerID(window, n)
+    igGetWindowResizeCornerID(window, n)
+  end
+
+  # arg: window(ImGuiWindow*), axis(ImGuiAxis)
+  # ret: uint
+  def self.GetWindowScrollbarID(window, axis)
+    igGetWindowScrollbarID(window, axis)
+  end
+
+  # arg: window(ImGuiWindow*), axis(ImGuiAxis)
+  # ret: void
+  def self.GetWindowScrollbarRect(window, axis)
+    pOut = ImRect.new
+    igGetWindowScrollbarRect(pOut, window, axis)
+    return pOut
+  end
+
   # ret: void
   def self.GetWindowSize()
     pOut = ImVec2.new
@@ -4082,9 +8106,603 @@ module ImGui
     return pOut
   end
 
+  # ret: pointer
+  def self.GetWindowViewport()
+    igGetWindowViewport()
+  end
+
   # ret: float
   def self.GetWindowWidth()
     igGetWindowWidth()
+  end
+
+  # arg: x(int)
+  # ret: int
+  def self.ImAbs_Int(x)
+    igImAbs_Int(x)
+  end
+
+  # arg: x(float)
+  # ret: float
+  def self.ImAbs_Float(x)
+    igImAbs_Float(x)
+  end
+
+  # arg: x(double)
+  # ret: double
+  def self.ImAbs_double(x)
+    igImAbs_double(x)
+  end
+
+  # arg: col_a(ImU32), col_b(ImU32)
+  # ret: uint
+  def self.ImAlphaBlendColors(col_a, col_b)
+    igImAlphaBlendColors(col_a, col_b)
+  end
+
+  # arg: p1(ImVec2), p2(ImVec2), p3(ImVec2), p4(ImVec2), t(float)
+  # ret: void
+  def self.ImBezierCubicCalc(p1, p2, p3, p4, t)
+    pOut = ImVec2.new
+    igImBezierCubicCalc(pOut, p1, p2, p3, p4, t)
+    return pOut
+  end
+
+  # arg: p1(ImVec2), p2(ImVec2), p3(ImVec2), p4(ImVec2), p(ImVec2), num_segments(int)
+  # ret: void
+  def self.ImBezierCubicClosestPoint(p1, p2, p3, p4, p, num_segments)
+    pOut = ImVec2.new
+    igImBezierCubicClosestPoint(pOut, p1, p2, p3, p4, p, num_segments)
+    return pOut
+  end
+
+  # arg: p1(ImVec2), p2(ImVec2), p3(ImVec2), p4(ImVec2), p(ImVec2), tess_tol(float)
+  # ret: void
+  def self.ImBezierCubicClosestPointCasteljau(p1, p2, p3, p4, p, tess_tol)
+    pOut = ImVec2.new
+    igImBezierCubicClosestPointCasteljau(pOut, p1, p2, p3, p4, p, tess_tol)
+    return pOut
+  end
+
+  # arg: p1(ImVec2), p2(ImVec2), p3(ImVec2), t(float)
+  # ret: void
+  def self.ImBezierQuadraticCalc(p1, p2, p3, t)
+    pOut = ImVec2.new
+    igImBezierQuadraticCalc(pOut, p1, p2, p3, t)
+    return pOut
+  end
+
+  # arg: arr(ImU32*), n(int)
+  # ret: void
+  def self.ImBitArrayClearBit(arr, n)
+    igImBitArrayClearBit(arr, n)
+  end
+
+  # arg: arr(ImU32*), n(int)
+  # ret: void
+  def self.ImBitArraySetBit(arr, n)
+    igImBitArraySetBit(arr, n)
+  end
+
+  # arg: arr(ImU32*), n(int), n2(int)
+  # ret: void
+  def self.ImBitArraySetBitRange(arr, n, n2)
+    igImBitArraySetBitRange(arr, n, n2)
+  end
+
+  # arg: arr(const ImU32*), n(int)
+  # ret: bool
+  def self.ImBitArrayTestBit(arr, n)
+    igImBitArrayTestBit(arr, n)
+  end
+
+  # arg: c(char)
+  # ret: bool
+  def self.ImCharIsBlankA(c)
+    igImCharIsBlankA(c)
+  end
+
+  # arg: c(unsigned int)
+  # ret: bool
+  def self.ImCharIsBlankW(c)
+    igImCharIsBlankW(c)
+  end
+
+  # arg: v(ImVec2), mn(ImVec2), mx(ImVec2)
+  # ret: void
+  def self.ImClamp(v, mn, mx)
+    pOut = ImVec2.new
+    igImClamp(pOut, v, mn, mx)
+    return pOut
+  end
+
+  # arg: a(ImVec2), b(ImVec2)
+  # ret: float
+  def self.ImDot(a, b)
+    igImDot(a, b)
+  end
+
+  # arg: file(ImFileHandle)
+  # ret: bool
+  def self.ImFileClose(file)
+    igImFileClose(file)
+  end
+
+  # arg: file(ImFileHandle)
+  # ret: uint64
+  def self.ImFileGetSize(file)
+    igImFileGetSize(file)
+  end
+
+  # arg: filename(const char*), mode(const char*), out_file_size(size_t*), padding_bytes(int)
+  # ret: pointer
+  def self.ImFileLoadToMemory(filename, mode, out_file_size = nil, padding_bytes = 0)
+    igImFileLoadToMemory(filename, mode, out_file_size, padding_bytes)
+  end
+
+  # arg: filename(const char*), mode(const char*)
+  # ret: pointer
+  def self.ImFileOpen(filename, mode)
+    igImFileOpen(filename, mode)
+  end
+
+  # arg: data(void*), size(ImU64), count(ImU64), file(ImFileHandle)
+  # ret: uint64
+  def self.ImFileRead(data, size, count, file)
+    igImFileRead(data, size, count, file)
+  end
+
+  # arg: data(const void*), size(ImU64), count(ImU64), file(ImFileHandle)
+  # ret: uint64
+  def self.ImFileWrite(data, size, count, file)
+    igImFileWrite(data, size, count, file)
+  end
+
+  # arg: f(float)
+  # ret: float
+  def self.ImFloor_Float(f)
+    igImFloor_Float(f)
+  end
+
+  # arg: v(ImVec2)
+  # ret: void
+  def self.ImFloor_Vec2(v)
+    pOut = ImVec2.new
+    igImFloor_Vec2(pOut, v)
+    return pOut
+  end
+
+  # arg: f(float)
+  # ret: float
+  def self.ImFloorSigned_Float(f)
+    igImFloorSigned_Float(f)
+  end
+
+  # arg: v(ImVec2)
+  # ret: void
+  def self.ImFloorSigned_Vec2(v)
+    pOut = ImVec2.new
+    igImFloorSigned_Vec2(pOut, v)
+    return pOut
+  end
+
+  # arg: atlas(ImFontAtlas*)
+  # ret: void
+  def self.ImFontAtlasBuildFinish(atlas)
+    igImFontAtlasBuildFinish(atlas)
+  end
+
+  # arg: atlas(ImFontAtlas*)
+  # ret: void
+  def self.ImFontAtlasBuildInit(atlas)
+    igImFontAtlasBuildInit(atlas)
+  end
+
+  # arg: out_table(unsigned char[256]), in_multiply_factor(float)
+  # ret: void
+  def self.ImFontAtlasBuildMultiplyCalcLookupTable(out_table, in_multiply_factor)
+    igImFontAtlasBuildMultiplyCalcLookupTable(out_table, in_multiply_factor)
+  end
+
+  # arg: table(const unsigned char[256]), pixels(unsigned char*), x(int), y(int), w(int), h(int), stride(int)
+  # ret: void
+  def self.ImFontAtlasBuildMultiplyRectAlpha8(table, pixels, x, y, w, h, stride)
+    igImFontAtlasBuildMultiplyRectAlpha8(table, pixels, x, y, w, h, stride)
+  end
+
+  # arg: atlas(ImFontAtlas*), stbrp_context_opaque(void*)
+  # ret: void
+  def self.ImFontAtlasBuildPackCustomRects(atlas, stbrp_context_opaque)
+    igImFontAtlasBuildPackCustomRects(atlas, stbrp_context_opaque)
+  end
+
+  # arg: atlas(ImFontAtlas*), x(int), y(int), w(int), h(int), in_str(const char*), in_marker_char(char), in_marker_pixel_value(unsigned int)
+  # ret: void
+  def self.ImFontAtlasBuildRender32bppRectFromString(atlas, x, y, w, h, in_str, in_marker_char, in_marker_pixel_value)
+    igImFontAtlasBuildRender32bppRectFromString(atlas, x, y, w, h, in_str, in_marker_char, in_marker_pixel_value)
+  end
+
+  # arg: atlas(ImFontAtlas*), x(int), y(int), w(int), h(int), in_str(const char*), in_marker_char(char), in_marker_pixel_value(unsigned char)
+  # ret: void
+  def self.ImFontAtlasBuildRender8bppRectFromString(atlas, x, y, w, h, in_str, in_marker_char, in_marker_pixel_value)
+    igImFontAtlasBuildRender8bppRectFromString(atlas, x, y, w, h, in_str, in_marker_char, in_marker_pixel_value)
+  end
+
+  # arg: atlas(ImFontAtlas*), font(ImFont*), font_config(ImFontConfig*), ascent(float), descent(float)
+  # ret: void
+  def self.ImFontAtlasBuildSetupFont(atlas, font, font_config, ascent, descent)
+    igImFontAtlasBuildSetupFont(atlas, font, font_config, ascent, descent)
+  end
+
+  # ret: pointer
+  def self.ImFontAtlasGetBuilderForStbTruetype()
+    igImFontAtlasGetBuilderForStbTruetype()
+  end
+
+  # arg: buf(char*), buf_size(size_t), fmt(const char*), ...(...)
+  # ret: int
+  def self.ImFormatString(buf, buf_size, fmt, *varargs)
+    igImFormatString(buf, buf_size, fmt, *varargs)
+  end
+
+  # arg: dx(float), dy(float)
+  # ret: int
+  def self.ImGetDirQuadrantFromDelta(dx, dy)
+    igImGetDirQuadrantFromDelta(dx, dy)
+  end
+
+  # arg: data(const void*), data_size(size_t), seed(ImU32)
+  # ret: uint
+  def self.ImHashData(data, data_size, seed = 0)
+    igImHashData(data, data_size, seed)
+  end
+
+  # arg: data(const char*), data_size(size_t), seed(ImU32)
+  # ret: uint
+  def self.ImHashStr(data, data_size = 0, seed = 0)
+    igImHashStr(data, data_size, seed)
+  end
+
+  # arg: lhs(ImVec2), fail_value(float)
+  # ret: float
+  def self.ImInvLength(lhs, fail_value)
+    igImInvLength(lhs, fail_value)
+  end
+
+  # arg: f(float)
+  # ret: bool
+  def self.ImIsFloatAboveGuaranteedIntegerPrecision(f)
+    igImIsFloatAboveGuaranteedIntegerPrecision(f)
+  end
+
+  # arg: v(int)
+  # ret: bool
+  def self.ImIsPowerOfTwo_Int(v)
+    igImIsPowerOfTwo_Int(v)
+  end
+
+  # arg: v(ImU64)
+  # ret: bool
+  def self.ImIsPowerOfTwo_U64(v)
+    igImIsPowerOfTwo_U64(v)
+  end
+
+  # arg: lhs(ImVec2)
+  # ret: float
+  def self.ImLengthSqr_Vec2(lhs)
+    igImLengthSqr_Vec2(lhs)
+  end
+
+  # arg: lhs(ImVec4)
+  # ret: float
+  def self.ImLengthSqr_Vec4(lhs)
+    igImLengthSqr_Vec4(lhs)
+  end
+
+  # arg: a(ImVec2), b(ImVec2), t(float)
+  # ret: void
+  def self.ImLerp_Vec2Float(a, b, t)
+    pOut = ImVec2.new
+    igImLerp_Vec2Float(pOut, a, b, t)
+    return pOut
+  end
+
+  # arg: a(ImVec2), b(ImVec2), t(ImVec2)
+  # ret: void
+  def self.ImLerp_Vec2Vec2(a, b, t)
+    pOut = ImVec2.new
+    igImLerp_Vec2Vec2(pOut, a, b, t)
+    return pOut
+  end
+
+  # arg: a(ImVec4), b(ImVec4), t(float)
+  # ret: void
+  def self.ImLerp_Vec4(a, b, t)
+    pOut = ImVec4.new
+    igImLerp_Vec4(pOut, a, b, t)
+    return pOut
+  end
+
+  # arg: a(ImVec2), b(ImVec2), p(ImVec2)
+  # ret: void
+  def self.ImLineClosestPoint(a, b, p)
+    pOut = ImVec2.new
+    igImLineClosestPoint(pOut, a, b, p)
+    return pOut
+  end
+
+  # arg: current(float), target(float), speed(float)
+  # ret: float
+  def self.ImLinearSweep(current, target, speed)
+    igImLinearSweep(current, target, speed)
+  end
+
+  # arg: x(float)
+  # ret: float
+  def self.ImLog_Float(x)
+    igImLog_Float(x)
+  end
+
+  # arg: x(double)
+  # ret: double
+  def self.ImLog_double(x)
+    igImLog_double(x)
+  end
+
+  # arg: lhs(ImVec2), rhs(ImVec2)
+  # ret: void
+  def self.ImMax(lhs, rhs)
+    pOut = ImVec2.new
+    igImMax(pOut, lhs, rhs)
+    return pOut
+  end
+
+  # arg: lhs(ImVec2), rhs(ImVec2)
+  # ret: void
+  def self.ImMin(lhs, rhs)
+    pOut = ImVec2.new
+    igImMin(pOut, lhs, rhs)
+    return pOut
+  end
+
+  # arg: a(int), b(int)
+  # ret: int
+  def self.ImModPositive(a, b)
+    igImModPositive(a, b)
+  end
+
+  # arg: lhs(ImVec2), rhs(ImVec2)
+  # ret: void
+  def self.ImMul(lhs, rhs)
+    pOut = ImVec2.new
+    igImMul(pOut, lhs, rhs)
+    return pOut
+  end
+
+  # arg: format(const char*)
+  # ret: pointer
+  def self.ImParseFormatFindEnd(format)
+    igImParseFormatFindEnd(format)
+  end
+
+  # arg: format(const char*)
+  # ret: pointer
+  def self.ImParseFormatFindStart(format)
+    igImParseFormatFindStart(format)
+  end
+
+  # arg: format(const char*), default_value(int)
+  # ret: int
+  def self.ImParseFormatPrecision(format, default_value)
+    igImParseFormatPrecision(format, default_value)
+  end
+
+  # arg: format(const char*), buf(char*), buf_size(size_t)
+  # ret: pointer
+  def self.ImParseFormatTrimDecorations(format, buf, buf_size)
+    igImParseFormatTrimDecorations(format, buf, buf_size)
+  end
+
+  # arg: x(float), y(float)
+  # ret: float
+  def self.ImPow_Float(x, y)
+    igImPow_Float(x, y)
+  end
+
+  # arg: x(double), y(double)
+  # ret: double
+  def self.ImPow_double(x, y)
+    igImPow_double(x, y)
+  end
+
+  # arg: base(void*), count(size_t), size_of_element(size_t), compare_func(int(*)(void const*,void const*))
+  # ret: void
+  def self.ImQsort(base, count, size_of_element, compare_func)
+    igImQsort(base, count, size_of_element, compare_func)
+  end
+
+  # arg: v(ImVec2), cos_a(float), sin_a(float)
+  # ret: void
+  def self.ImRotate(v, cos_a, sin_a)
+    pOut = ImVec2.new
+    igImRotate(pOut, v, cos_a, sin_a)
+    return pOut
+  end
+
+  # arg: x(float)
+  # ret: float
+  def self.ImRsqrt_Float(x)
+    igImRsqrt_Float(x)
+  end
+
+  # arg: x(double)
+  # ret: double
+  def self.ImRsqrt_double(x)
+    igImRsqrt_double(x)
+  end
+
+  # arg: f(float)
+  # ret: float
+  def self.ImSaturate(f)
+    igImSaturate(f)
+  end
+
+  # arg: x(float)
+  # ret: float
+  def self.ImSign_Float(x)
+    igImSign_Float(x)
+  end
+
+  # arg: x(double)
+  # ret: double
+  def self.ImSign_double(x)
+    igImSign_double(x)
+  end
+
+  # arg: str(const char*)
+  # ret: pointer
+  def self.ImStrSkipBlank(str)
+    igImStrSkipBlank(str)
+  end
+
+  # arg: str(char*)
+  # ret: void
+  def self.ImStrTrimBlanks(str)
+    igImStrTrimBlanks(str)
+  end
+
+  # arg: buf_mid_line(const ImWchar*), buf_begin(const ImWchar*)
+  # ret: pointer
+  def self.ImStrbolW(buf_mid_line, buf_begin)
+    igImStrbolW(buf_mid_line, buf_begin)
+  end
+
+  # arg: str_begin(const char*), str_end(const char*), c(char)
+  # ret: pointer
+  def self.ImStrchrRange(str_begin, str_end, c)
+    igImStrchrRange(str_begin, str_end, c)
+  end
+
+  # arg: str(const char*)
+  # ret: pointer
+  def self.ImStrdup(str)
+    igImStrdup(str)
+  end
+
+  # arg: dst(char*), p_dst_size(size_t*), str(const char*)
+  # ret: pointer
+  def self.ImStrdupcpy(dst, p_dst_size, str)
+    igImStrdupcpy(dst, p_dst_size, str)
+  end
+
+  # arg: str(const char*), str_end(const char*)
+  # ret: pointer
+  def self.ImStreolRange(str, str_end)
+    igImStreolRange(str, str_end)
+  end
+
+  # arg: str1(const char*), str2(const char*)
+  # ret: int
+  def self.ImStricmp(str1, str2)
+    igImStricmp(str1, str2)
+  end
+
+  # arg: haystack(const char*), haystack_end(const char*), needle(const char*), needle_end(const char*)
+  # ret: pointer
+  def self.ImStristr(haystack, haystack_end, needle, needle_end)
+    igImStristr(haystack, haystack_end, needle, needle_end)
+  end
+
+  # arg: str(const ImWchar*)
+  # ret: int
+  def self.ImStrlenW(str)
+    igImStrlenW(str)
+  end
+
+  # arg: dst(char*), src(const char*), count(size_t)
+  # ret: void
+  def self.ImStrncpy(dst, src, count)
+    igImStrncpy(dst, src, count)
+  end
+
+  # arg: str1(const char*), str2(const char*), count(size_t)
+  # ret: int
+  def self.ImStrnicmp(str1, str2, count)
+    igImStrnicmp(str1, str2, count)
+  end
+
+  # arg: out_char(unsigned int*), in_text(const char*), in_text_end(const char*)
+  # ret: int
+  def self.ImTextCharFromUtf8(out_char, in_text, in_text_end)
+    igImTextCharFromUtf8(out_char, in_text, in_text_end)
+  end
+
+  # arg: out_buf(char[5]), c(unsigned int)
+  # ret: pointer
+  def self.ImTextCharToUtf8(out_buf, c)
+    igImTextCharToUtf8(out_buf, c)
+  end
+
+  # arg: in_text(const char*), in_text_end(const char*)
+  # ret: int
+  def self.ImTextCountCharsFromUtf8(in_text, in_text_end)
+    igImTextCountCharsFromUtf8(in_text, in_text_end)
+  end
+
+  # arg: in_text(const char*), in_text_end(const char*)
+  # ret: int
+  def self.ImTextCountUtf8BytesFromChar(in_text, in_text_end)
+    igImTextCountUtf8BytesFromChar(in_text, in_text_end)
+  end
+
+  # arg: in_text(const ImWchar*), in_text_end(const ImWchar*)
+  # ret: int
+  def self.ImTextCountUtf8BytesFromStr(in_text, in_text_end)
+    igImTextCountUtf8BytesFromStr(in_text, in_text_end)
+  end
+
+  # arg: out_buf(ImWchar*), out_buf_size(int), in_text(const char*), in_text_end(const char*), in_remaining(const char**)
+  # ret: int
+  def self.ImTextStrFromUtf8(out_buf, out_buf_size, in_text, in_text_end, in_remaining = nil)
+    igImTextStrFromUtf8(out_buf, out_buf_size, in_text, in_text_end, in_remaining)
+  end
+
+  # arg: out_buf(char*), out_buf_size(int), in_text(const ImWchar*), in_text_end(const ImWchar*)
+  # ret: int
+  def self.ImTextStrToUtf8(out_buf, out_buf_size, in_text, in_text_end)
+    igImTextStrToUtf8(out_buf, out_buf_size, in_text, in_text_end)
+  end
+
+  # arg: a(ImVec2), b(ImVec2), c(ImVec2)
+  # ret: float
+  def self.ImTriangleArea(a, b, c)
+    igImTriangleArea(a, b, c)
+  end
+
+  # arg: a(ImVec2), b(ImVec2), c(ImVec2), p(ImVec2), out_u(float*), out_v(float*), out_w(float*)
+  # ret: void
+  def self.ImTriangleBarycentricCoords(a, b, c, p, out_u, out_v, out_w)
+    igImTriangleBarycentricCoords(a, b, c, p, out_u, out_v, out_w)
+  end
+
+  # arg: a(ImVec2), b(ImVec2), c(ImVec2), p(ImVec2)
+  # ret: void
+  def self.ImTriangleClosestPoint(a, b, c, p)
+    pOut = ImVec2.new
+    igImTriangleClosestPoint(pOut, a, b, c, p)
+    return pOut
+  end
+
+  # arg: a(ImVec2), b(ImVec2), c(ImVec2), p(ImVec2)
+  # ret: bool
+  def self.ImTriangleContainsPoint(a, b, c, p)
+    igImTriangleContainsPoint(a, b, c, p)
+  end
+
+  # arg: v(int)
+  # ret: int
+  def self.ImUpperPowerOfTwo(v)
+    igImUpperPowerOfTwo(v)
   end
 
   # arg: user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), tint_col(ImVec4), border_col(ImVec4)
@@ -4099,10 +8717,22 @@ module ImGui
     igImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col)
   end
 
+  # arg: id(ImGuiID), texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), padding(ImVec2), bg_col(ImVec4), tint_col(ImVec4)
+  # ret: bool
+  def self.ImageButtonEx(id, texture_id, size, uv0, uv1, padding, bg_col, tint_col)
+    igImageButtonEx(id, texture_id, size, uv0, uv1, padding, bg_col, tint_col)
+  end
+
   # arg: indent_w(float)
   # ret: void
   def self.Indent(indent_w = 0.0)
     igIndent(indent_w)
+  end
+
+  # arg: context(ImGuiContext*)
+  # ret: void
+  def self.Initialize(context)
+    igInitialize(context)
   end
 
   # arg: label(const char*), v(double*), step(double), step_fast(double), format(const char*), flags(ImGuiInputTextFlags)
@@ -4177,6 +8807,12 @@ module ImGui
     igInputText(label, buf, buf_size, flags, callback, user_data)
   end
 
+  # arg: label(const char*), hint(const char*), buf(char*), buf_size(int), size_arg(ImVec2), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
+  # ret: bool
+  def self.InputTextEx(label, hint, buf, buf_size, size_arg, flags, callback = nil, user_data = nil)
+    igInputTextEx(label, hint, buf, buf_size, size_arg, flags, callback, user_data)
+  end
+
   # arg: label(const char*), buf(char*), buf_size(size_t), size(ImVec2), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
   # ret: bool
   def self.InputTextMultiline(label, buf, buf_size, size = ImVec2.create(0,0), flags = 0, callback = nil, user_data = nil)
@@ -4193,6 +8829,24 @@ module ImGui
   # ret: bool
   def self.InvisibleButton(str_id, size, flags = 0)
     igInvisibleButton(str_id, size, flags)
+  end
+
+  # arg: key(ImGuiKey)
+  # ret: bool
+  def self.IsActiveIdUsingKey(key)
+    igIsActiveIdUsingKey(key)
+  end
+
+  # arg: dir(ImGuiDir)
+  # ret: bool
+  def self.IsActiveIdUsingNavDir(dir)
+    igIsActiveIdUsingNavDir(dir)
+  end
+
+  # arg: input(ImGuiNavInput)
+  # ret: bool
+  def self.IsActiveIdUsingNavInput(input)
+    igIsActiveIdUsingNavInput(input)
   end
 
   # ret: bool
@@ -4213,6 +8867,23 @@ module ImGui
   # ret: bool
   def self.IsAnyMouseDown()
     igIsAnyMouseDown()
+  end
+
+  # arg: bb(ImRect), id(ImGuiID)
+  # ret: bool
+  def self.IsClippedEx(bb, id)
+    igIsClippedEx(bb, id)
+  end
+
+  # ret: bool
+  def self.IsDragDropPayloadBeingAccepted()
+    igIsDragDropPayloadBeingAccepted()
+  end
+
+  # arg: key(ImGuiKey)
+  # ret: bool
+  def self.IsGamepadKey(key)
+    igIsGamepadKey(key)
   end
 
   # ret: bool
@@ -4263,6 +8934,11 @@ module ImGui
   end
 
   # ret: bool
+  def self.IsItemToggledSelection()
+    igIsItemToggledSelection()
+  end
+
+  # ret: bool
   def self.IsItemVisible()
     igIsItemVisible()
   end
@@ -4279,10 +8955,22 @@ module ImGui
     igIsKeyPressed(key, repeat)
   end
 
+  # arg: key(ImGuiKey), repeat(bool)
+  # ret: bool
+  def self.IsKeyPressedMap(key, repeat = true)
+    igIsKeyPressedMap(key, repeat)
+  end
+
   # arg: key(ImGuiKey)
   # ret: bool
   def self.IsKeyReleased(key)
     igIsKeyReleased(key)
+  end
+
+  # arg: key(ImGuiKey)
+  # ret: bool
+  def self.IsLegacyKey(key)
+    igIsLegacyKey(key)
   end
 
   # arg: button(ImGuiMouseButton), repeat(bool)
@@ -4301,6 +8989,12 @@ module ImGui
   # ret: bool
   def self.IsMouseDown(button)
     igIsMouseDown(button)
+  end
+
+  # arg: button(ImGuiMouseButton), lock_threshold(float)
+  # ret: bool
+  def self.IsMouseDragPastThreshold(button, lock_threshold = -1.0)
+    igIsMouseDragPastThreshold(button, lock_threshold)
   end
 
   # arg: button(ImGuiMouseButton), lock_threshold(float)
@@ -4327,10 +9021,34 @@ module ImGui
     igIsMouseReleased(button)
   end
 
+  # arg: key(ImGuiKey)
+  # ret: bool
+  def self.IsNamedKey(key)
+    igIsNamedKey(key)
+  end
+
+  # arg: n(ImGuiNavInput)
+  # ret: bool
+  def self.IsNavInputDown(n)
+    igIsNavInputDown(n)
+  end
+
+  # arg: n(ImGuiNavInput), rm(ImGuiInputReadMode)
+  # ret: bool
+  def self.IsNavInputTest(n, rm)
+    igIsNavInputTest(n, rm)
+  end
+
   # arg: str_id(const char*), flags(ImGuiPopupFlags)
   # ret: bool
-  def self.IsPopupOpen(str_id, flags = 0)
-    igIsPopupOpen(str_id, flags)
+  def self.IsPopupOpen_Str(str_id, flags = 0)
+    igIsPopupOpen_Str(str_id, flags)
+  end
+
+  # arg: id(ImGuiID), popup_flags(ImGuiPopupFlags)
+  # ret: bool
+  def self.IsPopupOpen_ID(id, popup_flags)
+    igIsPopupOpen_ID(id, popup_flags)
   end
 
   # arg: size(ImVec2)
@@ -4345,14 +9063,31 @@ module ImGui
     igIsRectVisible_Vec2(rect_min, rect_max)
   end
 
+  # arg: potential_above(ImGuiWindow*), potential_below(ImGuiWindow*)
+  # ret: bool
+  def self.IsWindowAbove(potential_above, potential_below)
+    igIsWindowAbove(potential_above, potential_below)
+  end
+
   # ret: bool
   def self.IsWindowAppearing()
     igIsWindowAppearing()
   end
 
+  # arg: window(ImGuiWindow*), potential_parent(ImGuiWindow*), popup_hierarchy(bool), dock_hierarchy(bool)
+  # ret: bool
+  def self.IsWindowChildOf(window, potential_parent, popup_hierarchy, dock_hierarchy)
+    igIsWindowChildOf(window, potential_parent, popup_hierarchy, dock_hierarchy)
+  end
+
   # ret: bool
   def self.IsWindowCollapsed()
     igIsWindowCollapsed()
+  end
+
+  # ret: bool
+  def self.IsWindowDocked()
+    igIsWindowDocked()
   end
 
   # arg: flags(ImGuiFocusedFlags)
@@ -4365,6 +9100,48 @@ module ImGui
   # ret: bool
   def self.IsWindowHovered(flags = 0)
     igIsWindowHovered(flags)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: bool
+  def self.IsWindowNavFocusable(window)
+    igIsWindowNavFocusable(window)
+  end
+
+  # arg: window(ImGuiWindow*), potential_parent(ImGuiWindow*)
+  # ret: bool
+  def self.IsWindowWithinBeginStackOf(window, potential_parent)
+    igIsWindowWithinBeginStackOf(window, potential_parent)
+  end
+
+  # arg: bb(ImRect), id(ImGuiID), nav_bb(const ImRect*), extra_flags(ImGuiItemFlags)
+  # ret: bool
+  def self.ItemAdd(bb, id, nav_bb = nil, extra_flags = 0)
+    igItemAdd(bb, id, nav_bb, extra_flags)
+  end
+
+  # arg: bb(ImRect), id(ImGuiID)
+  # ret: bool
+  def self.ItemHoverable(bb, id)
+    igItemHoverable(bb, id)
+  end
+
+  # arg: size(ImVec2), text_baseline_y(float)
+  # ret: void
+  def self.ItemSize_Vec2(size, text_baseline_y = -1.0)
+    igItemSize_Vec2(size, text_baseline_y)
+  end
+
+  # arg: bb(ImRect), text_baseline_y(float)
+  # ret: void
+  def self.ItemSize_Rect(bb, text_baseline_y = -1.0)
+    igItemSize_Rect(bb, text_baseline_y)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: void
+  def self.KeepAliveID(id)
+    igKeepAliveID(id)
   end
 
   # arg: label(const char*), fmt(const char*), ...(...)
@@ -4397,6 +9174,12 @@ module ImGui
     igLoadIniSettingsFromMemory(ini_data, ini_size)
   end
 
+  # arg: type(ImGuiLogType), auto_open_depth(int)
+  # ret: void
+  def self.LogBegin(type, auto_open_depth)
+    igLogBegin(type, auto_open_depth)
+  end
+
   # ret: void
   def self.LogButtons()
     igLogButtons()
@@ -4407,10 +9190,28 @@ module ImGui
     igLogFinish()
   end
 
+  # arg: ref_pos(const ImVec2*), text(const char*), text_end(const char*)
+  # ret: void
+  def self.LogRenderedText(ref_pos, text, text_end = nil)
+    igLogRenderedText(ref_pos, text, text_end)
+  end
+
+  # arg: prefix(const char*), suffix(const char*)
+  # ret: void
+  def self.LogSetNextTextDecoration(prefix, suffix)
+    igLogSetNextTextDecoration(prefix, suffix)
+  end
+
   # arg: fmt(const char*), ...(...)
   # ret: void
   def self.LogText(fmt, *varargs)
     igLogText(fmt, *varargs)
+  end
+
+  # arg: auto_open_depth(int)
+  # ret: void
+  def self.LogToBuffer(auto_open_depth = -1)
+    igLogToBuffer(auto_open_depth)
   end
 
   # arg: auto_open_depth(int)
@@ -4429,6 +9230,23 @@ module ImGui
   # ret: void
   def self.LogToTTY(auto_open_depth = -1)
     igLogToTTY(auto_open_depth)
+  end
+
+  # ret: void
+  def self.MarkIniSettingsDirty_Nil()
+    igMarkIniSettingsDirty_Nil()
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.MarkIniSettingsDirty_WindowPtr(window)
+    igMarkIniSettingsDirty_WindowPtr(window)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: void
+  def self.MarkItemEdited(id)
+    igMarkItemEdited(id)
   end
 
   # arg: size(size_t)
@@ -4453,6 +9271,62 @@ module ImGui
   # ret: bool
   def self.MenuItem_BoolPtr(label, shortcut, p_selected, enabled = true)
     igMenuItem_BoolPtr(label, shortcut, p_selected, enabled)
+  end
+
+  # arg: label(const char*), icon(const char*), shortcut(const char*), selected(bool), enabled(bool)
+  # ret: bool
+  def self.MenuItemEx(label, icon, shortcut = nil, selected = false, enabled = true)
+    igMenuItemEx(label, icon, shortcut, selected, enabled)
+  end
+
+  # ret: void
+  def self.NavInitRequestApplyResult()
+    igNavInitRequestApplyResult()
+  end
+
+  # arg: window(ImGuiWindow*), force_reinit(bool)
+  # ret: void
+  def self.NavInitWindow(window, force_reinit)
+    igNavInitWindow(window, force_reinit)
+  end
+
+  # ret: void
+  def self.NavMoveRequestApplyResult()
+    igNavMoveRequestApplyResult()
+  end
+
+  # ret: bool
+  def self.NavMoveRequestButNoResultYet()
+    igNavMoveRequestButNoResultYet()
+  end
+
+  # ret: void
+  def self.NavMoveRequestCancel()
+    igNavMoveRequestCancel()
+  end
+
+  # arg: move_dir(ImGuiDir), clip_dir(ImGuiDir), move_flags(ImGuiNavMoveFlags), scroll_flags(ImGuiScrollFlags)
+  # ret: void
+  def self.NavMoveRequestForward(move_dir, clip_dir, move_flags, scroll_flags)
+    igNavMoveRequestForward(move_dir, clip_dir, move_flags, scroll_flags)
+  end
+
+  # arg: result(ImGuiNavItemData*)
+  # ret: void
+  def self.NavMoveRequestResolveWithLastItem(result)
+    igNavMoveRequestResolveWithLastItem(result)
+  end
+
+  # arg: move_dir(ImGuiDir), clip_dir(ImGuiDir), move_flags(ImGuiNavMoveFlags), scroll_flags(ImGuiScrollFlags)
+  # ret: void
+  def self.NavMoveRequestSubmit(move_dir, clip_dir, move_flags, scroll_flags)
+    igNavMoveRequestSubmit(move_dir, clip_dir, move_flags, scroll_flags)
+  end
+
+  # arg: window(ImGuiWindow*), move_flags(ImGuiNavMoveFlags)
+  # ret: void
+  def self.NavMoveRequestTryWrapping(window, move_flags)
+    igNavMoveRequestTryWrapping(window, move_flags)
   end
 
   # ret: void
@@ -4482,10 +9356,22 @@ module ImGui
     igOpenPopup_ID(id, popup_flags)
   end
 
+  # arg: id(ImGuiID), popup_flags(ImGuiPopupFlags)
+  # ret: void
+  def self.OpenPopupEx(id, popup_flags = ImGuiPopupFlags_None)
+    igOpenPopupEx(id, popup_flags)
+  end
+
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: void
   def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 1)
     igOpenPopupOnItemClick(str_id, popup_flags)
+  end
+
+  # arg: plot_type(ImGuiPlotType), label(const char*), values_getter(float(*)(void* data,int idx)), data(void*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), frame_size(ImVec2)
+  # ret: int
+  def self.PlotEx(plot_type, label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, frame_size)
+    igPlotEx(plot_type, label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, frame_size)
   end
 
   # arg: label(const char*), values(const float*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2), stride(int)
@@ -4528,6 +9414,16 @@ module ImGui
   end
 
   # ret: void
+  def self.PopColumnsBackground()
+    igPopColumnsBackground()
+  end
+
+  # ret: void
+  def self.PopFocusScope()
+    igPopFocusScope()
+  end
+
+  # ret: void
   def self.PopFont()
     igPopFont()
   end
@@ -4535,6 +9431,11 @@ module ImGui
   # ret: void
   def self.PopID()
     igPopID()
+  end
+
+  # ret: void
+  def self.PopItemFlag()
+    igPopItemFlag()
   end
 
   # ret: void
@@ -4583,6 +9484,23 @@ module ImGui
     igPushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
   end
 
+  # arg: column_index(int)
+  # ret: void
+  def self.PushColumnClipRect(column_index)
+    igPushColumnClipRect(column_index)
+  end
+
+  # ret: void
+  def self.PushColumnsBackground()
+    igPushColumnsBackground()
+  end
+
+  # arg: id(ImGuiID)
+  # ret: void
+  def self.PushFocusScope(id)
+    igPushFocusScope(id)
+  end
+
   # arg: font(ImFont*)
   # ret: void
   def self.PushFont(font)
@@ -4613,10 +9531,28 @@ module ImGui
     igPushID_Int(int_id)
   end
 
+  # arg: option(ImGuiItemFlags), enabled(bool)
+  # ret: void
+  def self.PushItemFlag(option, enabled)
+    igPushItemFlag(option, enabled)
+  end
+
   # arg: item_width(float)
   # ret: void
   def self.PushItemWidth(item_width)
     igPushItemWidth(item_width)
+  end
+
+  # arg: components(int), width_full(float)
+  # ret: void
+  def self.PushMultiItemsWidths(components, width_full)
+    igPushMultiItemsWidths(components, width_full)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: void
+  def self.PushOverrideID(id)
+    igPushOverrideID(id)
   end
 
   # arg: idx(ImGuiCol), col(ImU32)
@@ -4661,9 +9597,123 @@ module ImGui
     igRadioButton_IntPtr(label, v, v_button)
   end
 
+  # arg: context(ImGuiContext*), hook_to_remove(ImGuiID)
+  # ret: void
+  def self.RemoveContextHook(context, hook_to_remove)
+    igRemoveContextHook(context, hook_to_remove)
+  end
+
   # ret: void
   def self.Render()
     igRender()
+  end
+
+  # arg: draw_list(ImDrawList*), pos(ImVec2), col(ImU32), dir(ImGuiDir), scale(float)
+  # ret: void
+  def self.RenderArrow(draw_list, pos, col, dir, scale = 1.0)
+    igRenderArrow(draw_list, pos, col, dir, scale)
+  end
+
+  # arg: draw_list(ImDrawList*), p_min(ImVec2), sz(float), col(ImU32)
+  # ret: void
+  def self.RenderArrowDockMenu(draw_list, p_min, sz, col)
+    igRenderArrowDockMenu(draw_list, p_min, sz, col)
+  end
+
+  # arg: draw_list(ImDrawList*), pos(ImVec2), half_sz(ImVec2), direction(ImGuiDir), col(ImU32)
+  # ret: void
+  def self.RenderArrowPointingAt(draw_list, pos, half_sz, direction, col)
+    igRenderArrowPointingAt(draw_list, pos, half_sz, direction, col)
+  end
+
+  # arg: draw_list(ImDrawList*), pos(ImVec2), col(ImU32)
+  # ret: void
+  def self.RenderBullet(draw_list, pos, col)
+    igRenderBullet(draw_list, pos, col)
+  end
+
+  # arg: draw_list(ImDrawList*), pos(ImVec2), col(ImU32), sz(float)
+  # ret: void
+  def self.RenderCheckMark(draw_list, pos, col, sz)
+    igRenderCheckMark(draw_list, pos, col, sz)
+  end
+
+  # arg: draw_list(ImDrawList*), p_min(ImVec2), p_max(ImVec2), fill_col(ImU32), grid_step(float), grid_off(ImVec2), rounding(float), flags(ImDrawFlags)
+  # ret: void
+  def self.RenderColorRectWithAlphaCheckerboard(draw_list, p_min, p_max, fill_col, grid_step, grid_off, rounding = 0.0, flags = 0)
+    igRenderColorRectWithAlphaCheckerboard(draw_list, p_min, p_max, fill_col, grid_step, grid_off, rounding, flags)
+  end
+
+  # arg: p_min(ImVec2), p_max(ImVec2), fill_col(ImU32), border(bool), rounding(float)
+  # ret: void
+  def self.RenderFrame(p_min, p_max, fill_col, border = true, rounding = 0.0)
+    igRenderFrame(p_min, p_max, fill_col, border, rounding)
+  end
+
+  # arg: p_min(ImVec2), p_max(ImVec2), rounding(float)
+  # ret: void
+  def self.RenderFrameBorder(p_min, p_max, rounding = 0.0)
+    igRenderFrameBorder(p_min, p_max, rounding)
+  end
+
+  # arg: draw_list(ImDrawList*), pos(ImVec2), scale(float), mouse_cursor(ImGuiMouseCursor), col_fill(ImU32), col_border(ImU32), col_shadow(ImU32)
+  # ret: void
+  def self.RenderMouseCursor(draw_list, pos, scale, mouse_cursor, col_fill, col_border, col_shadow)
+    igRenderMouseCursor(draw_list, pos, scale, mouse_cursor, col_fill, col_border, col_shadow)
+  end
+
+  # arg: bb(ImRect), id(ImGuiID), flags(ImGuiNavHighlightFlags)
+  # ret: void
+  def self.RenderNavHighlight(bb, id, flags = ImGuiNavHighlightFlags_TypeDefault)
+    igRenderNavHighlight(bb, id, flags)
+  end
+
+  # arg: platform_render_arg(void*), renderer_render_arg(void*)
+  # ret: void
+  def self.RenderPlatformWindowsDefault(platform_render_arg = nil, renderer_render_arg = nil)
+    igRenderPlatformWindowsDefault(platform_render_arg, renderer_render_arg)
+  end
+
+  # arg: draw_list(ImDrawList*), rect(ImRect), col(ImU32), x_start_norm(float), x_end_norm(float), rounding(float)
+  # ret: void
+  def self.RenderRectFilledRangeH(draw_list, rect, col, x_start_norm, x_end_norm, rounding)
+    igRenderRectFilledRangeH(draw_list, rect, col, x_start_norm, x_end_norm, rounding)
+  end
+
+  # arg: draw_list(ImDrawList*), outer(ImRect), inner(ImRect), col(ImU32), rounding(float)
+  # ret: void
+  def self.RenderRectFilledWithHole(draw_list, outer, inner, col, rounding)
+    igRenderRectFilledWithHole(draw_list, outer, inner, col, rounding)
+  end
+
+  # arg: pos(ImVec2), text(const char*), text_end(const char*), hide_text_after_hash(bool)
+  # ret: void
+  def self.RenderText(pos, text, text_end = nil, hide_text_after_hash = true)
+    igRenderText(pos, text, text_end, hide_text_after_hash)
+  end
+
+  # arg: pos_min(ImVec2), pos_max(ImVec2), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*), align(ImVec2), clip_rect(const ImRect*)
+  # ret: void
+  def self.RenderTextClipped(pos_min, pos_max, text, text_end, text_size_if_known, align = ImVec2.create(0,0), clip_rect = nil)
+    igRenderTextClipped(pos_min, pos_max, text, text_end, text_size_if_known, align, clip_rect)
+  end
+
+  # arg: draw_list(ImDrawList*), pos_min(ImVec2), pos_max(ImVec2), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*), align(ImVec2), clip_rect(const ImRect*)
+  # ret: void
+  def self.RenderTextClippedEx(draw_list, pos_min, pos_max, text, text_end, text_size_if_known, align = ImVec2.create(0,0), clip_rect = nil)
+    igRenderTextClippedEx(draw_list, pos_min, pos_max, text, text_end, text_size_if_known, align, clip_rect)
+  end
+
+  # arg: draw_list(ImDrawList*), pos_min(ImVec2), pos_max(ImVec2), clip_max_x(float), ellipsis_max_x(float), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*)
+  # ret: void
+  def self.RenderTextEllipsis(draw_list, pos_min, pos_max, clip_max_x, ellipsis_max_x, text, text_end, text_size_if_known)
+    igRenderTextEllipsis(draw_list, pos_min, pos_max, clip_max_x, ellipsis_max_x, text, text_end, text_size_if_known)
+  end
+
+  # arg: pos(ImVec2), text(const char*), text_end(const char*), wrap_width(float)
+  # ret: void
+  def self.RenderTextWrapped(pos, text, text_end, wrap_width)
+    igRenderTextWrapped(pos, text, text_end, wrap_width)
   end
 
   # arg: button(ImGuiMouseButton)
@@ -4690,6 +9740,50 @@ module ImGui
     igSaveIniSettingsToMemory(out_ini_size)
   end
 
+  # arg: viewport(ImGuiViewportP*), scale(float)
+  # ret: void
+  def self.ScaleWindowsInViewport(viewport, scale)
+    igScaleWindowsInViewport(viewport, scale)
+  end
+
+  # arg: window(ImGuiWindow*), rect(ImRect)
+  # ret: void
+  def self.ScrollToBringRectIntoView(window, rect)
+    igScrollToBringRectIntoView(window, rect)
+  end
+
+  # arg: flags(ImGuiScrollFlags)
+  # ret: void
+  def self.ScrollToItem(flags = 0)
+    igScrollToItem(flags)
+  end
+
+  # arg: window(ImGuiWindow*), rect(ImRect), flags(ImGuiScrollFlags)
+  # ret: void
+  def self.ScrollToRect(window, rect, flags = 0)
+    igScrollToRect(window, rect, flags)
+  end
+
+  # arg: window(ImGuiWindow*), rect(ImRect), flags(ImGuiScrollFlags)
+  # ret: void
+  def self.ScrollToRectEx(window, rect, flags = 0)
+    pOut = ImVec2.new
+    igScrollToRectEx(pOut, window, rect, flags)
+    return pOut
+  end
+
+  # arg: axis(ImGuiAxis)
+  # ret: void
+  def self.Scrollbar(axis)
+    igScrollbar(axis)
+  end
+
+  # arg: bb(ImRect), id(ImGuiID), axis(ImGuiAxis), p_scroll_v(ImS64*), avail_v(ImS64), contents_v(ImS64), flags(ImDrawFlags)
+  # ret: bool
+  def self.ScrollbarEx(bb, id, axis, p_scroll_v, avail_v, contents_v, flags)
+    igScrollbarEx(bb, id, axis, p_scroll_v, avail_v, contents_v, flags)
+  end
+
   # arg: label(const char*), selected(bool), flags(ImGuiSelectableFlags), size(ImVec2)
   # ret: bool
   def self.Selectable_Bool(label, selected = false, flags = 0, size = ImVec2.create(0,0))
@@ -4705,6 +9799,29 @@ module ImGui
   # ret: void
   def self.Separator()
     igSeparator()
+  end
+
+  # arg: flags(ImGuiSeparatorFlags)
+  # ret: void
+  def self.SeparatorEx(flags)
+    igSeparatorEx(flags)
+  end
+
+  # arg: id(ImGuiID), window(ImGuiWindow*)
+  # ret: void
+  def self.SetActiveID(id, window)
+    igSetActiveID(id, window)
+  end
+
+  # arg: key(ImGuiKey)
+  # ret: void
+  def self.SetActiveIdUsingKey(key)
+    igSetActiveIdUsingKey(key)
+  end
+
+  # ret: void
+  def self.SetActiveIdUsingNavAndKeys()
+    igSetActiveIdUsingNavAndKeys()
   end
 
   # arg: alloc_func(ImGuiMemAllocFunc), free_func(ImGuiMemFreeFunc), user_data(void*)
@@ -4743,6 +9860,18 @@ module ImGui
     igSetCurrentContext(ctx)
   end
 
+  # arg: font(ImFont*)
+  # ret: void
+  def self.SetCurrentFont(font)
+    igSetCurrentFont(font)
+  end
+
+  # arg: window(ImGuiWindow*), viewport(ImGuiViewportP*)
+  # ret: void
+  def self.SetCurrentViewport(window, viewport)
+    igSetCurrentViewport(window, viewport)
+  end
+
   # arg: local_pos(ImVec2)
   # ret: void
   def self.SetCursorPos(local_pos)
@@ -4773,6 +9902,18 @@ module ImGui
     igSetDragDropPayload(type, data, sz, cond)
   end
 
+  # arg: id(ImGuiID), window(ImGuiWindow*)
+  # ret: void
+  def self.SetFocusID(id, window)
+    igSetFocusID(id, window)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: void
+  def self.SetHoveredID(id)
+    igSetHoveredID(id)
+  end
+
   # ret: void
   def self.SetItemAllowOverlap()
     igSetItemAllowOverlap()
@@ -4783,16 +9924,33 @@ module ImGui
     igSetItemDefaultFocus()
   end
 
+  # ret: void
+  def self.SetItemUsingMouseWheel()
+    igSetItemUsingMouseWheel()
+  end
+
   # arg: offset(int)
   # ret: void
   def self.SetKeyboardFocusHere(offset = 0)
     igSetKeyboardFocusHere(offset)
   end
 
+  # arg: item_id(ImGuiID), in_flags(ImGuiItemFlags), status_flags(ImGuiItemStatusFlags), item_rect(ImRect)
+  # ret: void
+  def self.SetLastItemData(item_id, in_flags, status_flags, item_rect)
+    igSetLastItemData(item_id, in_flags, status_flags, item_rect)
+  end
+
   # arg: cursor_type(ImGuiMouseCursor)
   # ret: void
   def self.SetMouseCursor(cursor_type)
     igSetMouseCursor(cursor_type)
+  end
+
+  # arg: id(ImGuiID), nav_layer(ImGuiNavLayer), focus_scope_id(ImGuiID), rect_rel(ImRect)
+  # ret: void
+  def self.SetNavID(id, nav_layer, focus_scope_id, rect_rel)
+    igSetNavID(id, nav_layer, focus_scope_id, rect_rel)
   end
 
   # arg: is_open(bool), cond(ImGuiCond)
@@ -4813,6 +9971,12 @@ module ImGui
     igSetNextWindowBgAlpha(alpha)
   end
 
+  # arg: window_class(const ImGuiWindowClass*)
+  # ret: void
+  def self.SetNextWindowClass(window_class)
+    igSetNextWindowClass(window_class)
+  end
+
   # arg: collapsed(bool), cond(ImGuiCond)
   # ret: void
   def self.SetNextWindowCollapsed(collapsed, cond = 0)
@@ -4825,6 +9989,12 @@ module ImGui
     igSetNextWindowContentSize(size)
   end
 
+  # arg: dock_id(ImGuiID), cond(ImGuiCond)
+  # ret: void
+  def self.SetNextWindowDockID(dock_id, cond = 0)
+    igSetNextWindowDockID(dock_id, cond)
+  end
+
   # ret: void
   def self.SetNextWindowFocus()
     igSetNextWindowFocus()
@@ -4834,6 +10004,12 @@ module ImGui
   # ret: void
   def self.SetNextWindowPos(pos, cond = 0, pivot = ImVec2.create(0,0))
     igSetNextWindowPos(pos, cond, pivot)
+  end
+
+  # arg: scroll(ImVec2)
+  # ret: void
+  def self.SetNextWindowScroll(scroll)
+    igSetNextWindowScroll(scroll)
   end
 
   # arg: size(ImVec2), cond(ImGuiCond)
@@ -4848,16 +10024,34 @@ module ImGui
     igSetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
   end
 
+  # arg: viewport_id(ImGuiID)
+  # ret: void
+  def self.SetNextWindowViewport(viewport_id)
+    igSetNextWindowViewport(viewport_id)
+  end
+
   # arg: local_x(float), center_x_ratio(float)
   # ret: void
-  def self.SetScrollFromPosX(local_x, center_x_ratio = 0.5)
-    igSetScrollFromPosX(local_x, center_x_ratio)
+  def self.SetScrollFromPosX_Float(local_x, center_x_ratio = 0.5)
+    igSetScrollFromPosX_Float(local_x, center_x_ratio)
+  end
+
+  # arg: window(ImGuiWindow*), local_x(float), center_x_ratio(float)
+  # ret: void
+  def self.SetScrollFromPosX_WindowPtr(window, local_x, center_x_ratio)
+    igSetScrollFromPosX_WindowPtr(window, local_x, center_x_ratio)
   end
 
   # arg: local_y(float), center_y_ratio(float)
   # ret: void
-  def self.SetScrollFromPosY(local_y, center_y_ratio = 0.5)
-    igSetScrollFromPosY(local_y, center_y_ratio)
+  def self.SetScrollFromPosY_Float(local_y, center_y_ratio = 0.5)
+    igSetScrollFromPosY_Float(local_y, center_y_ratio)
+  end
+
+  # arg: window(ImGuiWindow*), local_y(float), center_y_ratio(float)
+  # ret: void
+  def self.SetScrollFromPosY_WindowPtr(window, local_y, center_y_ratio)
+    igSetScrollFromPosY_WindowPtr(window, local_y, center_y_ratio)
   end
 
   # arg: center_x_ratio(float)
@@ -4874,14 +10068,26 @@ module ImGui
 
   # arg: scroll_x(float)
   # ret: void
-  def self.SetScrollX(scroll_x)
-    igSetScrollX(scroll_x)
+  def self.SetScrollX_Float(scroll_x)
+    igSetScrollX_Float(scroll_x)
+  end
+
+  # arg: window(ImGuiWindow*), scroll_x(float)
+  # ret: void
+  def self.SetScrollX_WindowPtr(window, scroll_x)
+    igSetScrollX_WindowPtr(window, scroll_x)
   end
 
   # arg: scroll_y(float)
   # ret: void
-  def self.SetScrollY(scroll_y)
-    igSetScrollY(scroll_y)
+  def self.SetScrollY_Float(scroll_y)
+    igSetScrollY_Float(scroll_y)
+  end
+
+  # arg: window(ImGuiWindow*), scroll_y(float)
+  # ret: void
+  def self.SetScrollY_WindowPtr(window, scroll_y)
+    igSetScrollY_WindowPtr(window, scroll_y)
   end
 
   # arg: storage(ImGuiStorage*)
@@ -4902,6 +10108,12 @@ module ImGui
     igSetTooltip(fmt, *varargs)
   end
 
+  # arg: window(ImGuiWindow*), clip_rect(ImRect)
+  # ret: void
+  def self.SetWindowClipRectBeforeSetChannel(window, clip_rect)
+    igSetWindowClipRectBeforeSetChannel(window, clip_rect)
+  end
+
   # arg: collapsed(bool), cond(ImGuiCond)
   # ret: void
   def self.SetWindowCollapsed_Bool(collapsed, cond = 0)
@@ -4912,6 +10124,18 @@ module ImGui
   # ret: void
   def self.SetWindowCollapsed_Str(name, collapsed, cond = 0)
     igSetWindowCollapsed_Str(name, collapsed, cond)
+  end
+
+  # arg: window(ImGuiWindow*), collapsed(bool), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowCollapsed_WindowPtr(window, collapsed, cond = 0)
+    igSetWindowCollapsed_WindowPtr(window, collapsed, cond)
+  end
+
+  # arg: window(ImGuiWindow*), dock_id(ImGuiID), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowDock(window, dock_id, cond)
+    igSetWindowDock(window, dock_id, cond)
   end
 
   # ret: void
@@ -4931,6 +10155,12 @@ module ImGui
     igSetWindowFontScale(scale)
   end
 
+  # arg: window(ImGuiWindow*), pos(ImVec2), size(ImVec2)
+  # ret: void
+  def self.SetWindowHitTestHole(window, pos, size)
+    igSetWindowHitTestHole(window, pos, size)
+  end
+
   # arg: pos(ImVec2), cond(ImGuiCond)
   # ret: void
   def self.SetWindowPos_Vec2(pos, cond = 0)
@@ -4941,6 +10171,12 @@ module ImGui
   # ret: void
   def self.SetWindowPos_Str(name, pos, cond = 0)
     igSetWindowPos_Str(name, pos, cond)
+  end
+
+  # arg: window(ImGuiWindow*), pos(ImVec2), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowPos_WindowPtr(window, pos, cond = 0)
+    igSetWindowPos_WindowPtr(window, pos, cond)
   end
 
   # arg: size(ImVec2), cond(ImGuiCond)
@@ -4955,6 +10191,24 @@ module ImGui
     igSetWindowSize_Str(name, size, cond)
   end
 
+  # arg: window(ImGuiWindow*), size(ImVec2), cond(ImGuiCond)
+  # ret: void
+  def self.SetWindowSize_WindowPtr(window, size, cond = 0)
+    igSetWindowSize_WindowPtr(window, size, cond)
+  end
+
+  # arg: draw_list(ImDrawList*), vert_start_idx(int), vert_end_idx(int), gradient_p0(ImVec2), gradient_p1(ImVec2), col0(ImU32), col1(ImU32)
+  # ret: void
+  def self.ShadeVertsLinearColorGradientKeepAlpha(draw_list, vert_start_idx, vert_end_idx, gradient_p0, gradient_p1, col0, col1)
+    igShadeVertsLinearColorGradientKeepAlpha(draw_list, vert_start_idx, vert_end_idx, gradient_p0, gradient_p1, col0, col1)
+  end
+
+  # arg: draw_list(ImDrawList*), vert_start_idx(int), vert_end_idx(int), a(ImVec2), b(ImVec2), uv_a(ImVec2), uv_b(ImVec2), clamp(bool)
+  # ret: void
+  def self.ShadeVertsLinearUV(draw_list, vert_start_idx, vert_end_idx, a, b, uv_a, uv_b, clamp)
+    igShadeVertsLinearUV(draw_list, vert_start_idx, vert_end_idx, a, b, uv_a, uv_b, clamp)
+  end
+
   # arg: p_open(bool*)
   # ret: void
   def self.ShowAboutWindow(p_open = nil)
@@ -4965,6 +10219,12 @@ module ImGui
   # ret: void
   def self.ShowDemoWindow(p_open = nil)
     igShowDemoWindow(p_open)
+  end
+
+  # arg: atlas(ImFontAtlas*)
+  # ret: void
+  def self.ShowFontAtlas(atlas)
+    igShowFontAtlas(atlas)
   end
 
   # arg: label(const char*)
@@ -5002,10 +10262,28 @@ module ImGui
     igShowUserGuide()
   end
 
+  # arg: items(ImGuiShrinkWidthItem*), count(int), width_excess(float)
+  # ret: void
+  def self.ShrinkWidths(items, count, width_excess)
+    igShrinkWidths(items, count, width_excess)
+  end
+
+  # arg: context(ImGuiContext*)
+  # ret: void
+  def self.Shutdown(context)
+    igShutdown(context)
+  end
+
   # arg: label(const char*), v_rad(float*), v_degrees_min(float), v_degrees_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
   def self.SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg", flags = 0)
     igSliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format, flags)
+  end
+
+  # arg: bb(ImRect), id(ImGuiID), data_type(ImGuiDataType), p_v(void*), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags), out_grab_bb(ImRect*)
+  # ret: bool
+  def self.SliderBehavior(bb, id, data_type, p_v, p_min, p_max, format, flags, out_grab_bb)
+    igSliderBehavior(bb, id, data_type, p_v, p_min, p_max, format, flags, out_grab_bb)
   end
 
   # arg: label(const char*), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
@@ -5079,6 +10357,24 @@ module ImGui
     igSpacing()
   end
 
+  # arg: bb(ImRect), id(ImGuiID), axis(ImGuiAxis), size1(float*), size2(float*), min_size1(float), min_size2(float), hover_extend(float), hover_visibility_delay(float), bg_col(ImU32)
+  # ret: bool
+  def self.SplitterBehavior(bb, id, axis, size1, size2, min_size1, min_size2, hover_extend = 0.0, hover_visibility_delay = 0.0, bg_col = 0)
+    igSplitterBehavior(bb, id, axis, size1, size2, min_size1, min_size2, hover_extend, hover_visibility_delay, bg_col)
+  end
+
+  # arg: window(ImGuiWindow*)
+  # ret: void
+  def self.StartMouseMovingWindow(window)
+    igStartMouseMovingWindow(window)
+  end
+
+  # arg: window(ImGuiWindow*), node(ImGuiDockNode*), undock_floating_node(bool)
+  # ret: void
+  def self.StartMouseMovingWindowOrNode(window, node, undock_floating_node)
+    igStartMouseMovingWindowOrNode(window, node, undock_floating_node)
+  end
+
   # arg: dst(ImGuiStyle*)
   # ret: void
   def self.StyleColorsClassic(dst = nil)
@@ -5097,10 +10393,175 @@ module ImGui
     igStyleColorsLight(dst)
   end
 
+  # arg: tab_bar(ImGuiTabBar*), tab_flags(ImGuiTabItemFlags), window(ImGuiWindow*)
+  # ret: void
+  def self.TabBarAddTab(tab_bar, tab_flags, window)
+    igTabBarAddTab(tab_bar, tab_flags, window)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), tab(ImGuiTabItem*)
+  # ret: void
+  def self.TabBarCloseTab(tab_bar, tab)
+    igTabBarCloseTab(tab_bar, tab)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*)
+  # ret: pointer
+  def self.TabBarFindMostRecentlySelectedTabForActiveWindow(tab_bar)
+    igTabBarFindMostRecentlySelectedTabForActiveWindow(tab_bar)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), tab_id(ImGuiID)
+  # ret: pointer
+  def self.TabBarFindTabByID(tab_bar, tab_id)
+    igTabBarFindTabByID(tab_bar, tab_id)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*)
+  # ret: bool
+  def self.TabBarProcessReorder(tab_bar)
+    igTabBarProcessReorder(tab_bar)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), tab(const ImGuiTabItem*), offset(int)
+  # ret: void
+  def self.TabBarQueueReorder(tab_bar, tab, offset)
+    igTabBarQueueReorder(tab_bar, tab, offset)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), tab(const ImGuiTabItem*), mouse_pos(ImVec2)
+  # ret: void
+  def self.TabBarQueueReorderFromMousePos(tab_bar, tab, mouse_pos)
+    igTabBarQueueReorderFromMousePos(tab_bar, tab, mouse_pos)
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), tab_id(ImGuiID)
+  # ret: void
+  def self.TabBarRemoveTab(tab_bar, tab_id)
+    igTabBarRemoveTab(tab_bar, tab_id)
+  end
+
+  # arg: draw_list(ImDrawList*), bb(ImRect), flags(ImGuiTabItemFlags), col(ImU32)
+  # ret: void
+  def self.TabItemBackground(draw_list, bb, flags, col)
+    igTabItemBackground(draw_list, bb, flags, col)
+  end
+
   # arg: label(const char*), flags(ImGuiTabItemFlags)
   # ret: bool
   def self.TabItemButton(label, flags = 0)
     igTabItemButton(label, flags)
+  end
+
+  # arg: label(const char*), has_close_button(bool)
+  # ret: void
+  def self.TabItemCalcSize(label, has_close_button)
+    pOut = ImVec2.new
+    igTabItemCalcSize(pOut, label, has_close_button)
+    return pOut
+  end
+
+  # arg: tab_bar(ImGuiTabBar*), label(const char*), p_open(bool*), flags(ImGuiTabItemFlags), docked_window(ImGuiWindow*)
+  # ret: bool
+  def self.TabItemEx(tab_bar, label, p_open, flags, docked_window)
+    igTabItemEx(tab_bar, label, p_open, flags, docked_window)
+  end
+
+  # arg: draw_list(ImDrawList*), bb(ImRect), flags(ImGuiTabItemFlags), frame_padding(ImVec2), label(const char*), tab_id(ImGuiID), close_button_id(ImGuiID), is_contents_visible(bool), out_just_closed(bool*), out_text_clipped(bool*)
+  # ret: void
+  def self.TabItemLabelAndCloseButton(draw_list, bb, flags, frame_padding, label, tab_id, close_button_id, is_contents_visible, out_just_closed, out_text_clipped)
+    igTabItemLabelAndCloseButton(draw_list, bb, flags, frame_padding, label, tab_id, close_button_id, is_contents_visible, out_just_closed, out_text_clipped)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableBeginApplyRequests(table)
+    igTableBeginApplyRequests(table)
+  end
+
+  # arg: table(ImGuiTable*), column_n(int)
+  # ret: void
+  def self.TableBeginCell(table, column_n)
+    igTableBeginCell(table, column_n)
+  end
+
+  # arg: table(ImGuiTable*), columns_count(int)
+  # ret: void
+  def self.TableBeginInitMemory(table, columns_count)
+    igTableBeginInitMemory(table, columns_count)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableBeginRow(table)
+    igTableBeginRow(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableDrawBorders(table)
+    igTableDrawBorders(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableDrawContextMenu(table)
+    igTableDrawContextMenu(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableEndCell(table)
+    igTableEndCell(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableEndRow(table)
+    igTableEndRow(table)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.TableFindByID(id)
+    igTableFindByID(id)
+  end
+
+  # arg: table(ImGuiTable*), column(ImGuiTableColumn*)
+  # ret: void
+  def self.TableFixColumnSortDirection(table, column)
+    igTableFixColumnSortDirection(table, column)
+  end
+
+  # ret: void
+  def self.TableGcCompactSettings()
+    igTableGcCompactSettings()
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableGcCompactTransientBuffers_TablePtr(table)
+    igTableGcCompactTransientBuffers_TablePtr(table)
+  end
+
+  # arg: table(ImGuiTableTempData*)
+  # ret: void
+  def self.TableGcCompactTransientBuffers_TableTempDataPtr(table)
+    igTableGcCompactTransientBuffers_TableTempDataPtr(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: pointer
+  def self.TableGetBoundSettings(table)
+    igTableGetBoundSettings(table)
+  end
+
+  # arg: table(const ImGuiTable*), column_n(int)
+  # ret: void
+  def self.TableGetCellBgRect(table, column_n)
+    pOut = ImRect.new
+    igTableGetCellBgRect(pOut, table, column_n)
+    return pOut
   end
 
   # ret: int
@@ -5121,8 +10582,48 @@ module ImGui
 
   # arg: column_n(int)
   # ret: pointer
-  def self.TableGetColumnName(column_n = -1)
-    igTableGetColumnName(column_n)
+  def self.TableGetColumnName_Int(column_n = -1)
+    igTableGetColumnName_Int(column_n)
+  end
+
+  # arg: table(const ImGuiTable*), column_n(int)
+  # ret: pointer
+  def self.TableGetColumnName_TablePtr(table, column_n)
+    igTableGetColumnName_TablePtr(table, column_n)
+  end
+
+  # arg: column(ImGuiTableColumn*)
+  # ret: int
+  def self.TableGetColumnNextSortDirection(column)
+    igTableGetColumnNextSortDirection(column)
+  end
+
+  # arg: table(const ImGuiTable*), column_n(int), instance_no(int)
+  # ret: uint
+  def self.TableGetColumnResizeID(table, column_n, instance_no = 0)
+    igTableGetColumnResizeID(table, column_n, instance_no)
+  end
+
+  # arg: table(ImGuiTable*), column(ImGuiTableColumn*)
+  # ret: float
+  def self.TableGetColumnWidthAuto(table, column)
+    igTableGetColumnWidthAuto(table, column)
+  end
+
+  # ret: float
+  def self.TableGetHeaderRowHeight()
+    igTableGetHeaderRowHeight()
+  end
+
+  # ret: int
+  def self.TableGetHoveredColumn()
+    igTableGetHoveredColumn()
+  end
+
+  # arg: table(const ImGuiTable*), column_n(int)
+  # ret: float
+  def self.TableGetMaxColumnWidth(table, column_n)
+    igTableGetMaxColumnWidth(table, column_n)
   end
 
   # ret: int
@@ -5146,6 +10647,18 @@ module ImGui
     igTableHeadersRow()
   end
 
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableLoadSettings(table)
+    igTableLoadSettings(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableMergeDrawChannels(table)
+    igTableMergeDrawChannels(table)
+  end
+
   # ret: bool
   def self.TableNextColumn()
     igTableNextColumn()
@@ -5155,6 +10668,40 @@ module ImGui
   # ret: void
   def self.TableNextRow(row_flags = 0, min_row_height = 0.0)
     igTableNextRow(row_flags, min_row_height)
+  end
+
+  # arg: column_n(int)
+  # ret: void
+  def self.TableOpenContextMenu(column_n = -1)
+    igTableOpenContextMenu(column_n)
+  end
+
+  # ret: void
+  def self.TablePopBackgroundChannel()
+    igTablePopBackgroundChannel()
+  end
+
+  # ret: void
+  def self.TablePushBackgroundChannel()
+    igTablePushBackgroundChannel()
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableRemove(table)
+    igTableRemove(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableResetSettings(table)
+    igTableResetSettings(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSaveSettings(table)
+    igTableSaveSettings(table)
   end
 
   # arg: target(ImGuiTableBgTarget), color(ImU32), column_n(int)
@@ -5175,16 +10722,112 @@ module ImGui
     igTableSetColumnIndex(column_n)
   end
 
+  # arg: column_n(int), sort_direction(ImGuiSortDirection), append_to_sort_specs(bool)
+  # ret: void
+  def self.TableSetColumnSortDirection(column_n, sort_direction, append_to_sort_specs)
+    igTableSetColumnSortDirection(column_n, sort_direction, append_to_sort_specs)
+  end
+
+  # arg: column_n(int), width(float)
+  # ret: void
+  def self.TableSetColumnWidth(column_n, width)
+    igTableSetColumnWidth(column_n, width)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSetColumnWidthAutoAll(table)
+    igTableSetColumnWidthAutoAll(table)
+  end
+
+  # arg: table(ImGuiTable*), column_n(int)
+  # ret: void
+  def self.TableSetColumnWidthAutoSingle(table, column_n)
+    igTableSetColumnWidthAutoSingle(table, column_n)
+  end
+
+  # arg: id(ImGuiID), columns_count(int)
+  # ret: pointer
+  def self.TableSettingsCreate(id, columns_count)
+    igTableSettingsCreate(id, columns_count)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.TableSettingsFindByID(id)
+    igTableSettingsFindByID(id)
+  end
+
+  # arg: context(ImGuiContext*)
+  # ret: void
+  def self.TableSettingsInstallHandler(context)
+    igTableSettingsInstallHandler(context)
+  end
+
   # arg: label(const char*), flags(ImGuiTableColumnFlags), init_width_or_weight(float), user_id(ImGuiID)
   # ret: void
   def self.TableSetupColumn(label, flags = 0, init_width_or_weight = 0.0, user_id = 0)
     igTableSetupColumn(label, flags, init_width_or_weight, user_id)
   end
 
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSetupDrawChannels(table)
+    igTableSetupDrawChannels(table)
+  end
+
   # arg: cols(int), rows(int)
   # ret: void
   def self.TableSetupScrollFreeze(cols, rows)
     igTableSetupScrollFreeze(cols, rows)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSortSpecsBuild(table)
+    igTableSortSpecsBuild(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSortSpecsSanitize(table)
+    igTableSortSpecsSanitize(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableUpdateBorders(table)
+    igTableUpdateBorders(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableUpdateColumnsWeightFromWidth(table)
+    igTableUpdateColumnsWeightFromWidth(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableUpdateLayout(table)
+    igTableUpdateLayout(table)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: bool
+  def self.TempInputIsActive(id)
+    igTempInputIsActive(id)
+  end
+
+  # arg: bb(ImRect), id(ImGuiID), label(const char*), data_type(ImGuiDataType), p_data(void*), format(const char*), p_clamp_min(const void*), p_clamp_max(const void*)
+  # ret: bool
+  def self.TempInputScalar(bb, id, label, data_type, p_data, format, p_clamp_min = nil, p_clamp_max = nil)
+    igTempInputScalar(bb, id, label, data_type, p_data, format, p_clamp_min, p_clamp_max)
+  end
+
+  # arg: bb(ImRect), id(ImGuiID), label(const char*), buf(char*), buf_size(int), flags(ImGuiInputTextFlags)
+  # ret: bool
+  def self.TempInputText(bb, id, label, buf, buf_size, flags)
+    igTempInputText(bb, id, label, buf, buf_size, flags)
   end
 
   # arg: fmt(const char*), ...(...)
@@ -5205,6 +10848,12 @@ module ImGui
     igTextDisabled(fmt, *varargs)
   end
 
+  # arg: text(const char*), text_end(const char*), flags(ImGuiTextFlags)
+  # ret: void
+  def self.TextEx(text, text_end = nil, flags = 0)
+    igTextEx(text, text_end, flags)
+  end
+
   # arg: text(const char*), text_end(const char*)
   # ret: void
   def self.TextUnformatted(text, text_end = nil)
@@ -5215,6 +10864,12 @@ module ImGui
   # ret: void
   def self.TextWrapped(fmt, *varargs)
     igTextWrapped(fmt, *varargs)
+  end
+
+  # arg: viewport(ImGuiViewportP*), old_pos(ImVec2), new_pos(ImVec2)
+  # ret: void
+  def self.TranslateWindowsInViewport(viewport, old_pos, new_pos)
+    igTranslateWindowsInViewport(viewport, old_pos, new_pos)
   end
 
   # arg: label(const char*)
@@ -5233,6 +10888,18 @@ module ImGui
   # ret: bool
   def self.TreeNode_Ptr(ptr_id, fmt, *varargs)
     igTreeNode_Ptr(ptr_id, fmt, *varargs)
+  end
+
+  # arg: id(ImGuiID), flags(ImGuiTreeNodeFlags), label(const char*), label_end(const char*)
+  # ret: bool
+  def self.TreeNodeBehavior(id, flags, label, label_end = nil)
+    igTreeNodeBehavior(id, flags, label, label_end)
+  end
+
+  # arg: id(ImGuiID), flags(ImGuiTreeNodeFlags)
+  # ret: bool
+  def self.TreeNodeBehaviorIsOpen(id, flags = 0)
+    igTreeNodeBehaviorIsOpen(id, flags)
   end
 
   # arg: label(const char*), flags(ImGuiTreeNodeFlags)
@@ -5270,10 +10937,48 @@ module ImGui
     igTreePush_Ptr(ptr_id)
   end
 
+  # arg: id(ImGuiID)
+  # ret: void
+  def self.TreePushOverrideID(id)
+    igTreePushOverrideID(id)
+  end
+
   # arg: indent_w(float)
   # ret: void
   def self.Unindent(indent_w = 0.0)
     igUnindent(indent_w)
+  end
+
+  # ret: void
+  def self.UpdateHoveredWindowAndCaptureFlags()
+    igUpdateHoveredWindowAndCaptureFlags()
+  end
+
+  # arg: trickle_fast_inputs(bool)
+  # ret: void
+  def self.UpdateInputEvents(trickle_fast_inputs)
+    igUpdateInputEvents(trickle_fast_inputs)
+  end
+
+  # ret: void
+  def self.UpdateMouseMovingWindowEndFrame()
+    igUpdateMouseMovingWindowEndFrame()
+  end
+
+  # ret: void
+  def self.UpdateMouseMovingWindowNewFrame()
+    igUpdateMouseMovingWindowNewFrame()
+  end
+
+  # ret: void
+  def self.UpdatePlatformWindows()
+    igUpdatePlatformWindows()
+  end
+
+  # arg: window(ImGuiWindow*), flags(ImGuiWindowFlags), parent_window(ImGuiWindow*)
+  # ret: void
+  def self.UpdateWindowParentAndRootLinks(window, flags, parent_window)
+    igUpdateWindowParentAndRootLinks(window, flags, parent_window)
   end
 
   # arg: label(const char*), size(ImVec2), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
@@ -5318,6 +11023,22 @@ module ImGui
     igValue_Float(prefix, v, float_format)
   end
 
+  # arg: window(ImGuiWindow*), r(ImRect)
+  # ret: void
+  def self.WindowRectAbsToRel(window, r)
+    pOut = ImRect.new
+    igWindowRectAbsToRel(pOut, window, r)
+    return pOut
+  end
+
+  # arg: window(ImGuiWindow*), r(ImRect)
+  # ret: void
+  def self.WindowRectRelToAbs(window, r)
+    pOut = ImRect.new
+    igWindowRectRelToAbs(pOut, window, r)
+    return pOut
+  end
+
   # Overload functions
 
   def self.BeginChild(*arg)
@@ -5337,6 +11058,12 @@ module ImGui
     # arg: 0:label(const char*), 1:flags(unsigned int*), 2:flags_value(unsigned int)
     # ret: bool
     return igCheckboxFlags_UintPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:flags(ImS64*), 2:flags_value(ImS64)
+    # ret: bool
+    return igCheckboxFlags_S64Ptr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    # arg: 0:label(const char*), 1:flags(ImU64*), 2:flags_value(ImU64)
+    # ret: bool
+    return igCheckboxFlags_U64Ptr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] CheckboxFlags : No matching functions found (#{arg})")
   end
 
@@ -5363,6 +11090,16 @@ module ImGui
     $stderr.puts("[Warning] Combo : No matching functions found (#{arg})")
   end
 
+  def self.GetBackgroundDrawList(*arg)
+    # arg: 
+    # ret: pointer
+    return igGetBackgroundDrawList_Nil() if arg.length == 0 && ()
+    # arg: 0:viewport(ImGuiViewport*)
+    # ret: pointer
+    return igGetBackgroundDrawList_ViewportPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] GetBackgroundDrawList : No matching functions found (#{arg})")
+  end
+
   def self.GetColorU32(*arg)
     # arg: 0:idx(ImGuiCol), 1:alpha_mul(float)
     # ret: uint
@@ -5374,6 +11111,19 @@ module ImGui
     # ret: uint
     return igGetColorU32_U32(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] GetColorU32 : No matching functions found (#{arg})")
+  end
+
+  def self.GetForegroundDrawList(*arg)
+    # arg: 
+    # ret: pointer
+    return igGetForegroundDrawList_Nil() if arg.length == 0 && ()
+    # arg: 0:viewport(ImGuiViewport*)
+    # ret: pointer
+    return igGetForegroundDrawList_ViewportPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    # arg: 0:window(ImGuiWindow*)
+    # ret: pointer
+    return igGetForegroundDrawList_WindowPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] GetForegroundDrawList : No matching functions found (#{arg})")
   end
 
   def self.GetID(*arg)
@@ -5389,6 +11139,122 @@ module ImGui
     $stderr.puts("[Warning] GetID : No matching functions found (#{arg})")
   end
 
+  def self.ImAbs(*arg)
+    # arg: 0:x(int)
+    # ret: int
+    return igImAbs_Int(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    # arg: 0:x(float)
+    # ret: float
+    return igImAbs_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:x(double)
+    # ret: double
+    return igImAbs_double(arg[0]) if arg.length == 1 && (arg[0].kind_of?(double))
+    $stderr.puts("[Warning] ImAbs : No matching functions found (#{arg})")
+  end
+
+  def self.ImFloor(*arg)
+    # arg: 0:f(float)
+    # ret: float
+    return igImFloor_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:pOut(ImVec2*), 1:v(ImVec2)
+    # ret: void
+    return igImFloor_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2))
+    $stderr.puts("[Warning] ImFloor : No matching functions found (#{arg})")
+  end
+
+  def self.ImFloorSigned(*arg)
+    # arg: 0:f(float)
+    # ret: float
+    return igImFloorSigned_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:pOut(ImVec2*), 1:v(ImVec2)
+    # ret: void
+    return igImFloorSigned_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2))
+    $stderr.puts("[Warning] ImFloorSigned : No matching functions found (#{arg})")
+  end
+
+  def self.ImIsPowerOfTwo(*arg)
+    # arg: 0:v(int)
+    # ret: bool
+    return igImIsPowerOfTwo_Int(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    # arg: 0:v(ImU64)
+    # ret: bool
+    return igImIsPowerOfTwo_U64(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    $stderr.puts("[Warning] ImIsPowerOfTwo : No matching functions found (#{arg})")
+  end
+
+  def self.ImLengthSqr(*arg)
+    # arg: 0:lhs(ImVec2)
+    # ret: float
+    return igImLengthSqr_Vec2(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
+    # arg: 0:lhs(ImVec4)
+    # ret: float
+    return igImLengthSqr_Vec4(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImVec4))
+    $stderr.puts("[Warning] ImLengthSqr : No matching functions found (#{arg})")
+  end
+
+  def self.ImLerp(*arg)
+    # arg: 0:pOut(ImVec2*), 1:a(ImVec2), 2:b(ImVec2), 3:t(float)
+    # ret: void
+    return igImLerp_Vec2Float(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(Float))
+    # arg: 0:pOut(ImVec2*), 1:a(ImVec2), 2:b(ImVec2), 3:t(ImVec2)
+    # ret: void
+    return igImLerp_Vec2Vec2(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2))
+    # arg: 0:pOut(ImVec4*), 1:a(ImVec4), 2:b(ImVec4), 3:t(float)
+    # ret: void
+    return igImLerp_Vec4(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec4) && arg[2].kind_of?(ImVec4) && arg[3].kind_of?(Float))
+    $stderr.puts("[Warning] ImLerp : No matching functions found (#{arg})")
+  end
+
+  def self.ImLog(*arg)
+    # arg: 0:x(float)
+    # ret: float
+    return igImLog_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:x(double)
+    # ret: double
+    return igImLog_double(arg[0]) if arg.length == 1 && (arg[0].kind_of?(double))
+    $stderr.puts("[Warning] ImLog : No matching functions found (#{arg})")
+  end
+
+  def self.ImPow(*arg)
+    # arg: 0:x(float), 1:y(float)
+    # ret: float
+    return igImPow_Float(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Float) && arg[1].kind_of?(Float))
+    # arg: 0:x(double), 1:y(double)
+    # ret: double
+    return igImPow_double(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(double) && arg[1].kind_of?(double))
+    $stderr.puts("[Warning] ImPow : No matching functions found (#{arg})")
+  end
+
+  def self.ImRsqrt(*arg)
+    # arg: 0:x(float)
+    # ret: float
+    return igImRsqrt_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:x(double)
+    # ret: double
+    return igImRsqrt_double(arg[0]) if arg.length == 1 && (arg[0].kind_of?(double))
+    $stderr.puts("[Warning] ImRsqrt : No matching functions found (#{arg})")
+  end
+
+  def self.ImSign(*arg)
+    # arg: 0:x(float)
+    # ret: float
+    return igImSign_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:x(double)
+    # ret: double
+    return igImSign_double(arg[0]) if arg.length == 1 && (arg[0].kind_of?(double))
+    $stderr.puts("[Warning] ImSign : No matching functions found (#{arg})")
+  end
+
+  def self.IsPopupOpen(*arg)
+    # arg: 0:str_id(const char*), 1:flags(ImGuiPopupFlags)
+    # ret: bool
+    return igIsPopupOpen_Str(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
+    # arg: 0:id(ImGuiID), 1:popup_flags(ImGuiPopupFlags)
+    # ret: bool
+    return igIsPopupOpen_ID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
+    $stderr.puts("[Warning] IsPopupOpen : No matching functions found (#{arg})")
+  end
+
   def self.IsRectVisible(*arg)
     # arg: 0:size(ImVec2)
     # ret: bool
@@ -5399,6 +11265,16 @@ module ImGui
     $stderr.puts("[Warning] IsRectVisible : No matching functions found (#{arg})")
   end
 
+  def self.ItemSize(*arg)
+    # arg: 0:size(ImVec2), 1:text_baseline_y(float)
+    # ret: void
+    return igItemSize_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Float))
+    # arg: 0:bb(ImRect), 1:text_baseline_y(float)
+    # ret: void
+    return igItemSize_Rect(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Float))
+    $stderr.puts("[Warning] ItemSize : No matching functions found (#{arg})")
+  end
+
   def self.ListBox(*arg)
     # arg: 0:label(const char*), 1:current_item(int*), 2:items(const char* const[]), 3:items_count(int), 4:height_in_items(int)
     # ret: bool
@@ -5407,6 +11283,16 @@ module ImGui
     # ret: bool
     return igListBox_FnBoolPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ListBox : No matching functions found (#{arg})")
+  end
+
+  def self.MarkIniSettingsDirty(*arg)
+    # arg: 
+    # ret: void
+    return igMarkIniSettingsDirty_Nil() if arg.length == 0 && ()
+    # arg: 0:window(ImGuiWindow*)
+    # ret: void
+    return igMarkIniSettingsDirty_WindowPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] MarkIniSettingsDirty : No matching functions found (#{arg})")
   end
 
   def self.MenuItem(*arg)
@@ -5505,6 +11391,46 @@ module ImGui
     $stderr.puts("[Warning] Selectable : No matching functions found (#{arg})")
   end
 
+  def self.SetScrollFromPosX(*arg)
+    # arg: 0:local_x(float), 1:center_x_ratio(float)
+    # ret: void
+    return igSetScrollFromPosX_Float(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Float) && arg[1].kind_of?(Float))
+    # arg: 0:window(ImGuiWindow*), 1:local_x(float), 2:center_x_ratio(float)
+    # ret: void
+    return igSetScrollFromPosX_WindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Float) && arg[2].kind_of?(Float))
+    $stderr.puts("[Warning] SetScrollFromPosX : No matching functions found (#{arg})")
+  end
+
+  def self.SetScrollFromPosY(*arg)
+    # arg: 0:local_y(float), 1:center_y_ratio(float)
+    # ret: void
+    return igSetScrollFromPosY_Float(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Float) && arg[1].kind_of?(Float))
+    # arg: 0:window(ImGuiWindow*), 1:local_y(float), 2:center_y_ratio(float)
+    # ret: void
+    return igSetScrollFromPosY_WindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Float) && arg[2].kind_of?(Float))
+    $stderr.puts("[Warning] SetScrollFromPosY : No matching functions found (#{arg})")
+  end
+
+  def self.SetScrollX(*arg)
+    # arg: 0:scroll_x(float)
+    # ret: void
+    return igSetScrollX_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:window(ImGuiWindow*), 1:scroll_x(float)
+    # ret: void
+    return igSetScrollX_WindowPtr(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Float))
+    $stderr.puts("[Warning] SetScrollX : No matching functions found (#{arg})")
+  end
+
+  def self.SetScrollY(*arg)
+    # arg: 0:scroll_y(float)
+    # ret: void
+    return igSetScrollY_Float(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
+    # arg: 0:window(ImGuiWindow*), 1:scroll_y(float)
+    # ret: void
+    return igSetScrollY_WindowPtr(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Float))
+    $stderr.puts("[Warning] SetScrollY : No matching functions found (#{arg})")
+  end
+
   def self.SetWindowCollapsed(*arg)
     # arg: 0:collapsed(bool), 1:cond(ImGuiCond)
     # ret: void
@@ -5512,6 +11438,9 @@ module ImGui
     # arg: 0:name(const char*), 1:collapsed(bool), 2:cond(ImGuiCond)
     # ret: void
     return igSetWindowCollapsed_Str(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer))
+    # arg: 0:window(ImGuiWindow*), 1:collapsed(bool), 2:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowCollapsed_WindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] SetWindowCollapsed : No matching functions found (#{arg})")
   end
 
@@ -5532,6 +11461,9 @@ module ImGui
     # arg: 0:name(const char*), 1:pos(ImVec2), 2:cond(ImGuiCond)
     # ret: void
     return igSetWindowPos_Str(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
+    # arg: 0:window(ImGuiWindow*), 1:pos(ImVec2), 2:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowPos_WindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] SetWindowPos : No matching functions found (#{arg})")
   end
 
@@ -5542,7 +11474,30 @@ module ImGui
     # arg: 0:name(const char*), 1:size(ImVec2), 2:cond(ImGuiCond)
     # ret: void
     return igSetWindowSize_Str(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
+    # arg: 0:window(ImGuiWindow*), 1:size(ImVec2), 2:cond(ImGuiCond)
+    # ret: void
+    return igSetWindowSize_WindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] SetWindowSize : No matching functions found (#{arg})")
+  end
+
+  def self.TableGcCompactTransientBuffers(*arg)
+    # arg: 0:table(ImGuiTable*)
+    # ret: void
+    return igTableGcCompactTransientBuffers_TablePtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    # arg: 0:table(ImGuiTableTempData*)
+    # ret: void
+    return igTableGcCompactTransientBuffers_TableTempDataPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] TableGcCompactTransientBuffers : No matching functions found (#{arg})")
+  end
+
+  def self.TableGetColumnName(*arg)
+    # arg: 0:column_n(int)
+    # ret: pointer
+    return igTableGetColumnName_Int(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    # arg: 0:table(const ImGuiTable*), 1:column_n(int)
+    # ret: pointer
+    return igTableGetColumnName_TablePtr(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
+    $stderr.puts("[Warning] TableGetColumnName : No matching functions found (#{arg})")
   end
 
   def self.TreeNode(*arg)
