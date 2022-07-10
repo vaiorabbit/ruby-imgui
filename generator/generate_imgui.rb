@@ -168,15 +168,15 @@ module Generator
              end
       args = ""
       if m.is_array
-        args = if m.type.to_s.start_with?('Im') # e.g.) :MouseClickedPos, [ImVec2.by_value, 5],
+        args = if (m.type.to_s.start_with?('Im') || m.type.to_s.start_with?('Stb') || m.type.to_s.start_with?('STB')) # e.g.) :MouseClickedPos, [ImVec2.by_value, 5],
                  "[#{m.type}.by_value, #{m.size}]"
                else # e.g.) :MouseClickedTime, [:double, 5],
                  "[:#{m.type}, #{m.size}]"
                end
       else
-        args = if m.type.to_s.start_with?('Im') # e.g.) :MouseDelta, ImVec2.by_value,
+        args = if (m.type.to_s.start_with?('Im') || m.type.to_s.start_with?('Stb') || m.type.to_s.start_with?('STB')) # e.g.) :MouseDelta, ImVec2.by_value,
                  "#{m.type}.by_value"
-               elsif m.type_str.start_with?('Im') && (m.type_str.include?('*') || m.type_str.include?('&')) # e.g.) :Fonts, ImFontAtlas.ptr,
+               elsif (m.type_str.start_with?('Im') || m.type_str.start_with?('Stb') || m.type_str.start_with?('STB')) && (m.type_str.include?('*') || m.type_str.include?('&')) # e.g.) :Fonts, ImFontAtlas.ptr,
                  imgui_struct_or_typedef = m.type_str.gsub(/[*&]+/, '') # omit asterisk, etc. e.g.) ImDrawList** -> ImDrawList
                  # e.g.) ImDrawIdx (Starts with "Im" but just a typedef of unsinged int): then the ImGuiTypedefMapEntry looks like:
                  # "ImDrawIdx"=>
@@ -242,7 +242,7 @@ module Generator
       func_args = func.args.map do |arg|
         if arg.type_name.to_s.end_with?('Callback')
           ':' + arg.type_name.to_s
-        elsif arg.type.to_s.start_with?('Im')
+        elsif (arg.type.to_s.start_with?('Im') || arg.type.to_s.start_with?('Stb') || arg.type.to_s.start_with?('STB'))
           arg.type.to_s + '.by_value'
         else
           ':' + arg.type.to_s
@@ -257,7 +257,7 @@ module Generator
     out.write("retvals = {\n")
     out.push_indent
     funcs_map.each do |func|
-      func.retval = if func.retval.to_s.start_with?('Im')
+      func.retval = if (func.retval.to_s.start_with?('Im') || func.retval.to_s.start_with?('Stb') || func.retval.to_s.start_with?('STB'))
                       func.retval.to_s + '.by_value'
                     else
                       ':' + func.retval.to_s
@@ -500,12 +500,12 @@ if __FILE__ == $PROGRAM_NAME
   # 'ImFontConfig',
     'ImFontGlyph',
   # 'ImGuiInputTextCallbackData',
-    'ImGuiListClipper',
+  # 'ImGuiListClipper',
     'ImGuiOnceUponAFrame',
-    'ImGuiPayload',
+  # 'ImGuiPayload',
   # 'ImGuiSizeCallbackData',
   # 'ImGuiStorage',
-    'ImGuiTextBuffer',
+  # 'ImGuiTextBuffer',
   # 'ImGuiTextFilter',
     'TextRange',
     'Pair',
@@ -581,16 +581,12 @@ require 'ffi'
     # Structs
     #
 
-    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas', 'ImGuiKeyData',
-     'ImGuiViewport', 'ImGuiViewportP', 'ImFont', 'ImRect', 'ImGuiIO', 'ImGuiPlatformIO', 'ImGuiStyle', 'ImGuiStorage', 'ImGuiWindowClass', 'ImGuiWindow'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
+    ['ImVec1', 'ImVec2', 'ImVec4', 'ImRect', 'ImVec2ih', 'ImVector', 'ImChunkStream', 'ImSpan', 'ImDrawVert', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawListSplitter', 'ImDrawList', 'ImDrawData', 'ImFontAtlas', 'ImGuiKeyData', 'ImGuiPayload',
+     'ImGuiStorage', 'ImPool', 'ImDrawDataBuilder', 'ImGuiOldColumns', 'ImGuiMenuColumns', 'ImGuiWindowTempData', 'ImGuiViewport', 'ImGuiViewportP', 'ImFont', 'ImGuiIO', 'ImGuiStyle', 'ImGuiWindow', 'ImGuiPlatformImeData', 'ImGuiMetricsConfig', 'ImGuiStackTool',
+     'ImGuiNextItemData', 'ImGuiLastItemData', 'ImGuiNextWindowData', 'ImGuiNavItemData', 'ImGuiTextBuffer', 'ImGuiTabBar', 'ImGuiTableTempData', 'ImGuiTableInstanceData', 'ImGuiTableColumnSortSpecs', 'ImGuiTableSortSpecs', 'ImGuiTable', 'StbUndoRecord', 'StbUndoState', 'STB_TexteditState', 'ImGuiInputTextState'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
       Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map)
       structs_map.delete_if {|struct| struct.name == name}
-    end
-
-    structs_map.each do |struct|
-      methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == struct.name }
-      Generator.write_struct(out, struct, methods, typedefs_map)
     end
 
     # define template struct 'ImBitArrayForNamedKeys' manually
@@ -602,6 +598,11 @@ class ImBitArrayForNamedKeys < FFI::Struct
 end
 
     EOS
+
+    structs_map.each do |struct|
+      methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == struct.name }
+      Generator.write_struct(out, struct, methods, typedefs_map)
+    end
 
     # define shorthand initializer for ImVec2 and ImVec4
     # - See https://github.com/ffi/ffi/wiki/Structs

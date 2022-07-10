@@ -130,6 +130,9 @@ module ImGuiBindings
 
     type_map['ImBitArrayForNamedKeys'] = ImGuiTypedefMapEntry.new(name: 'ImBitArrayForNamedKeys', type: :ImBitArrayForNamedKeys, callback_signature: nil)
 
+    # callbacks cannot have variadic parameters
+    type_map['ImGuiErrorLogCallback'] = ImGuiTypedefMapEntry.new(name: 'ImGuiErrorLogCallback', type: :pointer, callback_signature: nil)
+
     # Some internal enums don't have accompanying typedefs, so define corresponding type_map entry manually
     internal_enums_without_typedef = [
       'ImGuiContextHookType',
@@ -142,6 +145,7 @@ module ImGuiBindings
       'ImGuiInputSource',
       'ImGuiDockNodeState',
       'ImGuiInputEventType',
+      'ImGuiNavReadMode',
     ]
     internal_enums_without_typedef.each do |imgui_type_name|
       type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: :int, callback_signature: nil)
@@ -221,7 +225,6 @@ module ImGuiBindings
       ImGuiStructMemberEntry.new(name: 'MousePos', type_str: 'ImGuiInputEventMousePos', type: :ImGuiInputEventMousePos, is_array: false, size: 0),
       ImGuiStructMemberEntry.new(name: 'MouseWheel', type_str: 'ImGuiInputEventMouseWheel', type: :ImGuiInputEventMouseWheel, is_array: false, size: 0),
       ImGuiStructMemberEntry.new(name: 'MouseButton', type_str: 'ImGuiInputEventMouseButton', type: :ImGuiInputEventMouseButton, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'MouseViewport', type_str: 'ImGuiInputEventMouseViewport', type: :ImGuiInputEventMouseViewport, is_array: false, size: 0),
       ImGuiStructMemberEntry.new(name: 'Key', type_str: 'ImGuiInputEventKey', type: :ImGuiInputEventKey, is_array: false, size: 0),
       ImGuiStructMemberEntry.new(name: 'Text', type_str: 'ImGuiInputEventText', type: :ImGuiInputEventText, is_array: false, size: 0),
       ImGuiStructMemberEntry.new(name: 'AppFocused', type_str: 'ImGuiInputEventAppFocused', type: :ImGuiInputEventAppFocused, is_array: false, size: 0),
@@ -272,8 +275,8 @@ module ImGuiBindings
     struct_impool_stub.members = [
       ImGuiStructMemberEntry.new(name: 'Buf', type_str: 'ImVector', type: :ImVector, is_array: false, size: 0),
       ImGuiStructMemberEntry.new(name: 'Map', type_str: 'ImGuiStorage', type: :ImGuiStorage, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'FreeIdx', type_str: :int, type: :ImPoolIdx, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'AliveCount', type_str: :int, type: :ImPoolIdx, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'FreeIdx', type_str: :int, type: :int, is_array: false, size: 0),
+      ImGuiStructMemberEntry.new(name: 'AliveCount', type_str: :int, type: :int, is_array: false, size: 0),
     ]
     structs << struct_impool_stub
 
@@ -285,7 +288,7 @@ module ImGuiBindings
       ImGuiStructMemberEntry.new(name: 'Data', type_str: 'T*', type: :pointer, is_array: false, size: 0),
       ImGuiStructMemberEntry.new(name: 'DataEnd', type_str: 'T*', type: :pointer, is_array: false, size: 0),
     ]
-    structs << struct_impool_stub
+    structs << struct_imspan_stub
 
     # Tweak to resolve cross-referencing problem between ImDrawData (ImGuiViewport* OwnerViewport) and ImGuiViewport (ImDrawData* DrawData)
     structs.each do |struct|
