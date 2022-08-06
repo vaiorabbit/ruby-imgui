@@ -76,7 +76,7 @@ if __FILE__ == $PROGRAM_NAME
 
       # 'type' and 'timestamp' are common members for all SDL Event structs.
       event_type = event[:common][:type]
-      event_timestamp = event[:common][:timestamp]
+      # event_timestamp = event[:common][:timestamp]
       # puts "Event : type=0x#{event_type.to_s(16)}, timestamp=#{event_timestamp}"
       case event_type
       when SDL::KEYDOWN
@@ -96,14 +96,15 @@ if __FILE__ == $PROGRAM_NAME
     ImGuiDemo::ShowAboutWindow(nil)
 
     # See https://github.com/ffi/ffi/wiki/Structs
-    pos = ImVec2.create(50, 20)
+    pos = ImVec2.create(780,320)
     ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver)
+    size = ImVec2.create(480, 700)
+    ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver)
 
     p_open = nil
-    window_flags = ImGuiWindowFlags_AlwaysAutoResize
+    window_flags = 0
     ImGui::PushFont(japanese_font)
     ImGui::Begin("Ruby-ImGui : はじめてのウィンドウ＆日本語", p_open, window_flags)
-    ImGui::Text("Loaded shared library '%s'", :string, $lib_path) # See https://github.com/ffi/ffi/wiki/Examples#using-varargs
     ImGui::TextWrapped(japanese_utf8_text)
     ImGui::End()
     ImGui::PopFont()

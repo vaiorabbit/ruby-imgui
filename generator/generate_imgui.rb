@@ -272,9 +272,9 @@ module Generator
     out.push_indent
     out.write("attach_function sym, args[sym], retvals[sym]\n")
     out.pop_indent
-    out.write("rescue FFI::NotFoundError => error\n")
+    out.write("rescue FFI::NotFoundError\n")
     out.push_indent
-    out.write("$stderr.puts(\"[Warning] Failed to import \#{s}.\\n\") if output_error\n")
+    out.write("$stderr.puts(\"[Warning] Failed to import \#{sym}.\\n\") if output_error\n")
     out.pop_indent
     out.write("end\n")
     out.pop_indent
@@ -503,7 +503,7 @@ if __FILE__ == $PROGRAM_NAME
     'ImGuiStorage',
     'ImGuiTextBuffer',
   # 'ImGuiTextFilter',
-    'TextRange',
+    'ImGuiTextRange',
     'Pair',
   # 'ImVector',
   ]

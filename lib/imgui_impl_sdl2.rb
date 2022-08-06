@@ -17,7 +17,7 @@ module ImGui
       @window = nil                                           # SDL_Window*
       @renderer = nil                                         # SDL_Renderer*
       @time = 0.0                                             # Uint64
-      @mouseButtonsDown                                       # int
+      @mouseButtonsDown = 0                                   # int
       @mouseCursors = Array.new(ImGuiMouseCursor_COUNT) { 0 } # SDL_Cursor*
       @clipboardTextData = nil                                # char*
       @mouseCanUseGlobalState = false                         # bool

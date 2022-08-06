@@ -60,7 +60,6 @@ module ImGui
   end
 
   def self.ImplSDLRenderer_NewFrame()
-    io = ImGuiIO.new(ImGui::GetIO())
     bd = ImGui_ImplSDLRenderer_GetBackendData()
     ImGui::ImplSDLRenderer_CreateDeviceObjects() if bd[:FontTexture] == nil
   end

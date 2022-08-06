@@ -55,7 +55,7 @@ if __FILE__ == $PROGRAM_NAME
 
       # 'type' and 'timestamp' are common members for all SDL Event structs.
       event_type = event[:common][:type]
-      event_timestamp = event[:common][:timestamp]
+
       # puts "Event : type=0x#{event_type.to_s(16)}, timestamp=#{event_timestamp}"
       case event_type
       when SDL::KEYDOWN
@@ -69,8 +69,6 @@ if __FILE__ == $PROGRAM_NAME
     ImGui::ImplOpenGL2_NewFrame()
     ImGui::ImplSDL2_NewFrame()
     ImGui::NewFrame()
-
-    p_open = nil
 
     ImGuiDemo::BasicWindow::Show()
     ImGuiDemo::ButtonAndCheckboxWindow::Show()

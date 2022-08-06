@@ -79,14 +79,15 @@ if __FILE__ == $PROGRAM_NAME
 
     ImGuiDemo::ShowAboutWindow(nil)
 
-    pos = ImVec2.create(50, 20)
+    pos = ImVec2.create(780,320)
     ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver)
+    size = ImVec2.create(480, 700)
+    ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver)
 
     p_open = nil
-    window_flags = ImGuiWindowFlags_AlwaysAutoResize
+    window_flags = 0
     ImGui::PushFont(japanese_font)
     ImGui::Begin("Ruby-ImGui : はじめてのウィンドウ＆日本語", p_open, window_flags)
-    ImGui::Text("Loaded shared library '%s'", :string, $lib_path) # See https://github.com/ffi/ffi/wiki/Examples#using-varargs
     ImGui::TextWrapped(japanese_utf8_text)
     ImGui::End()
     ImGui::PopFont()
@@ -112,10 +113,6 @@ if __FILE__ == $PROGRAM_NAME
     GLFW.GetCursorPos(window, mx_buf, my_buf)
     GLFW.GetWindowSize(window, winWidth_buf, winHeight_buf)
     GLFW.GetFramebufferSize(window, fbWidth_buf, fbHeight_buf)
-    mx = mx_buf.unpack('D')[0]
-    my = my_buf.unpack('D')[0]
-    winWidth = winWidth_buf.unpack('L')[0]
-    winHeight = winHeight_buf.unpack('L')[0]
     fbWidth = fbWidth_buf.unpack('L')[0]
     fbHeight = fbHeight_buf.unpack('L')[0]
 

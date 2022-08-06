@@ -1635,34 +1635,6 @@ class ImGuiTextFilter < FFI::Struct
 
 end
 
-class ImGuiTextRange < FFI::Struct
-  layout(
-    :b, :pointer,
-    :e, :pointer
-  )
-
-  def self.create()
-    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRange_Nil())
-  end
-
-  def self.create(_b, _e)
-    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRange_Str(_b, _e))
-  end
-
-  def destroy()
-    ImGui::ImGuiTextRange_destroy(self)
-  end
-
-  def empty()
-    ImGui::ImGuiTextRange_empty(self)
-  end
-
-  def split(separator, out)
-    ImGui::ImGuiTextRange_split(self, separator, out)
-  end
-
-end
-
 class ImGuiViewport < FFI::Struct
   layout(
     :Flags, :int,
@@ -3235,8 +3207,8 @@ module ImGui
     symbols.each do |sym|
       begin
         attach_function sym, args[sym], retvals[sym]
-      rescue FFI::NotFoundError => error
-        $stderr.puts("[Warning] Failed to import #{s}.\n") if output_error
+      rescue FFI::NotFoundError
+        $stderr.puts("[Warning] Failed to import #{sym}.\n") if output_error
       end
     end
 

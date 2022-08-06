@@ -140,8 +140,8 @@ module ImGui
     draw_data[:CmdListsCount].times do |n|
 
       cmd_list = ImDrawList.new((draw_data[:CmdLists].pointer + 8 * n).read_pointer) # 8 == const ImDrawList*
-      vtx_buffer = ImDrawVert.new(cmd_list[:VtxBuffer][:Data]) # const ImDrawVert*
-      idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
+      # vtx_buffer = ImDrawVert.new(cmd_list[:VtxBuffer][:Data]) # const ImDrawVert*
+      # idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
 
       # Upload vertex/index buffers
       GL.BufferData(GL::ARRAY_BUFFER, cmd_list[:VtxBuffer][:Size] * ImDrawVert.size, Fiddle::Pointer.new(cmd_list[:VtxBuffer][:Data]), GL::STREAM_DRAW)
@@ -185,7 +185,7 @@ module ImGui
           end
 
         end
-        idx_buffer += pcmd[:ElemCount] * 2 # 2 == ImDrawIdx(:ushort).size
+        # idx_buffer += pcmd[:ElemCount] * 2 # 2 == ImDrawIdx(:ushort).size
       end
     end
 
