@@ -1,5 +1,5 @@
 [submodule "cimgui"]
-	path = cimgui
+	path = imgui_dll/cimgui
 	url = https://github.com/cimgui/cimgui.git
 	branch = master
 [submodule "imnodes_dll/ImNodes"]

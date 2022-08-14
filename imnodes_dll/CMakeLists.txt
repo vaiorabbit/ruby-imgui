@@ -6,7 +6,7 @@ file(GLOB IMNODES_LIB_SRCS "${CMAKE_CURRENT_LIST_DIR}/ImNodes/Im*.cpp")
 add_library(ImNodes SHARED ${IMNODES_LIB_HDRS} ${IMNODES_LIB_SRCS})
 target_sources(ImNodes PUBLIC "${CMAKE_CURRENT_LIST_DIR}/ImNodesCAPI.h")
 target_sources(ImNodes PRIVATE "${CMAKE_CURRENT_LIST_DIR}/ImNodesCAPI.cpp")
-include_directories( ${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui )
+include_directories( ${CMAKE_CURRENT_LIST_DIR}/../imgui_dll/cimgui/imgui )
 
 if (CMAKE_HOST_WIN32)
 	add_library(imgui SHARED IMPORTED)

@@ -58,7 +58,7 @@
     *   For the first time:
         *   git submodule update --init --recursive
     *   Update:
-        *   cd cimgui
+        *   cd imgui_dll/cimgui
         *   git pull origin master <- to get latest cimgui
         *   git submodule update <- to get specific revision of imgui required by cimgui
 2.  Get GLFW or SDL2

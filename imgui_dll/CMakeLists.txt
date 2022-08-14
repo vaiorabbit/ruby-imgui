@@ -3,19 +3,19 @@ cmake_minimum_required(VERSION 3.0)
 
 set (CMAKE_CXX_STANDARD 11)
 
-include_directories( ${CMAKE_CURRENT_LIST_DIR}/../cimgui )
-include_directories( ${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui )
+include_directories( ${CMAKE_CURRENT_LIST_DIR}/cimgui )
+include_directories( ${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui )
 include_directories(.)
 
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 
 set(IMGUI_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/../cimgui/cimgui.cpp
-	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui.cpp
-	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_draw.cpp
-	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_demo.cpp
-	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_tables.cpp
-	${CMAKE_CURRENT_LIST_DIR}/../cimgui/imgui/imgui_widgets.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/cimgui/cimgui.cpp
+	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui.cpp
+	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_draw.cpp
+	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_demo.cpp
+	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_tables.cpp
+	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_widgets.cpp
 	)
 
 set(IMGUI_LIBRARIES )
