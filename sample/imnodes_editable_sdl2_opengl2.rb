@@ -2,7 +2,6 @@
 require_relative 'util/setup_dll'
 require_relative 'util/setup_opengl_dll'
 require_relative 'util/setup_sdl2_dll'
-require_relative '../lib/imgui_internal'
 
 WINDOW_W = 1280
 WINDOW_H = 720
@@ -117,8 +116,6 @@ if __FILE__ == $0
   SDL.GL_SetSwapInterval(1) # Enable vsync
 
   GL.load_lib()
-
-  ImGui.import_internal_symbols(true)
 
   # Setup Dear ImGui context
   ImGui::CreateContext()
