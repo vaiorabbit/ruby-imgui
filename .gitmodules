@@ -2,3 +2,6 @@
 	path = cimgui
 	url = https://github.com/cimgui/cimgui.git
 	branch = master
+[submodule "imnodes_dll/ImNodes"]
+	path = imnodes_dll/ImNodes
+	url = https://github.com/rokups/ImNodes.git

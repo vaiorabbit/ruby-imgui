@@ -40,6 +40,12 @@ else (IMGUI_STATIC)
     add_library(imgui SHARED ${IMGUI_SOURCES})
     if (WIN32)
 	    target_link_libraries(imgui imm32)
+		# Export all original ImGui symbols to support other libraries (e.g. ImNodes)
+		# Note that these settings below didn't work as I expeced on Windows/MSys2 environment.
+		#  set(WINDOWS_EXPORT_ALL_SYMBOLS ON)
+		#  set(CMAKE_SUPPORT_WINDOWS_EXPORT_ALL_SYMBOLS 1)
+		# So I add linker option 'export-all-symbols' explicitly.
+		set (CMAKE_SHARED_LINKER_FLAGS "-Wl,--export-all-symbols")
     endif(WIN32)
 endif (IMGUI_STATIC)
 

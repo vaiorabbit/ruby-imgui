@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "imgui-bindings"
-  spec.version       = "0.0.4"
+  spec.version       = "0.1.0"
   spec.authors       = ["vaiorabbit"]
   spec.email         = ["vaiorabbit@gmail.com"]
   spec.summary       = %q{Bindings for Dear ImGui}
@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
 Ruby bindings for Dear ImGui ( https://github.com/ocornut/imgui ).
   DESC
 
-  spec.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = '>= 3.0.0'
 
   spec.add_runtime_dependency 'ffi', '~> 1.15'
   spec.add_runtime_dependency 'opengl-bindings2', '~> 2'
