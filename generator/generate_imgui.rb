@@ -475,11 +475,11 @@ if __FILE__ == $PROGRAM_NAME
   #
   # Setup
   #
-  typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json' )
-  enums_map = ImGuiBindings.build_enum_map( '../cimgui/generator/output/structs_and_enums.json' )
-  structs_map = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
-  funcs_base_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/definitions.json' )
-  # funcs_impl_map = ImGuiBindings.build_function_map( '../cimgui/generator/output/impl_definitions.json' )
+  typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../imgui_dll/cimgui/generator/output/typedefs_dict.json' )
+  enums_map = ImGuiBindings.build_enum_map( '../imgui_dll/cimgui/generator/output/structs_and_enums.json' )
+  structs_map = ImGuiBindings.build_struct_map( '../imgui_dll/cimgui/generator/output/structs_and_enums.json' )
+  funcs_base_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/definitions.json' )
+  # funcs_impl_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/impl_definitions.json' )
   funcs_impl_map = []
 
   # Omit needless/unusable data
