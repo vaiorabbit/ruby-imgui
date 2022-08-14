@@ -2,6 +2,7 @@
 require_relative 'util/setup_dll'
 require_relative 'util/setup_opengl_dll'
 require_relative 'util/setup_sdl2_dll'
+require_relative '../lib/imgui_internal'
 
 WINDOW_W = 1280
 WINDOW_H = 720
@@ -117,6 +118,8 @@ if __FILE__ == $0
 
   GL.load_lib()
 
+  ImGui.import_internal_symbols(true)
+
   # Setup Dear ImGui context
   ImGui::CreateContext()
 
@@ -189,7 +192,7 @@ if __FILE__ == $0
       end
       ImNodes::EzEndNode()
 
-      if node.is_selected? && (ImGui::IsKeyPressed(ImGuiKey_Delete) || ImGui::IsKeyPressed(ImGuiKey_Backspace)) #&& ImGui::IsWindowFocused() # [TODO] support internal methods
+      if node.is_selected? && (ImGui::IsKeyPressed(ImGuiKey_Delete) || ImGui::IsKeyPressed(ImGuiKey_Backspace)) && ImGui::IsWindowFocused()
         node.connections.each do |connection|
           input_node, output_node = connection.get_nodes
           if output_node.id == node.id
@@ -210,7 +213,7 @@ if __FILE__ == $0
 
     # Context Menu
     if ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered() && !ImGui::IsMouseDragging(1)
-      # ImGui::FocusWindow(ImGui::GetCurrentWindow()) # [TODO] support internal methods
+      ImGui::FocusWindow(ImGui::GetCurrentWindow())
       ImGui::OpenPopup("NodesContextMenu", 0)
     end
 
