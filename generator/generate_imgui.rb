@@ -658,6 +658,8 @@ end
     # end
     Generator.write_attach_functions(out, funcs_map)
 
+    out.newline
+    out.write("@@imgui_import_done = true")
     out.pop_indent
 
     out.write("end # self.import_symbols\n")

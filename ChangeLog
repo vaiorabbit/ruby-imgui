@@ -3,6 +3,7 @@
 	* Added ImNodes ( https://github.com/rokups/ImNodes ) support
 	* Moved cimgui location
 	* Removed unmaintained debug version of shared libraries
+	* Added hand-written binding code for imgui_internal.h
 
 2022-08-06  vaiorabbit  <http://twitter.com/vaiorabbit>
 
