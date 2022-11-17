@@ -9,6 +9,7 @@ require 'ffi'
 FFI.typedef :int, :ImDrawFlags
 FFI.typedef :ushort, :ImDrawIdx
 FFI.typedef :int, :ImDrawListFlags
+FFI.typedef :pointer, :ImDrawListSharedData
 FFI.typedef :int, :ImFontAtlasFlags
 FFI.typedef :int, :ImGuiBackendFlags
 FFI.typedef :int, :ImGuiButtonFlags
@@ -24,13 +25,11 @@ FFI.typedef :int, :ImGuiFocusedFlags
 FFI.typedef :int, :ImGuiHoveredFlags
 FFI.typedef :uint, :ImGuiID
 FFI.typedef :int, :ImGuiInputTextFlags
-FFI.typedef :int, :ImGuiKey
+FFI.typedef :int, :ImGuiKeyChord
 FFI.typedef :pointer, :ImGuiMemAllocFunc
 FFI.typedef :pointer, :ImGuiMemFreeFunc
-FFI.typedef :int, :ImGuiModFlags
 FFI.typedef :int, :ImGuiMouseButton
 FFI.typedef :int, :ImGuiMouseCursor
-FFI.typedef :int, :ImGuiNavInput
 FFI.typedef :int, :ImGuiPopupFlags
 FFI.typedef :int, :ImGuiSelectableFlags
 FFI.typedef :int, :ImGuiSliderFlags
@@ -57,6 +56,7 @@ FFI.typedef :uchar, :ImU8
 FFI.typedef :ushort, :ImWchar
 FFI.typedef :ushort, :ImWchar16
 FFI.typedef :uint, :ImWchar32
+FFI.typedef :int, :ImGuiKey
 
 # ImDrawFlags_
 ImDrawFlags_None = 0 # 0
@@ -273,6 +273,9 @@ ImGuiHoveredFlags_AllowWhenDisabled = 512 # 1 << 9
 ImGuiHoveredFlags_NoNavOverride = 1024 # 1 << 10
 ImGuiHoveredFlags_RectOnly = 416 # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
 ImGuiHoveredFlags_RootAndChildWindows = 3 # ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows
+ImGuiHoveredFlags_DelayNormal = 2048 # 1 << 11
+ImGuiHoveredFlags_DelayShort = 4096 # 1 << 12
+ImGuiHoveredFlags_NoSharedDelay = 8192 # 1 << 13
 
 # ImGuiInputTextFlags_
 ImGuiInputTextFlags_None = 0 # 0
@@ -296,8 +299,9 @@ ImGuiInputTextFlags_NoUndoRedo = 65536 # 1 << 16
 ImGuiInputTextFlags_CharsScientific = 131072 # 1 << 17
 ImGuiInputTextFlags_CallbackResize = 262144 # 1 << 18
 ImGuiInputTextFlags_CallbackEdit = 524288 # 1 << 19
+ImGuiInputTextFlags_EscapeClearsAll = 1048576 # 1 << 20
 
-# ImGuiKey_
+# ImGuiKey
 ImGuiKey_None = 0 # 0
 ImGuiKey_Tab = 512 # 512
 ImGuiKey_LeftArrow = 513 # 513
@@ -406,45 +410,52 @@ ImGuiKey_KeypadEnter = 615 # 615
 ImGuiKey_KeypadEqual = 616 # 616
 ImGuiKey_GamepadStart = 617 # 617
 ImGuiKey_GamepadBack = 618 # 618
-ImGuiKey_GamepadFaceUp = 619 # 619
-ImGuiKey_GamepadFaceDown = 620 # 620
-ImGuiKey_GamepadFaceLeft = 621 # 621
-ImGuiKey_GamepadFaceRight = 622 # 622
-ImGuiKey_GamepadDpadUp = 623 # 623
-ImGuiKey_GamepadDpadDown = 624 # 624
-ImGuiKey_GamepadDpadLeft = 625 # 625
-ImGuiKey_GamepadDpadRight = 626 # 626
+ImGuiKey_GamepadFaceLeft = 619 # 619
+ImGuiKey_GamepadFaceRight = 620 # 620
+ImGuiKey_GamepadFaceUp = 621 # 621
+ImGuiKey_GamepadFaceDown = 622 # 622
+ImGuiKey_GamepadDpadLeft = 623 # 623
+ImGuiKey_GamepadDpadRight = 624 # 624
+ImGuiKey_GamepadDpadUp = 625 # 625
+ImGuiKey_GamepadDpadDown = 626 # 626
 ImGuiKey_GamepadL1 = 627 # 627
 ImGuiKey_GamepadR1 = 628 # 628
 ImGuiKey_GamepadL2 = 629 # 629
 ImGuiKey_GamepadR2 = 630 # 630
 ImGuiKey_GamepadL3 = 631 # 631
 ImGuiKey_GamepadR3 = 632 # 632
-ImGuiKey_GamepadLStickUp = 633 # 633
-ImGuiKey_GamepadLStickDown = 634 # 634
-ImGuiKey_GamepadLStickLeft = 635 # 635
-ImGuiKey_GamepadLStickRight = 636 # 636
-ImGuiKey_GamepadRStickUp = 637 # 637
-ImGuiKey_GamepadRStickDown = 638 # 638
-ImGuiKey_GamepadRStickLeft = 639 # 639
-ImGuiKey_GamepadRStickRight = 640 # 640
-ImGuiKey_ModCtrl = 641 # 641
-ImGuiKey_ModShift = 642 # 642
-ImGuiKey_ModAlt = 643 # 643
-ImGuiKey_ModSuper = 644 # 644
-ImGuiKey_COUNT = 645 # 645
+ImGuiKey_GamepadLStickLeft = 633 # 633
+ImGuiKey_GamepadLStickRight = 634 # 634
+ImGuiKey_GamepadLStickUp = 635 # 635
+ImGuiKey_GamepadLStickDown = 636 # 636
+ImGuiKey_GamepadRStickLeft = 637 # 637
+ImGuiKey_GamepadRStickRight = 638 # 638
+ImGuiKey_GamepadRStickUp = 639 # 639
+ImGuiKey_GamepadRStickDown = 640 # 640
+ImGuiKey_MouseLeft = 641 # 641
+ImGuiKey_MouseRight = 642 # 642
+ImGuiKey_MouseMiddle = 643 # 643
+ImGuiKey_MouseX1 = 644 # 644
+ImGuiKey_MouseX2 = 645 # 645
+ImGuiKey_MouseWheelX = 646 # 646
+ImGuiKey_MouseWheelY = 647 # 647
+ImGuiKey_ReservedForModCtrl = 648 # 648
+ImGuiKey_ReservedForModShift = 649 # 649
+ImGuiKey_ReservedForModAlt = 650 # 650
+ImGuiKey_ReservedForModSuper = 651 # 651
+ImGuiKey_COUNT = 652 # 652
+ImGuiMod_None = 0 # 0
+ImGuiMod_Ctrl = 4096 # 1 << 12
+ImGuiMod_Shift = 8192 # 1 << 13
+ImGuiMod_Alt = 16384 # 1 << 14
+ImGuiMod_Super = 32768 # 1 << 15
+ImGuiMod_Mask_ = 61440 # 0xF000
+ImGuiMod_Shortcut = 32768 # ImGuiMod_Super
 ImGuiKey_NamedKey_BEGIN = 512 # 512
-ImGuiKey_NamedKey_END = 645 # ImGuiKey_COUNT
-ImGuiKey_NamedKey_COUNT = 133 # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
-ImGuiKey_KeysData_SIZE = 645 # ImGuiKey_COUNT
+ImGuiKey_NamedKey_END = 652 # ImGuiKey_COUNT
+ImGuiKey_NamedKey_COUNT = 140 # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
+ImGuiKey_KeysData_SIZE = 652 # ImGuiKey_COUNT
 ImGuiKey_KeysData_OFFSET = 0 # 0
-
-# ImGuiModFlags_
-ImGuiModFlags_None = 0 # 0
-ImGuiModFlags_Ctrl = 1 # 1 << 0
-ImGuiModFlags_Shift = 2 # 1 << 1
-ImGuiModFlags_Alt = 4 # 1 << 2
-ImGuiModFlags_Super = 8 # 1 << 3
 
 # ImGuiMouseButton_
 ImGuiMouseButton_Left = 0 # 0
@@ -465,7 +476,7 @@ ImGuiMouseCursor_Hand = 7 # 7
 ImGuiMouseCursor_NotAllowed = 8 # 8
 ImGuiMouseCursor_COUNT = 9 # 9
 
-# ImGuiNavInput_
+# ImGuiNavInput
 ImGuiNavInput_Activate = 0 # 0
 ImGuiNavInput_Cancel = 1 # 1
 ImGuiNavInput_Input = 2 # 2
@@ -482,11 +493,7 @@ ImGuiNavInput_FocusPrev = 12 # 12
 ImGuiNavInput_FocusNext = 13 # 13
 ImGuiNavInput_TweakSlow = 14 # 14
 ImGuiNavInput_TweakFast = 15 # 15
-ImGuiNavInput_KeyLeft_ = 16 # 16
-ImGuiNavInput_KeyRight_ = 17 # 17
-ImGuiNavInput_KeyUp_ = 18 # 18
-ImGuiNavInput_KeyDown_ = 19 # 19
-ImGuiNavInput_COUNT = 20 # 20
+ImGuiNavInput_COUNT = 16 # 16
 
 # ImGuiPopupFlags_
 ImGuiPopupFlags_None = 0 # 0
@@ -1150,6 +1157,10 @@ class ImFontAtlas < FFI::Struct
     ImGui::ImFontAtlas_GetGlyphRangesDefault(self)
   end
 
+  def GetGlyphRangesGreek()
+    ImGui::ImFontAtlas_GetGlyphRangesGreek(self)
+  end
+
   def GetGlyphRangesJapanese()
     ImGui::ImFontAtlas_GetGlyphRangesJapanese(self)
   end
@@ -1350,6 +1361,8 @@ class ImGuiIO < FFI::Struct
     :MouseDragThreshold, :float,
     :KeyRepeatDelay, :float,
     :KeyRepeatRate, :float,
+    :HoverDelayNormal, :float,
+    :HoverDelayShort, :float,
     :UserData, :pointer,
     :Fonts, ImFontAtlas.ptr,
     :FontGlobalScale, :float,
@@ -1360,6 +1373,7 @@ class ImGuiIO < FFI::Struct
     :ConfigMacOSXBehaviors, :bool,
     :ConfigInputTrickleEventQueue, :bool,
     :ConfigInputTextCursorBlink, :bool,
+    :ConfigInputTextEnterKeepActive, :bool,
     :ConfigDragClickToInputText, :bool,
     :ConfigWindowsResizeFromEdges, :bool,
     :ConfigWindowsMoveFromTitleBarOnly, :bool,
@@ -1388,8 +1402,9 @@ class ImGuiIO < FFI::Struct
     :MetricsActiveWindows, :int,
     :MetricsActiveAllocations, :int,
     :MouseDelta, ImVec2.by_value,
-    :KeyMap, [:int, 645],
-    :KeysDown, [:bool, 645],
+    :KeyMap, [:int, 652],
+    :KeysDown, [:bool, 652],
+    :NavInputs, [:float, 16],
     :MousePos, ImVec2.by_value,
     :MouseDown, [:bool, 5],
     :MouseWheel, :float,
@@ -1398,9 +1413,8 @@ class ImGuiIO < FFI::Struct
     :KeyShift, :bool,
     :KeyAlt, :bool,
     :KeySuper, :bool,
-    :NavInputs, [:float, 20],
     :KeyMods, :int,
-    :KeysData, [ImGuiKeyData.by_value, 645],
+    :KeysData, [ImGuiKeyData.by_value, 652],
     :WantCaptureMouseUnlessPopupClose, :bool,
     :MousePosPrev, ImVec2.by_value,
     :MouseClickedPos, [ImVec2.by_value, 5],
@@ -1415,8 +1429,6 @@ class ImGuiIO < FFI::Struct
     :MouseDownDuration, [:float, 5],
     :MouseDownDurationPrev, [:float, 5],
     :MouseDragMaxDistanceSqr, [:float, 5],
-    :NavInputsDownDuration, [:float, 20],
-    :NavInputsDownDurationPrev, [:float, 20],
     :PenPressure, :float,
     :AppFocusLost, :bool,
     :AppAcceptingEvents, :bool,
@@ -1785,6 +1797,7 @@ module ImGui
       :ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon,
       :ImFontAtlas_GetGlyphRangesCyrillic,
       :ImFontAtlas_GetGlyphRangesDefault,
+      :ImFontAtlas_GetGlyphRangesGreek,
       :ImFontAtlas_GetGlyphRangesJapanese,
       :ImFontAtlas_GetGlyphRangesKorean,
       :ImFontAtlas_GetGlyphRangesThai,
@@ -2117,6 +2130,7 @@ module ImGui
       :igSetNextWindowContentSize,
       :igSetNextWindowFocus,
       :igSetNextWindowPos,
+      :igSetNextWindowScroll,
       :igSetNextWindowSize,
       :igSetNextWindowSizeConstraints,
       :igSetScrollFromPosX,
@@ -2286,6 +2300,7 @@ module ImGui
       :ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon => [:pointer],
       :ImFontAtlas_GetGlyphRangesCyrillic => [:pointer],
       :ImFontAtlas_GetGlyphRangesDefault => [:pointer],
+      :ImFontAtlas_GetGlyphRangesGreek => [:pointer],
       :ImFontAtlas_GetGlyphRangesJapanese => [:pointer],
       :ImFontAtlas_GetGlyphRangesKorean => [:pointer],
       :ImFontAtlas_GetGlyphRangesThai => [:pointer],
@@ -2487,7 +2502,7 @@ module ImGui
       :igGetWindowSize => [:pointer],
       :igGetWindowWidth => [],
       :igImage => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value],
-      :igImageButton => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int, ImVec4.by_value, ImVec4.by_value],
+      :igImageButton => [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value],
       :igIndent => [:float],
       :igInputDouble => [:pointer, :pointer, :double, :double, :pointer, :int],
       :igInputFloat => [:pointer, :pointer, :float, :float, :pointer, :int],
@@ -2618,6 +2633,7 @@ module ImGui
       :igSetNextWindowContentSize => [ImVec2.by_value],
       :igSetNextWindowFocus => [],
       :igSetNextWindowPos => [ImVec2.by_value, :int, ImVec2.by_value],
+      :igSetNextWindowScroll => [ImVec2.by_value],
       :igSetNextWindowSize => [ImVec2.by_value, :int],
       :igSetNextWindowSizeConstraints => [ImVec2.by_value, ImVec2.by_value, :ImGuiSizeCallback, :pointer],
       :igSetScrollFromPosX => [:float, :float],
@@ -2787,6 +2803,7 @@ module ImGui
       :ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon => :pointer,
       :ImFontAtlas_GetGlyphRangesCyrillic => :pointer,
       :ImFontAtlas_GetGlyphRangesDefault => :pointer,
+      :ImFontAtlas_GetGlyphRangesGreek => :pointer,
       :ImFontAtlas_GetGlyphRangesJapanese => :pointer,
       :ImFontAtlas_GetGlyphRangesKorean => :pointer,
       :ImFontAtlas_GetGlyphRangesThai => :pointer,
@@ -3119,6 +3136,7 @@ module ImGui
       :igSetNextWindowContentSize => :void,
       :igSetNextWindowFocus => :void,
       :igSetNextWindowPos => :void,
+      :igSetNextWindowScroll => :void,
       :igSetNextWindowSize => :void,
       :igSetNextWindowSizeConstraints => :void,
       :igSetScrollFromPosX => :void,
@@ -3216,7 +3234,8 @@ module ImGui
     attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void
     attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void
     attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void
-  end # self.import_symbols
+
+    @@imgui_import_done = true  end # self.import_symbols
 
   # arg: type(const char*), flags(ImGuiDragDropFlags)
   # ret: pointer
@@ -4073,10 +4092,10 @@ module ImGui
     igImage(user_texture_id, size, uv0, uv1, tint_col, border_col)
   end
 
-  # arg: user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), frame_padding(int), bg_col(ImVec4), tint_col(ImVec4)
+  # arg: str_id(const char*), user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), bg_col(ImVec4), tint_col(ImVec4)
   # ret: bool
-  def self.ImageButton(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), frame_padding = -1, bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))
-    igImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col)
+  def self.ImageButton(str_id, user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))
+    igImageButton(str_id, user_texture_id, size, uv0, uv1, bg_col, tint_col)
   end
 
   # arg: indent_w(float)
@@ -4828,6 +4847,12 @@ module ImGui
     igSetNextWindowPos(pos, cond, pivot)
   end
 
+  # arg: scroll(ImVec2)
+  # ret: void
+  def self.SetNextWindowScroll(scroll)
+    igSetNextWindowScroll(scroll)
+  end
+
   # arg: size(ImVec2), cond(ImGuiCond)
   # ret: void
   def self.SetNextWindowSize(size, cond = 0)
@@ -5264,7 +5289,7 @@ module ImGui
 
   # arg: ptr_id(const void*)
   # ret: void
-  def self.TreePush_Ptr(ptr_id = nil)
+  def self.TreePush_Ptr(ptr_id)
     igTreePush_Ptr(ptr_id)
   end
 

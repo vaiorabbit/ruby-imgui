@@ -260,10 +260,10 @@ module ImGui
   # [INTERNAL]
   def self.ImGui_ImplRaylib_UpdateKeyModifiers()
     io = ImGuiIO.new(ImGui::GetIO())
-    io.AddKeyEvent(ImGuiKey_ModCtrl, Raylib.IsKeyDown(Raylib::KEY_RIGHT_CONTROL) || Raylib.IsKeyDown(Raylib::KEY_LEFT_CONTROL))
-    io.AddKeyEvent(ImGuiKey_ModShift, Raylib.IsKeyDown(Raylib::KEY_RIGHT_SHIFT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SHIFT))
-    io.AddKeyEvent(ImGuiKey_ModAlt, Raylib.IsKeyDown(Raylib::KEY_RIGHT_ALT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_ALT))
-    io.AddKeyEvent(ImGuiKey_ModSuper, Raylib.IsKeyDown(Raylib::KEY_RIGHT_SUPER) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SUPER))
+    io.AddKeyEvent(ImGuiMod_Ctrl, Raylib.IsKeyDown(Raylib::KEY_RIGHT_CONTROL) || Raylib.IsKeyDown(Raylib::KEY_LEFT_CONTROL))
+    io.AddKeyEvent(ImGuiMod_Shift, Raylib.IsKeyDown(Raylib::KEY_RIGHT_SHIFT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SHIFT))
+    io.AddKeyEvent(ImGuiMod_Alt, Raylib.IsKeyDown(Raylib::KEY_RIGHT_ALT) || Raylib.IsKeyDown(Raylib::KEY_LEFT_ALT))
+    io.AddKeyEvent(ImGuiMod_Super, Raylib.IsKeyDown(Raylib::KEY_RIGHT_SUPER) || Raylib.IsKeyDown(Raylib::KEY_LEFT_SUPER))
   end
 
   def self.ImplRaylib_ProcessKeyboard()

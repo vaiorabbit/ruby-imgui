@@ -173,10 +173,10 @@ module ImGui
 
   def self.ImGui_ImplGlfw_UpdateKeyModifiers(mods)
     io = ImGuiIO.new(ImGui::GetIO())
-    io.AddKeyEvent(ImGuiKey_ModCtrl, (mods & GLFW::MOD_CONTROL) != 0)
-    io.AddKeyEvent(ImGuiKey_ModShift, (mods & GLFW::MOD_SHIFT) != 0)
-    io.AddKeyEvent(ImGuiKey_ModAlt, (mods & GLFW::MOD_ALT) != 0)
-    io.AddKeyEvent(ImGuiKey_ModSuper, (mods & GLFW::MOD_SUPER) != 0)
+    io.AddKeyEvent(ImGuiMod_Ctrl, (mods & GLFW::MOD_CONTROL) != 0)
+    io.AddKeyEvent(ImGuiMod_Shift, (mods & GLFW::MOD_SHIFT) != 0)
+    io.AddKeyEvent(ImGuiMod_Alt, (mods & GLFW::MOD_ALT) != 0)
+    io.AddKeyEvent(ImGuiMod_Super, (mods & GLFW::MOD_SUPER) != 0)
   end
 
   @@ImplGlfw_MouseButtonCallback = GLFW::create_callback(:GLFWmousebuttonfun) do |window, button, action, mods|

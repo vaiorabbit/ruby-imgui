@@ -475,7 +475,7 @@ if __FILE__ == $PROGRAM_NAME
   #
   # Setup
   #
-  typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../imgui_dll/cimgui/generator/output/typedefs_dict.json' )
+  typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../imgui_dll/cimgui/generator/output/typedefs_dict.json', '../imgui_dll/cimgui/generator/output/structs_and_enums.json' )
   enums_map = ImGuiBindings.build_enum_map( '../imgui_dll/cimgui/generator/output/structs_and_enums.json' )
   structs_map = ImGuiBindings.build_struct_map( '../imgui_dll/cimgui/generator/output/structs_and_enums.json' )
   funcs_base_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/definitions.json' )
@@ -490,6 +490,7 @@ if __FILE__ == $PROGRAM_NAME
   # 'ImDrawCmd',
   # 'ImDrawData',
   # 'ImDrawList',
+    'ImDrawListSharedData',
   # 'ImDrawVert',
   # 'ImFont',
   # 'ImFontAtlas',

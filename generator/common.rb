@@ -48,10 +48,13 @@ module ImGuiBindings
     'iterator',
     'const_iterator'
   ]
-  def self.build_ffi_typedef_map(json_filename)
+  OpaqueStruct = [
+    'ImDrawListSharedData',
+  ]
+  def self.build_ffi_typedef_map(typedefs_dict_json_filename, structs_and_enums_json_filename)
     return if @@imGuiToCTypeMap != nil
     type_map = Hash.new
-    File.open(json_filename) do |file|
+    File.open(typedefs_dict_json_filename) do |file|
       json = JSON.load(file)
       json.keys.each do |imgui_type_name|
         next if IgnoredTypedefs.include?(imgui_type_name)
@@ -100,8 +103,21 @@ module ImGuiBindings
           next
         end
 
+        if OpaqueStruct.include?(imgui_type_name)
+          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: :pointer, callback_signature: nil)
+          next
+        end
         # Resolve other types into the symbols of their names
         type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: nil)
+      end
+    end
+
+    File.open(structs_and_enums_json_filename) do |file|
+      json = JSON.load(file)
+      json_enumtypes = json['enumtypes'] # [2022-11-17] for ImGuiKey
+      enumtypes_names = json_enumtypes.keys
+      enumtypes_names.each do |enumtypes_name|
+        type_map[enumtypes_name] = ImGuiTypedefMapEntry.new(name: enumtypes_name, type: get_ffi_type(json_enumtypes[enumtypes_name]), callback_signature: nil)
       end
     end
 
@@ -329,7 +345,7 @@ end
 
 if __FILE__ == $0 # test code snippets
 
-  ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json' )
+  ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json', '../cimgui/generator/output/structs_and_enums.json' )
   # exit()
 
   structs = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
