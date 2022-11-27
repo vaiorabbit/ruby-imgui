@@ -66,7 +66,7 @@ module ImGuiBindings
           end
           next
         end
-        if (typedef_type_details = type_info['type_details']) != nil
+        unless (typedef_type_details = type_info['type_details']).nil?
           if typedef_type_details['flavour'] == 'function_pointer'
             ### Analyze signature of callback
             ret = get_ffi_type(typedef_type_details['return_type']['declaration'])
@@ -84,75 +84,12 @@ module ImGuiBindings
         type_map[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: get_ffi_type(type_info['declaration']), callback_signature: nil)
       end
 
-      type_map.each do |type_name, type_entry|
-        if type_entry.type == nil
-          actual_type_name = json_typedefs.find { |t| t['name'] == type_entry.name }['type']['declaration']
-          resolved_type = type_map.values.find {|v| v.name == actual_type_name}
-          type_entry.type = resolved_type['type']
-        end
-      end
+      type_map.each_value do |type_entry|
+        next unless type_entry.type.nil?
 
-    end
-
-    @@imGuiToCTypeMap = type_map
-
-    return type_map
-  end
-
-  def self.build_ffi_typedef_map0(json_filename)
-    return if @@imGuiToCTypeMap != nil
-    type_map = Hash.new
-    File.open(json_filename) do |file|
-      json = JSON.load(file)
-      json.keys.each do |imgui_type_name|
-        next if IgnoredTypedefs.include?(imgui_type_name)
-
-        # Resolve ImWchar : Now ImWchar is a typedef of ImWchar16 or ImWchar32 (v1.76 ~)
-        # https://github.com/cimgui/cimgui/commit/f84d9c43015742dc5ad4434da92c5e1a99254d27#diff-2e9752529db931d99aade39734631cd0L70
-        if imgui_type_name == "ImWchar"
-          imwchar_type = json[imgui_type_name] # "ImWchar16" or "ImWchar32"
-          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imwchar_type]), callback_signature: nil)
-          next
-        end
-
-        # Resolve Callback
-        if imgui_type_name.end_with?("Callback")
-          # json[imgui_type_name] contans the signture of callback function (e.g.: "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd);")
-          # Keep this information in 'callback_signature:' for later use
-
-          ### Analyze signature of callback / TODO fragile code. need maintainance ###
-          ret = nil
-          args = []
-
-          raw_callback_str = json[imgui_type_name]                    # e.g.) raw_callback_str = "void(*)(const ImDrawList* parent_list,const ImDrawCmd* cmd)"
-          match_data = /(.+)\(\*\)\((.+)\)/.match(raw_callback_str)
-          ret_type_str, raw_args = match_data[1], match_data[2]       # e.g.) ret_type_str="void", raw_args="const ImDrawList* parent_list,const ImDrawCmd* cmd"
-
-          ret_type_sym = get_ffi_type(ret_type_str)
-          ret_type_sym = ret_type_str.to_sym if ret_type_sym == nil   # e.g.) ret_type_sym = :void
-          ret = ret_type_sym
-
-          arg_strs = raw_args.split(",")                              # e.g.) arg_strs = ["const ImDrawList* parent_list", "const ImDrawCmd* cmd"]
-          arg_strs.each do |arg_str|
-            arg_str.gsub!(/const[ ]+/, '')                            # e.g.) arg_str = "ImDrawList* parent_list"
-            elems = arg_str.split(" ")                                # e.g.) elems = ["ImDrawList*", "parent_list"]
-            elems.pop                                                 # e.g.) elems = ["ImDrawList*"]
-            raise RuntimeError if elems.length != 1
-            arg_type_str = elems[0].gsub(/\*/, '')                    # e.g.) arg_type_str = "ImDrawList"
-            arg_type_sym = get_ffi_type(arg_type_str)
-            arg_type_sym = arg_type_str.to_sym if arg_type_sym == nil # e.g.) arg_type_sym = :ImDrawList
-            args << arg_type_sym
-          end
-          ###
-
-          # [NOTE] Register as a new ImGui to C type by specifing 'type: imgui_type_name.to_sym'
-          # type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: imgui_type_name.to_sym, callback_signature: [ret, args])
-          type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: [ret, args])
-          next
-        end
-
-        # Resolve other types into the symbols of their names
-        type_map[imgui_type_name] = ImGuiTypedefMapEntry.new(name: imgui_type_name, type: get_ffi_type(json[imgui_type_name]), callback_signature: nil)
+        actual_type_name = json_typedefs.find { |t| t['name'] == type_entry.name }['type']['declaration']
+        resolved_type = type_map.values.find { |v| v.name == actual_type_name }
+        type_entry.type = resolved_type['type']
       end
     end
 
@@ -161,38 +98,46 @@ module ImGuiBindings
     return type_map
   end
 
+  def self.add_ffi_typedef_map(type_name, ffi_type)
+    return if (@@imGuiToCTypeMap.nil? || @@imGuiToCTypeMap.has_key?(type_name))
+
+    @@imGuiToCTypeMap[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: ffi_type)
+  end
 
   def self.build_struct_map(json_filename)
     structs = []
     File.open(json_filename) do |file|
       json = JSON.load(file)
       json_structs = json['structs']
-      struct_names = json_structs.keys
-      struct_names.each do |struct_name|
+      json_structs.each do |json_struct|
+        next if json_struct['forward_declaration'] == true
+
+        struct_name = json_struct['name']
+        next if json_struct['name'].include? 'ImGuiStoragePair' # Use stub instead
+
         struct = ImGuiStructMapEntry.new(name: struct_name, members: [])
-        members = json_structs[struct_name]
-        members.each do |m|
-          # Some members in "structs" of "structs_and_enums.json" contains array brackets in its name (e.g.: "name": "Used4kPagesMap[(0xFFFF+1)/4096/8]",), which is not desirable as actual variable name.
-          member_name = if m['name'].include? "["
-                          m['name'].gsub(/\[.+\]/, '')
-                        else
-                          m['name']
-                        end
-          member = ImGuiStructMemberEntry.new(name: member_name, type_str: m['type'], type: get_ffi_type(m['type']), is_array: m.has_key?('size'))
-          if member.is_array
-            member.size = m['size'].to_i
-            member.name.gsub!(/\[[\w\+]+\]/,'')
-          else
-            member.size = 0
+        json_fields = json_struct['fields']
+        json_fields.each do |json_field|
+          type_str = json_field['type']['declaration']
+          ffi_type = get_ffi_type(type_str)
+          json_names = json_field['names']
+          json_names.each do |json_name|
+            member = ImGuiStructMemberEntry.new(name: json_name['name'], type_str: type_str, type: ffi_type, is_array: json_name['is_array'])
+            if member.is_array
+              member.size = json_name['array_bounds'] # [TODO] handle "array_bounds": "(IM_UNICODE_CODEPOINT_MAX +1)/4096/8" ("Used4kPagesMap") and apply 'to_i' as before
+            else
+              member.size = 0
+            end
+            struct.members << member
           end
-          struct.members << member
         end
+        add_ffi_typedef_map(struct_name, ":#{struct_name}")
         structs << struct
       end
     end
 
     # ImVector stub
-    structs.delete_if {|struct| struct.name == "ImVector"}
+    structs.delete_if {|struct| struct.name == 'ImVector'}
     struct_imvector_stub = ImGuiStructMapEntry.new
     struct_imvector_stub.name = 'ImVector'
     struct_imvector_stub.members = [
@@ -381,11 +326,11 @@ end
 if __FILE__ == $0 # test code snippets
 
   ImGuiBindings.build_ffi_typedef_map( '../third_party/dear_bindings/cimgui.json' )
-  exit()
-
-  structs = ImGuiBindings.build_struct_map( '../cimgui/generator/output/structs_and_enums.json' )
-  # pp structs
   # exit()
+
+  structs = ImGuiBindings.build_struct_map( '../third_party/dear_bindings/cimgui.json' )
+  pp structs
+  exit()
 
   enums = ImGuiBindings.build_enum_map( '../cimgui/generator/output/structs_and_enums.json' )
   # enums.each do |e|
