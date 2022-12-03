@@ -170,7 +170,49 @@ module ImGuiBindings
     return structs
   end
 
-  def self.build_enum_map(json_filename)
+  def self.build_enum_map(json_filename, conditions = [])
+    enums = []
+    File.open(json_filename) do |file|
+      json = JSON.load(file)
+      json_enums = json['enums']
+      json_enums.each do |json_enum|
+        enum_current_value = 0
+        enum_type_name = json_enum['name']
+
+        enum = ImGuiEnumMapEntry.new(name: enum_type_name, members: [])
+        json_elements = json_enum['elements']
+        json_elements.each do |json_element|
+
+          enum_name = json_element['name']
+          next if enum_name == 'ImGuiMod_Shortcut' # depends on the host os (whether macOS or other)
+
+          if json_element.has_key? 'conditionals' # e.g.) ImGuiKey_KeysData_xxx
+            json_element_conditionals = json_element['conditionals']
+            condition = json_element_conditionals[0]['condition']
+            macro_value = json_element_conditionals[0]['expression']
+            should_macro_defined = (condition == 'ifdef')
+            macro_defined = conditions.include? macro_value
+            next if ((should_macro_defined && !macro_defined) || (!should_macro_defined && macro_defined))
+          end
+
+          val = if json_element.has_key? 'value'
+                  eval(json_element['value'])
+                else
+                  enum_current_value
+                end
+          enum_value = val
+          enum_current_value = val + 1
+          Kernel.const_set(enum_name, enum_value)
+          member = ImGuiEnumValEntry.new(name: enum_name, value: enum_value, original: json_element['value'])
+          enum.members << member
+        end
+        enums << enum
+      end
+    end
+    return enums
+  end
+
+  def self.build_enum_map0(json_filename)
     enums = []
     File.open(json_filename) do |file|
       json = JSON.load(file)
@@ -193,7 +235,7 @@ module ImGuiBindings
   def self.is_udt(type_name)
     return UDT.include?(type_name)
   end
-
+p
   def self.get_ffi_type(type_name)
     if type_name.include?('*') || type_name.include?('&') || type_name.include?(']')
       return :pointer
@@ -329,17 +371,17 @@ if __FILE__ == $0 # test code snippets
   # exit()
 
   structs = ImGuiBindings.build_struct_map( '../third_party/dear_bindings/cimgui.json' )
-  pp structs
-  exit()
-
-  enums = ImGuiBindings.build_enum_map( '../cimgui/generator/output/structs_and_enums.json' )
-  # enums.each do |e|
-  #   print "#{e.name}\n"
-  #   e.members.each do |m|
-  #     print "    #{m.name} = #{m.value} # #{m.original}\n"
-  #   end
-  # end
+  # pp structs
   # exit()
+
+  enums = ImGuiBindings.build_enum_map( '../third_party/dear_bindings/cimgui.json' )
+  enums.each do |e|
+    print "#{e.name}\n"
+    e.members.each do |m|
+      print "    #{m.name} = #{m.value} # #{m.original}\n"
+    end
+  end
+  exit()
 
   funcs_base = ImGuiBindings.build_function_map( '../cimgui/generator/output/definitions.json' )
   # pp funcs_base
