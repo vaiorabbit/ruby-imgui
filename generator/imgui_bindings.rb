@@ -212,30 +212,6 @@ module ImGuiBindings
     return enums
   end
 
-  def self.build_enum_map0(json_filename)
-    enums = []
-    File.open(json_filename) do |file|
-      json = JSON.load(file)
-      json_enums = json['enums']
-      enum_names = json_enums.keys
-      enum_names.each do |enum_name|
-        enum = ImGuiEnumMapEntry.new(name: enum_name, members: [])
-        members = json_enums[enum_name]
-        members.each do |m|
-          member = ImGuiEnumValEntry.new(name: m['name'], value: m['calc_value'], original: m['value'])
-          enum.members << member
-        end
-        enums << enum
-      end
-    end
-    return enums
-  end
-
-  UDT = %w{ImVec2 ImVec4 ImColor ImRect}
-  def self.is_udt(type_name)
-    return UDT.include?(type_name)
-  end
-p
   def self.get_ffi_type(type_name)
     if type_name.include?('*') || type_name.include?('&') || type_name.include?(']')
       return :pointer
@@ -257,7 +233,112 @@ p
     return CToFFITypeMap[type_name]
   end
 
-  def self.create_new_function_map(func_info)
+  def self.create_new_function_map(json_function)
+    func = ImGuiFunctionMapEntry.new
+
+    # name
+    func.name = json_function['name']
+
+    # original_funcname
+    func.original_funcname = json_function['original_fully_qualified_name']
+
+    # arguments
+    func.args = []
+    json_function['arguments'].each do |json_argument|
+      # basic info
+      type_name = json_argument['type']['declaration']
+      type = get_ffi_type(type_name)
+      size = 0
+      is_array = json_argument['is_array']
+      if is_array
+        if json_argument['array_bounds'] == 'None'
+          size = 0
+          is_array = false
+        else
+          size = json_argument['array_bounds'].to_i
+        end
+      end
+      # check if default argument exists
+      default_arg = if json_argument.has_key? 'default_value'
+                      json_argument['default_value']
+                    else
+                      nil
+                    end
+
+      arg = ImGuiFunctionArgEntry.new(name: json_argument['name'], type: type, type_name: type_name, default: default_arg, is_array: is_array, size: size)
+      func.args << arg
+    end
+
+    # return value
+    func.retval = get_ffi_type(json_function['return_type']['declaration'])
+
+    #
+    # check if return value is modified from original signature
+    #
+    # If you find an entry with 'nonUDT : 1' in 'definitions.json',
+    # cimgui version API doesn't return the original value; instead has
+    # 1st output argument to write the original return value.
+    #
+    # e.g.)  imgui.h : IMGUI_API ImVec2 GetMousePos();
+    #       cimgui.h : CIMGUI_API void igGetMousePos(ImVec2 *pOut);
+    #
+    func.return_udt = false
+
+    #
+    # check if this function should also be generated as a method of class
+    #
+    # If you find an entry with 'stname : XXX' in 'definitions.json',
+    # the original API is a method of the struct called 'XXX (e.g.: ImColor, ImFontAtlas, ...')
+    #
+
+    if func.name == 'GetKeyIndex'
+      func.method_of = nil
+    else
+      func_prefix = /(.+)_(.+)/.match(func.name)[0] # e.g.: "ImFontAtlas_AddFont" -> func_prefix = "ImFontAtlas"
+      func.method_of = if func_prefix != 'ImGui'
+                         func_prefix
+                       else
+                         nil
+                       end
+    end
+    func.ctor = nil
+    func.dtor = nil
+
+    return func
+  end
+
+  def self.build_function_map(json_filename)
+    functions = []
+    File.open(json_filename) do |file|
+      json = JSON.load(file)
+      json_functions = json['functions']
+      json_functions.each do |json_function|
+
+        # Ignore ImVector methods.
+        next if json_function['name'].start_with?('ImVector_')
+
+        # Ignore functions with 'va_list' arguments.  Use ':varargs (...)' versions instead.
+        has_va_list = false
+        json_arguments = json_function['arguments']
+        json_arguments.each do |json_argument|
+          if json_argument['is_varargs']
+            has_va_list = true
+            break
+          end
+        end
+        next if has_va_list
+
+        func = create_new_function_map(json_function)
+        functions << func
+      end
+
+      func_names = json.keys
+    end
+    return functions
+  end
+
+
+  def self.create_new_function_map0(func_info)
     func = ImGuiFunctionMapEntry.new
 
     # name
@@ -339,7 +420,7 @@ p
     return func
   end
 
-  def self.build_function_map(json_filename)
+  def self.build_function_map0(json_filename)
     functions = []
     File.open(json_filename) do |file|
       json = JSON.load(file) # <- <func_name, func_info_overloadings>
@@ -375,18 +456,18 @@ if __FILE__ == $0 # test code snippets
   # exit()
 
   enums = ImGuiBindings.build_enum_map( '../third_party/dear_bindings/cimgui.json' )
-  enums.each do |e|
-    print "#{e.name}\n"
-    e.members.each do |m|
-      print "    #{m.name} = #{m.value} # #{m.original}\n"
-    end
-  end
-  exit()
+  # enums.each do |e|
+  #   print "#{e.name}\n"
+  #   e.members.each do |m|
+  #     print "    #{m.name} = #{m.value} # #{m.original}\n"
+  #   end
+  # end
+  # exit()
 
-  funcs_base = ImGuiBindings.build_function_map( '../cimgui/generator/output/definitions.json' )
-  # pp funcs_base
+  funcs_base = ImGuiBindings.build_function_map( '../third_party/dear_bindings/cimgui.json' )
+  pp funcs_base
 
-  funcs_impl = ImGuiBindings.build_function_map( '../cimgui/generator/output/impl_definitions.json' )
-  funcs_impl.select! {|f| f.name.include?('OpenGL2') or f.name.include?('Glfw')}
+  # funcs_impl = ImGuiBindings.build_function_map( '../cimgui/generator/output/impl_definitions.json' )
+  # funcs_impl.select! {|f| f.name.include?('OpenGL2') or f.name.include?('Glfw')}
   # pp funcs_impl
 end
