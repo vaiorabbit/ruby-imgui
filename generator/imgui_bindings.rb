@@ -10,7 +10,7 @@ ImGuiEnumValEntry = Struct.new( :name, :value, :original, keyword_init: true )
 ImGuiEnumMapEntry = Struct.new( :name, :members, keyword_init: true )
 
 ImGuiFunctionArgEntry = Struct.new( :name, :type, :type_name, :default, :is_array, :size, keyword_init: true )
-ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, :return_udt, :method_of, :ctor, :dtor, :original_funcname, keyword_init: true )
+ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, :replaced_name, :generate_module_method, :generate_overload_method, :method_of, :ctor, :dtor, :original_funcname, keyword_init: true )
 
 module ImGuiBindings
 
@@ -39,6 +39,7 @@ module ImGuiBindings
     'void *' => :pointer,
     'size_t' => :size_t,
     '...' => :varargs,
+    'va_list' => :varargs,
   }
 
   @@imGuiToCTypeMap = nil
@@ -233,14 +234,40 @@ module ImGuiBindings
     return CToFFITypeMap[type_name]
   end
 
-  def self.create_new_function_map(json_function)
+  def self.create_new_function_map(json_function, json, conditions = [])
+
     func = ImGuiFunctionMapEntry.new
+
+    if json_function.has_key? 'conditionals'
+      pp 'ho',  json_function['name']
+      json_function_conditionals = json_function['conditionals']
+      condition = json_function_conditionals[0]['condition']
+      macro_value = json_function_conditionals[0]['expression']
+      should_macro_defined = (condition == 'ifdef' or condition == 'if')
+      macro_defined = conditions.include? macro_value
+      return nil if ((should_macro_defined && !macro_defined) || (!should_macro_defined && macro_defined))
+    end
 
     # name
     func.name = json_function['name']
 
     # original_funcname
     func.original_funcname = json_function['original_fully_qualified_name']
+
+    func.replaced_name = nil
+    func.generate_module_method = true
+    func.generate_overload_method = false
+    if func.name.start_with? 'ImGui_'
+      api_name_c = func.name[6..]
+      api_name_cpp = func.original_funcname[7..]
+      if api_name_c != api_name_cpp
+#        func.generate_module_method = false
+        func.generate_overload_method = true
+        if api_name_c.sub(api_name_cpp, '') == 'Ex'
+          func.replaced_name = api_name_cpp
+        end
+      end
+    end
 
     # arguments
     func.args = []
@@ -273,28 +300,16 @@ module ImGuiBindings
     func.retval = get_ffi_type(json_function['return_type']['declaration'])
 
     #
-    # check if return value is modified from original signature
-    #
-    # If you find an entry with 'nonUDT : 1' in 'definitions.json',
-    # cimgui version API doesn't return the original value; instead has
-    # 1st output argument to write the original return value.
-    #
-    # e.g.)  imgui.h : IMGUI_API ImVec2 GetMousePos();
-    #       cimgui.h : CIMGUI_API void igGetMousePos(ImVec2 *pOut);
-    #
-    func.return_udt = false
-
-    #
     # check if this function should also be generated as a method of class
     #
     # If you find an entry with 'stname : XXX' in 'definitions.json',
     # the original API is a method of the struct called 'XXX (e.g.: ImColor, ImFontAtlas, ...')
     #
 
-    if func.name == 'GetKeyIndex'
+    if func.name == 'GetKeyIndex' # [TODO]
       func.method_of = nil
     else
-      func_prefix = /(.+)_(.+)/.match(func.name)[0] # e.g.: "ImFontAtlas_AddFont" -> func_prefix = "ImFontAtlas"
+      func_prefix = /(.+)_(.+)/.match(func.name)[1] # e.g.: "ImFontAtlas_AddFont" -> func_prefix = "ImFontAtlas"
       func.method_of = if func_prefix != 'ImGui'
                          func_prefix
                        else
@@ -307,7 +322,7 @@ module ImGuiBindings
     return func
   end
 
-  def self.build_function_map(json_filename)
+  def self.build_function_map(json_filename, conditions = [])
     functions = []
     File.open(json_filename) do |file|
       json = JSON.load(file)
@@ -316,6 +331,7 @@ module ImGuiBindings
 
         # Ignore ImVector methods.
         next if json_function['name'].start_with?('ImVector_')
+        next if json_function['is_default_argument_helper'] == true
 
         # Ignore functions with 'va_list' arguments.  Use ':varargs (...)' versions instead.
         has_va_list = false
@@ -328,118 +344,11 @@ module ImGuiBindings
         end
         next if has_va_list
 
-        func = create_new_function_map(json_function)
-        functions << func
+        func = create_new_function_map(json_function, json, conditions)
+        functions << func unless func.nil?
       end
 
       func_names = json.keys
-    end
-    return functions
-  end
-
-
-  def self.create_new_function_map0(func_info)
-    func = ImGuiFunctionMapEntry.new
-
-    # name
-    func.name = if func_info.has_key?('ov_cimguiname')
-                  func_info['ov_cimguiname']
-                else
-                  func_info['cimguiname']
-                end
-
-    # original_funcname
-    func.original_funcname = func_info.has_key?('funcname') ? func_info['funcname'] : ""
-
-    # arguments
-    func.args = []
-    if func_info['argsT'].any?
-      args = func_info['argsT']
-      args.each do |arg_info|
-        # basic info
-        is_array = false
-        size = 0
-        type_name = arg_info['type']
-        type = get_ffi_type(arg_info['type'])
-        if type == nil # This happens when arg_info['type'] contains '[' or ']'.
-          is_array = true
-          size = /\[([\w\+])+\]/.match(arg_info['type'])[1].to_i
-          type = get_ffi_type(arg_info['type'].gsub(/\[[\w\+]+\]/,''))
-        end
-        # check if default argument exists
-        default_arg = nil
-        unless func_info['defaults'].empty?
-          if func_info['defaults'].has_key?( arg_info['name'] )
-            default_arg = func_info['defaults'][arg_info['name']]
-          end
-        end
-        arg = ImGuiFunctionArgEntry.new(name: arg_info['name'], type: type, type_name: type_name, default: default_arg, is_array: is_array, size: size)
-        func.args << arg
-      end
-    end
-
-    # return value
-    func.retval = if func_info.has_key?('ret')
-                    if func_info['ret'].include?('_Simple')
-                      func_info['ret'].gsub!(/_Simple/, '')
-                    end
-                    get_ffi_type(func_info['ret'])
-                  elsif func_info.has_key?('constructor') # entries with "constructor" do NOT have "ret" but it's okay just to return ":pointer"
-                    :pointer
-                  else
-                    :void
-                  end
-
-    #
-    # check if return value is modified from original signature
-    #
-    # If you find an entry with 'nonUDT : 1' in 'definitions.json',
-    # cimgui version API doesn't return the original value; instead has
-    # 1st output argument to write the original return value.
-    #
-    # e.g.)  imgui.h : IMGUI_API ImVec2 GetMousePos();
-    #       cimgui.h : CIMGUI_API void igGetMousePos(ImVec2 *pOut);
-    #
-    func.return_udt = func_info.has_key?('nonUDT')
-
-    #
-    # check if this function should also be generated as a method of class
-    #
-    # If you find an entry with 'stname : XXX' in 'definitions.json',
-    # the original API is a method of the struct called 'XXX (e.g.: ImColor, ImFontAtlas, ...')
-    #
-    func.method_of = func_info.has_key?('stname') ? func_info['stname'] : nil
-    if func.method_of != nil
-      func.ctor = func_info.has_key?('constructor') ? func_info['constructor'] : nil
-      func.dtor = func_info.has_key?('destructor') ? func_info['destructor'] : nil
-    else
-      func.ctor = nil
-      func.dtor = nil
-    end
-
-    return func
-  end
-
-  def self.build_function_map0(json_filename)
-    functions = []
-    File.open(json_filename) do |file|
-      json = JSON.load(file) # <- <func_name, func_info_overloadings>
-      func_names = json.keys
-      func_names.each do |func_name|
-        func_info_overloadings = json[func_name]
-        func_info_overloadings.each do |func_info|
-
-          # Ignore functions with 'va_list' arguments.  Use ':varargs (...)' versions instead.
-          next if func_info['args'].include?('va_list')
-
-          # Ignore ImVector methods.
-          next if func_info['cimguiname'].start_with?('ImVector_')
-
-          func = create_new_function_map(func_info)
-          functions << func
-
-        end
-      end
     end
     return functions
   end

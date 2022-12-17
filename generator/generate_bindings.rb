@@ -64,9 +64,9 @@ module Generator
       when /^([-+]?[0-9]*\.[0-9]+)[f]*$/ # omit 'f' suffix of floating point number
         $1
       when /^ImVec2\((.+),(.+)\)$/ # use our own shorthand initializer
-        "ImVec2.create(#{floating_num($1)},#{floating_num($2)})"
+        "ImVec2.create(#{floating_num($1.strip)},#{floating_num($2.strip)})"
       when /^ImVec4\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
-        "ImVec4.create(#{floating_num($1)},#{floating_num($2)},#{floating_num($3)},#{floating_num($4)})"
+        "ImVec4.create(#{floating_num($1.strip)},#{floating_num($2.strip)},#{floating_num($3.strip)},#{floating_num($4.strip)})"
       when /^ImColor\((.+),(.+),(.+),(.+)\)$/ # use our own shorthand initializer
         "ImColor.create(#{$1},#{$2},#{$3},#{$4})"
       when /^FLT_MAX$/ # C's FLT_MAX -> Ruby's Float::MAX
@@ -128,6 +128,7 @@ module Generator
         end
     end
 
+=begin
     if func.return_udt
       ret = arg_names_with_defaults.shift # == "pOut"
       var_type = /([^\*]+)/.match(func.args[0].type_name)[0] # e.g.) ImVec2* -> ImVec2
@@ -139,6 +140,8 @@ module Generator
       out.pop_indent
       out.write("end\n\n")
     elsif func.ctor
+=end
+    if func.ctor
       out.write("def self.create(#{arg_names_with_defaults.join(', ')})\n")
       out.push_indent
       out.write("return #{func.method_of}.new(ImGui::#{func.name}(#{arg_names.join(', ')}))\n")
@@ -154,11 +157,14 @@ module Generator
   end
 
   def self.write_struct(out, struct, methods, typedefs_map)
+    return unless struct.name.start_with?('Im')
+
     out.write("class #{struct.name} < FFI::Struct\n")
     out.push_indent
     # write member layout
     out.write("layout(\n")
     out.push_indent
+
     struct.members.each do |m|
       tail = if m.equal?(struct.members.last)
                "\n"
@@ -193,7 +199,7 @@ module Generator
                  #
                  # -> entry.type.to_s == entry.name ? FFI::Struct : :pointer
                  #
-                 if typedefs_map[imgui_struct_or_typedef].type.to_s == typedefs_map[imgui_struct_or_typedef].name
+                 if typedefs_map.has_key?(imgui_struct_or_typedef) && typedefs_map[imgui_struct_or_typedef].type.to_s == typedefs_map[imgui_struct_or_typedef].name
                    # FFI::Struct -> use .ptr
                    "#{imgui_struct_or_typedef}.ptr"
                  else
@@ -287,29 +293,6 @@ module Generator
     out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
   end
 
-  # [obsolete] Use write_attach_functions instead
-  def self.write_attach_function(out, func)
-
-    func_args = func.args.map do |arg|
-      if arg.type_name.to_s.end_with?('Callback')
-        ':' + arg.type_name.to_s
-      elsif arg.type.to_s.start_with?('Im')
-        arg.type.to_s + '.by_value'
-      else
-        ':' + arg.type.to_s
-      end
-    end
-
-    func.retval = if func.retval.to_s.start_with?('Im')
-                    func.retval.to_s + '.by_value'
-                  else
-                    ':' + func.retval.to_s
-                  end
-
-    func_name_ruby = func.name
-    func_name_c = func.name
-    out.write("attach_function :#{func_name_ruby}, :#{func_name_c}, [#{func_args.join(', ')}], #{func.retval}\n")
-  end
 
   def self.write_callback_signature(out, typedef)
     return if typedef[1].callback_signature == nil
@@ -317,8 +300,8 @@ module Generator
   end
 
   def self.write_module_method(out, func)
-
-    return unless func.name.start_with?('ig')
+    return unless func.name.start_with?('ImGui_')
+    return unless func.generate_module_method
 
     arg_names = sanitize_arg_names(func.args)
 
@@ -329,10 +312,10 @@ module Generator
     sanitize_default_value(default_values)
 
     # Fix raw names into public API names by omitting some prefixes
-    func_name_ruby = func.name
+    func_name_ruby = func.replaced_name ? func.replaced_name : func.name
     func_name_c = func.name
-    if func.name.start_with?('ig')
-      func_name_ruby = func_name_c.gsub(/^ig/, '')
+    if func.name.start_with?('ImGui_')
+      func_name_ruby = func_name_c.gsub(/^ImGui_/, '')
     end
 
     # Make list of argument with default value
@@ -348,7 +331,7 @@ module Generator
 
     args_comment = []
     func.args.length.times do |i|
-      next if i == 0 && func.return_udt # skip pOut
+      # next if i == 0 && func.return_udt # skip pOut
       args_comment << "#{func.args[i].name}(#{func.args[i].type_name})"
     end
 
@@ -356,6 +339,7 @@ module Generator
 
     out.write("# arg: #{args_comment.join(', ')}\n") unless args_comment.empty?
     out.write("# ret: #{retval_comment}\n")
+=begin
     if func.return_udt
       ret = arg_names_with_defaults.shift # == "pOut"
       var_type = /([^\*]+)/.match(func.args[0].type_name)[0] # e.g.) ImVec2* -> ImVec2
@@ -367,6 +351,8 @@ module Generator
       out.pop_indent
       out.write("end\n\n")
     else
+=end
+    if true
       out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
       out.push_indent
       out.write("#{func.name}(#{arg_names.join(', ')})\n")
@@ -377,21 +363,25 @@ module Generator
 
   def self.write_overload_module_methods(out, funcs_map, typedefs_map)
 
+    # funcs_map = funcs_map_original.filter {|func| func.generate_overload_method}
+
     # extract function names that require overload definition
     original_funcnames = funcs_map.collect {|func| func.original_funcname}.filter {|original_funcname| !original_funcname.empty?}
     overload_funcnames = original_funcnames.find_all {|ofn| original_funcnames.count(ofn) > 1}.uniq!
-
+=begin
     # remove candidates that aren't the ImGui module methods (e.g. ImGuiTextRange_ImGuiTextRange_Nil)
     overload_funcnames.delete_if do |ofn|
       ovl_funcs = funcs_map.filter {|func| func.original_funcname == ofn}
       ovl_funcs.any? { |ovl_func| /^(Im[^_]+_)/.match(ovl_func.name) }
     end
-
+=end
     out.write("# Overload functions\n\n")
     overload_funcnames.each do |ofn|
+      method_name = ofn[7..] # [7..] to remove preceding string "ImGui::"
+      next if method_name.nil? or method_name.empty?
       ovl_funcs = funcs_map.filter {|func| func.original_funcname == ofn}
 
-      out.write("def self.#{ofn}(*arg)\n")
+      out.write("def self.#{method_name}(*arg)\n")
       out.push_indent
       ovl_funcs.each do |ovl_func|
 
@@ -413,7 +403,7 @@ module Generator
                         Float
                       elsif type_name.include?('bool')
                         has_bool = true
-                      elsif type_name.include?('...')
+                      elsif type_name.include?('va_list')
                         has_vararg = true
                       elsif typedefs_map.has_key?(type_name) # { |typedef| typedef[0] == type_name}
                         case typedefs_map[type_name][1]
@@ -425,7 +415,6 @@ module Generator
                           typedefs_map[type_name][0] # e.g.) ImVec2, ImVec4
                         end
                       else
-                        pp type_name
                         type_name # bool
                       end
           if has_bool
@@ -475,13 +464,15 @@ if __FILE__ == $PROGRAM_NAME
   #
   # Setup
   #
-  typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../imgui_dll/cimgui/generator/output/typedefs_dict.json' )
-  enums_map = ImGuiBindings.build_enum_map( '../imgui_dll/cimgui/generator/output/structs_and_enums.json' )
-  structs_map = ImGuiBindings.build_struct_map( '../imgui_dll/cimgui/generator/output/structs_and_enums.json' )
-  funcs_base_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/definitions.json' )
+
+  typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../third_party/dear_bindings/cimgui.json' )
+  enums_map = ImGuiBindings.build_enum_map( '../third_party/dear_bindings/cimgui.json' )
+  structs_map = structs = ImGuiBindings.build_struct_map( '../third_party/dear_bindings/cimgui.json' )
+  funcs_base_map = ImGuiBindings.build_function_map( '../third_party/dear_bindings/cimgui.json' )
   # funcs_impl_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/impl_definitions.json' )
   funcs_impl_map = []
 
+=begin
   # Omit needless/unusable data
   omit_structs = [
     'CustomRect',
@@ -508,8 +499,10 @@ if __FILE__ == $PROGRAM_NAME
   # 'ImVector',
   ]
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
+=end
 
   # end-user API only
+=begin
   funcs_base_map.delete_if {|func|
     !(func.name.start_with?('ig') ||
       func.name.start_with?('ImFontAtlas_') ||
@@ -521,6 +514,7 @@ if __FILE__ == $PROGRAM_NAME
       func.name.start_with?('ImFontConfig_') ||
       func.name.start_with?('ImDrawList_'))
   }
+=end
 
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL3')} # not supported yet
@@ -553,12 +547,14 @@ require 'ffi'
     #
     # Typedefs
     #
+=begin
     typedefs_map.each do |typedef|
       if typedef[0] != typedef[1].type.to_s
         Generator.write_typedef(out, typedef)
       end
     end
     out.newline
+=end
 
     #
     # Enums
