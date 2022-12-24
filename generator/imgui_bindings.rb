@@ -185,13 +185,13 @@ module ImGuiBindings
         json_elements.each do |json_element|
 
           enum_name = json_element['name']
-          next if enum_name == 'ImGuiMod_Shortcut' # depends on the host os (whether macOS or other)
+          next if enum_name == 'ImGuiMod_Shortcut' # [TODO] depends on the host os (whether macOS or other) / generate code to determine at runtime
 
           if json_element.has_key? 'conditionals' # e.g.) ImGuiKey_KeysData_xxx
             json_element_conditionals = json_element['conditionals']
             condition = json_element_conditionals[0]['condition']
             macro_value = json_element_conditionals[0]['expression']
-            should_macro_defined = (condition == 'ifdef')
+            should_macro_defined = (condition == 'ifdef' or condition == 'if')
             macro_defined = conditions.include? macro_value
             next if ((should_macro_defined && !macro_defined) || (!should_macro_defined && macro_defined))
           end
@@ -235,11 +235,9 @@ module ImGuiBindings
   end
 
   def self.create_new_function_map(json_function, json, conditions = [])
-
     func = ImGuiFunctionMapEntry.new
 
     if json_function.has_key? 'conditionals'
-      pp 'ho',  json_function['name']
       json_function_conditionals = json_function['conditionals']
       condition = json_function_conditionals[0]['condition']
       macro_value = json_function_conditionals[0]['expression']
@@ -257,17 +255,18 @@ module ImGuiBindings
     func.replaced_name = nil
     func.generate_module_method = true
     func.generate_overload_method = false
-    if func.name.start_with? 'ImGui_'
-      api_name_c = func.name[6..]
-      api_name_cpp = func.original_funcname[7..]
-      if api_name_c != api_name_cpp
-#        func.generate_module_method = false
-        func.generate_overload_method = true
-        if api_name_c.sub(api_name_cpp, '') == 'Ex'
-          func.replaced_name = api_name_cpp
-        end
-      end
-    end
+    # if func.name.start_with? 'ImGui_'
+    #   api_name_c = func.name[6..]
+    #   api_name_cpp = func.original_funcname[7..]
+    #   if api_name_c != api_name_cpp
+    #     pp [api_name_c, api_name_cpp]
+    #     func.generate_module_method = false
+    #     func.generate_overload_method = true
+    #     if api_name_c.sub(api_name_cpp, '') == 'Ex'
+    #       func.replaced_name = api_name_cpp
+    #     end
+    #   end
+    # end
 
     # arguments
     func.args = []
@@ -348,7 +347,30 @@ module ImGuiBindings
         functions << func unless func.nil?
       end
 
-      func_names = json.keys
+      # fixup info for generating overeloads
+
+      original_name_count = {}
+      functions.each do |func|
+        original_name_count[func.original_funcname] = 0 unless original_name_count.has_key? func.original_funcname
+        original_name_count[func.original_funcname] += 1
+      end
+      pp original_name_count
+=begin
+    overload_funcnames = original_funcnames.find_all {|ofn| original_funcnames.count(ofn) > 1}.uniq!
+      
+    if func.name.start_with? 'ImGui_'
+      api_name_c = func.name[6..]
+      api_name_cpp = func.original_funcname[7..]
+      if api_name_c != api_name_cpp
+        pp [api_name_c, api_name_cpp]
+        func.generate_module_method = false
+        func.generate_overload_method = true
+        if api_name_c.sub(api_name_cpp, '') == 'Ex'
+          func.replaced_name = api_name_cpp
+        end
+      end
+    end
+=end
     end
     return functions
   end
