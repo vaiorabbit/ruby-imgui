@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2022-08-14
+*   Last modified : 2022-12-25
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -24,7 +24,7 @@
         *   gem install ffi
 *   Compiler
     *   Tested on:
-        *   [Windows] gcc (Rev1, Built by MSYS2 project) 8.2.1 20181214
+        *   [Windows] gcc (Rev10, Built by MSYS2 project) 11.2.0
         *   [macOS] clang (Apple clang version 13.1.6 (clang-1316.0.21.2.5), Target: arm64-apple-darwin21.5.0)
 *   CMake https://cmake.org/download/
 
