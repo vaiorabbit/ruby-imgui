@@ -1,6 +1,5 @@
 require 'ffi'
 require 'raylib'
-require 'opengl'
 
 require_relative 'imgui'
 
@@ -379,11 +378,6 @@ module ImGui
     ImplRaylib_UpdateMouseCursor()
 
     # [TODO] update gamepads
-
-    # [NOTE] rlgl does not provide glBlendFuncSeparate wrapper. So we manually set states for ImGui here.
-    #        Ref.: https://github.com/vaiorabbit/ruby-imgui/blob/05e94e6bf1969d3abf12598fef831219dca90247/lib/imgui_impl_opengl3.rb#L227-L234
-    # [TODO] Hide raw OpenGL operation
-    GL.BlendFuncSeparate(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA, GL::ONE, GL::ONE_MINUS_SRC_ALPHA)
   end
 
   # [INTERNAL]
