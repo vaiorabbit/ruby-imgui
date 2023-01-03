@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2022-12-25
+*   Last modified : 2023-01-04
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -16,7 +16,7 @@
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
             *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x64-mingw-ucrt]
         *   [macOS]
-            *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [arm64-darwin21]
+            *   ruby 3.2.0 (2022-12-25 revision a528908271) [arm64-darwin21]
 *   Ruby Gems
     *   opengl-bindings
         *   gem install opengl-bindings
@@ -25,7 +25,7 @@
 *   Compiler
     *   Tested on:
         *   [Windows] gcc (Rev10, Built by MSYS2 project) 11.2.0
-        *   [macOS] clang (Apple clang version 13.1.6 (clang-1316.0.21.2.5), Target: arm64-apple-darwin21.5.0)
+        *   [macOS] Apple clang version 14.0.0 (clang-1400.0.29.202), Target: arm64-apple-darwin22.2.0
 *   CMake https://cmake.org/download/
 
 <details>
@@ -39,6 +39,7 @@
             *   ruby 2.7.1p83 (2020-03-31 revision a0c7c23c9c) [x64-mingw32]
         *   [macOS]
             *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [arm64-darwin21]
+            *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [arm64-darwin21]
             *   ruby 3.1.0p0 (2021-12-25 revision fb4df44d16) [arm64-darwin20]
             *   ruby 3.0.2p107 (2021-07-07 revision 0db68f0233) [arm64-darwin20]
             *   ruby 3.0.1p64 (2021-04-05 revision 0fb782ee38) [arm64-darwin20]
@@ -49,6 +50,7 @@
 *   Compiler
     *   Tested on:
         *   [Windows] gcc (Rev1, Built by MSYS2 project) 8.2.1 20181214
+        *   [macOS] clang (Apple clang version 13.1.6 (clang-1316.0.21.2.5), Target: arm64-apple-darwin21.5.0)
         *   [macOS] clang (Apple clang version 12.0.5 (clang-1205.0.22.11), Target: arm64-apple-darwin20.6.0)
 </details>
 
@@ -88,7 +90,7 @@ All ruby codes here are available under the terms of the zlib/libpng License ( h
 
 ```
 Ruby-Imgui : Yet another ImGui wrapper for Ruby
-Copyright (c) 2019-2022 vaiorabbit <http://twitter.com/vaiorabbit>
+Copyright (c) 2019-2023 vaiorabbit <http://twitter.com/vaiorabbit>
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
