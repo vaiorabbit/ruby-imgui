@@ -1,6 +1,7 @@
 2023-01-04  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* lib/imgui_impl_raylib.rb: Removed codes manipulating blend function. Now it seems there's no need to do so.
+	* imgui_dll/cimgui_internal.cpp: Internal functions I need are now imported manually
 
 2022-12-25  vaiorabbit  <http://twitter.com/vaiorabbit>
 
