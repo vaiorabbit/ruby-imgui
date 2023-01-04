@@ -225,6 +225,55 @@ module Generator
   end
 
   def self.write_attach_functions(out, funcs_map)
+    func_entries = {}
+    funcs_map.each do |func|
+      sym = func.name
+      # args map
+      func_args = func.args.map do |arg|
+        if arg.type_name.to_s.end_with?('Callback')
+          ':' + arg.type_name.to_s
+        elsif arg.type.to_s.start_with?('Im')
+          arg.type.to_s + '.by_value'
+        else
+          ':' + arg.type.to_s
+        end
+      end
+      # retval map
+      func.retval = if func.retval.to_s.start_with?('Im')
+                      func.retval.to_s + '.by_value'
+                    else
+                      ':' + func.retval.to_s
+                    end
+      func_entries[sym] = [func_args.join(', '), func.retval]
+    end
+
+    out.write("entries = [\n")
+    out.push_indent
+    func_entries.each do |func_sym, func_entry|
+      out.write("[:#{func_sym}, [#{func_entry[0]}], #{func_entry[1]}],\n")
+    end
+    out.pop_indent
+    out.write("]\n\n")
+    out.write("entries.each do |entry|\n")
+    out.push_indent
+    out.write("attach_function entry[0], entry[1], entry[2]\n")
+    out.pop_indent
+    out.write("rescue FFI::NotFoundError => e\n")
+    out.push_indent
+    out.write("warn \"[Warning] Failed to import \#{entry[0]} (\#{e}).\"\n")
+    out.pop_indent
+    out.write("end\n\n")
+
+    ## ImWchar special handling (Ref.: cimgui_template.cpp)
+    out.write("attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer\n")
+    out.write("attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    out.write("attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+  end
+
+=begin
+  # [obsolete]
+  def self.write_attach_functions0(out, funcs_map)
     # symbols array
     out.write("symbols = [\n")
     out.push_indent
@@ -286,30 +335,7 @@ module Generator
     out.write("attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void\n")
     out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
   end
-
-  # [obsolete] Use write_attach_functions instead
-  def self.write_attach_function(out, func)
-
-    func_args = func.args.map do |arg|
-      if arg.type_name.to_s.end_with?('Callback')
-        ':' + arg.type_name.to_s
-      elsif arg.type.to_s.start_with?('Im')
-        arg.type.to_s + '.by_value'
-      else
-        ':' + arg.type.to_s
-      end
-    end
-
-    func.retval = if func.retval.to_s.start_with?('Im')
-                    func.retval.to_s + '.by_value'
-                  else
-                    ':' + func.retval.to_s
-                  end
-
-    func_name_ruby = func.name
-    func_name_c = func.name
-    out.write("attach_function :#{func_name_ruby}, :#{func_name_c}, [#{func_args.join(', ')}], #{func.retval}\n")
-  end
+=end
 
   def self.write_callback_signature(out, typedef)
     return if typedef[1].callback_signature == nil
