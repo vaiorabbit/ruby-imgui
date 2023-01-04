@@ -5,3 +5,6 @@
 [submodule "imnodes_dll/ImNodes"]
 	path = imnodes_dll/ImNodes
 	url = https://github.com/rokups/ImNodes.git
+[submodule "third_party/dear_bindings"]
+	path = third_party/dear_bindings
+	url = https://github.com/dearimgui/dear_bindings.git
