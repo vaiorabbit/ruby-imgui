@@ -86,11 +86,24 @@ module Generator
     return default_values
   end
 
-  def self.write_enum(out, enum)
+  def self.write_enum(out, enum, enum_comment_entries = nil)
+    enum_comment_entry = if enum_comment_entries
+                           enum_comment_entries[enum.name]
+                         else
+                           nil
+                         end
     out.write("# " + enum.name)
     out.newline
+    if enum_comment_entry
+      out.write(enum_comment_entry.comments[:preceding])
+    end
     enum.members.each do |m|
-      out.write("#{m.name} = #{m.value} # #{m.original}\n")
+      if enum_comment_entry
+        enum_element_comment = enum_comment_entry.children[m.name].comments[:attached]
+        out.write("#{m.name} = #{m.value} # #{m.original} #{enum_element_comment}\n")
+      else
+        out.write("#{m.name} = #{m.value} # #{m.original}\n")
+      end
     end
     out.newline
   end
@@ -508,6 +521,8 @@ if __FILE__ == $PROGRAM_NAME
   # funcs_impl_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/impl_definitions.json' )
   funcs_impl_map = []
 
+  comments_map = ImGuiBindings.build_comment_map( './dearbindings.json' )
+
   # Omit needless/unusable data
   omit_structs = [
     'CustomRect',
@@ -591,7 +606,7 @@ require 'ffi'
     # Enums
     #
     enums_map.each do |enum|
-      Generator.write_enum(out, enum)
+      Generator.write_enum(out, enum, comments_map['enums'])
     end
     out.newline
 
