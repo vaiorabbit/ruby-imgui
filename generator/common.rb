@@ -12,6 +12,8 @@ ImGuiEnumMapEntry = Struct.new( :name, :members, keyword_init: true )
 ImGuiFunctionArgEntry = Struct.new( :name, :type, :type_name, :default, :is_array, :size, keyword_init: true )
 ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, :return_udt, :method_of, :ctor, :dtor, :original_funcname, keyword_init: true )
 
+ImGuiCommentEntry = Struct.new( :name, :comments, :children, keyword_init: true )
+
 module ImGuiBindings
 
   CToFFITypeMap = {
@@ -341,10 +343,95 @@ module ImGuiBindings
     return functions
   end
 
+  def self.build_comment_map(dearbindings_json_filename = 'dearbindings.json')
+    comments = {}
+    comments['structs'] = {}
+    comments['enums'] = {}
+    comments['functions'] = {}
+
+    File.open(dearbindings_json_filename) do |file|
+      json_dearbindings = JSON.load(file)
+      json_structs = json_dearbindings['structs']
+      json_structs.each do |json_struct|
+        json_comments = json_struct['comments']
+        json_attached_comment = if json_comments and json_comments.has_key?('attached')
+                                  " #{json_comments['attached'].gsub(/^\/\//, '#')}"
+                                else
+                                  ''
+                                end
+        json_preceding_comment = if json_comments and json_comments.has_key?('preceding')
+                                   json_comments['preceding'].map{|comment| comment.gsub(/^\/\//, '#')}.join("\n") + "\n"
+                                 else
+                                   ''
+                                 end
+        struct_comment_entry = ImGuiCommentEntry.new(name: json_struct['name'], comments: {:preceding => json_preceding_comment, :attached => json_attached_comment}, children: {})
+        json_fields = json_struct['fields']
+        json_fields.each do |json_field|
+          json_field_comments = json_field['comments']
+          json_field_attached_comment = if json_field_comments and json_field_comments.has_key?('attached')
+                                          " #{json_field_comments['attached'].gsub(/^\/\//, '#')}"
+                                        else
+                                          ''
+                                        end
+          struct_field_comment_entry = ImGuiCommentEntry.new(name: json_field['names'][0]['name'], comments: {:preceding => '', :attached => json_field_attached_comment}, children: nil)
+          struct_comment_entry.children[struct_field_comment_entry.name] = struct_field_comment_entry
+        end
+        comments['structs'][json_struct['name']] = struct_comment_entry
+      end
+
+      json_enums = json_dearbindings['enums']
+      json_enums.each do |json_enum|
+        json_comments = json_enum['comments']
+        json_attached_comment = if json_comments and json_comments.has_key?('attached')
+                                  " #{json_comments['attached'].gsub(/^\/\//, '#')}"
+                                else
+                                  ''
+                                end
+        json_preceding_comment = if json_comments and json_comments.has_key?('preceding')
+                                   json_comments['preceding'].map{|comment| comment.gsub(/^\/\//, '#')}.join("\n") + "\n"
+                                 else
+                                   ''
+                                 end
+        enum_comment_entry = ImGuiCommentEntry.new(name: json_enum['name'], comments: {:preceding => json_preceding_comment, :attached => json_attached_comment}, children: {})
+        json_elements = json_enum['elements']
+        json_elements.each do |json_element|
+          json_element_comments = json_element['comments']
+          json_element_attached_comment = if json_element_comments and json_element_comments.has_key?('attached')
+                                            " #{json_element_comments['attached'].gsub(/^\/\//, '#')}"
+                                          else
+                                            ''
+                                          end
+          enum_element_comment_entry = ImGuiCommentEntry.new(name: json_element['name'], comments: {:preceding => '', :attached => json_element_attached_comment}, children: nil)
+          enum_comment_entry.children[enum_element_comment_entry.name] = enum_element_comment_entry
+        end
+        comments['enums'][json_enum['name']] = enum_comment_entry
+      end
+
+      json_functions = json_dearbindings['functions']
+      json_functions.each do |json_function|
+        json_comments = json_function['comments']
+        json_attached_comment = if json_comments and json_comments.has_key?('attached')
+                                  " #{json_comments['attached'].gsub(/^\/\//, '#')}"
+                                else
+                                  ''
+                                end
+        json_preceding_comment = if json_comments and json_comments.has_key?('preceding')
+                                   json_comments['preceding'].map{|comment| comment.gsub(/^\/\//, '#')}.join("\n") + "\n"
+                                 else
+                                   ''
+                                 end
+        function_comment_entry = ImGuiCommentEntry.new(name: json_function['name'], comments: {:preceding => json_preceding_comment, :attached => json_attached_comment}, children: {})
+        comments['functions'][json_function['name']] = function_comment_entry
+      end
+    end
+
+    return comments
+  end
 end
 
 if __FILE__ == $0 # test code snippets
 
+=begin
   ImGuiBindings.build_ffi_typedef_map( '../cimgui/generator/output/typedefs_dict.json', '../cimgui/generator/output/structs_and_enums.json' )
   # exit()
 
@@ -367,4 +454,8 @@ if __FILE__ == $0 # test code snippets
   funcs_impl = ImGuiBindings.build_function_map( '../cimgui/generator/output/impl_definitions.json' )
   funcs_impl.select! {|f| f.name.include?('OpenGL2') or f.name.include?('Glfw')}
   # pp funcs_impl
+=end
+
+  pp ImGuiBindings.build_comment_map
+
 end
