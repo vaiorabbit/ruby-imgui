@@ -32,6 +32,8 @@ end
 
 module Generator
 
+  CodeAndCommentStringEntry = Struct.new(:code, :comment, keyword_init: true)
+
   def self.sanitize_arg_names(func_args)
     arg_names = func_args.map do |arg|
       case arg.name
@@ -97,14 +99,30 @@ module Generator
     if enum_comment_entry
       out.write(enum_comment_entry.comments[:preceding])
     end
+
+    enum_element_string_max_code_length = 0
+    enum_element_strings = []
+
     enum.members.each do |m|
-      if enum_comment_entry
-        enum_element_comment = enum_comment_entry.children[m.name].comments[:attached]
-        out.write("#{m.name} = #{m.value} # #{m.original} #{enum_element_comment}\n")
-      else
-        out.write("#{m.name} = #{m.value} # #{m.original}\n")
-      end
+      enum_element_string = CodeAndCommentStringEntry.new
+
+      enum_element_comment = if enum_comment_entry && enum_comment_entry.children[m.name]
+                               enum_comment_entry.children[m.name].comments[:attached]
+                             else
+                               ''
+                             end
+      enum_element_string.comment = "# #{m.original}#{enum_element_comment}"
+
+      enum_element_string.code = "#{m.name} = #{m.value}"
+      enum_element_string_max_code_length = [enum_element_string.code.length, enum_element_string_max_code_length].max
+      enum_element_strings << enum_element_string
     end
+
+    enum_element_strings.each do |enum_element_string|
+      spaces_for_alignment = enum_element_string_max_code_length - enum_element_string.code.length + 1
+      out.write("#{enum_element_string.code}#{' ' * spaces_for_alignment}#{enum_element_string.comment}\n")
+    end
+
     out.newline
   end
 
@@ -166,8 +184,6 @@ module Generator
     end
   end
 
-  StructMemberStringEntry = Struct.new(:code, :comment, keyword_init: true)
-
   def self.write_struct(out, struct, methods, typedefs_map, struct_comment_entries = nil)
     struct_comment_entry = if struct_comment_entries
                            struct_comment_entries[struct.name]
@@ -188,7 +204,7 @@ module Generator
     struct_member_strings = []
 
     struct.members.each do |m|
-      struct_member_string = StructMemberStringEntry.new
+      struct_member_string = CodeAndCommentStringEntry.new
       struct_field_comment = if struct_comment_entry && struct_comment_entry.children[m.name]
                                struct_comment_entry.children[m.name].comments[:attached]
                              else
