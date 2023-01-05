@@ -166,18 +166,35 @@ module Generator
     end
   end
 
-  def self.write_struct(out, struct, methods, typedefs_map)
+  StructMemberStringEntry = Struct.new(:code, :comment, keyword_init: true)
+
+  def self.write_struct(out, struct, methods, typedefs_map, struct_comment_entries = nil)
+    struct_comment_entry = if struct_comment_entries
+                           struct_comment_entries[struct.name]
+                         else
+                           nil
+                         end
+    if struct_comment_entry
+      out.write(struct_comment_entry.comments[:preceding])
+    end
+
     out.write("class #{struct.name} < FFI::Struct\n")
     out.push_indent
     # write member layout
     out.write("layout(\n")
     out.push_indent
+
+    struct_member_string_max_code_length = 0
+    struct_member_strings = []
+
     struct.members.each do |m|
-      tail = if m.equal?(struct.members.last)
-               "\n"
-             else
-               ",\n"
-             end
+      struct_member_string = StructMemberStringEntry.new
+      struct_field_comment = if struct_comment_entry && struct_comment_entry.children[m.name]
+                               struct_comment_entry.children[m.name].comments[:attached]
+                             else
+                               ''
+                             end
+      struct_member_string.comment = struct_field_comment
       args = ""
       if m.is_array
         args = if m.type.to_s.start_with?('Im') # e.g.) :MouseClickedPos, [ImVec2.by_value, 5],
@@ -217,8 +234,25 @@ module Generator
                  ":#{m.type}"
                end
       end
-      out.write(":#{m.name}, #{args}#{tail}")
+      struct_member_string.code = ":#{m.name}, #{args}"
+      struct_member_string_max_code_length = [struct_member_string.code.length, struct_member_string_max_code_length].max
+      struct_member_strings << struct_member_string
     end
+
+    struct_member_strings.each do |struct_member_string|
+      spaces_for_alignment = struct_member_string_max_code_length - struct_member_string.code.length + 1
+      tail = if struct_member_string.comment.empty?
+               struct_member_string.equal?(struct_member_strings.last) ? "\n" : ",\n"
+             else
+               if struct_member_string.equal?(struct_member_strings.last)
+                 " #{' ' * spaces_for_alignment}#{struct_member_string.comment}\n"
+               else
+                 ",#{' ' * spaces_for_alignment}#{struct_member_string.comment}\n"
+               end
+             end
+      out.write("#{struct_member_string.code}#{tail}")
+    end
+
     out.pop_indent
     out.write(")\n")
     out.pop_indent
@@ -616,13 +650,13 @@ require 'ffi'
 
     ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas', 'ImGuiKeyData'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
-      Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map)
+      Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map, comments_map['structs'])
       structs_map.delete_if {|struct| struct.name == name}
     end
 
     structs_map.each do |struct|
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == struct.name }
-      Generator.write_struct(out, struct, methods, typedefs_map)
+      Generator.write_struct(out, struct, methods, typedefs_map, comments_map['structs'])
     end
 
     # define shorthand initializer for ImVec2 and ImVec4

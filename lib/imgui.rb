@@ -814,6 +814,7 @@ class ImVec2 < FFI::Struct
   )
 end
 
+# ImVec4: 4D vector used to store clipping rectangles, colors etc. [Compile-time configurable type]
 class ImVec4 < FFI::Struct
   layout(
     :x, :float,
@@ -839,26 +840,34 @@ class ImDrawVert < FFI::Struct
   )
 end
 
+# Split/Merge functions are used to split the draw list into different layers which can be drawn into out of order.
+# This is used by the Columns/Tables API, so items of each column can be batched together in a same draw call.
 class ImDrawListSplitter < FFI::Struct
   layout(
-    :_Current, :int,
-    :_Count, :int,
-    :_Channels, ImVector.by_value
+    :_Current, :int,                # Current channel number (0)
+    :_Count, :int,                  # Number of active channels (1+)
+    :_Channels, ImVector.by_value   # Draw channels (not resized down so _Count might be < Channels.Size)
   )
 end
 
+# Typically, 1 command = 1 GPU draw call (unless command is a callback)
+# - VtxOffset: When 'io.BackendFlags & ImGuiBackendFlags_RendererHasVtxOffset' is enabled,
+#   this fields allow us to render meshes larger than 64K vertices while keeping 16-bit indices.
+#   Backends made for <1.71. will typically ignore the VtxOffset fields.
+# - The ClipRect/TextureId/VtxOffset fields must be contiguous as we memcmp() them together (this is asserted for).
 class ImDrawCmd < FFI::Struct
   layout(
-    :ClipRect, ImVec4.by_value,
-    :TextureId, :pointer,
-    :VtxOffset, :uint,
-    :IdxOffset, :uint,
-    :ElemCount, :uint,
-    :UserCallback, :pointer,
-    :UserCallbackData, :pointer
+    :ClipRect, ImVec4.by_value,   # 4*4  // Clipping rectangle (x1, y1, x2, y2). Subtract ImDrawData->DisplayPos to get clipping rectangle in "viewport" coordinates
+    :TextureId, :pointer,         # 4-8  // User-provided texture ID. Set by user in ImfontAtlas::SetTexID() for fonts or passed to Image*() functions. Ignore if never using images or multiple fonts atlas.
+    :VtxOffset, :uint,            # 4    // Start offset in vertex buffer. ImGuiBackendFlags_RendererHasVtxOffset: always 0, otherwise may be >0 to support meshes larger than 64K vertices with 16-bit indices.
+    :IdxOffset, :uint,            # 4    // Start offset in index buffer.
+    :ElemCount, :uint,            # 4    // Number of indices (multiple of 3) to be rendered as triangles. Vertices are stored in the callee ImDrawList's vtx_buffer[] array, indices in idx_buffer[].
+    :UserCallback, :pointer,      # 4-8  // If != NULL, call the function instead of rendering the vertices. clip_rect and texture_id will be set normally.
+    :UserCallbackData, :pointer   # 4-8  // The draw callback code can access this.
   )
 end
 
+# [Internal] For use by ImDrawList
 class ImDrawCmdHeader < FFI::Struct
   layout(
     :ClipRect, ImVec4.by_value,
@@ -867,23 +876,32 @@ class ImDrawCmdHeader < FFI::Struct
   )
 end
 
+# Draw command list
+# This is the low-level list of polygons that ImGui:: functions are filling. At the end of the frame,
+# all command lists are passed to your ImGuiIO::RenderDrawListFn function for rendering.
+# Each dear imgui window contains its own ImDrawList. You can use ImGui::GetWindowDrawList() to
+# access the current window draw list and draw custom primitives.
+# You can interleave normal ImGui:: calls and adding primitives to the current draw list.
+# In single viewport mode, top-left is == GetMainViewport()->Pos (generally 0,0), bottom-right is == GetMainViewport()->Pos+Size (generally io.DisplaySize).
+# You are totally free to apply whatever transformation matrix to want to the data (depending on the use of the transformation you may want to apply it to ClipRect as well!)
+# Important: Primitives are always added to the list and not culled (culling is done at higher-level by ImGui:: functions), if you use this API a lot consider coarse culling your drawn objects.
 class ImDrawList < FFI::Struct
   layout(
-    :CmdBuffer, ImVector.by_value,
-    :IdxBuffer, ImVector.by_value,
-    :VtxBuffer, ImVector.by_value,
-    :Flags, :int,
-    :_VtxCurrentIdx, :uint,
-    :_Data, :pointer,
-    :_OwnerName, :pointer,
-    :_VtxWritePtr, ImDrawVert.ptr,
-    :_IdxWritePtr, :pointer,
-    :_ClipRectStack, ImVector.by_value,
-    :_TextureIdStack, ImVector.by_value,
-    :_Path, ImVector.by_value,
-    :_CmdHeader, ImDrawCmdHeader.by_value,
-    :_Splitter, ImDrawListSplitter.by_value,
-    :_FringeScale, :float
+    :CmdBuffer, ImVector.by_value,            # Draw commands. Typically 1 command = 1 GPU draw call, unless the command is a callback.
+    :IdxBuffer, ImVector.by_value,            # Index buffer. Each command consume ImDrawCmd::ElemCount of those
+    :VtxBuffer, ImVector.by_value,            # Vertex buffer.
+    :Flags, :int,                             # Flags, you may poke into these to adjust anti-aliasing settings per-primitive.
+    :_VtxCurrentIdx, :uint,                   # [Internal] generally == VtxBuffer.Size unless we are past 64K vertices, in which case this gets reset to 0.
+    :_Data, :pointer,                         # Pointer to shared draw data (you can use ImGui::GetDrawListSharedData() to get the one from current ImGui context)
+    :_OwnerName, :pointer,                    # Pointer to owner window's name for debugging
+    :_VtxWritePtr, ImDrawVert.ptr,            # [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
+    :_IdxWritePtr, :pointer,                  # [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
+    :_ClipRectStack, ImVector.by_value,       # [Internal]
+    :_TextureIdStack, ImVector.by_value,      # [Internal]
+    :_Path, ImVector.by_value,                # [Internal] current path building
+    :_CmdHeader, ImDrawCmdHeader.by_value,    # [Internal] template of active commands. Fields should match those of CmdBuffer.back().
+    :_Splitter, ImDrawListSplitter.by_value,  # [Internal] for channels api (note: prefer using your own persistent instance of ImDrawListSplitter!)
+    :_FringeScale, :float                     # [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
   )
 
   def AddBezierCubic(p1, p2, p3, p4, col, thickness, num_segments = 0)
@@ -1148,29 +1166,46 @@ class ImDrawList < FFI::Struct
 
 end
 
+# Load and rasterize multiple TTF/OTF fonts into a same texture. The font atlas will build a single texture holding:
+#  - One or more fonts.
+#  - Custom graphics data needed to render the shapes needed by Dear ImGui.
+#  - Mouse cursor shapes for software cursor rendering (unless setting 'Flags |= ImFontAtlasFlags_NoMouseCursors' in the font atlas).
+# It is the user-code responsibility to setup/build the atlas, then upload the pixel data into a texture accessible by your graphics api.
+#  - Optionally, call any of the AddFont*** functions. If you don't call any, the default font embedded in the code will be loaded for you.
+#  - Call GetTexDataAsAlpha8() or GetTexDataAsRGBA32() to build and retrieve pixels data.
+#  - Upload the pixels data into a texture within your graphics system (see imgui_impl_xxxx.cpp examples)
+#  - Call SetTexID(my_tex_id); and pass the pointer/identifier to your texture in a format natural to your graphics API.
+#    This value will be passed back to you during rendering to identify the texture. Read FAQ entry about ImTextureID for more details.
+# Common pitfalls:
+# - If you pass a 'glyph_ranges' array to AddFont*** functions, you need to make sure that your array persist up until the
+#   atlas is build (when calling GetTexData*** or Build()). We only copy the pointer, not the data.
+# - Important: By default, AddFontFromMemoryTTF() takes ownership of the data. Even though we are not writing to it, we will free the pointer on destruction.
+#   You can set font_cfg->FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed,
+# - Even though many functions are suffixed with "TTF", OTF data is supported just as well.
+# - This is an old API and it is currently awkward for those and various other reasons! We will address them in the future!
 class ImFontAtlas < FFI::Struct
   layout(
-    :Flags, :int,
-    :TexID, :pointer,
-    :TexDesiredWidth, :int,
-    :TexGlyphPadding, :int,
-    :Locked, :bool,
-    :TexReady, :bool,
-    :TexPixelsUseColors, :bool,
-    :TexPixelsAlpha8, :pointer,
-    :TexPixelsRGBA32, :pointer,
-    :TexWidth, :int,
-    :TexHeight, :int,
-    :TexUvScale, ImVec2.by_value,
-    :TexUvWhitePixel, ImVec2.by_value,
-    :Fonts, ImVector.by_value,
-    :CustomRects, ImVector.by_value,
-    :ConfigData, ImVector.by_value,
-    :TexUvLines, [ImVec4.by_value, 64],
-    :FontBuilderIO, :pointer,
-    :FontBuilderFlags, :uint,
-    :PackIdMouseCursors, :int,
-    :PackIdLines, :int
+    :Flags, :int,                        # Build flags (see ImFontAtlasFlags_)
+    :TexID, :pointer,                    # User data to refer to the texture once it has been uploaded to user's graphic systems. It is passed back to you during rendering via the ImDrawCmd structure.
+    :TexDesiredWidth, :int,              # Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.
+    :TexGlyphPadding, :int,              # Padding between glyphs within texture in pixels. Defaults to 1. If your rendering method doesn't rely on bilinear filtering you may set this to 0 (will also need to set AntiAliasedLinesUseTex = false).
+    :Locked, :bool,                      # Marked as Locked by ImGui::NewFrame() so attempt to modify the atlas will assert.
+    :TexReady, :bool,                    # Set when texture was built matching current font input
+    :TexPixelsUseColors, :bool,          # Tell whether our texture data is known to use colors (rather than just alpha channel), in order to help backend select a format.
+    :TexPixelsAlpha8, :pointer,          # 1 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight
+    :TexPixelsRGBA32, :pointer,          # 4 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight * 4
+    :TexWidth, :int,                     # Texture width calculated during Build().
+    :TexHeight, :int,                    # Texture height calculated during Build().
+    :TexUvScale, ImVec2.by_value,        # = (1.0f/TexWidth, 1.0f/TexHeight)
+    :TexUvWhitePixel, ImVec2.by_value,   # Texture coordinates to a white pixel
+    :Fonts, ImVector.by_value,           # Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
+    :CustomRects, ImVector.by_value,     # Rectangles for packing custom texture data into the atlas.
+    :ConfigData, ImVector.by_value,      # Configuration data
+    :TexUvLines, [ImVec4.by_value, 64],  # UVs for baked anti-aliased lines
+    :FontBuilderIO, :pointer,            # Opaque interface to a font builder (default to stb_truetype, can be changed to use FreeType by defining IMGUI_ENABLE_FREETYPE).
+    :FontBuilderFlags, :uint,            # Shared flags (for all fonts) for custom font builder. THIS IS BUILD IMPLEMENTATION DEPENDENT. Per-font override is also available in ImFontConfig.
+    :PackIdMouseCursors, :int,           # Custom texture rectangle ID for white pixel and mouse cursors
+    :PackIdLines, :int                   # Custom texture rectangle ID for baked anti-aliased lines
   )
 
   def AddCustomRectFontGlyph(font, id, width, height, advance_x, offset = ImVec2.create(0,0))
@@ -1299,90 +1334,102 @@ class ImFontAtlas < FFI::Struct
 
 end
 
+# [Internal] Storage used by IsKeyDown(), IsKeyPressed() etc functions.
+# If prior to 1.87 you used io.KeysDownDuration[] (which was marked as internal), you should use GetKeyData(key)->DownDuration and *NOT* io.KeysData[key]->DownDuration.
 class ImGuiKeyData < FFI::Struct
   layout(
-    :Down, :bool,
-    :DownDuration, :float,
-    :DownDurationPrev, :float,
-    :AnalogValue, :float
+    :Down, :bool,               # True for if key is down
+    :DownDuration, :float,      # Duration the key has been down (<0.0f: not pressed, 0.0f: just pressed, >0.0f: time held)
+    :DownDurationPrev, :float,  # Last frame duration the key has been down
+    :AnalogValue, :float        # 0.0f..1.0f for gamepad values
   )
 end
 
+# Helper: ImColor() implicitly converts colors to either ImU32 (packed 4x1 byte) or ImVec4 (4x1 float)
+# Prefer using IM_COL32() macros if you want a guaranteed compile-time ImU32 for usage with ImDrawList API.
+# **Avoid storing ImColor! Store either u32 of ImVec4. This is not a full-featured color class. MAY OBSOLETE.
+# **None of the ImGui API are using ImColor directly but you can use it as a convenience to pass colors in either ImU32 or ImVec4 formats. Explicitly cast to ImU32 or ImVec4 if needed.
 class ImColor < FFI::Struct
   layout(
     :Value, ImVec4.by_value
   )
 end
 
+# All draw data to render a Dear ImGui frame
+# (NB: the style and the naming convention here is a little inconsistent, we currently preserve them for backward compatibility purpose,
+# as this is one of the oldest structure exposed by the library! Basically, ImDrawList == CmdList)
 class ImDrawData < FFI::Struct
   layout(
-    :Valid, :bool,
-    :CmdListsCount, :int,
-    :TotalIdxCount, :int,
-    :TotalVtxCount, :int,
-    :CmdLists, ImDrawList.ptr,
-    :DisplayPos, ImVec2.by_value,
-    :DisplaySize, ImVec2.by_value,
-    :FramebufferScale, ImVec2.by_value
+    :Valid, :bool,                       # Only valid after Render() is called and before the next NewFrame() is called.
+    :CmdListsCount, :int,                # Number of ImDrawList* to render
+    :TotalIdxCount, :int,                # For convenience, sum of all ImDrawList's IdxBuffer.Size
+    :TotalVtxCount, :int,                # For convenience, sum of all ImDrawList's VtxBuffer.Size
+    :CmdLists, ImDrawList.ptr,           # Array of ImDrawList* to render. The ImDrawList are owned by ImGuiContext and only pointed to from here.
+    :DisplayPos, ImVec2.by_value,        # Top-left position of the viewport to render (== top-left of the orthogonal projection matrix to use) (== GetMainViewport()->Pos for the main viewport, == (0.0) in most single-viewport applications)
+    :DisplaySize, ImVec2.by_value,       # Size of the viewport to render (== GetMainViewport()->Size for the main viewport, == io.DisplaySize in most single-viewport applications)
+    :FramebufferScale, ImVec2.by_value   # Amount of pixels for each unit of DisplaySize. Based on io.DisplayFramebufferScale. Generally (1,1) on normal display, (2,2) on OSX with Retina display.
   )
 end
 
+# Font runtime data and rendering
+# ImFontAtlas automatically loads a default embedded font for you when you call GetTexDataAsAlpha8() or GetTexDataAsRGBA32().
 class ImFont < FFI::Struct
   layout(
-    :IndexAdvanceX, ImVector.by_value,
-    :FallbackAdvanceX, :float,
-    :FontSize, :float,
-    :IndexLookup, ImVector.by_value,
-    :Glyphs, ImVector.by_value,
-    :FallbackGlyph, :pointer,
-    :ContainerAtlas, ImFontAtlas.ptr,
-    :ConfigData, :pointer,
-    :ConfigDataCount, :short,
-    :FallbackChar, :ushort,
-    :EllipsisChar, :ushort,
-    :DotChar, :ushort,
-    :DirtyLookupTables, :bool,
-    :Scale, :float,
-    :Ascent, :float,
+    :IndexAdvanceX, ImVector.by_value,  # 12-16 // out //            // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this this info, and are often bottleneck in large UI).
+    :FallbackAdvanceX, :float,          # 4     // out // = FallbackGlyph->AdvanceX
+    :FontSize, :float,                  # 4     // in  //            // Height of characters/line, set during loading (don't change after loading)
+    :IndexLookup, ImVector.by_value,    # 12-16 // out //            // Sparse. Index glyphs by Unicode code-point.
+    :Glyphs, ImVector.by_value,         # 12-16 // out //            // All glyphs.
+    :FallbackGlyph, :pointer,           # 4-8   // out // = FindGlyph(FontFallbackChar)
+    :ContainerAtlas, ImFontAtlas.ptr,   # 4-8   // out //            // What we has been loaded into
+    :ConfigData, :pointer,              # 4-8   // in  //            // Pointer within ContainerAtlas->ConfigData
+    :ConfigDataCount, :short,           # 2     // in  // ~ 1        // Number of ImFontConfig involved in creating this font. Bigger than 1 when merging multiple font sources into one ImFont.
+    :FallbackChar, :ushort,             # 2     // out // = FFFD/'?' // Character used if a glyph isn't found.
+    :EllipsisChar, :ushort,             # 2     // out // = '...'    // Character used for ellipsis rendering.
+    :DotChar, :ushort,                  # 2     // out // = '.'      // Character used for ellipsis rendering (if a single '...' character isn't found)
+    :DirtyLookupTables, :bool,          # 1     // out //
+    :Scale, :float,                     # 4     // in  // = 1.f      // Base font scale, multiplied by the per-window font scale which you can adjust with SetWindowFontScale()
+    :Ascent, :float,                    # 4+4   // out //            // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize]
     :Descent, :float,
-    :MetricsTotalSurface, :int,
-    :Used4kPagesMap, [:uchar, 2]
+    :MetricsTotalSurface, :int,         # 4     // out //            // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)
+    :Used4kPagesMap, [:uchar, 2]        # 2 bytes if ImWchar=ImWchar16, 34 bytes if ImWchar==ImWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.
   )
 end
 
+# See ImFontAtlas::AddCustomRectXXX functions.
 class ImFontAtlasCustomRect < FFI::Struct
   layout(
-    :Width, :ushort,
+    :Width, :ushort,                # Input    // Desired rectangle dimension
     :Height, :ushort,
-    :X, :ushort,
+    :X, :ushort,                    # Output   // Packed position in Atlas
     :Y, :ushort,
-    :GlyphID, :uint,
-    :GlyphAdvanceX, :float,
-    :GlyphOffset, ImVec2.by_value,
-    :Font, ImFont.ptr
+    :GlyphID, :uint,                # Input    // For custom font glyphs only (ID < 0x110000)
+    :GlyphAdvanceX, :float,         # Input    // For custom font glyphs only: glyph xadvance
+    :GlyphOffset, ImVec2.by_value,  # Input    // For custom font glyphs only: glyph display offset
+    :Font, ImFont.ptr               # Input    // For custom font glyphs only: target font
   )
 end
 
 class ImFontConfig < FFI::Struct
   layout(
-    :FontData, :pointer,
-    :FontDataSize, :int,
-    :FontDataOwnedByAtlas, :bool,
-    :FontNo, :int,
-    :SizePixels, :float,
-    :OversampleH, :int,
-    :OversampleV, :int,
-    :PixelSnapH, :bool,
-    :GlyphExtraSpacing, ImVec2.by_value,
-    :GlyphOffset, ImVec2.by_value,
-    :GlyphRanges, :pointer,
-    :GlyphMinAdvanceX, :float,
-    :GlyphMaxAdvanceX, :float,
-    :MergeMode, :bool,
-    :FontBuilderFlags, :uint,
-    :RasterizerMultiply, :float,
-    :EllipsisChar, :ushort,
-    :Name, [:char, 40],
+    :FontData, :pointer,                  #          // TTF/OTF data
+    :FontDataSize, :int,                  #          // TTF/OTF data size
+    :FontDataOwnedByAtlas, :bool,         # true     // TTF/OTF data ownership taken by the container ImFontAtlas (will delete memory itself).
+    :FontNo, :int,                        # 0        // Index of font within TTF/OTF file
+    :SizePixels, :float,                  #          // Size in pixels for rasterizer (more or less maps to the resulting font height).
+    :OversampleH, :int,                   # 3        // Rasterize at higher quality for sub-pixel positioning. Note the difference between 2 and 3 is minimal so you can reduce this to 2 to save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
+    :OversampleV, :int,                   # 1        // Rasterize at higher quality for sub-pixel positioning. This is not really useful as we don't use sub-pixel positions on the Y axis.
+    :PixelSnapH, :bool,                   # false    // Align every glyph to pixel boundary. Useful e.g. if you are merging a non-pixel aligned font with the default font. If enabled, you can set OversampleH/V to 1.
+    :GlyphExtraSpacing, ImVec2.by_value,  # 0, 0     // Extra spacing (in pixels) between glyphs. Only X axis is supported for now.
+    :GlyphOffset, ImVec2.by_value,        # 0, 0     // Offset all glyphs from this font input.
+    :GlyphRanges, :pointer,               # NULL     // Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list). THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE.
+    :GlyphMinAdvanceX, :float,            # 0        // Minimum AdvanceX for glyphs, set Min to align font icons, set both Min/Max to enforce mono-space font
+    :GlyphMaxAdvanceX, :float,            # FLT_MAX  // Maximum AdvanceX for glyphs
+    :MergeMode, :bool,                    # false    // Merge into previous ImFont, so you can combine multiple inputs font into one ImFont (e.g. ASCII font + icons + Japanese glyphs). You may want to use GlyphOffset.y when merge font of different heights.
+    :FontBuilderFlags, :uint,             # 0        // Settings for custom font builder. THIS IS BUILDER IMPLEMENTATION DEPENDENT. Leave as zero if unsure.
+    :RasterizerMultiply, :float,          # 1.0f     // Brighten (>1.0f) or darken (<1.0f) font output. Brightening small fonts may be a good workaround to make them more readable.
+    :EllipsisChar, :ushort,               # -1       // Explicitly specify unicode codepoint of ellipsis character. When fonts are being merged first specified ellipsis will be used.
+    :Name, [:char, 40],                   # Name (strictly to ease debugging)
     :DstFont, ImFont.ptr
   )
 
@@ -1396,9 +1443,11 @@ class ImFontConfig < FFI::Struct
 
 end
 
+# Helper to build glyph ranges from text/string data. Feed your application strings/characters to it then call BuildRanges().
+# This is essentially a tightly packed of vector of 64k booleans = 8KB storage.
 class ImFontGlyphRangesBuilder < FFI::Struct
   layout(
-    :UsedChars, ImVector.by_value
+    :UsedChars, ImVector.by_value   # Store 1-bit per Unicode code point (0=unused, 1=used)
   )
 
   def AddChar(c)
@@ -1441,93 +1490,93 @@ end
 
 class ImGuiIO < FFI::Struct
   layout(
-    :ConfigFlags, :int,
-    :BackendFlags, :int,
-    :DisplaySize, ImVec2.by_value,
-    :DeltaTime, :float,
-    :IniSavingRate, :float,
-    :IniFilename, :pointer,
-    :LogFilename, :pointer,
-    :MouseDoubleClickTime, :float,
-    :MouseDoubleClickMaxDist, :float,
-    :MouseDragThreshold, :float,
-    :KeyRepeatDelay, :float,
-    :KeyRepeatRate, :float,
-    :HoverDelayNormal, :float,
-    :HoverDelayShort, :float,
-    :UserData, :pointer,
-    :Fonts, ImFontAtlas.ptr,
-    :FontGlobalScale, :float,
-    :FontAllowUserScaling, :bool,
-    :FontDefault, ImFont.ptr,
-    :DisplayFramebufferScale, ImVec2.by_value,
-    :MouseDrawCursor, :bool,
-    :ConfigMacOSXBehaviors, :bool,
-    :ConfigInputTrickleEventQueue, :bool,
-    :ConfigInputTextCursorBlink, :bool,
-    :ConfigInputTextEnterKeepActive, :bool,
-    :ConfigDragClickToInputText, :bool,
-    :ConfigWindowsResizeFromEdges, :bool,
-    :ConfigWindowsMoveFromTitleBarOnly, :bool,
-    :ConfigMemoryCompactTimer, :float,
-    :BackendPlatformName, :pointer,
-    :BackendRendererName, :pointer,
-    :BackendPlatformUserData, :pointer,
-    :BackendRendererUserData, :pointer,
-    :BackendLanguageUserData, :pointer,
+    :ConfigFlags, :int,                           # = 0              // See ImGuiConfigFlags_ enum. Set by user/application. Gamepad/keyboard navigation options, etc.
+    :BackendFlags, :int,                          # = 0              // See ImGuiBackendFlags_ enum. Set by backend (imgui_impl_xxx files or custom backend) to communicate features supported by the backend.
+    :DisplaySize, ImVec2.by_value,                # <unset>          // Main display size, in pixels (generally == GetMainViewport()->Size). May change every frame.
+    :DeltaTime, :float,                           # = 1.0f/60.0f     // Time elapsed since last frame, in seconds. May change every frame.
+    :IniSavingRate, :float,                       # = 5.0f           // Minimum time between saving positions/sizes to .ini file, in seconds.
+    :IniFilename, :pointer,                       # = "imgui.ini"    // Path to .ini file (important: default "imgui.ini" is relative to current working dir!). Set NULL to disable automatic .ini loading/saving or if you want to manually call LoadIniSettingsXXX() / SaveIniSettingsXXX() functions.
+    :LogFilename, :pointer,                       # = "imgui_log.txt"// Path to .log file (default parameter to ImGui::LogToFile when no file is specified).
+    :MouseDoubleClickTime, :float,                # = 0.30f          // Time for a double-click, in seconds.
+    :MouseDoubleClickMaxDist, :float,             # = 6.0f           // Distance threshold to stay in to validate a double-click, in pixels.
+    :MouseDragThreshold, :float,                  # = 6.0f           // Distance threshold before considering we are dragging.
+    :KeyRepeatDelay, :float,                      # = 0.275f         // When holding a key/button, time before it starts repeating, in seconds (for buttons in Repeat mode, etc.).
+    :KeyRepeatRate, :float,                       # = 0.050f         // When holding a key/button, rate at which it repeats, in seconds.
+    :HoverDelayNormal, :float,                    # = 0.30 sec       // Delay on hovering before IsItemHovered(ImGuiHoveredFlags_DelayNormal) returns true.
+    :HoverDelayShort, :float,                     # = 0.10 sec       // Delay on hovering before IsItemHovered(ImGuiHoveredFlags_DelayShort) returns true.
+    :UserData, :pointer,                          # = NULL           // Store your own data for retrieval by callbacks.
+    :Fonts, ImFontAtlas.ptr,                      # <auto>           // Font atlas: load, rasterize and pack one or more fonts into a single texture.
+    :FontGlobalScale, :float,                     # = 1.0f           // Global scale all fonts
+    :FontAllowUserScaling, :bool,                 # = false          // Allow user scaling text of individual window with CTRL+Wheel.
+    :FontDefault, ImFont.ptr,                     # = NULL           // Font to use on NewFrame(). Use NULL to uses Fonts->Fonts[0].
+    :DisplayFramebufferScale, ImVec2.by_value,    # = (1, 1)         // For retina display or other situations where window coordinates are different from framebuffer coordinates. This generally ends up in ImDrawData::FramebufferScale.
+    :MouseDrawCursor, :bool,                      # = false          // Request ImGui to draw a mouse cursor for you (if you are on a platform without a mouse cursor). Cannot be easily renamed to 'io.ConfigXXX' because this is frequently used by backend implementations.
+    :ConfigMacOSXBehaviors, :bool,                # = defined(__APPLE__) // OS X style: Text editing cursor movement using Alt instead of Ctrl, Shortcuts using Cmd/Super instead of Ctrl, Line/Text Start and End using Cmd+Arrows instead of Home/End, Double click selects by word instead of selecting whole text, Multi-selection in lists uses Cmd/Super instead of Ctrl.
+    :ConfigInputTrickleEventQueue, :bool,         # = true           // Enable input queue trickling: some types of events submitted during the same frame (e.g. button down + up) will be spread over multiple frames, improving interactions with low framerates.
+    :ConfigInputTextCursorBlink, :bool,           # = true           // Enable blinking cursor (optional as some users consider it to be distracting).
+    :ConfigInputTextEnterKeepActive, :bool,       # = false          // [BETA] Pressing Enter will keep item active and select contents (single-line only).
+    :ConfigDragClickToInputText, :bool,           # = false          // [BETA] Enable turning DragXXX widgets into text input with a simple mouse click-release (without moving). Not desirable on devices without a keyboard.
+    :ConfigWindowsResizeFromEdges, :bool,         # = true           // Enable resizing of windows from their edges and from the lower-left corner. This requires (io.BackendFlags & ImGuiBackendFlags_HasMouseCursors) because it needs mouse cursor feedback. (This used to be a per-window ImGuiWindowFlags_ResizeFromAnySide flag)
+    :ConfigWindowsMoveFromTitleBarOnly, :bool,    # = false       // Enable allowing to move windows only when clicking on their title bar. Does not apply to windows without a title bar.
+    :ConfigMemoryCompactTimer, :float,            # = 60.0f          // Timer (in seconds) to free transient windows/tables memory buffers when unused. Set to -1.0f to disable.
+    :BackendPlatformName, :pointer,               # = NULL
+    :BackendRendererName, :pointer,               # = NULL
+    :BackendPlatformUserData, :pointer,           # = NULL           // User data for platform backend
+    :BackendRendererUserData, :pointer,           # = NULL           // User data for renderer backend
+    :BackendLanguageUserData, :pointer,           # = NULL           // User data for non C++ programming language backend
     :GetClipboardTextFn, :pointer,
     :SetClipboardTextFn, :pointer,
     :ClipboardUserData, :pointer,
     :SetPlatformImeDataFn, :pointer,
     :_UnusedPadding, :pointer,
-    :WantCaptureMouse, :bool,
-    :WantCaptureKeyboard, :bool,
-    :WantTextInput, :bool,
-    :WantSetMousePos, :bool,
-    :WantSaveIniSettings, :bool,
-    :NavActive, :bool,
-    :NavVisible, :bool,
-    :Framerate, :float,
-    :MetricsRenderVertices, :int,
-    :MetricsRenderIndices, :int,
-    :MetricsRenderWindows, :int,
-    :MetricsActiveWindows, :int,
-    :MetricsActiveAllocations, :int,
-    :MouseDelta, ImVec2.by_value,
-    :KeyMap, [:int, 652],
-    :KeysDown, [:bool, 652],
-    :NavInputs, [:float, 16],
-    :MousePos, ImVec2.by_value,
-    :MouseDown, [:bool, 5],
-    :MouseWheel, :float,
-    :MouseWheelH, :float,
-    :KeyCtrl, :bool,
-    :KeyShift, :bool,
-    :KeyAlt, :bool,
-    :KeySuper, :bool,
-    :KeyMods, :int,
-    :KeysData, [ImGuiKeyData.by_value, 652],
-    :WantCaptureMouseUnlessPopupClose, :bool,
-    :MousePosPrev, ImVec2.by_value,
-    :MouseClickedPos, [ImVec2.by_value, 5],
-    :MouseClickedTime, [:double, 5],
-    :MouseClicked, [:bool, 5],
-    :MouseDoubleClicked, [:bool, 5],
-    :MouseClickedCount, [:ushort, 5],
-    :MouseClickedLastCount, [:ushort, 5],
-    :MouseReleased, [:bool, 5],
-    :MouseDownOwned, [:bool, 5],
-    :MouseDownOwnedUnlessPopupClose, [:bool, 5],
-    :MouseDownDuration, [:float, 5],
-    :MouseDownDurationPrev, [:float, 5],
-    :MouseDragMaxDistanceSqr, [:float, 5],
-    :PenPressure, :float,
-    :AppFocusLost, :bool,
-    :AppAcceptingEvents, :bool,
-    :BackendUsingLegacyKeyArrays, :char,
-    :BackendUsingLegacyNavInputArray, :bool,
-    :InputQueueSurrogate, :ushort,
-    :InputQueueCharacters, ImVector.by_value
+    :WantCaptureMouse, :bool,                     # Set when Dear ImGui will use mouse inputs, in this case do not dispatch them to your main game/application (either way, always pass on mouse inputs to imgui). (e.g. unclicked mouse is hovering over an imgui window, widget is active, mouse was clicked over an imgui window, etc.).
+    :WantCaptureKeyboard, :bool,                  # Set when Dear ImGui will use keyboard inputs, in this case do not dispatch them to your main game/application (either way, always pass keyboard inputs to imgui). (e.g. InputText active, or an imgui window is focused and navigation is enabled, etc.).
+    :WantTextInput, :bool,                        # Mobile/console: when set, you may display an on-screen keyboard. This is set by Dear ImGui when it wants textual keyboard input to happen (e.g. when a InputText widget is active).
+    :WantSetMousePos, :bool,                      # MousePos has been altered, backend should reposition mouse on next frame. Rarely used! Set only when ImGuiConfigFlags_NavEnableSetMousePos flag is enabled.
+    :WantSaveIniSettings, :bool,                  # When manual .ini load/save is active (io.IniFilename == NULL), this will be set to notify your application that you can call SaveIniSettingsToMemory() and save yourself. Important: clear io.WantSaveIniSettings yourself after saving!
+    :NavActive, :bool,                            # Keyboard/Gamepad navigation is currently allowed (will handle ImGuiKey_NavXXX events) = a window is focused and it doesn't use the ImGuiWindowFlags_NoNavInputs flag.
+    :NavVisible, :bool,                           # Keyboard/Gamepad navigation is visible and allowed (will handle ImGuiKey_NavXXX events).
+    :Framerate, :float,                           # Estimate of application framerate (rolling average over 60 frames, based on io.DeltaTime), in frame per second. Solely for convenience. Slow applications may not want to use a moving average or may want to reset underlying buffers occasionally.
+    :MetricsRenderVertices, :int,                 # Vertices output during last call to Render()
+    :MetricsRenderIndices, :int,                  # Indices output during last call to Render() = number of triangles * 3
+    :MetricsRenderWindows, :int,                  # Number of visible windows
+    :MetricsActiveWindows, :int,                  # Number of active windows
+    :MetricsActiveAllocations, :int,              # Number of active allocations, updated by MemAlloc/MemFree based on current context. May be off if you have multiple imgui contexts.
+    :MouseDelta, ImVec2.by_value,                 # Mouse delta. Note that this is zero if either current or previous position are invalid (-FLT_MAX,-FLT_MAX), so a disappearing/reappearing mouse won't have a huge delta.
+    :KeyMap, [:int, 652],                         # [LEGACY] Input: map of indices into the KeysDown[512] entries array which represent your "native" keyboard state. The first 512 are now unused and should be kept zero. Legacy backend will write into KeyMap[] using ImGuiKey_ indices which are always >512.
+    :KeysDown, [:bool, 652],                      # [LEGACY] Input: Keyboard keys that are pressed (ideally left in the "native" order your engine has access to keyboard keys, so you can use your own defines/enums for keys). This used to be [512] sized. It is now ImGuiKey_COUNT to allow legacy io.KeysDown[GetKeyIndex(...)] to work without an overflow.
+    :NavInputs, [:float, 16],                     # [LEGACY] Since 1.88, NavInputs[] was removed. Backends from 1.60 to 1.86 won't build. Feed gamepad inputs via io.AddKeyEvent() and ImGuiKey_GamepadXXX enums.
+    :MousePos, ImVec2.by_value,                   # Mouse position, in pixels. Set to ImVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)
+    :MouseDown, [:bool, 5],                       # Mouse buttons: 0=left, 1=right, 2=middle + extras (ImGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API.
+    :MouseWheel, :float,                          # Mouse wheel Vertical: 1 unit scrolls about 5 lines text.
+    :MouseWheelH, :float,                         # Mouse wheel Horizontal. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends.
+    :KeyCtrl, :bool,                              # Keyboard modifier down: Control
+    :KeyShift, :bool,                             # Keyboard modifier down: Shift
+    :KeyAlt, :bool,                               # Keyboard modifier down: Alt
+    :KeySuper, :bool,                             # Keyboard modifier down: Cmd/Super/Windows
+    :KeyMods, :int,                               # Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags). Read-only, updated by NewFrame()
+    :KeysData, [ImGuiKeyData.by_value, 652],      # Key state for all known keys. Use IsKeyXXX() functions to access this.
+    :WantCaptureMouseUnlessPopupClose, :bool,     # Alternative to WantCaptureMouse: (WantCaptureMouse == true && WantCaptureMouseUnlessPopupClose == false) when a click over void is expected to close a popup.
+    :MousePosPrev, ImVec2.by_value,               # Previous mouse position (note that MouseDelta is not necessary == MousePos-MousePosPrev, in case either position is invalid)
+    :MouseClickedPos, [ImVec2.by_value, 5],       # Position at time of clicking
+    :MouseClickedTime, [:double, 5],              # Time of last click (used to figure out double-click)
+    :MouseClicked, [:bool, 5],                    # Mouse button went from !Down to Down (same as MouseClickedCount[x] != 0)
+    :MouseDoubleClicked, [:bool, 5],              # Has mouse button been double-clicked? (same as MouseClickedCount[x] == 2)
+    :MouseClickedCount, [:ushort, 5],             # == 0 (not clicked), == 1 (same as MouseClicked[]), == 2 (double-clicked), == 3 (triple-clicked) etc. when going from !Down to Down
+    :MouseClickedLastCount, [:ushort, 5],         # Count successive number of clicks. Stays valid after mouse release. Reset after another click is done.
+    :MouseReleased, [:bool, 5],                   # Mouse button went from Down to !Down
+    :MouseDownOwned, [:bool, 5],                  # Track if button was clicked inside a dear imgui window or over void blocked by a popup. We don't request mouse capture from the application if click started outside ImGui bounds.
+    :MouseDownOwnedUnlessPopupClose, [:bool, 5],  # Track if button was clicked inside a dear imgui window.
+    :MouseDownDuration, [:float, 5],              # Duration the mouse button has been down (0.0f == just clicked)
+    :MouseDownDurationPrev, [:float, 5],          # Previous time the mouse button has been down
+    :MouseDragMaxDistanceSqr, [:float, 5],        # Squared maximum distance of how much mouse has traveled from the clicking point (used for moving thresholds)
+    :PenPressure, :float,                         # Touch/Pen pressure (0.0f to 1.0f, should be >0.0f only when MouseDown[0] == true). Helper storage currently unused by Dear ImGui.
+    :AppFocusLost, :bool,                         # Only modify via AddFocusEvent()
+    :AppAcceptingEvents, :bool,                   # Only modify via SetAppAcceptingEvents()
+    :BackendUsingLegacyKeyArrays, :char,          # -1: unknown, 0: using AddKeyEvent(), 1: using legacy io.KeysDown[]
+    :BackendUsingLegacyNavInputArray, :bool,      # 0: using AddKeyAnalogEvent(), 1: writing to legacy io.NavInputs[] directly
+    :InputQueueSurrogate, :ushort,                # For AddInputCharacterUTF16()
+    :InputQueueCharacters, ImVector.by_value      # Queue of _characters_ input (obtained by platform backend). Fill using AddInputCharacter() helper.
   )
 
   def AddFocusEvent(focused)
@@ -1592,82 +1641,94 @@ class ImGuiIO < FFI::Struct
 
 end
 
+# Shared state of InputText(), passed as an argument to your callback when a ImGuiInputTextFlags_Callback* flag is used.
+# The callback function should return 0 by default.
+# Callbacks (follow a flag name and see comments in ImGuiInputTextFlags_ declarations for more details)
+# - ImGuiInputTextFlags_CallbackEdit:        Callback on buffer edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)
+# - ImGuiInputTextFlags_CallbackAlways:      Callback on each iteration
+# - ImGuiInputTextFlags_CallbackCompletion:  Callback on pressing TAB
+# - ImGuiInputTextFlags_CallbackHistory:     Callback on pressing Up/Down arrows
+# - ImGuiInputTextFlags_CallbackCharFilter:  Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
+# - ImGuiInputTextFlags_CallbackResize:      Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow.
 class ImGuiInputTextCallbackData < FFI::Struct
   layout(
-    :EventFlag, :int,
-    :Flags, :int,
-    :UserData, :pointer,
-    :EventChar, :ushort,
-    :EventKey, :int,
-    :Buf, :pointer,
-    :BufTextLen, :int,
-    :BufSize, :int,
-    :BufDirty, :bool,
-    :CursorPos, :int,
-    :SelectionStart, :int,
-    :SelectionEnd, :int
+    :EventFlag, :int,       # One ImGuiInputTextFlags_Callback*    // Read-only
+    :Flags, :int,           # What user passed to InputText()      // Read-only
+    :UserData, :pointer,    # What user passed to InputText()      // Read-only
+    :EventChar, :ushort,    # Character input                      // Read-write   // [CharFilter] Replace character with another one, or set to zero to drop. return 1 is equivalent to setting EventChar=0;
+    :EventKey, :int,        # Key pressed (Up/Down/TAB)            // Read-only    // [Completion,History]
+    :Buf, :pointer,         # Text buffer                          // Read-write   // [Resize] Can replace pointer / [Completion,History,Always] Only write to pointed data, don't replace the actual pointer!
+    :BufTextLen, :int,      # Text length (in bytes)               // Read-write   // [Resize,Completion,History,Always] Exclude zero-terminator storage. In C land: == strlen(some_text), in C++ land: string.length()
+    :BufSize, :int,         # Buffer size (in bytes) = capacity+1  // Read-only    // [Resize,Completion,History,Always] Include zero-terminator storage. In C land == ARRAYSIZE(my_char_array), in C++ land: string.capacity()+1
+    :BufDirty, :bool,       # Set if you modify Buf/BufTextLen!    // Write        // [Completion,History,Always]
+    :CursorPos, :int,       #                                      // Read-write   // [Completion,History,Always]
+    :SelectionStart, :int,  #                                      // Read-write   // [Completion,History,Always] == to SelectionEnd when no selection)
+    :SelectionEnd, :int     #                                      // Read-write   // [Completion,History,Always]
   )
 end
 
+# (Optional) Support for IME (Input Method Editor) via the io.SetPlatformImeDataFn() function.
 class ImGuiPlatformImeData < FFI::Struct
   layout(
-    :WantVisible, :bool,
-    :InputPos, ImVec2.by_value,
-    :InputLineHeight, :float
+    :WantVisible, :bool,         # A widget wants the IME to be visible
+    :InputPos, ImVec2.by_value,  # Position of the input cursor
+    :InputLineHeight, :float     # Line height
   )
 end
 
+# Resizing callback data to apply custom constraint. As enabled by SetNextWindowSizeConstraints(). Callback is called during the next Begin().
+# NB: For basic min/max size constraint on each axis you don't need to use the callback! The SetNextWindowSizeConstraints() parameters are enough.
 class ImGuiSizeCallbackData < FFI::Struct
   layout(
-    :UserData, :pointer,
-    :Pos, ImVec2.by_value,
-    :CurrentSize, ImVec2.by_value,
-    :DesiredSize, ImVec2.by_value
+    :UserData, :pointer,            # Read-only.   What user passed to SetNextWindowSizeConstraints(). Generally store an integer or float in here (need reinterpret_cast<>).
+    :Pos, ImVec2.by_value,          # Read-only.   Window position, for reference.
+    :CurrentSize, ImVec2.by_value,  # Read-only.   Current window size.
+    :DesiredSize, ImVec2.by_value   # Read-write.  Desired size, based on user's mouse position. Write to this field to restrain resizing.
   )
 end
 
 class ImGuiStyle < FFI::Struct
   layout(
-    :Alpha, :float,
-    :DisabledAlpha, :float,
-    :WindowPadding, ImVec2.by_value,
-    :WindowRounding, :float,
-    :WindowBorderSize, :float,
-    :WindowMinSize, ImVec2.by_value,
-    :WindowTitleAlign, ImVec2.by_value,
-    :WindowMenuButtonPosition, :int,
-    :ChildRounding, :float,
-    :ChildBorderSize, :float,
-    :PopupRounding, :float,
-    :PopupBorderSize, :float,
-    :FramePadding, ImVec2.by_value,
-    :FrameRounding, :float,
-    :FrameBorderSize, :float,
-    :ItemSpacing, ImVec2.by_value,
-    :ItemInnerSpacing, ImVec2.by_value,
-    :CellPadding, ImVec2.by_value,
-    :TouchExtraPadding, ImVec2.by_value,
-    :IndentSpacing, :float,
-    :ColumnsMinSpacing, :float,
-    :ScrollbarSize, :float,
-    :ScrollbarRounding, :float,
-    :GrabMinSize, :float,
-    :GrabRounding, :float,
-    :LogSliderDeadzone, :float,
-    :TabRounding, :float,
-    :TabBorderSize, :float,
-    :TabMinWidthForCloseButton, :float,
-    :ColorButtonPosition, :int,
-    :ButtonTextAlign, ImVec2.by_value,
-    :SelectableTextAlign, ImVec2.by_value,
-    :DisplayWindowPadding, ImVec2.by_value,
-    :DisplaySafeAreaPadding, ImVec2.by_value,
-    :MouseCursorScale, :float,
-    :AntiAliasedLines, :bool,
-    :AntiAliasedLinesUseTex, :bool,
-    :AntiAliasedFill, :bool,
-    :CurveTessellationTol, :float,
-    :CircleTessellationMaxError, :float,
+    :Alpha, :float,                            # Global alpha applies to everything in Dear ImGui.
+    :DisabledAlpha, :float,                    # Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
+    :WindowPadding, ImVec2.by_value,           # Padding within a window.
+    :WindowRounding, :float,                   # Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
+    :WindowBorderSize, :float,                 # Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    :WindowMinSize, ImVec2.by_value,           # Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
+    :WindowTitleAlign, ImVec2.by_value,        # Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
+    :WindowMenuButtonPosition, :int,           # Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left.
+    :ChildRounding, :float,                    # Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
+    :ChildBorderSize, :float,                  # Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    :PopupRounding, :float,                    # Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
+    :PopupBorderSize, :float,                  # Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    :FramePadding, ImVec2.by_value,            # Padding within a framed rectangle (used by most widgets).
+    :FrameRounding, :float,                    # Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
+    :FrameBorderSize, :float,                  # Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    :ItemSpacing, ImVec2.by_value,             # Horizontal and vertical spacing between widgets/lines.
+    :ItemInnerSpacing, ImVec2.by_value,        # Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
+    :CellPadding, ImVec2.by_value,             # Padding within a table cell
+    :TouchExtraPadding, ImVec2.by_value,       # Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+    :IndentSpacing, :float,                    # Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
+    :ColumnsMinSpacing, :float,                # Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
+    :ScrollbarSize, :float,                    # Width of the vertical scrollbar, Height of the horizontal scrollbar.
+    :ScrollbarRounding, :float,                # Radius of grab corners for scrollbar.
+    :GrabMinSize, :float,                      # Minimum width/height of a grab box for slider/scrollbar.
+    :GrabRounding, :float,                     # Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+    :LogSliderDeadzone, :float,                # The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
+    :TabRounding, :float,                      # Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
+    :TabBorderSize, :float,                    # Thickness of border around tabs.
+    :TabMinWidthForCloseButton, :float,        # Minimum width for close button to appear on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
+    :ColorButtonPosition, :int,                # Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
+    :ButtonTextAlign, ImVec2.by_value,         # Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
+    :SelectableTextAlign, ImVec2.by_value,     # Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+    :DisplayWindowPadding, ImVec2.by_value,    # Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
+    :DisplaySafeAreaPadding, ImVec2.by_value,  # If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly!
+    :MouseCursorScale, :float,                 # Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
+    :AntiAliasedLines, :bool,                  # Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    :AntiAliasedLinesUseTex, :bool,            # Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering). Latched at the beginning of the frame (copied to ImDrawList).
+    :AntiAliasedFill, :bool,                   # Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    :CurveTessellationTol, :float,             # Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
+    :CircleTessellationMaxError, :float,       # Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
     :Colors, [ImVec4.by_value, 53]
   )
 
@@ -1685,23 +1746,29 @@ class ImGuiStyle < FFI::Struct
 
 end
 
+# Sorting specification for one column of a table (sizeof == 12 bytes)
 class ImGuiTableColumnSortSpecs < FFI::Struct
   layout(
-    :ColumnUserID, :uint,
-    :ColumnIndex, :short,
-    :SortOrder, :short,
-    :SortDirection, :int
+    :ColumnUserID, :uint,  # User id of the column (if specified by a TableSetupColumn() call)
+    :ColumnIndex, :short,  # Index of the column
+    :SortOrder, :short,    # Index within parent ImGuiTableSortSpecs (always stored in order starting from 0, tables sorted on a single criteria will always have a 0 here)
+    :SortDirection, :int   # ImGuiSortDirection_Ascending or ImGuiSortDirection_Descending (you can use this or SortSign, whichever is more convenient for your sort function)
   )
 end
 
+# Sorting specifications for a table (often handling sort specs for a single column, occasionally more)
+# Obtained by calling TableGetSortSpecs().
+# When 'SpecsDirty == true' you can sort your data. It will be true with sorting specs have changed since last call, or the first time.
+# Make sure to set 'SpecsDirty = false' after sorting, else you may wastefully sort your data every frame!
 class ImGuiTableSortSpecs < FFI::Struct
   layout(
-    :Specs, :pointer,
-    :SpecsCount, :int,
-    :SpecsDirty, :bool
+    :Specs, :pointer,    # Pointer to sort spec array.
+    :SpecsCount, :int,   # Sort spec count. Most often 1. May be > 1 when ImGuiTableFlags_SortMulti is enabled. May be == 0 when ImGuiTableFlags_SortTristate is enabled.
+    :SpecsDirty, :bool   # Set to true when specs have changed since last time! Use this to sort again, then clear the flag.
   )
 end
 
+# Helper: Parse and apply text filters. In format "aaaaa[,bbbb][,ccccc]"
 class ImGuiTextFilter < FFI::Struct
   layout(
     :InputBuf, [:char, 256],
@@ -1739,14 +1806,21 @@ class ImGuiTextFilter < FFI::Struct
 
 end
 
+# - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
+# - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
+# - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
+# - About Main Area vs Work Area:
+#   - Main Area = entire viewport.
+#   - Work Area = entire viewport minus sections used by main menu bars (for platform windows), or by task bar (for platform monitor).
+#   - Windows are generally trying to stay within the Work Area of their host viewport.
 class ImGuiViewport < FFI::Struct
   layout(
-    :Flags, :int,
-    :Pos, ImVec2.by_value,
-    :Size, ImVec2.by_value,
-    :WorkPos, ImVec2.by_value,
-    :WorkSize, ImVec2.by_value,
-    :PlatformHandleRaw, :pointer
+    :Flags, :int,                  # See ImGuiViewportFlags_
+    :Pos, ImVec2.by_value,         # Main Area: Position of the viewport (Dear ImGui coordinates are the same as OS desktop/native coordinates)
+    :Size, ImVec2.by_value,        # Main Area: Size of the viewport.
+    :WorkPos, ImVec2.by_value,     # Work Area: Position of the viewport minus task bars, menus bars, status bars (>= Pos)
+    :WorkSize, ImVec2.by_value,    # Work Area: Size of the viewport minus task bars, menu bars, status bars (<= Size)
+    :PlatformHandleRaw, :pointer   # void* to hold lower-level, platform-native window handle (under Win32 this is expected to be a HWND, unused for other platforms)
   )
 end
 
