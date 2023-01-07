@@ -258,7 +258,7 @@ ImGuiDir_COUNT = 4 # 4
 # ImGuiDragDropFlags_
 # Flags for ImGui::BeginDragDropSource(), ImGui::AcceptDragDropPayload()
 ImGuiDragDropFlags_None = 0                       # 0
-ImGuiDragDropFlags_SourceNoPreviewTooltip = 1     # 1 << 0 # By default, a successful call to BeginDragDropSource opens a tooltip so you can display a preview or description of the source contents. This flag disables this behavior.
+ImGuiDragDropFlags_SourceNoPreviewTooltip = 1     # 1 << 0 # Disable preview tooltip. By default, a successful call to BeginDragDropSource opens a tooltip so you can display a preview or description of the source contents. This flag disables this behavior.
 ImGuiDragDropFlags_SourceNoDisableHover = 2       # 1 << 1 # By default, when dragging we clear data so that IsItemHovered() will return false, to avoid subsequent user code submitting tooltips. This flag disables this behavior so you can still call IsItemHovered() on the source item.
 ImGuiDragDropFlags_SourceNoHoldToOpenOthers = 4   # 1 << 2 # Disable the behavior that allows to open tree nodes and collapsing header by holding over them while dragging a source item.
 ImGuiDragDropFlags_SourceAllowNullID = 8          # 1 << 3 # Allow items such as Text(), Image() that have no unique identifier to be used as drag source, by manufacturing a temporary identifier based on their window-relative position. This is extremely unusual within the dear imgui ecosystem and so we made it explicit.
@@ -322,12 +322,13 @@ ImGuiInputTextFlags_NoUndoRedo = 65536         # 1 << 16 # Disable undo/redo. No
 ImGuiInputTextFlags_CharsScientific = 131072   # 1 << 17 # Allow 0123456789.+-*/eE (Scientific notation input)
 ImGuiInputTextFlags_CallbackResize = 262144    # 1 << 18 # Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
 ImGuiInputTextFlags_CallbackEdit = 524288      # 1 << 19 # Callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)
-ImGuiInputTextFlags_EscapeClearsAll = 1048576  # 1 << 20 # Escape key clears content if not empty, and deactivate otherwise (constrast to default behavior of Escape to revert)
+ImGuiInputTextFlags_EscapeClearsAll = 1048576  # 1 << 20 # Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)
 
 # ImGuiKey
-# A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value)
-# All our named keys are >= 512. Keys value 0 to 511 are left unused as legacy native/opaque key values (< 1.87)
+# A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value): can represent Keyboard, Mouse and Gamepad values.
+# All our named keys are >= 512. Keys value 0 to 511 are left unused as legacy native/opaque key values (< 1.87).
 # Since >= 1.89 we increased typing (went from int to enum), some legacy code may need a cast to ImGuiKey.
+# Read details about the 1.87 and 1.89 transition : https://github.com/ocornut/imgui/issues/4921
 ImGuiKey_None = 0                  # 0
 ImGuiKey_Tab = 512                 # 512 # == ImGuiKey_NamedKey_BEGIN
 ImGuiKey_LeftArrow = 513           # 513
@@ -471,12 +472,12 @@ ImGuiKey_ReservedForModAlt = 650   # 650
 ImGuiKey_ReservedForModSuper = 651 # 651
 ImGuiKey_COUNT = 652               # 652
 ImGuiMod_None = 0                  # 0
-ImGuiMod_Ctrl = 4096               # 1 << 12
-ImGuiMod_Shift = 8192              # 1 << 13
+ImGuiMod_Ctrl = 4096               # 1 << 12 # Ctrl
+ImGuiMod_Shift = 8192              # 1 << 13 # Shift
 ImGuiMod_Alt = 16384               # 1 << 14 # Option/Menu
 ImGuiMod_Super = 32768             # 1 << 15 # Cmd/Super/Windows
-ImGuiMod_Mask_ = 61440             # 0xF000
-ImGuiMod_Shortcut = 32768          # ImGuiMod_Super
+ImGuiMod_Shortcut = 2048           # 1 << 11 # Alias for Ctrl (non-macOS) _or_ Super (macOS).
+ImGuiMod_Mask_ = 63488             # 0xF800 # 5-bits
 ImGuiKey_NamedKey_BEGIN = 512      # 512
 ImGuiKey_NamedKey_END = 652        # ImGuiKey_COUNT
 ImGuiKey_NamedKey_COUNT = 140      # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
@@ -1190,6 +1191,7 @@ class ImFontAtlas < FFI::Struct
     :TexDesiredWidth, :int,              # Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.
     :TexGlyphPadding, :int,              # Padding between glyphs within texture in pixels. Defaults to 1. If your rendering method doesn't rely on bilinear filtering you may set this to 0 (will also need to set AntiAliasedLinesUseTex = false).
     :Locked, :bool,                      # Marked as Locked by ImGui::NewFrame() so attempt to modify the atlas will assert.
+    :UserData, :pointer,                 # Store your own atlas related user-data (if e.g. you have multiple font atlas).
     :TexReady, :bool,                    # Set when texture was built matching current font input
     :TexPixelsUseColors, :bool,          # Tell whether our texture data is known to use colors (rather than just alpha channel), in order to help backend select a format.
     :TexPixelsAlpha8, :pointer,          # 1 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight
@@ -1504,7 +1506,7 @@ class ImGuiIO < FFI::Struct
     :KeyRepeatRate, :float,                       # = 0.050f         // When holding a key/button, rate at which it repeats, in seconds.
     :HoverDelayNormal, :float,                    # = 0.30 sec       // Delay on hovering before IsItemHovered(ImGuiHoveredFlags_DelayNormal) returns true.
     :HoverDelayShort, :float,                     # = 0.10 sec       // Delay on hovering before IsItemHovered(ImGuiHoveredFlags_DelayShort) returns true.
-    :UserData, :pointer,                          # = NULL           // Store your own data for retrieval by callbacks.
+    :UserData, :pointer,                          # = NULL           // Store your own data.
     :Fonts, ImFontAtlas.ptr,                      # <auto>           // Font atlas: load, rasterize and pack one or more fonts into a single texture.
     :FontGlobalScale, :float,                     # = 1.0f           // Global scale all fonts
     :FontAllowUserScaling, :bool,                 # = false          // Allow user scaling text of individual window with CTRL+Wheel.
@@ -1554,7 +1556,7 @@ class ImGuiIO < FFI::Struct
     :KeyShift, :bool,                             # Keyboard modifier down: Shift
     :KeyAlt, :bool,                               # Keyboard modifier down: Alt
     :KeySuper, :bool,                             # Keyboard modifier down: Cmd/Super/Windows
-    :KeyMods, :int,                               # Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags). Read-only, updated by NewFrame()
+    :KeyMods, :int,                               # Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags. DOES NOT CONTAINS ImGuiMod_Shortcut which is pretranslated). Read-only, updated by NewFrame()
     :KeysData, [ImGuiKeyData.by_value, 652],      # Key state for all known keys. Use IsKeyXXX() functions to access this.
     :WantCaptureMouseUnlessPopupClose, :bool,     # Alternative to WantCaptureMouse: (WantCaptureMouse == true && WantCaptureMouseUnlessPopupClose == false) when a click over void is expected to close a popup.
     :MousePosPrev, ImVec2.by_value,               # Previous mouse position (note that MouseDelta is not necessary == MousePos-MousePosPrev, in case either position is invalid)
@@ -2132,6 +2134,7 @@ module ImGui
       [:igGetID_StrStr, [:pointer, :pointer], :uint],
       [:igGetID_Ptr, [:pointer], :uint],
       [:igGetIO, [], :pointer],
+      [:igGetItemID, [], :uint],
       [:igGetItemRectMax, [:pointer], :void],
       [:igGetItemRectMin, [:pointer], :void],
       [:igGetItemRectSize, [:pointer], :void],
@@ -3055,6 +3058,11 @@ module ImGui
   # ret: pointer
   def self.GetIO()
     igGetIO()
+  end
+
+  # ret: uint
+  def self.GetItemID()
+    igGetItemID()
   end
 
   # ret: void

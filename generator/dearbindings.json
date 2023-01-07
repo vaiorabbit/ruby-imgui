@@ -2,11 +2,11 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.89.1 WIP\""
+            "content": "\"1.89.2\""
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "18910"
+            "content": "18920"
         },
         {
             "name": "IM_MSVC_RUNTIME_CHECKS_OFF",
@@ -598,7 +598,7 @@
                     "name": "ImGuiInputTextFlags_EscapeClearsAll",
                     "value": "1<<20",
                     "comments": {
-                        "attached": "// Escape key clears content if not empty, and deactivate otherwise (constrast to default behavior of Escape to revert)"
+                        "attached": "// Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)"
                     }
                 },
                 {
@@ -1864,7 +1864,7 @@
                         "preceding": [
                             "// BeginDragDropSource() flags"
                         ],
-                        "attached": "// By default, a successful call to BeginDragDropSource opens a tooltip so you can display a preview or description of the source contents. This flag disables this behavior."
+                        "attached": "// Disable preview tooltip. By default, a successful call to BeginDragDropSource opens a tooltip so you can display a preview or description of the source contents. This flag disables this behavior."
                     }
                 },
                 {
@@ -2449,7 +2449,7 @@
                     "name": "ImGuiKey_GamepadStart",
                     "comments": {
                         "preceding": [
-                            "// Gamepad (some of those are analog values, 0.0f to 1.0f)                          // GAME NAVIGATION ACTION",
+                            "// Gamepad (some of those are analog values, 0.0f to 1.0f)                          // NAVIGATION ACTION",
                             "// (download controller mapping PNG/PSD at http://dearimgui.org/controls_sheets)"
                         ],
                         "attached": "// Menu (Xbox)      + (Switch)   Start/Options (PS)"
@@ -2597,7 +2597,7 @@
                     "name": "ImGuiKey_MouseLeft",
                     "comments": {
                         "preceding": [
-                            "// Mouse Buttons (auto-submitted from AddMouseButtonEvent() calls)",
+                            "// Aliases: Mouse Buttons (auto-submitted from AddMouseButtonEvent() calls)",
                             "// - This is mirroring the data also written to io.MouseDown[], io.MouseWheel, in a format allowing them to be accessed via standard key API."
                         ]
                     }
@@ -2663,11 +2663,17 @@
                 },
                 {
                     "name": "ImGuiMod_Ctrl",
-                    "value": "1<<12"
+                    "value": "1<<12",
+                    "comments": {
+                        "attached": "// Ctrl"
+                    }
                 },
                 {
                     "name": "ImGuiMod_Shift",
-                    "value": "1<<13"
+                    "value": "1<<13",
+                    "comments": {
+                        "attached": "// Shift"
+                    }
                 },
                 {
                     "name": "ImGuiMod_Alt",
@@ -2684,28 +2690,18 @@
                     }
                 },
                 {
+                    "name": "ImGuiMod_Shortcut",
+                    "value": "1<<11",
+                    "comments": {
+                        "attached": "// Alias for Ctrl (non-macOS) _or_ Super (macOS)."
+                    }
+                },
+                {
                     "name": "ImGuiMod_Mask_",
-                    "value": "0xF000"
-                },
-                {
-                    "name": "ImGuiMod_Shortcut",
-                    "value": "ImGuiMod_Super",
-                    "conditionals": [
-                        {
-                            "condition": "if",
-                            "expression": "defined(__APPLE__)"
-                        }
-                    ]
-                },
-                {
-                    "name": "ImGuiMod_Shortcut",
-                    "value": "ImGuiMod_Ctrl",
-                    "conditionals": [
-                        {
-                            "condition": "ifnot",
-                            "expression": "defined(__APPLE__)"
-                        }
-                    ]
+                    "value": "0xF800",
+                    "comments": {
+                        "attached": "// 5-bits"
+                    }
                 },
                 {
                     "name": "ImGuiKey_NamedKey_BEGIN",
@@ -2839,9 +2835,10 @@
             ],
             "comments": {
                 "preceding": [
-                    "// A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value)",
-                    "// All our named keys are >= 512. Keys value 0 to 511 are left unused as legacy native/opaque key values (< 1.87)",
-                    "// Since >= 1.89 we increased typing (went from int to enum), some legacy code may need a cast to ImGuiKey."
+                    "// A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value): can represent Keyboard, Mouse and Gamepad values.",
+                    "// All our named keys are >= 512. Keys value 0 to 511 are left unused as legacy native/opaque key values (< 1.87).",
+                    "// Since >= 1.89 we increased typing (went from int to enum), some legacy code may need a cast to ImGuiKey.",
+                    "// Read details about the 1.87 and 1.89 transition : https://github.com/ocornut/imgui/issues/4921"
                 ],
                 "attached": "// Forward declared enum type ImGuiKey"
             }
@@ -6893,7 +6890,7 @@
                         "declaration": "void*"
                     },
                     "comments": {
-                        "attached": "// = NULL           // Store your own data for retrieval by callbacks."
+                        "attached": "// = NULL           // Store your own data."
                     }
                 },
                 {
@@ -7749,7 +7746,7 @@
                         "preceding": [
                             "// Other state maintained from data above + IO function calls"
                         ],
-                        "attached": "// Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags). Read-only, updated by NewFrame()"
+                        "attached": "// Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags. DOES NOT CONTAINS ImGuiMod_Shortcut which is pretranslated). Read-only, updated by NewFrame()"
                     }
                 },
                 {
@@ -10458,6 +10455,21 @@
                     },
                     "comments": {
                         "attached": "// Marked as Locked by ImGui::NewFrame() so attempt to modify the atlas will assert."
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "UserData",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "void*"
+                    },
+                    "comments": {
+                        "attached": "// Store your own atlas related user-data (if e.g. you have multiple font atlas)."
                     }
                 },
                 {
@@ -13343,7 +13355,7 @@
             "comments": {
                 "preceding": [
                     "// Style read access",
-                    "// - Use the style editor (ShowStyleEditor() function) to interactively see what the colors are)"
+                    "// - Use the ShowStyleEditor() function to interactively see/edit the colors."
                 ],
                 "attached": "// get current font"
             }
@@ -23536,7 +23548,8 @@
             "has_imstr_helper": false,
             "comments": {
                 "preceding": [
-                    "// Tab Bars, Tabs"
+                    "// Tab Bars, Tabs",
+                    "// - Note: Tabs are automatically created by the docking system (when in 'docking' branch). Use this to create tab bars/tabs yourself."
                 ],
                 "attached": "// create and append into a TabBar"
             }
@@ -24412,6 +24425,21 @@
             }
         },
         {
+            "name": "ImGui_GetItemID",
+            "original_fully_qualified_name": "ImGui::GetItemID",
+            "return_type": {
+                "declaration": "ImGuiID"
+            },
+            "arguments": [],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "attached": "// get ID of last item (~~ often same ImGui::GetID(label) beforehand)"
+            }
+        },
+        {
             "name": "ImGui_GetItemRectMin",
             "original_fully_qualified_name": "ImGui::GetItemRectMin",
             "return_type": {
@@ -25011,12 +25039,11 @@
             "has_imstr_helper": false,
             "comments": {
                 "preceding": [
-                    "// Inputs Utilities: Keyboard",
-                    "// Without IMGUI_DISABLE_OBSOLETE_KEYIO: (legacy support)",
-                    "//   - For 'ImGuiKey key' you can still use your legacy native/user indices according to how your backend/engine stored them in io.KeysDown[].",
-                    "// With IMGUI_DISABLE_OBSOLETE_KEYIO: (this is the way forward)",
-                    "//   - Any use of 'ImGuiKey' will assert when key < 512 will be passed, previously reserved as native/user keys indices",
-                    "//   - GetKeyIndex() is pass-through and therefore deprecated (gone if IMGUI_DISABLE_OBSOLETE_KEYIO is defined)"
+                    "// Inputs Utilities: Keyboard/Mouse/Gamepad",
+                    "// - the ImGuiKey enum contains all possible keyboard, mouse and gamepad inputs (e.g. ImGuiKey_A, ImGuiKey_MouseLeft, ImGuiKey_GamepadDpadUp...).",
+                    "// - before v1.87, we used ImGuiKey to carry native/user indices as defined by each backends. About use of those legacy ImGuiKey values:",
+                    "//  - without IMGUI_DISABLE_OBSOLETE_KEYIO (legacy support): you can still use your legacy native/user indices (< 512) according to how your backend/engine stored them in io.KeysDown[], but need to cast them to ImGuiKey.",
+                    "//  - with    IMGUI_DISABLE_OBSOLETE_KEYIO (this is the way forward): any use of ImGuiKey will assert with key < 512. GetKeyIndex() is pass-through and therefore deprecated (gone if IMGUI_DISABLE_OBSOLETE_KEYIO is defined)."
                 ],
                 "attached": "// is key being held."
             }
@@ -25212,7 +25239,7 @@
             "has_imstr_helper": false,
             "comments": {
                 "preceding": [
-                    "// Inputs Utilities: Mouse",
+                    "// Inputs Utilities: Mouse specific",
                     "// - To refer to a mouse button, you may use named enums in your code e.g. ImGuiMouseButton_Left, ImGuiMouseButton_Right.",
                     "// - You can also use regular integer: it is forever guaranteed that 0=Left, 1=Right, 2=Middle.",
                     "// - Dragging operations are only reported after mouse has moved a certain distance away from the initial clicking position (see 'lock_threshold' and 'io.MouseDraggingThreshold')"

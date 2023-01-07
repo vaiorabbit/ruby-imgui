@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2023-01-05
+*   Last modified : 2023-01-07
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -18,8 +18,8 @@
         *   [macOS]
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [arm64-darwin21]
 *   Ruby Gems
-    *   opengl-bindings
-        *   gem install opengl-bindings
+    *   opengl-bindings2
+        *   gem install opengl-bindings2
     *   ffi
         *   gem install ffi
 *   Compiler
