@@ -14,7 +14,7 @@
 *   Ruby interpreter
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
-            *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x64-mingw-ucrt]
+            *   ruby 3.2.0 (2022-12-25 revision a528908271) [x64-mingw-ucrt]
         *   [macOS]
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [arm64-darwin21]
 *   Ruby Gems
@@ -24,7 +24,7 @@
         *   gem install ffi
 *   Compiler
     *   Tested on:
-        *   [Windows] gcc (Rev10, Built by MSYS2 project) 11.2.0
+        *   [Windows] gcc (Rev7, Built by MSYS2 project) 12.2.0
         *   [macOS] Apple clang version 14.0.0 (clang-1400.0.29.202), Target: arm64-apple-darwin22.2.0
 *   CMake https://cmake.org/download/
 
@@ -34,6 +34,7 @@
 *   Ruby interpreter
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
+            *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x64-mingw-ucrt]
             *   ruby 3.0.2p107 (2021-07-07 revision 0db68f0233) [x64-mingw32]
             *   ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [x64-mingw32]
             *   ruby 2.7.1p83 (2020-03-31 revision a0c7c23c9c) [x64-mingw32]
@@ -49,6 +50,7 @@
 
 *   Compiler
     *   Tested on:
+        *   [Windows] gcc (Rev10, Built by MSYS2 project) 11.2.0
         *   [Windows] gcc (Rev1, Built by MSYS2 project) 8.2.1 20181214
         *   [macOS] clang (Apple clang version 13.1.6 (clang-1316.0.21.2.5), Target: arm64-apple-darwin21.5.0)
         *   [macOS] clang (Apple clang version 12.0.5 (clang-1205.0.22.11), Target: arm64-apple-darwin20.6.0)
