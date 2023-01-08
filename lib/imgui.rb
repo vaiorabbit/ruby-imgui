@@ -2400,23 +2400,36 @@ module ImGui
 
   # arg: type(const char*), flags(ImGuiDragDropFlags)
   # ret: pointer
-  def self.AcceptDragDropPayload(type, flags = 0)
+  def self.AcceptDragDropPayload(type, flags = 0)  # accept contents of a given type. If ImGuiDragDropFlags_AcceptBeforeDelivery is set you can peek into the payload before the mouse button is released.
     igAcceptDragDropPayload(type, flags)
   end
 
   # ret: void
-  def self.AlignTextToFramePadding()
+  def self.AlignTextToFramePadding()  # vertically align upcoming text baseline to FramePadding.y so that it will align properly to regularly framed items (call if you have text on a line before a framed item)
     igAlignTextToFramePadding()
   end
 
   # arg: str_id(const char*), dir(ImGuiDir)
   # ret: bool
-  def self.ArrowButton(str_id, dir)
+  def self.ArrowButton(str_id, dir)  # square button with an arrow shape
     igArrowButton(str_id, dir)
   end
 
   # arg: name(const char*), p_open(bool*), flags(ImGuiWindowFlags)
   # ret: bool
+  #
+  # Windows
+  # - Begin() = push window to the stack and start appending to it. End() = pop window from the stack.
+  # - Passing 'bool* p_open != NULL' shows a window-closing widget in the upper-right corner of the window,
+  #   which clicking will set the boolean to false when clicked.
+  # - You may append multiple times to the same window during the same frame by calling Begin()/End() pairs multiple times.
+  #   Some information such as 'flags' or 'p_open' will only be considered by the first call to Begin().
+  # - Begin() return false to indicate the window is collapsed or fully clipped, so you may early out and omit submitting
+  #   anything to the window. Always call a matching End() for each Begin() call, regardless of its return value!
+  #   [Important: due to legacy reason, this is inconsistent with most other functions such as BeginMenu/EndMenu,
+  #    BeginPopup/EndPopup, etc. where the EndXXX call should only be called if the corresponding BeginXXX function
+  #    returned true. Begin and BeginChild are the only odd ones out. Will be fixed in a future update.]
+  # - Note that the bottom of window stack always contains a window called "Debug".
   def self.Begin(name, p_open = nil, flags = 0)
     igBegin(name, p_open, flags)
   end
@@ -2435,138 +2448,212 @@ module ImGui
 
   # arg: id(ImGuiID), size(ImVec2), flags(ImGuiWindowFlags)
   # ret: bool
-  def self.BeginChildFrame(id, size, flags = 0)
+  def self.BeginChildFrame(id, size, flags = 0)  # helper to create a child window / scrolling region that looks like a normal widget frame
     igBeginChildFrame(id, size, flags)
   end
 
   # arg: label(const char*), preview_value(const char*), flags(ImGuiComboFlags)
   # ret: bool
+  #
+  # Widgets: Combo Box (Dropdown)
+  # - The BeginCombo()/EndCombo() api allows you to manage your contents and selection state however you want it, by creating e.g. Selectable() items.
+  # - The old Combo() api are helpers over BeginCombo()/EndCombo() which are kept available for convenience purpose. This is analogous to how ListBox are created.
   def self.BeginCombo(label, preview_value, flags = 0)
     igBeginCombo(label, preview_value, flags)
   end
 
   # arg: disabled(bool)
   # ret: void
+  #
+  # Disabling [BETA API]
+  # - Disable all user interactions and dim items visuals (applying style.DisabledAlpha over current colors)
+  # - Those can be nested but it cannot be used to enable an already disabled section (a single BeginDisabled(true) in the stack is enough to keep everything disabled)
+  # - BeginDisabled(false) essentially does nothing useful but is provided to facilitate use of boolean expressions. If you can avoid calling BeginDisabled(False)/EndDisabled() best to avoid it.
   def self.BeginDisabled(disabled = true)
     igBeginDisabled(disabled)
   end
 
   # arg: flags(ImGuiDragDropFlags)
   # ret: bool
-  def self.BeginDragDropSource(flags = 0)
+  #
+  # Drag and Drop
+  # - On source items, call BeginDragDropSource(), if it returns true also call SetDragDropPayload() + EndDragDropSource().
+  # - On target candidates, call BeginDragDropTarget(), if it returns true also call AcceptDragDropPayload() + EndDragDropTarget().
+  # - If you stop calling BeginDragDropSource() the payload is preserved however it won't have a preview tooltip (we currently display a fallback "..." tooltip, see #1725)
+  # - An item can be both drag source and drop target.
+  def self.BeginDragDropSource(flags = 0)  # call after submitting an item which may be dragged. when this return true, you can call SetDragDropPayload() + EndDragDropSource()
     igBeginDragDropSource(flags)
   end
 
   # ret: bool
-  def self.BeginDragDropTarget()
+  def self.BeginDragDropTarget()  # call after submitting an item that may receive a payload. If this returns true, you can call AcceptDragDropPayload() + EndDragDropTarget()
     igBeginDragDropTarget()
   end
 
   # ret: void
-  def self.BeginGroup()
+  def self.BeginGroup()  # lock horizontal starting position
     igBeginGroup()
   end
 
   # arg: label(const char*), size(ImVec2)
   # ret: bool
-  def self.BeginListBox(label, size = ImVec2.create(0,0))
+  #
+  # Widgets: List Boxes
+  # - This is essentially a thin wrapper to using BeginChild/EndChild with some stylistic changes.
+  # - The BeginListBox()/EndListBox() api allows you to manage your contents and selection state however you want it, by creating e.g. Selectable() or any items.
+  # - The simplified/old ListBox() api are helpers over BeginListBox()/EndListBox() which are kept available for convenience purpose. This is analoguous to how Combos are created.
+  # - Choose frame width:   size.x > 0.0f: custom  /  size.x < 0.0f or -FLT_MIN: right-align   /  size.x = 0.0f (default): use current ItemWidth
+  # - Choose frame height:  size.y > 0.0f: custom  /  size.y < 0.0f or -FLT_MIN: bottom-align  /  size.y = 0.0f (default): arbitrary default height which can fit ~7 items
+  def self.BeginListBox(label, size = ImVec2.create(0,0))  # open a framed scrolling region
     igBeginListBox(label, size)
   end
 
   # ret: bool
-  def self.BeginMainMenuBar()
+  def self.BeginMainMenuBar()  # create and append to a full screen menu-bar.
     igBeginMainMenuBar()
   end
 
   # arg: label(const char*), enabled(bool)
   # ret: bool
-  def self.BeginMenu(label, enabled = true)
+  def self.BeginMenu(label, enabled = true)  # Implied enabled = true
     igBeginMenu(label, enabled)
   end
 
   # ret: bool
-  def self.BeginMenuBar()
+  #
+  # Widgets: Menus
+  # - Use BeginMenuBar() on a window ImGuiWindowFlags_MenuBar to append to its menu bar.
+  # - Use BeginMainMenuBar() to create a menu bar at the top of the screen and append to it.
+  # - Use BeginMenu() to create a menu. You can call BeginMenu() multiple time with the same identifier to append more items to it.
+  # - Not that MenuItem() keyboardshortcuts are displayed as a convenience but _not processed_ by Dear ImGui at the moment.
+  def self.BeginMenuBar()  # append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window).
     igBeginMenuBar()
   end
 
   # arg: str_id(const char*), flags(ImGuiWindowFlags)
   # ret: bool
-  def self.BeginPopup(str_id, flags = 0)
+  #
+  # Popups: begin/end functions
+  #  - BeginPopup(): query popup state, if open start appending into the window. Call EndPopup() afterwards. ImGuiWindowFlags are forwarded to the window.
+  #  - BeginPopupModal(): block every interaction behind the window, cannot be closed by user, add a dimming background, has a title bar.
+  def self.BeginPopup(str_id, flags = 0)  # return true if the popup is open, and you can start outputting to it.
     igBeginPopup(str_id, flags)
   end
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: bool
-  def self.BeginPopupContextItem(str_id = nil, popup_flags = 1)
+  #
+  # Popups: open+begin combined functions helpers
+  #  - Helpers to do OpenPopup+BeginPopup where the Open action is triggered by e.g. hovering an item and right-clicking.
+  #  - They are convenient to easily create context menus, hence the name.
+  #  - IMPORTANT: Notice that BeginPopupContextXXX takes ImGuiPopupFlags just like OpenPopup() and unlike BeginPopup(). For full consistency, we may add ImGuiWindowFlags to the BeginPopupContextXXX functions in the future.
+  #  - IMPORTANT: Notice that we exceptionally default their flags to 1 (== ImGuiPopupFlags_MouseButtonRight) for backward compatibility with older API taking 'int mouse_button = 1' parameter, so if you add other flags remember to re-add the ImGuiPopupFlags_MouseButtonRight.
+  def self.BeginPopupContextItem(str_id = nil, popup_flags = 1)  # Implied str_id = NULL, popup_flags = 1
     igBeginPopupContextItem(str_id, popup_flags)
   end
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: bool
-  def self.BeginPopupContextVoid(str_id = nil, popup_flags = 1)
+  def self.BeginPopupContextVoid(str_id = nil, popup_flags = 1)  # Implied str_id = NULL, popup_flags = 1
     igBeginPopupContextVoid(str_id, popup_flags)
   end
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: bool
-  def self.BeginPopupContextWindow(str_id = nil, popup_flags = 1)
+  def self.BeginPopupContextWindow(str_id = nil, popup_flags = 1)  # Implied str_id = NULL, popup_flags = 1
     igBeginPopupContextWindow(str_id, popup_flags)
   end
 
   # arg: name(const char*), p_open(bool*), flags(ImGuiWindowFlags)
   # ret: bool
-  def self.BeginPopupModal(name, p_open = nil, flags = 0)
+  def self.BeginPopupModal(name, p_open = nil, flags = 0)  # return true if the modal is open, and you can start outputting to it.
     igBeginPopupModal(name, p_open, flags)
   end
 
   # arg: str_id(const char*), flags(ImGuiTabBarFlags)
   # ret: bool
-  def self.BeginTabBar(str_id, flags = 0)
+  #
+  # Tab Bars, Tabs
+  # - Note: Tabs are automatically created by the docking system (when in 'docking' branch). Use this to create tab bars/tabs yourself.
+  def self.BeginTabBar(str_id, flags = 0)  # create and append into a TabBar
     igBeginTabBar(str_id, flags)
   end
 
   # arg: label(const char*), p_open(bool*), flags(ImGuiTabItemFlags)
   # ret: bool
-  def self.BeginTabItem(label, p_open = nil, flags = 0)
+  def self.BeginTabItem(label, p_open = nil, flags = 0)  # create a Tab. Returns true if the Tab is selected.
     igBeginTabItem(label, p_open, flags)
   end
 
   # arg: str_id(const char*), column(int), flags(ImGuiTableFlags), outer_size(ImVec2), inner_width(float)
   # ret: bool
-  def self.BeginTable(str_id, column, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)
+  #
+  # Tables
+  # - Full-featured replacement for old Columns API.
+  # - See Demo->Tables for demo code. See top of imgui_tables.cpp for general commentary.
+  # - See ImGuiTableFlags_ and ImGuiTableColumnFlags_ enums for a description of available flags.
+  # The typical call flow is:
+  # - 1. Call BeginTable(), early out if returning false.
+  # - 2. Optionally call TableSetupColumn() to submit column name/flags/defaults.
+  # - 3. Optionally call TableSetupScrollFreeze() to request scroll freezing of columns/rows.
+  # - 4. Optionally call TableHeadersRow() to submit a header row. Names are pulled from TableSetupColumn() data.
+  # - 5. Populate contents:
+  #    - In most situations you can use TableNextRow() + TableSetColumnIndex(N) to start appending into a column.
+  #    - If you are using tables as a sort of grid, where every column is holding the same type of contents,
+  #      you may prefer using TableNextColumn() instead of TableNextRow() + TableSetColumnIndex().
+  #      TableNextColumn() will automatically wrap-around into the next row if needed.
+  #    - IMPORTANT: Comparatively to the old Columns() API, we need to call TableNextColumn() for the first column!
+  #    - Summary of possible call flow:
+  #        --------------------------------------------------------------------------------------------------------
+  #        TableNextRow() -> TableSetColumnIndex(0) -> Text("Hello 0") -> TableSetColumnIndex(1) -> Text("Hello 1")  // OK
+  #        TableNextRow() -> TableNextColumn()      -> Text("Hello 0") -> TableNextColumn()      -> Text("Hello 1")  // OK
+  #                          TableNextColumn()      -> Text("Hello 0") -> TableNextColumn()      -> Text("Hello 1")  // OK: TableNextColumn() automatically gets to next row!
+  #        TableNextRow()                           -> Text("Hello 0")                                               // Not OK! Missing TableSetColumnIndex() or TableNextColumn()! Text will not appear!
+  #        --------------------------------------------------------------------------------------------------------
+  # - 5. Call EndTable()
+  def self.BeginTable(str_id, column, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)  # Implied outer_size = ImVec2(0.0f, 0.0f), inner_width = 0.0f
     igBeginTable(str_id, column, flags, outer_size, inner_width)
   end
 
   # ret: void
-  def self.BeginTooltip()
+  #
+  # Tooltips
+  # - Tooltip are windows following the mouse. They do not take focus away.
+  def self.BeginTooltip()  # begin/append a tooltip window. to create full-featured tooltip (with any kind of items).
     igBeginTooltip()
   end
 
   # ret: void
-  def self.Bullet()
+  def self.Bullet()  # draw a small circle + keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses
     igBullet()
   end
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.BulletText(fmt, *varargs)
+  def self.BulletText(fmt, *varargs)  # shortcut for Bullet()+Text()
     igBulletText(fmt, *varargs)
   end
 
   # arg: label(const char*), size(ImVec2)
   # ret: bool
-  def self.Button(label, size = ImVec2.create(0,0))
+  #
+  # Widgets: Main
+  # - Most widgets return true when the value has been changed or when pressed/selected
+  # - You may also use one of the many IsItemXXX functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state.
+  def self.Button(label, size = ImVec2.create(0,0))  # Implied size = ImVec2(0, 0)
     igButton(label, size)
   end
 
   # ret: float
-  def self.CalcItemWidth()
+  def self.CalcItemWidth()  # width of item given pushed settings and current cursor position. NOT necessarily the width of last item unlike most 'Item' functions.
     igCalcItemWidth()
   end
 
   # arg: text(const char*), text_end(const char*), hide_text_after_double_hash(bool), wrap_width(float)
   # ret: void
-  def self.CalcTextSize(text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)
+  #
+  # Text Utilities
+  def self.CalcTextSize(text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)  # Implied text_end = NULL, hide_text_after_double_hash = false, wrap_width = -1.0f
     pOut = ImVec2.new
     igCalcTextSize(pOut, text, text_end, hide_text_after_double_hash, wrap_width)
     return pOut
@@ -2591,7 +2678,7 @@ module ImGui
   end
 
   # ret: void
-  def self.CloseCurrentPopup()
+  def self.CloseCurrentPopup()  # manually close the popup we have begin-ed into.
     igCloseCurrentPopup()
   end
 
@@ -2609,7 +2696,7 @@ module ImGui
 
   # arg: desc_id(const char*), col(ImVec4), flags(ImGuiColorEditFlags), size(ImVec2)
   # ret: bool
-  def self.ColorButton(desc_id, col, flags = 0, size = ImVec2.create(0,0))
+  def self.ColorButton(desc_id, col, flags = 0, size = ImVec2.create(0,0))  # Implied size = ImVec2(0, 0)
     igColorButton(desc_id, col, flags, size)
   end
 
@@ -2633,6 +2720,8 @@ module ImGui
 
   # arg: in(ImU32)
   # ret: void
+  #
+  # Color Utilities
   def self.ColorConvertU32ToFloat4(_in_)
     pOut = ImVec4.new
     igColorConvertU32ToFloat4(pOut, _in_)
@@ -2641,6 +2730,10 @@ module ImGui
 
   # arg: label(const char*), col(float[3]), flags(ImGuiColorEditFlags)
   # ret: bool
+  #
+  # Widgets: Color Editor/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
+  # - Note that in C++ a 'float v[X]' function argument is the _same_ as 'float* v', the array syntax is just a way to document the number of elements that are expected to be accessible.
+  # - You can pass the address of a first float element out of a contiguous structure, e.g. &myvector.x
   def self.ColorEdit3(label, col, flags = 0)
     igColorEdit3(label, col, flags)
   end
@@ -2665,7 +2758,10 @@ module ImGui
 
   # arg: count(int), id(const char*), border(bool)
   # ret: void
-  def self.Columns(count = 1, id = nil, border = true)
+  #
+  # Legacy Columns API (prefer using Tables!)
+  # - You can also use SameLine(pos_x) to mimic simplified columns.
+  def self.Columns(count = 1, id = nil, border = true)  # Implied count = 1, id = NULL, border = true
     igColumns(count, id, border)
   end
 
@@ -2689,103 +2785,123 @@ module ImGui
 
   # arg: shared_font_atlas(ImFontAtlas*)
   # ret: pointer
+  #
+  # Context creation and access
+  # - Each context create its own ImFontAtlas by default. You may instance one yourself and pass it to CreateContext() to share a font atlas between contexts.
+  # - DLL users: heaps and globals are not shared across DLL boundaries! You will need to call SetCurrentContext() + SetAllocatorFunctions()
+  #   for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for details.
   def self.CreateContext(shared_font_atlas = nil)
     igCreateContext(shared_font_atlas)
   end
 
   # arg: version_str(const char*), sz_io(size_t), sz_style(size_t), sz_vec2(size_t), sz_vec4(size_t), sz_drawvert(size_t), sz_drawidx(size_t)
   # ret: bool
-  def self.DebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
+  def self.DebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)  # This is called by IMGUI_CHECKVERSION() macro.
     igDebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
   end
 
   # arg: text(const char*)
   # ret: void
+  #
+  # Debug Utilities
   def self.DebugTextEncoding(text)
     igDebugTextEncoding(text)
   end
 
   # arg: ctx(ImGuiContext*)
   # ret: void
-  def self.DestroyContext(ctx = nil)
+  def self.DestroyContext(ctx = nil)  # NULL = destroy current context
     igDestroyContext(ctx)
   end
 
   # arg: label(const char*), v(float*), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragFloat(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+  #
+  # Widgets: Drag Sliders
+  # - CTRL+Click on any drag box to turn them into an input box. Manually input values aren't clamped by default and can go off-bounds. Use ImGuiSliderFlags_AlwaysClamp to always clamp.
+  # - For all the Float2/Float3/Float4/Int2/Int3/Int4 versions of every function, note that a 'float v[X]' function argument is the same as 'float* v',
+  #   the array syntax is just a way to document the number of elements that are expected to be accessible. You can pass address of your first element out of a contiguous set, e.g. &myvector.x
+  # - Adjust format string to decorate the value with a prefix, a suffix, or adapt the editing and display precision e.g. "%.3f" -> 1.234; "%5.2f secs" -> 01.23 secs; "Biscuit: %.0f" -> Biscuit: 1; etc.
+  # - Format string may also be set to NULL or use the default format ("%f" or "%d").
+  # - Speed are per-pixel of mouse movement (v_speed=0.2f: mouse needs to move by 5 pixels to increase value by 1). For gamepad/keyboard navigation, minimum speed is Max(v_speed, minimum_step_at_given_precision).
+  # - Use v_min < v_max to clamp edits to given limits. Note that CTRL+Click manual input can override those limits if ImGuiSliderFlags_AlwaysClamp is not used.
+  # - Use v_max = FLT_MAX / INT_MAX etc to avoid clamping to a maximum, same with v_min = -FLT_MAX / INT_MIN to avoid clamping to a minimum.
+  # - We use the same sets of flags for DragXXX() and SliderXXX() functions as the features are the same and it makes it easier to swap them.
+  # - Legacy: Pre-1.78 there are DragXXX() function signatures that take a final `float power=1.0f' argument instead of the `ImGuiSliderFlags flags=0' argument.
+  #   If you get a warning converting a float to ImGuiSliderFlags, read https://github.com/ocornut/imgui/issues/3361
+  def self.DragFloat(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)  # Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
     igDragFloat(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(float[2]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragFloat2(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+  def self.DragFloat2(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)  # Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
     igDragFloat2(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(float[3]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragFloat3(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+  def self.DragFloat3(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)  # Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
     igDragFloat3(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(float[4]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragFloat4(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
+  def self.DragFloat4(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)  # Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
     igDragFloat4(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v_current_min(float*), v_current_max(float*), v_speed(float), v_min(float), v_max(float), format(const char*), format_max(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = nil, flags = 0)
+  def self.DragFloatRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = nil, flags = 0)  # Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", format_max = NULL, flags = 0
     igDragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
   end
 
   # arg: label(const char*), v(int*), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragInt(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+  def self.DragInt(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)  # Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
     igDragInt(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(int[2]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragInt2(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+  def self.DragInt2(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)  # Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
     igDragInt2(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(int[3]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragInt3(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+  def self.DragInt3(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)  # Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
     igDragInt3(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(int[4]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragInt4(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
+  def self.DragInt4(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)  # Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
     igDragInt4(label, v, v_speed, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v_current_min(int*), v_current_max(int*), v_speed(float), v_min(int), v_max(int), format(const char*), format_max(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragIntRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = nil, flags = 0)
+  def self.DragIntRange2(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = nil, flags = 0)  # Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", format_max = NULL, flags = 0
     igDragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
   end
 
   # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), v_speed(float), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragScalar(label, data_type, p_data, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)
+  def self.DragScalar(label, data_type, p_data, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)  # Implied v_speed = 1.0f, p_min = NULL, p_max = NULL, format = NULL, flags = 0
     igDragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, flags)
   end
 
   # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), v_speed(float), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.DragScalarN(label, data_type, p_data, components, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)
+  def self.DragScalarN(label, data_type, p_data, components, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)  # Implied v_speed = 1.0f, p_min = NULL, p_max = NULL, format = NULL, flags = 0
     igDragScalarN(label, data_type, p_data, components, v_speed, p_min, p_max, format, flags)
   end
 
   # arg: size(ImVec2)
   # ret: void
-  def self.Dummy(size)
+  def self.Dummy(size)  # add a dummy item of given size. unlike InvisibleButton(), Dummy() won't take the mouse click or be navigable into.
     igDummy(size)
   end
 
@@ -2800,12 +2916,12 @@ module ImGui
   end
 
   # ret: void
-  def self.EndChildFrame()
+  def self.EndChildFrame()  # always call EndChildFrame() regardless of BeginChildFrame() return values (which indicates a collapsed/clipped window)
     igEndChildFrame()
   end
 
   # ret: void
-  def self.EndCombo()
+  def self.EndCombo()  # only call EndCombo() if BeginCombo() returns true!
     igEndCombo()
   end
 
@@ -2815,62 +2931,62 @@ module ImGui
   end
 
   # ret: void
-  def self.EndDragDropSource()
+  def self.EndDragDropSource()  # only call EndDragDropSource() if BeginDragDropSource() returns true!
     igEndDragDropSource()
   end
 
   # ret: void
-  def self.EndDragDropTarget()
+  def self.EndDragDropTarget()  # only call EndDragDropTarget() if BeginDragDropTarget() returns true!
     igEndDragDropTarget()
   end
 
   # ret: void
-  def self.EndFrame()
+  def self.EndFrame()  # ends the Dear ImGui frame. automatically called by Render(). If you don't need to render data (skipping rendering) you may call EndFrame() without Render()... but you'll have wasted CPU already! If you don't need to render, better to not create any windows and not call NewFrame() at all!
     igEndFrame()
   end
 
   # ret: void
-  def self.EndGroup()
+  def self.EndGroup()  # unlock horizontal starting position + capture the whole group bounding box into one "item" (so you can use IsItemHovered() or layout primitives such as SameLine() on whole group, etc.)
     igEndGroup()
   end
 
   # ret: void
-  def self.EndListBox()
+  def self.EndListBox()  # only call EndListBox() if BeginListBox() returned true!
     igEndListBox()
   end
 
   # ret: void
-  def self.EndMainMenuBar()
+  def self.EndMainMenuBar()  # only call EndMainMenuBar() if BeginMainMenuBar() returns true!
     igEndMainMenuBar()
   end
 
   # ret: void
-  def self.EndMenu()
+  def self.EndMenu()  # only call EndMenu() if BeginMenu() returns true!
     igEndMenu()
   end
 
   # ret: void
-  def self.EndMenuBar()
+  def self.EndMenuBar()  # only call EndMenuBar() if BeginMenuBar() returns true!
     igEndMenuBar()
   end
 
   # ret: void
-  def self.EndPopup()
+  def self.EndPopup()  # only call EndPopup() if BeginPopupXXX() returns true!
     igEndPopup()
   end
 
   # ret: void
-  def self.EndTabBar()
+  def self.EndTabBar()  # only call EndTabBar() if BeginTabBar() returns true!
     igEndTabBar()
   end
 
   # ret: void
-  def self.EndTabItem()
+  def self.EndTabItem()  # only call EndTabItem() if BeginTabItem() returns true!
     igEndTabItem()
   end
 
   # ret: void
-  def self.EndTable()
+  def self.EndTable()  # only call EndTable() if BeginTable() returns true!
     igEndTable()
   end
 
@@ -2886,11 +3002,16 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetBackgroundDrawList()
+  #
+  # Background/Foreground Draw Lists
+  def self.GetBackgroundDrawList()  # this draw list will be the first rendered one. Useful to quickly draw shapes/text behind dear imgui contents.
     igGetBackgroundDrawList()
   end
 
   # ret: pointer
+  #
+  # Clipboard Utilities
+  # - Also see the LogToClipboard() function to capture GUI into clipboard, or easily output text data to the clipboard.
   def self.GetClipboardText()
     igGetClipboardText()
   end
@@ -2914,19 +3035,19 @@ module ImGui
   end
 
   # ret: int
-  def self.GetColumnIndex()
+  def self.GetColumnIndex()  # get current column index
     igGetColumnIndex()
   end
 
   # arg: column_index(int)
   # ret: float
-  def self.GetColumnOffset(column_index = -1)
+  def self.GetColumnOffset(column_index = -1)  # get position of column line (in pixels, from the left side of the contents region). pass -1 to use current column, otherwise 0..GetColumnsCount() inclusive. column 0 is typically 0.0f
     igGetColumnOffset(column_index)
   end
 
   # arg: column_index(int)
   # ret: float
-  def self.GetColumnWidth(column_index = -1)
+  def self.GetColumnWidth(column_index = -1)  # get column width (in pixels). pass -1 to use current column
     igGetColumnWidth(column_index)
   end
 
@@ -2936,14 +3057,18 @@ module ImGui
   end
 
   # ret: void
-  def self.GetContentRegionAvail()
+  #
+  # Content region
+  # - Retrieve available space from a given point. GetContentRegionAvail() is frequently useful.
+  # - Those functions are bound to be redesigned (they are confusing, incomplete and the Min/Max return values are in local window coordinates which increases confusion)
+  def self.GetContentRegionAvail()  # == GetContentRegionMax() - GetCursorPos()
     pOut = ImVec2.new
     igGetContentRegionAvail(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetContentRegionMax()
+  def self.GetContentRegionMax()  # current content boundaries (typically window boundaries including scrolling, or current column boundaries), in windows coordinates
     pOut = ImVec2.new
     igGetContentRegionMax(pOut)
     return pOut
@@ -2955,85 +3080,88 @@ module ImGui
   end
 
   # ret: void
-  def self.GetCursorPos()
+  def self.GetCursorPos()  # cursor position in window coordinates (relative to window position)
     pOut = ImVec2.new
     igGetCursorPos(pOut)
     return pOut
   end
 
   # ret: float
-  def self.GetCursorPosX()
+  def self.GetCursorPosX()  #   (some functions are using window-relative coordinates, such as: GetCursorPos, GetCursorStartPos, GetContentRegionMax, GetWindowContentRegion* etc.
     igGetCursorPosX()
   end
 
   # ret: float
-  def self.GetCursorPosY()
+  def self.GetCursorPosY()  #    other functions such as GetCursorScreenPos or everything in ImDrawList::
     igGetCursorPosY()
   end
 
   # ret: void
-  def self.GetCursorScreenPos()
+  def self.GetCursorScreenPos()  # cursor position in absolute coordinates (useful to work with ImDrawList API). generally top-left == GetMainViewport()->Pos == (0,0) in single viewport mode, and bottom-right == GetMainViewport()->Pos+Size == io.DisplaySize in single-viewport mode.
     pOut = ImVec2.new
     igGetCursorScreenPos(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetCursorStartPos()
+  def self.GetCursorStartPos()  # initial cursor position in window coordinates
     pOut = ImVec2.new
     igGetCursorStartPos(pOut)
     return pOut
   end
 
   # ret: pointer
-  def self.GetDragDropPayload()
+  def self.GetDragDropPayload()  # peek directly into the current payload from anywhere. may return NULL. use ImGuiPayload::IsDataType() to test for the payload type.
     igGetDragDropPayload()
   end
 
   # ret: pointer
-  def self.GetDrawData()
+  def self.GetDrawData()  # valid after Render() and until the next call to NewFrame(). this is what you have to render.
     igGetDrawData()
   end
 
   # ret: pointer
-  def self.GetDrawListSharedData()
+  def self.GetDrawListSharedData()  # you may use this when creating your own ImDrawList instances.
     igGetDrawListSharedData()
   end
 
   # ret: pointer
-  def self.GetFont()
+  #
+  # Style read access
+  # - Use the ShowStyleEditor() function to interactively see/edit the colors.
+  def self.GetFont()  # get current font
     igGetFont()
   end
 
   # ret: float
-  def self.GetFontSize()
+  def self.GetFontSize()  # get current font size (= height in pixels) of current font with current scale applied
     igGetFontSize()
   end
 
   # ret: void
-  def self.GetFontTexUvWhitePixel()
+  def self.GetFontTexUvWhitePixel()  # get UV coordinate for a while pixel, useful to draw custom shapes via the ImDrawList API
     pOut = ImVec2.new
     igGetFontTexUvWhitePixel(pOut)
     return pOut
   end
 
   # ret: pointer
-  def self.GetForegroundDrawList()
+  def self.GetForegroundDrawList()  # this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
     igGetForegroundDrawList()
   end
 
   # ret: int
-  def self.GetFrameCount()
+  def self.GetFrameCount()  # get global imgui frame count. incremented by 1 every frame.
     igGetFrameCount()
   end
 
   # ret: float
-  def self.GetFrameHeight()
+  def self.GetFrameHeight()  # ~ FontSize + style.FramePadding.y * 2
     igGetFrameHeight()
   end
 
   # ret: float
-  def self.GetFrameHeightWithSpacing()
+  def self.GetFrameHeightWithSpacing()  # ~ FontSize + style.FramePadding.y * 2 + style.ItemSpacing.y (distance in pixels between 2 consecutive lines of framed widgets)
     igGetFrameHeightWithSpacing()
   end
 
@@ -3056,31 +3184,33 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetIO()
+  #
+  # Main
+  def self.GetIO()  # access the IO structure (mouse/keyboard/gamepad inputs, time, various configuration options/flags)
     igGetIO()
   end
 
   # ret: uint
-  def self.GetItemID()
+  def self.GetItemID()  # get ID of last item (~~ often same ImGui::GetID(label) beforehand)
     igGetItemID()
   end
 
   # ret: void
-  def self.GetItemRectMax()
+  def self.GetItemRectMax()  # get lower-right bounding rectangle of the last item (screen space)
     pOut = ImVec2.new
     igGetItemRectMax(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetItemRectMin()
+  def self.GetItemRectMin()  # get upper-left bounding rectangle of the last item (screen space)
     pOut = ImVec2.new
     igGetItemRectMin(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetItemRectSize()
+  def self.GetItemRectSize()  # get size of last item
     pOut = ImVec2.new
     igGetItemRectSize(pOut)
     return pOut
@@ -3094,71 +3224,80 @@ module ImGui
 
   # arg: key(ImGuiKey)
   # ret: pointer
-  def self.GetKeyName(key)
+  def self.GetKeyName(key)  # [DEBUG] returns English name of the key. Those names a provided for debugging purpose and are not meant to be saved persistently not compared.
     igGetKeyName(key)
   end
 
   # arg: key(ImGuiKey), repeat_delay(float), rate(float)
   # ret: int
-  def self.GetKeyPressedAmount(key, repeat_delay, rate)
+  def self.GetKeyPressedAmount(key, repeat_delay, rate)  # uses provided repeat rate/delay. return a count, most often 0 or 1 but might be >1 if RepeatRate is small enough that DeltaTime > RepeatRate
     igGetKeyPressedAmount(key, repeat_delay, rate)
   end
 
   # ret: pointer
-  def self.GetMainViewport()
+  #
+  # Viewports
+  # - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
+  # - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
+  # - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
+  def self.GetMainViewport()  # return primary/default viewport. This can never be NULL.
     igGetMainViewport()
   end
 
   # arg: button(ImGuiMouseButton)
   # ret: int
-  def self.GetMouseClickedCount(button)
+  def self.GetMouseClickedCount(button)  # return the number of successive mouse-clicks at the time where a click happen (otherwise 0).
     igGetMouseClickedCount(button)
   end
 
   # ret: int
-  def self.GetMouseCursor()
+  def self.GetMouseCursor()  # get desired mouse cursor shape. Important: reset in ImGui::NewFrame(), this is updated during the frame. valid before Render(). If you use software rendering by setting io.MouseDrawCursor ImGui will render those for you
     igGetMouseCursor()
   end
 
   # arg: button(ImGuiMouseButton), lock_threshold(float)
   # ret: void
-  def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)
+  def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)  # return the delta from the initial clicking position while the mouse button is pressed or was just released. This is locked and return 0.0f until the mouse moves past a distance threshold at least once (if lock_threshold < -1.0f, uses io.MouseDraggingThreshold)
     pOut = ImVec2.new
     igGetMouseDragDelta(pOut, button, lock_threshold)
     return pOut
   end
 
   # ret: void
-  def self.GetMousePos()
+  def self.GetMousePos()  # shortcut to ImGui::GetIO().MousePos provided by user, to be consistent with other calls
     pOut = ImVec2.new
     igGetMousePos(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetMousePosOnOpeningCurrentPopup()
+  def self.GetMousePosOnOpeningCurrentPopup()  # retrieve mouse position at the time of opening popup we have BeginPopup() into (helper to avoid user backing that value themselves)
     pOut = ImVec2.new
     igGetMousePosOnOpeningCurrentPopup(pOut)
     return pOut
   end
 
   # ret: float
-  def self.GetScrollMaxX()
+  def self.GetScrollMaxX()  # get maximum scrolling amount ~~ ContentSize.x - WindowSize.x - DecorationsSize.x
     igGetScrollMaxX()
   end
 
   # ret: float
-  def self.GetScrollMaxY()
+  def self.GetScrollMaxY()  # get maximum scrolling amount ~~ ContentSize.y - WindowSize.y - DecorationsSize.y
     igGetScrollMaxY()
   end
 
   # ret: float
-  def self.GetScrollX()
+  #
+  # Windows Scrolling
+  # - Any change of Scroll will be applied at the beginning of next frame in the first call to Begin().
+  # - You may instead use SetNextWindowScroll() prior to calling Begin() to avoid this delay, as an alternative to using SetScrollX()/SetScrollY().
+  def self.GetScrollX()  # get scrolling amount [0 .. GetScrollMaxX()]
     igGetScrollX()
   end
 
   # ret: float
-  def self.GetScrollY()
+  def self.GetScrollY()  # get scrolling amount [0 .. GetScrollMaxY()]
     igGetScrollY()
   end
 
@@ -3168,141 +3307,144 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetStyle()
+  def self.GetStyle()  # access the Style structure (colors, sizes). Always use PushStyleCol(), PushStyleVar() to modify style mid-frame!
     igGetStyle()
   end
 
   # arg: idx(ImGuiCol)
   # ret: pointer
-  def self.GetStyleColorName(idx)
+  def self.GetStyleColorName(idx)  # get a string corresponding to the enum value (for display, saving, etc.).
     igGetStyleColorName(idx)
   end
 
   # arg: idx(ImGuiCol)
   # ret: pointer
-  def self.GetStyleColorVec4(idx)
+  def self.GetStyleColorVec4(idx)  # retrieve style color as stored in ImGuiStyle structure. use to feed back into PushStyleColor(), otherwise use GetColorU32() to get style color with style alpha baked in.
     igGetStyleColorVec4(idx)
   end
 
   # ret: float
-  def self.GetTextLineHeight()
+  def self.GetTextLineHeight()  # ~ FontSize
     igGetTextLineHeight()
   end
 
   # ret: float
-  def self.GetTextLineHeightWithSpacing()
+  def self.GetTextLineHeightWithSpacing()  # ~ FontSize + style.ItemSpacing.y (distance in pixels between 2 consecutive lines of text)
     igGetTextLineHeightWithSpacing()
   end
 
   # ret: double
-  def self.GetTime()
+  def self.GetTime()  # get global imgui time. incremented by io.DeltaTime every frame.
     igGetTime()
   end
 
   # ret: float
-  def self.GetTreeNodeToLabelSpacing()
+  def self.GetTreeNodeToLabelSpacing()  # horizontal distance preceding label when using TreeNode*() or Bullet() == (g.FontSize + style.FramePadding.x*2) for a regular unframed TreeNode
     igGetTreeNodeToLabelSpacing()
   end
 
   # ret: pointer
-  def self.GetVersion()
+  def self.GetVersion()  # get the compiled version string e.g. "1.80 WIP" (essentially the value for IMGUI_VERSION from the compiled version of imgui.cpp)
     igGetVersion()
   end
 
   # ret: void
-  def self.GetWindowContentRegionMax()
+  def self.GetWindowContentRegionMax()  # content boundaries max for the full window (roughly (0,0)+Size-Scroll) where Size can be overridden with SetNextWindowContentSize(), in window coordinates
     pOut = ImVec2.new
     igGetWindowContentRegionMax(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetWindowContentRegionMin()
+  def self.GetWindowContentRegionMin()  # content boundaries min for the full window (roughly (0,0)-Scroll), in window coordinates
     pOut = ImVec2.new
     igGetWindowContentRegionMin(pOut)
     return pOut
   end
 
   # ret: pointer
-  def self.GetWindowDrawList()
+  def self.GetWindowDrawList()  # get draw list associated to the current window, to append your own drawing primitives
     igGetWindowDrawList()
   end
 
   # ret: float
-  def self.GetWindowHeight()
+  def self.GetWindowHeight()  # get current window height (shortcut for GetWindowSize().y)
     igGetWindowHeight()
   end
 
   # ret: void
-  def self.GetWindowPos()
+  def self.GetWindowPos()  # get current window position in screen space (useful if you want to do your own drawing via the DrawList API)
     pOut = ImVec2.new
     igGetWindowPos(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetWindowSize()
+  def self.GetWindowSize()  # get current window size
     pOut = ImVec2.new
     igGetWindowSize(pOut)
     return pOut
   end
 
   # ret: float
-  def self.GetWindowWidth()
+  def self.GetWindowWidth()  # get current window width (shortcut for GetWindowSize().x)
     igGetWindowWidth()
   end
 
   # arg: user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), tint_col(ImVec4), border_col(ImVec4)
   # ret: void
-  def self.Image(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), tint_col = ImVec4.create(1,1,1,1), border_col = ImVec4.create(0,0,0,0))
+  #
+  # Widgets: Images
+  # - Read about ImTextureID here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+  def self.Image(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), tint_col = ImVec4.create(1,1,1,1), border_col = ImVec4.create(0,0,0,0))  # Implied uv0 = ImVec2(0, 0), uv1 = ImVec2(1, 1), tint_col = ImVec4(1, 1, 1, 1), border_col = ImVec4(0, 0, 0, 0)
     igImage(user_texture_id, size, uv0, uv1, tint_col, border_col)
   end
 
   # arg: str_id(const char*), user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), bg_col(ImVec4), tint_col(ImVec4)
   # ret: bool
-  def self.ImageButton(str_id, user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))
+  def self.ImageButton(str_id, user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))  # Implied uv0 = ImVec2(0, 0), uv1 = ImVec2(1, 1), bg_col = ImVec4(0, 0, 0, 0), tint_col = ImVec4(1, 1, 1, 1)
     igImageButton(str_id, user_texture_id, size, uv0, uv1, bg_col, tint_col)
   end
 
   # arg: indent_w(float)
   # ret: void
-  def self.Indent(indent_w = 0.0)
+  def self.Indent(indent_w = 0.0)  # Implied indent_w = 0.0f
     igIndent(indent_w)
   end
 
   # arg: label(const char*), v(double*), step(double), step_fast(double), format(const char*), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputDouble(label, v, step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0)
+  def self.InputDouble(label, v, step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0)  # Implied step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0
     igInputDouble(label, v, step, step_fast, format, flags)
   end
 
   # arg: label(const char*), v(float*), step(float), step_fast(float), format(const char*), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputFloat(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0)
+  def self.InputFloat(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0)  # Implied step = 0.0f, step_fast = 0.0f, format = "%.3f", flags = 0
     igInputFloat(label, v, step, step_fast, format, flags)
   end
 
   # arg: label(const char*), v(float[2]), format(const char*), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputFloat2(label, v, format = "%.3f", flags = 0)
+  def self.InputFloat2(label, v, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igInputFloat2(label, v, format, flags)
   end
 
   # arg: label(const char*), v(float[3]), format(const char*), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputFloat3(label, v, format = "%.3f", flags = 0)
+  def self.InputFloat3(label, v, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igInputFloat3(label, v, format, flags)
   end
 
   # arg: label(const char*), v(float[4]), format(const char*), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputFloat4(label, v, format = "%.3f", flags = 0)
+  def self.InputFloat4(label, v, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igInputFloat4(label, v, format, flags)
   end
 
   # arg: label(const char*), v(int*), step(int), step_fast(int), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputInt(label, v, step = 1, step_fast = 100, flags = 0)
+  def self.InputInt(label, v, step = 1, step_fast = 100, flags = 0)  # Implied step = 1, step_fast = 100, flags = 0
     igInputInt(label, v, step, step_fast, flags)
   end
 
@@ -3326,175 +3468,199 @@ module ImGui
 
   # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), p_step(const void*), p_step_fast(const void*), format(const char*), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputScalar(label, data_type, p_data, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
+  def self.InputScalar(label, data_type, p_data, p_step = nil, p_step_fast = nil, format = nil, flags = 0)  # Implied p_step = NULL, p_step_fast = NULL, format = NULL, flags = 0
     igInputScalar(label, data_type, p_data, p_step, p_step_fast, format, flags)
   end
 
   # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), p_step(const void*), p_step_fast(const void*), format(const char*), flags(ImGuiInputTextFlags)
   # ret: bool
-  def self.InputScalarN(label, data_type, p_data, components, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
+  def self.InputScalarN(label, data_type, p_data, components, p_step = nil, p_step_fast = nil, format = nil, flags = 0)  # Implied p_step = NULL, p_step_fast = NULL, format = NULL, flags = 0
     igInputScalarN(label, data_type, p_data, components, p_step, p_step_fast, format, flags)
   end
 
   # arg: label(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
   # ret: bool
-  def self.InputText(label, buf, buf_size, flags = 0, callback = nil, user_data = nil)
+  #
+  # Widgets: Input with Keyboard
+  # - If you want to use InputText() with std::string or any custom dynamic string type, see misc/cpp/imgui_stdlib.h and comments in imgui_demo.cpp.
+  # - Most of the ImGuiInputTextFlags flags are only useful for InputText() and not for InputFloatX, InputIntX, InputDouble etc.
+  def self.InputText(label, buf, buf_size, flags = 0, callback = nil, user_data = nil)  # Implied callback = NULL, user_data = NULL
     igInputText(label, buf, buf_size, flags, callback, user_data)
   end
 
   # arg: label(const char*), buf(char*), buf_size(size_t), size(ImVec2), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
   # ret: bool
-  def self.InputTextMultiline(label, buf, buf_size, size = ImVec2.create(0,0), flags = 0, callback = nil, user_data = nil)
+  def self.InputTextMultiline(label, buf, buf_size, size = ImVec2.create(0,0), flags = 0, callback = nil, user_data = nil)  # Implied size = ImVec2(0, 0), flags = 0, callback = NULL, user_data = NULL
     igInputTextMultiline(label, buf, buf_size, size, flags, callback, user_data)
   end
 
   # arg: label(const char*), hint(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
   # ret: bool
-  def self.InputTextWithHint(label, hint, buf, buf_size, flags = 0, callback = nil, user_data = nil)
+  def self.InputTextWithHint(label, hint, buf, buf_size, flags = 0, callback = nil, user_data = nil)  # Implied callback = NULL, user_data = NULL
     igInputTextWithHint(label, hint, buf, buf_size, flags, callback, user_data)
   end
 
   # arg: str_id(const char*), size(ImVec2), flags(ImGuiButtonFlags)
   # ret: bool
-  def self.InvisibleButton(str_id, size, flags = 0)
+  def self.InvisibleButton(str_id, size, flags = 0)  # flexible button behavior without the visuals, frequently useful to build custom behaviors using the public api (along with IsItemActive, IsItemHovered, etc.)
     igInvisibleButton(str_id, size, flags)
   end
 
   # ret: bool
-  def self.IsAnyItemActive()
+  def self.IsAnyItemActive()  # is any item active?
     igIsAnyItemActive()
   end
 
   # ret: bool
-  def self.IsAnyItemFocused()
+  def self.IsAnyItemFocused()  # is any item focused?
     igIsAnyItemFocused()
   end
 
   # ret: bool
-  def self.IsAnyItemHovered()
+  def self.IsAnyItemHovered()  # is any item hovered?
     igIsAnyItemHovered()
   end
 
   # ret: bool
-  def self.IsAnyMouseDown()
+  def self.IsAnyMouseDown()  # [WILL OBSOLETE] is any mouse button held? This was designed for backends, but prefer having backend maintain a mask of held mouse buttons, because upcoming input queue system will make this invalid.
     igIsAnyMouseDown()
   end
 
   # ret: bool
-  def self.IsItemActivated()
+  def self.IsItemActivated()  # was the last item just made active (item was previously inactive).
     igIsItemActivated()
   end
 
   # ret: bool
-  def self.IsItemActive()
+  def self.IsItemActive()  # is the last item active? (e.g. button being held, text field being edited. This will continuously return true while holding mouse button on an item. Items that don't interact will always return false)
     igIsItemActive()
   end
 
   # arg: mouse_button(ImGuiMouseButton)
   # ret: bool
-  def self.IsItemClicked(mouse_button = 0)
+  def self.IsItemClicked(mouse_button = 0)  # Implied mouse_button = 0
     igIsItemClicked(mouse_button)
   end
 
   # ret: bool
-  def self.IsItemDeactivated()
+  def self.IsItemDeactivated()  # was the last item just made inactive (item was previously active). Useful for Undo/Redo patterns with widgets that require continuous editing.
     igIsItemDeactivated()
   end
 
   # ret: bool
-  def self.IsItemDeactivatedAfterEdit()
+  def self.IsItemDeactivatedAfterEdit()  # was the last item just made inactive and made a value change when it was active? (e.g. Slider/Drag moved). Useful for Undo/Redo patterns with widgets that require continuous editing. Note that you may get false positives (some widgets such as Combo()/ListBox()/Selectable() will return true even when clicking an already selected item).
     igIsItemDeactivatedAfterEdit()
   end
 
   # ret: bool
-  def self.IsItemEdited()
+  def self.IsItemEdited()  # did the last item modify its underlying value this frame? or was pressed? This is generally the same as the "bool" return value of many widgets.
     igIsItemEdited()
   end
 
   # ret: bool
-  def self.IsItemFocused()
+  def self.IsItemFocused()  # is the last item focused for keyboard/gamepad navigation?
     igIsItemFocused()
   end
 
   # arg: flags(ImGuiHoveredFlags)
   # ret: bool
-  def self.IsItemHovered(flags = 0)
+  #
+  # Item/Widgets Utilities and Query Functions
+  # - Most of the functions are referring to the previous Item that has been submitted.
+  # - See Demo Window under "Widgets->Querying Status" for an interactive visualization of most of those functions.
+  def self.IsItemHovered(flags = 0)  # is the last item hovered? (and usable, aka not blocked by a popup, etc.). See ImGuiHoveredFlags for more options.
     igIsItemHovered(flags)
   end
 
   # ret: bool
-  def self.IsItemToggledOpen()
+  def self.IsItemToggledOpen()  # was the last item open state toggled? set by TreeNode().
     igIsItemToggledOpen()
   end
 
   # ret: bool
-  def self.IsItemVisible()
+  def self.IsItemVisible()  # is the last item visible? (items may be out of sight because of clipping/scrolling)
     igIsItemVisible()
   end
 
   # arg: key(ImGuiKey)
   # ret: bool
-  def self.IsKeyDown(key)
+  #
+  # Inputs Utilities: Keyboard/Mouse/Gamepad
+  # - the ImGuiKey enum contains all possible keyboard, mouse and gamepad inputs (e.g. ImGuiKey_A, ImGuiKey_MouseLeft, ImGuiKey_GamepadDpadUp...).
+  # - before v1.87, we used ImGuiKey to carry native/user indices as defined by each backends. About use of those legacy ImGuiKey values:
+  #  - without IMGUI_DISABLE_OBSOLETE_KEYIO (legacy support): you can still use your legacy native/user indices (< 512) according to how your backend/engine stored them in io.KeysDown[], but need to cast them to ImGuiKey.
+  #  - with    IMGUI_DISABLE_OBSOLETE_KEYIO (this is the way forward): any use of ImGuiKey will assert with key < 512. GetKeyIndex() is pass-through and therefore deprecated (gone if IMGUI_DISABLE_OBSOLETE_KEYIO is defined).
+  def self.IsKeyDown(key)  # is key being held.
     igIsKeyDown(key)
   end
 
   # arg: key(ImGuiKey), repeat(bool)
   # ret: bool
-  def self.IsKeyPressed(key, repeat = true)
+  def self.IsKeyPressed(key, repeat = true)  # Implied repeat = true
     igIsKeyPressed(key, repeat)
   end
 
   # arg: key(ImGuiKey)
   # ret: bool
-  def self.IsKeyReleased(key)
+  def self.IsKeyReleased(key)  # was key released (went from Down to !Down)?
     igIsKeyReleased(key)
   end
 
   # arg: button(ImGuiMouseButton), repeat(bool)
   # ret: bool
-  def self.IsMouseClicked(button, repeat = false)
+  def self.IsMouseClicked(button, repeat = false)  # Implied repeat = false
     igIsMouseClicked(button, repeat)
   end
 
   # arg: button(ImGuiMouseButton)
   # ret: bool
-  def self.IsMouseDoubleClicked(button)
+  def self.IsMouseDoubleClicked(button)  # did mouse button double-clicked? Same as GetMouseClickedCount() == 2. (note that a double-click will also report IsMouseClicked() == true)
     igIsMouseDoubleClicked(button)
   end
 
   # arg: button(ImGuiMouseButton)
   # ret: bool
-  def self.IsMouseDown(button)
+  #
+  # Inputs Utilities: Mouse specific
+  # - To refer to a mouse button, you may use named enums in your code e.g. ImGuiMouseButton_Left, ImGuiMouseButton_Right.
+  # - You can also use regular integer: it is forever guaranteed that 0=Left, 1=Right, 2=Middle.
+  # - Dragging operations are only reported after mouse has moved a certain distance away from the initial clicking position (see 'lock_threshold' and 'io.MouseDraggingThreshold')
+  def self.IsMouseDown(button)  # is mouse button held?
     igIsMouseDown(button)
   end
 
   # arg: button(ImGuiMouseButton), lock_threshold(float)
   # ret: bool
-  def self.IsMouseDragging(button, lock_threshold = -1.0)
+  def self.IsMouseDragging(button, lock_threshold = -1.0)  # is mouse dragging? (if lock_threshold < -1.0f, uses io.MouseDraggingThreshold)
     igIsMouseDragging(button, lock_threshold)
   end
 
   # arg: r_min(ImVec2), r_max(ImVec2), clip(bool)
   # ret: bool
-  def self.IsMouseHoveringRect(r_min, r_max, clip = true)
+  def self.IsMouseHoveringRect(r_min, r_max, clip = true)  # Implied clip = true
     igIsMouseHoveringRect(r_min, r_max, clip)
   end
 
   # arg: mouse_pos(const ImVec2*)
   # ret: bool
-  def self.IsMousePosValid(mouse_pos = nil)
+  def self.IsMousePosValid(mouse_pos = nil)  # by convention we use (-FLT_MAX,-FLT_MAX) to denote that there is no mouse available
     igIsMousePosValid(mouse_pos)
   end
 
   # arg: button(ImGuiMouseButton)
   # ret: bool
-  def self.IsMouseReleased(button)
+  def self.IsMouseReleased(button)  # did mouse button released? (went from Down to !Down)
     igIsMouseReleased(button)
   end
 
   # arg: str_id(const char*), flags(ImGuiPopupFlags)
   # ret: bool
-  def self.IsPopupOpen(str_id, flags = 0)
+  #
+  # Popups: query functions
+  #  - IsPopupOpen(): return true if the popup is open at the current BeginPopup() level of the popup stack.
+  #  - IsPopupOpen() with ImGuiPopupFlags_AnyPopupId: return true if any popup is open at the current BeginPopup() level of the popup stack.
+  #  - IsPopupOpen() with ImGuiPopupFlags_AnyPopupId + ImGuiPopupFlags_AnyPopupLevel: return true if any popup is open.
+  def self.IsPopupOpen(str_id, flags = 0)  # return true if the popup is open.
     igIsPopupOpen(str_id, flags)
   end
 
@@ -3511,6 +3677,9 @@ module ImGui
   end
 
   # ret: bool
+  #
+  # Windows Utilities
+  # - 'current window' = the window we are appending into while inside a Begin()/End() block. 'next window' = next window we will Begin() into.
   def self.IsWindowAppearing()
     igIsWindowAppearing()
   end
@@ -3522,19 +3691,19 @@ module ImGui
 
   # arg: flags(ImGuiFocusedFlags)
   # ret: bool
-  def self.IsWindowFocused(flags = 0)
+  def self.IsWindowFocused(flags = 0)  # is current window focused? or its root/child, depending on flags. see flags for options.
     igIsWindowFocused(flags)
   end
 
   # arg: flags(ImGuiHoveredFlags)
   # ret: bool
-  def self.IsWindowHovered(flags = 0)
+  def self.IsWindowHovered(flags = 0)  # is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. NB: If you are trying to check whether your mouse should be dispatched to imgui or to your app, you should use the 'io.WantCaptureMouse' boolean for that! Please read the FAQ!
     igIsWindowHovered(flags)
   end
 
   # arg: label(const char*), fmt(const char*), ...(...)
   # ret: void
-  def self.LabelText(label, fmt, *varargs)
+  def self.LabelText(label, fmt, *varargs)  # display text+label aligned the same way as value+label widgets
     igLabelText(label, fmt, *varargs)
   end
 
@@ -3552,47 +3721,55 @@ module ImGui
 
   # arg: ini_filename(const char*)
   # ret: void
-  def self.LoadIniSettingsFromDisk(ini_filename)
+  #
+  # Settings/.Ini Utilities
+  # - The disk functions are automatically called if io.IniFilename != NULL (default is "imgui.ini").
+  # - Set io.IniFilename to NULL to load/save manually. Read io.WantSaveIniSettings description about handling .ini saving manually.
+  # - Important: default value "imgui.ini" is relative to current working dir! Most apps will want to lock this to an absolute path (e.g. same path as executables).
+  def self.LoadIniSettingsFromDisk(ini_filename)  # call after CreateContext() and before the first call to NewFrame(). NewFrame() automatically calls LoadIniSettingsFromDisk(io.IniFilename).
     igLoadIniSettingsFromDisk(ini_filename)
   end
 
   # arg: ini_data(const char*), ini_size(size_t)
   # ret: void
-  def self.LoadIniSettingsFromMemory(ini_data, ini_size = 0)
+  def self.LoadIniSettingsFromMemory(ini_data, ini_size = 0)  # call after CreateContext() and before the first call to NewFrame() to provide .ini data from your own data source.
     igLoadIniSettingsFromMemory(ini_data, ini_size)
   end
 
   # ret: void
-  def self.LogButtons()
+  def self.LogButtons()  # helper to display buttons for logging to tty/file/clipboard
     igLogButtons()
   end
 
   # ret: void
-  def self.LogFinish()
+  def self.LogFinish()  # stop logging (close file, etc.)
     igLogFinish()
   end
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.LogText(fmt, *varargs)
+  def self.LogText(fmt, *varargs)  # pass text data straight to log (without being displayed)
     igLogText(fmt, *varargs)
   end
 
   # arg: auto_open_depth(int)
   # ret: void
-  def self.LogToClipboard(auto_open_depth = -1)
+  def self.LogToClipboard(auto_open_depth = -1)  # start logging to OS clipboard
     igLogToClipboard(auto_open_depth)
   end
 
   # arg: auto_open_depth(int), filename(const char*)
   # ret: void
-  def self.LogToFile(auto_open_depth = -1, filename = nil)
+  def self.LogToFile(auto_open_depth = -1, filename = nil)  # start logging to file
     igLogToFile(auto_open_depth, filename)
   end
 
   # arg: auto_open_depth(int)
   # ret: void
-  def self.LogToTTY(auto_open_depth = -1)
+  #
+  # Logging/Capture
+  # - All text output from the interface can be captured into tty/file/clipboard. By default, tree nodes are automatically opened during logging.
+  def self.LogToTTY(auto_open_depth = -1)  # start logging to tty (stdout)
     igLogToTTY(auto_open_depth)
   end
 
@@ -3621,17 +3798,17 @@ module ImGui
   end
 
   # ret: void
-  def self.NewFrame()
+  def self.NewFrame()  # start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame().
     igNewFrame()
   end
 
   # ret: void
-  def self.NewLine()
+  def self.NewLine()  # undo a SameLine() or force a new line when in a horizontal-layout context.
     igNewLine()
   end
 
   # ret: void
-  def self.NextColumn()
+  def self.NextColumn()  # next column, defaults to current row or next row if the current row is finished
     igNextColumn()
   end
 
@@ -3649,7 +3826,7 @@ module ImGui
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: void
-  def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 1)
+  def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 1)  # helper to open popup when clicked on last item. Default to ImGuiPopupFlags_MouseButtonRight == 1. (note: actually triggers on the mouse _released_ event to be consistent with popup behaviors)
     igOpenPopupOnItemClick(str_id, popup_flags)
   end
 
@@ -3698,7 +3875,7 @@ module ImGui
   end
 
   # ret: void
-  def self.PopID()
+  def self.PopID()  # pop from the ID stack.
     igPopID()
   end
 
@@ -3709,13 +3886,13 @@ module ImGui
 
   # arg: count(int)
   # ret: void
-  def self.PopStyleColor(count = 1)
+  def self.PopStyleColor(count = 1)  # Implied count = 1
     igPopStyleColor(count)
   end
 
   # arg: count(int)
   # ret: void
-  def self.PopStyleVar(count = 1)
+  def self.PopStyleVar(count = 1)  # Implied count = 1
     igPopStyleVar(count)
   end
 
@@ -3732,25 +3909,30 @@ module ImGui
 
   # arg: allow_keyboard_focus(bool)
   # ret: void
-  def self.PushAllowKeyboardFocus(allow_keyboard_focus)
+  def self.PushAllowKeyboardFocus(allow_keyboard_focus)  # == tab stop enable. Allow focusing using TAB/Shift-TAB, enabled by default but you can disable it for certain widgets
     igPushAllowKeyboardFocus(allow_keyboard_focus)
   end
 
   # arg: repeat(bool)
   # ret: void
-  def self.PushButtonRepeat(repeat)
+  def self.PushButtonRepeat(repeat)  # in 'repeat' mode, Button*() functions return repeated true in a typematic manner (using io.KeyRepeatDelay/io.KeyRepeatRate setting). Note that you can call IsItemActive() after any Button() to tell if the button is held in the current frame.
     igPushButtonRepeat(repeat)
   end
 
   # arg: clip_rect_min(ImVec2), clip_rect_max(ImVec2), intersect_with_current_clip_rect(bool)
   # ret: void
+  #
+  # Clipping
+  # - Mouse hovering is affected by ImGui::PushClipRect() calls, unlike direct calls to ImDrawList::PushClipRect() which are render only.
   def self.PushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
     igPushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect)
   end
 
   # arg: font(ImFont*)
   # ret: void
-  def self.PushFont(font)
+  #
+  # Parameters stacks (shared)
+  def self.PushFont(font)  # use NULL as a shortcut to push default font
     igPushFont(font)
   end
 
@@ -3780,7 +3962,9 @@ module ImGui
 
   # arg: item_width(float)
   # ret: void
-  def self.PushItemWidth(item_width)
+  #
+  # Parameters stacks (current window)
+  def self.PushItemWidth(item_width)  # push width of items for common large "item+label" widgets. >0.0f: width in pixels, <0.0f align xx pixels to the right of window (so -FLT_MIN always align width to the right side).
     igPushItemWidth(item_width)
   end
 
@@ -3810,7 +3994,7 @@ module ImGui
 
   # arg: wrap_local_pos_x(float)
   # ret: void
-  def self.PushTextWrapPos(wrap_local_pos_x = 0.0)
+  def self.PushTextWrapPos(wrap_local_pos_x = 0.0)  # push word-wrapping position for Text*() commands. < 0.0f: no wrapping; 0.0f: wrap to end of window (or column); > 0.0f: wrap at 'wrap_pos_x' position in window local space
     igPushTextWrapPos(wrap_local_pos_x)
   end
 
@@ -3827,31 +4011,31 @@ module ImGui
   end
 
   # ret: void
-  def self.Render()
+  def self.Render()  # ends the Dear ImGui frame, finalize the draw data. You can then get call GetDrawData().
     igRender()
   end
 
   # arg: button(ImGuiMouseButton)
   # ret: void
-  def self.ResetMouseDragDelta(button = 0)
+  def self.ResetMouseDragDelta(button = 0)  # Implied button = 0
     igResetMouseDragDelta(button)
   end
 
   # arg: offset_from_start_x(float), spacing(float)
   # ret: void
-  def self.SameLine(offset_from_start_x = 0.0, spacing = -1.0)
+  def self.SameLine(offset_from_start_x = 0.0, spacing = -1.0)  # Implied offset_from_start_x = 0.0f, spacing = -1.0f
     igSameLine(offset_from_start_x, spacing)
   end
 
   # arg: ini_filename(const char*)
   # ret: void
-  def self.SaveIniSettingsToDisk(ini_filename)
+  def self.SaveIniSettingsToDisk(ini_filename)  # this is automatically called (if io.IniFilename is not empty) a few seconds after any modification that should be reflected in the .ini file (and also by DestroyContext).
     igSaveIniSettingsToDisk(ini_filename)
   end
 
   # arg: out_ini_size(size_t*)
   # ret: pointer
-  def self.SaveIniSettingsToMemory(out_ini_size = nil)
+  def self.SaveIniSettingsToMemory(out_ini_size = nil)  # return a zero-terminated string with the .ini data which you can save by your own mean. call when io.WantSaveIniSettings is set, then save data by your own mean and clear io.WantSaveIniSettings.
     igSaveIniSettingsToMemory(out_ini_size)
   end
 
@@ -3868,12 +4052,25 @@ module ImGui
   end
 
   # ret: void
-  def self.Separator()
+  #
+  # Cursor / Layout
+  # - By "cursor" we mean the current output position.
+  # - The typical widget behavior is to output themselves at the current cursor position, then move the cursor one line down.
+  # - You can call SameLine() between widgets to undo the last carriage return and output at the right of the preceding widget.
+  # - Attention! We currently have inconsistencies between window-local and absolute positions we will aim to fix with future API:
+  #    Window-local coordinates:   SameLine(), GetCursorPos(), SetCursorPos(), GetCursorStartPos(), GetContentRegionMax(), GetWindowContentRegion*(), PushTextWrapPos()
+  #    Absolute coordinate:        GetCursorScreenPos(), SetCursorScreenPos(), all ImDrawList:: functions.
+  def self.Separator()  # separator, generally horizontal. inside a menu bar or in horizontal layout mode, this becomes a vertical separator.
     igSeparator()
   end
 
   # arg: alloc_func(ImGuiMemAllocFunc), free_func(ImGuiMemFreeFunc), user_data(void*)
   # ret: void
+  #
+  # Memory Allocators
+  # - Those functions are not reliant on the current context.
+  # - DLL users: heaps and globals are not shared across DLL boundaries! You will need to call SetCurrentContext() + SetAllocatorFunctions()
+  #   for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for more details.
   def self.SetAllocatorFunctions(alloc_func, free_func, user_data = nil)
     igSetAllocatorFunctions(alloc_func, free_func, user_data)
   end
@@ -3886,19 +4083,19 @@ module ImGui
 
   # arg: flags(ImGuiColorEditFlags)
   # ret: void
-  def self.SetColorEditOptions(flags)
+  def self.SetColorEditOptions(flags)  # initialize current options (generally on application startup) if you want to select a default format, picker type, etc. User will be able to change many settings, unless you pass the _NoOptions flag to your calls.
     igSetColorEditOptions(flags)
   end
 
   # arg: column_index(int), offset_x(float)
   # ret: void
-  def self.SetColumnOffset(column_index, offset_x)
+  def self.SetColumnOffset(column_index, offset_x)  # set position of column line (in pixels, from the left side of the contents region). pass -1 to use current column
     igSetColumnOffset(column_index, offset_x)
   end
 
   # arg: column_index(int), width(float)
   # ret: void
-  def self.SetColumnWidth(column_index, width)
+  def self.SetColumnWidth(column_index, width)  # set column width (in pixels). pass -1 to use current column
     igSetColumnWidth(column_index, width)
   end
 
@@ -3910,178 +4107,184 @@ module ImGui
 
   # arg: local_pos(ImVec2)
   # ret: void
-  def self.SetCursorPos(local_pos)
+  def self.SetCursorPos(local_pos)  #    are using the main, absolute coordinate system.
     igSetCursorPos(local_pos)
   end
 
   # arg: local_x(float)
   # ret: void
-  def self.SetCursorPosX(local_x)
+  def self.SetCursorPosX(local_x)  #    GetWindowPos() + GetCursorPos() == GetCursorScreenPos() etc.)
     igSetCursorPosX(local_x)
   end
 
   # arg: local_y(float)
   # ret: void
-  def self.SetCursorPosY(local_y)
+  def self.SetCursorPosY(local_y)  #
     igSetCursorPosY(local_y)
   end
 
   # arg: pos(ImVec2)
   # ret: void
-  def self.SetCursorScreenPos(pos)
+  def self.SetCursorScreenPos(pos)  # cursor position in absolute coordinates
     igSetCursorScreenPos(pos)
   end
 
   # arg: type(const char*), data(const void*), sz(size_t), cond(ImGuiCond)
   # ret: bool
-  def self.SetDragDropPayload(type, data, sz, cond = 0)
+  def self.SetDragDropPayload(type, data, sz, cond = 0)  # type is a user defined string of maximum 32 characters. Strings starting with '_' are reserved for dear imgui internal types. Data is copied and held by imgui. Return true when payload has been accepted.
     igSetDragDropPayload(type, data, sz, cond)
   end
 
   # ret: void
-  def self.SetItemAllowOverlap()
+  def self.SetItemAllowOverlap()  # allow last item to be overlapped by a subsequent item. sometimes useful with invisible buttons, selectables, etc. to catch unused area.
     igSetItemAllowOverlap()
   end
 
   # ret: void
-  def self.SetItemDefaultFocus()
+  #
+  # Focus, Activation
+  # - Prefer using "SetItemDefaultFocus()" over "if (IsWindowAppearing()) SetScrollHereY()" when applicable to signify "this is the default item"
+  def self.SetItemDefaultFocus()  # make last item the default focused item of a window.
     igSetItemDefaultFocus()
   end
 
   # arg: offset(int)
   # ret: void
-  def self.SetKeyboardFocusHere(offset = 0)
+  def self.SetKeyboardFocusHere(offset = 0)  # Implied offset = 0
     igSetKeyboardFocusHere(offset)
   end
 
   # arg: cursor_type(ImGuiMouseCursor)
   # ret: void
-  def self.SetMouseCursor(cursor_type)
+  def self.SetMouseCursor(cursor_type)  # set desired mouse cursor shape
     igSetMouseCursor(cursor_type)
   end
 
   # arg: want_capture_keyboard(bool)
   # ret: void
-  def self.SetNextFrameWantCaptureKeyboard(want_capture_keyboard)
+  def self.SetNextFrameWantCaptureKeyboard(want_capture_keyboard)  # Override io.WantCaptureKeyboard flag next frame (said flag is left for your application to handle, typically when true it instructs your app to ignore inputs). e.g. force capture keyboard when your widget is being hovered. This is equivalent to setting "io.WantCaptureKeyboard = want_capture_keyboard"; after the next NewFrame() call.
     igSetNextFrameWantCaptureKeyboard(want_capture_keyboard)
   end
 
   # arg: want_capture_mouse(bool)
   # ret: void
-  def self.SetNextFrameWantCaptureMouse(want_capture_mouse)
+  def self.SetNextFrameWantCaptureMouse(want_capture_mouse)  # Override io.WantCaptureMouse flag next frame (said flag is left for your application to handle, typical when true it instucts your app to ignore inputs). This is equivalent to setting "io.WantCaptureMouse = want_capture_mouse;" after the next NewFrame() call.
     igSetNextFrameWantCaptureMouse(want_capture_mouse)
   end
 
   # arg: is_open(bool), cond(ImGuiCond)
   # ret: void
-  def self.SetNextItemOpen(is_open, cond = 0)
+  def self.SetNextItemOpen(is_open, cond = 0)  # set next TreeNode/CollapsingHeader open state.
     igSetNextItemOpen(is_open, cond)
   end
 
   # arg: item_width(float)
   # ret: void
-  def self.SetNextItemWidth(item_width)
+  def self.SetNextItemWidth(item_width)  # set width of the _next_ common large "item+label" widget. >0.0f: width in pixels, <0.0f align xx pixels to the right of window (so -FLT_MIN always align width to the right side)
     igSetNextItemWidth(item_width)
   end
 
   # arg: alpha(float)
   # ret: void
-  def self.SetNextWindowBgAlpha(alpha)
+  def self.SetNextWindowBgAlpha(alpha)  # set next window background color alpha. helper to easily override the Alpha component of ImGuiCol_WindowBg/ChildBg/PopupBg. you may also use ImGuiWindowFlags_NoBackground.
     igSetNextWindowBgAlpha(alpha)
   end
 
   # arg: collapsed(bool), cond(ImGuiCond)
   # ret: void
-  def self.SetNextWindowCollapsed(collapsed, cond = 0)
+  def self.SetNextWindowCollapsed(collapsed, cond = 0)  # set next window collapsed state. call before Begin()
     igSetNextWindowCollapsed(collapsed, cond)
   end
 
   # arg: size(ImVec2)
   # ret: void
-  def self.SetNextWindowContentSize(size)
+  def self.SetNextWindowContentSize(size)  # set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations (title bar, menu bar, etc.) nor WindowPadding. set an axis to 0.0f to leave it automatic. call before Begin()
     igSetNextWindowContentSize(size)
   end
 
   # ret: void
-  def self.SetNextWindowFocus()
+  def self.SetNextWindowFocus()  # set next window to be focused / top-most. call before Begin()
     igSetNextWindowFocus()
   end
 
   # arg: pos(ImVec2), cond(ImGuiCond), pivot(ImVec2)
   # ret: void
-  def self.SetNextWindowPos(pos, cond = 0, pivot = ImVec2.create(0,0))
+  #
+  # Window manipulation
+  # - Prefer using SetNextXXX functions (before Begin) rather that SetXXX functions (after Begin).
+  def self.SetNextWindowPos(pos, cond = 0, pivot = ImVec2.create(0,0))  # Implied pivot = ImVec2(0, 0)
     igSetNextWindowPos(pos, cond, pivot)
   end
 
   # arg: scroll(ImVec2)
   # ret: void
-  def self.SetNextWindowScroll(scroll)
+  def self.SetNextWindowScroll(scroll)  # set next window scrolling value (use < 0.0f to not affect a given axis).
     igSetNextWindowScroll(scroll)
   end
 
   # arg: size(ImVec2), cond(ImGuiCond)
   # ret: void
-  def self.SetNextWindowSize(size, cond = 0)
+  def self.SetNextWindowSize(size, cond = 0)  # set next window size. set axis to 0.0f to force an auto-fit on this axis. call before Begin()
     igSetNextWindowSize(size, cond)
   end
 
   # arg: size_min(ImVec2), size_max(ImVec2), custom_callback(ImGuiSizeCallback), custom_callback_data(void*)
   # ret: void
-  def self.SetNextWindowSizeConstraints(size_min, size_max, custom_callback = nil, custom_callback_data = nil)
+  def self.SetNextWindowSizeConstraints(size_min, size_max, custom_callback = nil, custom_callback_data = nil)  # set next window size limits. use -1,-1 on either X/Y axis to preserve the current size. Sizes will be rounded down. Use callback to apply non-trivial programmatic constraints.
     igSetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
   end
 
   # arg: local_x(float), center_x_ratio(float)
   # ret: void
-  def self.SetScrollFromPosX(local_x, center_x_ratio = 0.5)
+  def self.SetScrollFromPosX(local_x, center_x_ratio = 0.5)  # adjust scrolling amount to make given position visible. Generally GetCursorStartPos() + offset to compute a valid position.
     igSetScrollFromPosX(local_x, center_x_ratio)
   end
 
   # arg: local_y(float), center_y_ratio(float)
   # ret: void
-  def self.SetScrollFromPosY(local_y, center_y_ratio = 0.5)
+  def self.SetScrollFromPosY(local_y, center_y_ratio = 0.5)  # adjust scrolling amount to make given position visible. Generally GetCursorStartPos() + offset to compute a valid position.
     igSetScrollFromPosY(local_y, center_y_ratio)
   end
 
   # arg: center_x_ratio(float)
   # ret: void
-  def self.SetScrollHereX(center_x_ratio = 0.5)
+  def self.SetScrollHereX(center_x_ratio = 0.5)  # adjust scrolling amount to make current cursor position visible. center_x_ratio=0.0: left, 0.5: center, 1.0: right. When using to make a "default/current item" visible, consider using SetItemDefaultFocus() instead.
     igSetScrollHereX(center_x_ratio)
   end
 
   # arg: center_y_ratio(float)
   # ret: void
-  def self.SetScrollHereY(center_y_ratio = 0.5)
+  def self.SetScrollHereY(center_y_ratio = 0.5)  # adjust scrolling amount to make current cursor position visible. center_y_ratio=0.0: top, 0.5: center, 1.0: bottom. When using to make a "default/current item" visible, consider using SetItemDefaultFocus() instead.
     igSetScrollHereY(center_y_ratio)
   end
 
   # arg: scroll_x(float)
   # ret: void
-  def self.SetScrollX(scroll_x)
+  def self.SetScrollX(scroll_x)  # set scrolling amount [0 .. GetScrollMaxX()]
     igSetScrollX(scroll_x)
   end
 
   # arg: scroll_y(float)
   # ret: void
-  def self.SetScrollY(scroll_y)
+  def self.SetScrollY(scroll_y)  # set scrolling amount [0 .. GetScrollMaxY()]
     igSetScrollY(scroll_y)
   end
 
   # arg: storage(ImGuiStorage*)
   # ret: void
-  def self.SetStateStorage(storage)
+  def self.SetStateStorage(storage)  # replace current window storage with our own (if you want to manipulate it yourself, typically clear subsection of it)
     igSetStateStorage(storage)
   end
 
   # arg: tab_or_docked_window_label(const char*)
   # ret: void
-  def self.SetTabItemClosed(tab_or_docked_window_label)
+  def self.SetTabItemClosed(tab_or_docked_window_label)  # notify TabBar or Docking system of a closed tab/window ahead (useful to reduce visual flicker on reorderable tab bars). For tab-bar: call after BeginTabBar() and before Tab submissions. Otherwise call with a window name.
     igSetTabItemClosed(tab_or_docked_window_label)
   end
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.SetTooltip(fmt, *varargs)
+  def self.SetTooltip(fmt, *varargs)  # set a text-only tooltip, typically use with ImGui::IsItemHovered(). override any previous call to SetTooltip().
     igSetTooltip(fmt, *varargs)
   end
 
@@ -4110,7 +4313,7 @@ module ImGui
 
   # arg: scale(float)
   # ret: void
-  def self.SetWindowFontScale(scale)
+  def self.SetWindowFontScale(scale)  # [OBSOLETE] set font scale. Adjust IO.FontGlobalScale if you want to scale all windows. This is an old API! For correct scaling, prefer to reload font + rebuild ImFontAtlas + call style.ScaleAllSizes().
     igSetWindowFontScale(scale)
   end
 
@@ -4140,269 +4343,298 @@ module ImGui
 
   # arg: p_open(bool*)
   # ret: void
-  def self.ShowAboutWindow(p_open = nil)
+  def self.ShowAboutWindow(p_open = nil)  # create About window. display Dear ImGui version, credits and build/system information.
     igShowAboutWindow(p_open)
   end
 
   # arg: p_open(bool*)
   # ret: void
-  def self.ShowDebugLogWindow(p_open = nil)
+  def self.ShowDebugLogWindow(p_open = nil)  # create Debug Log window. display a simplified log of important dear imgui events.
     igShowDebugLogWindow(p_open)
   end
 
   # arg: p_open(bool*)
   # ret: void
-  def self.ShowDemoWindow(p_open = nil)
+  #
+  # Demo, Debug, Information
+  def self.ShowDemoWindow(p_open = nil)  # create Demo window. demonstrate most ImGui features. call this to learn about the library! try to make it always available in your application!
     igShowDemoWindow(p_open)
   end
 
   # arg: label(const char*)
   # ret: void
-  def self.ShowFontSelector(label)
+  def self.ShowFontSelector(label)  # add font selector block (not a window), essentially a combo listing the loaded fonts.
     igShowFontSelector(label)
   end
 
   # arg: p_open(bool*)
   # ret: void
-  def self.ShowMetricsWindow(p_open = nil)
+  def self.ShowMetricsWindow(p_open = nil)  # create Metrics/Debugger window. display Dear ImGui internals: windows, draw commands, various internal state, etc.
     igShowMetricsWindow(p_open)
   end
 
   # arg: p_open(bool*)
   # ret: void
-  def self.ShowStackToolWindow(p_open = nil)
+  def self.ShowStackToolWindow(p_open = nil)  # create Stack Tool window. hover items with mouse to query information about the source of their unique ID.
     igShowStackToolWindow(p_open)
   end
 
   # arg: ref(ImGuiStyle*)
   # ret: void
-  def self.ShowStyleEditor(ref = nil)
+  def self.ShowStyleEditor(ref = nil)  # add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)
     igShowStyleEditor(ref)
   end
 
   # arg: label(const char*)
   # ret: bool
-  def self.ShowStyleSelector(label)
+  def self.ShowStyleSelector(label)  # add style selector block (not a window), essentially a combo listing the default styles.
     igShowStyleSelector(label)
   end
 
   # ret: void
-  def self.ShowUserGuide()
+  def self.ShowUserGuide()  # add basic help/info block (not a window): how to manipulate ImGui as an end-user (mouse/keyboard controls).
     igShowUserGuide()
   end
 
   # arg: label(const char*), v_rad(float*), v_degrees_min(float), v_degrees_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg", flags = 0)
+  def self.SliderAngle(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg", flags = 0)  # Implied v_degrees_min = -360.0f, v_degrees_max = +360.0f, format = "%.0f deg", flags = 0
     igSliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format, flags)
   end
 
   # arg: label(const char*), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderFloat(label, v, v_min, v_max, format = "%.3f", flags = 0)
+  #
+  # Widgets: Regular Sliders
+  # - CTRL+Click on any slider to turn them into an input box. Manually input values aren't clamped by default and can go off-bounds. Use ImGuiSliderFlags_AlwaysClamp to always clamp.
+  # - Adjust format string to decorate the value with a prefix, a suffix, or adapt the editing and display precision e.g. "%.3f" -> 1.234; "%5.2f secs" -> 01.23 secs; "Biscuit: %.0f" -> Biscuit: 1; etc.
+  # - Format string may also be set to NULL or use the default format ("%f" or "%d").
+  # - Legacy: Pre-1.78 there are SliderXXX() function signatures that take a final `float power=1.0f' argument instead of the `ImGuiSliderFlags flags=0' argument.
+  #   If you get a warning converting a float to ImGuiSliderFlags, read https://github.com/ocornut/imgui/issues/3361
+  def self.SliderFloat(label, v, v_min, v_max, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igSliderFloat(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(float[2]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderFloat2(label, v, v_min, v_max, format = "%.3f", flags = 0)
+  def self.SliderFloat2(label, v, v_min, v_max, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igSliderFloat2(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(float[3]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderFloat3(label, v, v_min, v_max, format = "%.3f", flags = 0)
+  def self.SliderFloat3(label, v, v_min, v_max, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igSliderFloat3(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(float[4]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderFloat4(label, v, v_min, v_max, format = "%.3f", flags = 0)
+  def self.SliderFloat4(label, v, v_min, v_max, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igSliderFloat4(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(int*), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderInt(label, v, v_min, v_max, format = "%d", flags = 0)
+  def self.SliderInt(label, v, v_min, v_max, format = "%d", flags = 0)  # Implied format = "%d", flags = 0
     igSliderInt(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(int[2]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderInt2(label, v, v_min, v_max, format = "%d", flags = 0)
+  def self.SliderInt2(label, v, v_min, v_max, format = "%d", flags = 0)  # Implied format = "%d", flags = 0
     igSliderInt2(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(int[3]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderInt3(label, v, v_min, v_max, format = "%d", flags = 0)
+  def self.SliderInt3(label, v, v_min, v_max, format = "%d", flags = 0)  # Implied format = "%d", flags = 0
     igSliderInt3(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), v(int[4]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderInt4(label, v, v_min, v_max, format = "%d", flags = 0)
+  def self.SliderInt4(label, v, v_min, v_max, format = "%d", flags = 0)  # Implied format = "%d", flags = 0
     igSliderInt4(label, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderScalar(label, data_type, p_data, p_min, p_max, format = nil, flags = 0)
+  def self.SliderScalar(label, data_type, p_data, p_min, p_max, format = nil, flags = 0)  # Implied format = NULL, flags = 0
     igSliderScalar(label, data_type, p_data, p_min, p_max, format, flags)
   end
 
   # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format = nil, flags = 0)
+  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max, format = nil, flags = 0)  # Implied format = NULL, flags = 0
     igSliderScalarN(label, data_type, p_data, components, p_min, p_max, format, flags)
   end
 
   # arg: label(const char*)
   # ret: bool
-  def self.SmallButton(label)
+  def self.SmallButton(label)  # button with FramePadding=(0,0) to easily embed within text
     igSmallButton(label)
   end
 
   # ret: void
-  def self.Spacing()
+  def self.Spacing()  # add vertical spacing.
     igSpacing()
   end
 
   # arg: dst(ImGuiStyle*)
   # ret: void
-  def self.StyleColorsClassic(dst = nil)
+  def self.StyleColorsClassic(dst = nil)  # classic imgui style
     igStyleColorsClassic(dst)
   end
 
   # arg: dst(ImGuiStyle*)
   # ret: void
-  def self.StyleColorsDark(dst = nil)
+  #
+  # Styles
+  def self.StyleColorsDark(dst = nil)  # new, recommended style (default)
     igStyleColorsDark(dst)
   end
 
   # arg: dst(ImGuiStyle*)
   # ret: void
-  def self.StyleColorsLight(dst = nil)
+  def self.StyleColorsLight(dst = nil)  # best used with borders and a custom, thicker font
     igStyleColorsLight(dst)
   end
 
   # arg: label(const char*), flags(ImGuiTabItemFlags)
   # ret: bool
-  def self.TabItemButton(label, flags = 0)
+  def self.TabItemButton(label, flags = 0)  # create a Tab behaving like a button. return true when clicked. cannot be selected in the tab bar.
     igTabItemButton(label, flags)
   end
 
   # ret: int
-  def self.TableGetColumnCount()
+  def self.TableGetColumnCount()  # return number of columns (value passed to BeginTable)
     igTableGetColumnCount()
   end
 
   # arg: column_n(int)
   # ret: int
-  def self.TableGetColumnFlags(column_n = -1)
+  def self.TableGetColumnFlags(column_n = -1)  # return column flags so you can query their Enabled/Visible/Sorted/Hovered status flags. Pass -1 to use current column.
     igTableGetColumnFlags(column_n)
   end
 
   # ret: int
-  def self.TableGetColumnIndex()
+  def self.TableGetColumnIndex()  # return current column index.
     igTableGetColumnIndex()
   end
 
   # arg: column_n(int)
   # ret: pointer
-  def self.TableGetColumnName(column_n = -1)
+  def self.TableGetColumnName(column_n = -1)  # return "" if column didn't have a name declared by TableSetupColumn(). Pass -1 to use current column.
     igTableGetColumnName(column_n)
   end
 
   # ret: int
-  def self.TableGetRowIndex()
+  def self.TableGetRowIndex()  # return current row index.
     igTableGetRowIndex()
   end
 
   # ret: pointer
-  def self.TableGetSortSpecs()
+  #
+  # Tables: Sorting & Miscellaneous functions
+  # - Sorting: call TableGetSortSpecs() to retrieve latest sort specs for the table. NULL when not sorting.
+  #   When 'sort_specs->SpecsDirty == true' you should sort your data. It will be true when sorting specs have
+  #   changed since last call, or the first time. Make sure to set 'SpecsDirty = false' after sorting,
+  #   else you may wastefully sort your data every frame!
+  # - Functions args 'int column_n' treat the default value of -1 as the same as passing the current column index.
+  def self.TableGetSortSpecs()  # get latest sort specs for the table (NULL if not sorting).  Lifetime: don't hold on this pointer over multiple frames or past any subsequent call to BeginTable().
     igTableGetSortSpecs()
   end
 
   # arg: label(const char*)
   # ret: void
-  def self.TableHeader(label)
+  def self.TableHeader(label)  # submit one header cell manually (rarely used)
     igTableHeader(label)
   end
 
   # ret: void
-  def self.TableHeadersRow()
+  def self.TableHeadersRow()  # submit all headers cells based on data provided to TableSetupColumn() + submit context menu
     igTableHeadersRow()
   end
 
   # ret: bool
-  def self.TableNextColumn()
+  def self.TableNextColumn()  # append into the next column (or first column of next row if currently in last column). Return true when column is visible.
     igTableNextColumn()
   end
 
   # arg: row_flags(ImGuiTableRowFlags), min_row_height(float)
   # ret: void
-  def self.TableNextRow(row_flags = 0, min_row_height = 0.0)
+  def self.TableNextRow(row_flags = 0, min_row_height = 0.0)  # Implied row_flags = 0, min_row_height = 0.0f
     igTableNextRow(row_flags, min_row_height)
   end
 
   # arg: target(ImGuiTableBgTarget), color(ImU32), column_n(int)
   # ret: void
-  def self.TableSetBgColor(target, color, column_n = -1)
+  def self.TableSetBgColor(target, color, column_n = -1)  # change the color of a cell, row, or column. See ImGuiTableBgTarget_ flags for details.
     igTableSetBgColor(target, color, column_n)
   end
 
   # arg: column_n(int), v(bool)
   # ret: void
-  def self.TableSetColumnEnabled(column_n, v)
+  def self.TableSetColumnEnabled(column_n, v)  # change user accessible enabled/disabled state of a column. Set to false to hide the column. User can use the context menu to change this themselves (right-click in headers, or right-click in columns body with ImGuiTableFlags_ContextMenuInBody)
     igTableSetColumnEnabled(column_n, v)
   end
 
   # arg: column_n(int)
   # ret: bool
-  def self.TableSetColumnIndex(column_n)
+  def self.TableSetColumnIndex(column_n)  # append into the specified column. Return true when column is visible.
     igTableSetColumnIndex(column_n)
   end
 
   # arg: label(const char*), flags(ImGuiTableColumnFlags), init_width_or_weight(float), user_id(ImGuiID)
   # ret: void
-  def self.TableSetupColumn(label, flags = 0, init_width_or_weight = 0.0, user_id = 0)
+  #
+  # Tables: Headers & Columns declaration
+  # - Use TableSetupColumn() to specify label, resizing policy, default width/weight, id, various other flags etc.
+  # - Use TableHeadersRow() to create a header row and automatically submit a TableHeader() for each column.
+  #   Headers are required to perform: reordering, sorting, and opening the context menu.
+  #   The context menu can also be made available in columns body using ImGuiTableFlags_ContextMenuInBody.
+  # - You may manually submit headers using TableNextRow() + TableHeader() calls, but this is only useful in
+  #   some advanced use cases (e.g. adding custom widgets in header row).
+  # - Use TableSetupScrollFreeze() to lock columns/rows so they stay visible when scrolled.
+  def self.TableSetupColumn(label, flags = 0, init_width_or_weight = 0.0, user_id = 0)  # Implied init_width_or_weight = 0.0f, user_id = 0
     igTableSetupColumn(label, flags, init_width_or_weight, user_id)
   end
 
   # arg: cols(int), rows(int)
   # ret: void
-  def self.TableSetupScrollFreeze(cols, rows)
+  def self.TableSetupScrollFreeze(cols, rows)  # lock columns/rows so they stay visible when scrolled.
     igTableSetupScrollFreeze(cols, rows)
   end
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.Text(fmt, *varargs)
+  def self.Text(fmt, *varargs)  # formatted text
     igText(fmt, *varargs)
   end
 
   # arg: col(ImVec4), fmt(const char*), ...(...)
   # ret: void
-  def self.TextColored(col, fmt, *varargs)
+  def self.TextColored(col, fmt, *varargs)  # shortcut for PushStyleColor(ImGuiCol_Text, col); Text(fmt, ...); PopStyleColor();
     igTextColored(col, fmt, *varargs)
   end
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.TextDisabled(fmt, *varargs)
+  def self.TextDisabled(fmt, *varargs)  # shortcut for PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]); Text(fmt, ...); PopStyleColor();
     igTextDisabled(fmt, *varargs)
   end
 
   # arg: text(const char*), text_end(const char*)
   # ret: void
-  def self.TextUnformatted(text, text_end = nil)
+  #
+  # Widgets: Text
+  def self.TextUnformatted(text, text_end = nil)  # Implied text_end = NULL
     igTextUnformatted(text, text_end)
   end
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.TextWrapped(fmt, *varargs)
+  def self.TextWrapped(fmt, *varargs)  # shortcut for PushTextWrapPos(0.0f); Text(fmt, ...); PopTextWrapPos();. Note that this won't work on an auto-resizing window if there's no other widgets to extend the window width, yoy may need to set a size using SetNextWindowSize().
     igTextWrapped(fmt, *varargs)
   end
 
@@ -4443,7 +4675,7 @@ module ImGui
   end
 
   # ret: void
-  def self.TreePop()
+  def self.TreePop()  # ~ Unindent()+PopId()
     igTreePop()
   end
 
@@ -4461,25 +4693,25 @@ module ImGui
 
   # arg: indent_w(float)
   # ret: void
-  def self.Unindent(indent_w = 0.0)
+  def self.Unindent(indent_w = 0.0)  # Implied indent_w = 0.0f
     igUnindent(indent_w)
   end
 
   # arg: label(const char*), size(ImVec2), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.VSliderFloat(label, size, v, v_min, v_max, format = "%.3f", flags = 0)
+  def self.VSliderFloat(label, size, v, v_min, v_max, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
     igVSliderFloat(label, size, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), size(ImVec2), v(int*), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.VSliderInt(label, size, v, v_min, v_max, format = "%d", flags = 0)
+  def self.VSliderInt(label, size, v, v_min, v_max, format = "%d", flags = 0)  # Implied format = "%d", flags = 0
     igVSliderInt(label, size, v, v_min, v_max, format, flags)
   end
 
   # arg: label(const char*), size(ImVec2), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
-  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format = nil, flags = 0)
+  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max, format = nil, flags = 0)  # Implied format = NULL, flags = 0
     igVSliderScalar(label, size, data_type, p_data, p_min, p_max, format, flags)
   end
 

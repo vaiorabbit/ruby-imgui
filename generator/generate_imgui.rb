@@ -405,7 +405,7 @@ module Generator
     out.write("callback :#{typedef[1].name}, [#{typedef[1].callback_signature[1].join(', ')}], :#{typedef[1].callback_signature[0]}\n")
   end
 
-  def self.write_module_method(out, func)
+  def self.write_module_method(out, func, functions_comment_entries = nil)
 
     return unless func.name.start_with?('ig')
 
@@ -443,12 +443,29 @@ module Generator
 
     retval_comment = func.retval.gsub(/^:/,'')
 
+    function_comment_entry = if functions_comment_entries
+                               functions_comment_entries["ImGui_#{func_name_ruby}"]
+                             else
+                               nil
+                             end
+
     out.write("# arg: #{args_comment.join(', ')}\n") unless args_comment.empty?
     out.write("# ret: #{retval_comment}\n")
+    if function_comment_entry && !function_comment_entry.comments[:preceding].empty?
+      out.write("#\n")
+      preceding_comments = function_comment_entry.comments[:preceding].split("\n")
+      preceding_comments.each do |preceding_comment|
+        out.write("#{preceding_comment}\n")
+      end
+    end
     if func.return_udt
       ret = arg_names_with_defaults.shift # == "pOut"
       var_type = /([^\*]+)/.match(func.args[0].type_name)[0] # e.g.) ImVec2* -> ImVec2
-      out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      if function_comment_entry && !function_comment_entry.comments[:attached].empty?
+        out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')}) #{function_comment_entry.comments[:attached]}\n")
+      else
+        out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      end
       out.push_indent
       out.write("#{ret} = #{var_type}.new\n")
       out.write("#{func.name}(#{arg_names.join(', ')})\n")
@@ -456,7 +473,11 @@ module Generator
       out.pop_indent
       out.write("end\n\n")
     else
-      out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      if function_comment_entry && !function_comment_entry.comments[:attached].empty?
+        out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')}) #{function_comment_entry.comments[:attached]}\n")
+      else
+        out.write("def self.#{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
+      end
       out.push_indent
       out.write("#{func.name}(#{arg_names.join(', ')})\n")
       out.pop_indent
@@ -761,7 +782,7 @@ end
     # ImGui module methods
     #
     funcs_map.each do |func|
-      Generator.write_module_method(out, func)
+      Generator.write_module_method(out, func, comments_map['functions'])
     end
 
     Generator.write_overload_module_methods(out, funcs_map, typedefs_map)
