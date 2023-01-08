@@ -4741,6 +4741,15 @@ module ImGui
 
   # Overload functions
 
+  #
+  # Child Windows
+  # - Use child windows to begin into a self-contained independent scrolling/clipping regions within a host window. Child windows can embed their own child.
+  # - For each independent axis of 'size': ==0.0f: use remaining host window size / >0.0f: fixed size / <0.0f: use remaining window size minus abs(size) / Each axis can use a different mode, e.g. ImVec2(0,400).
+  # - BeginChild() returns false to indicate the window is collapsed or fully clipped, so you may early out and omit submitting anything to the window.
+  #   Always call a matching EndChild() for each BeginChild() call, regardless of its return value.
+  #   [Important: due to legacy reason, this is inconsistent with most other functions such as BeginMenu/EndMenu,
+  #    BeginPopup/EndPopup, etc. where the EndXXX call should only be called if the corresponding BeginXXX function
+  #    returned true. Begin and BeginChild are the only odd ones out. Will be fixed in a future update.]
   def self.BeginChild(*arg)
     # arg: 0:str_id(const char*), 1:size(ImVec2), 2:border(bool), 3:flags(ImGuiWindowFlags)
     # ret: bool
@@ -4761,7 +4770,7 @@ module ImGui
     $stderr.puts("[Warning] CheckboxFlags : No matching functions found (#{arg})")
   end
 
-  def self.CollapsingHeader(*arg)
+  def self.CollapsingHeader(*arg)  # if returning 'true' the header is open. doesn't indent nor push on ID stack. user doesn't have to call TreePop().
     # arg: 0:label(const char*), 1:flags(ImGuiTreeNodeFlags)
     # ret: bool
     return igCollapsingHeader_TreeNodeFlags(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
@@ -4771,7 +4780,7 @@ module ImGui
     $stderr.puts("[Warning] CollapsingHeader : No matching functions found (#{arg})")
   end
 
-  def self.Combo(*arg)
+  def self.Combo(*arg)  # Implied popup_max_height_in_items = -1
     # arg: 0:label(const char*), 1:current_item(int*), 2:items(const char* const[]), 3:items_count(int), 4:popup_max_height_in_items(int)
     # ret: bool
     return igCombo_Str_arr(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
@@ -4784,7 +4793,7 @@ module ImGui
     $stderr.puts("[Warning] Combo : No matching functions found (#{arg})")
   end
 
-  def self.GetColorU32(*arg)
+  def self.GetColorU32(*arg)  # Implied alpha_mul = 1.0f
     # arg: 0:idx(ImGuiCol), 1:alpha_mul(float)
     # ret: uint
     return igGetColorU32_Col(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
@@ -4797,7 +4806,7 @@ module ImGui
     $stderr.puts("[Warning] GetColorU32 : No matching functions found (#{arg})")
   end
 
-  def self.GetID(*arg)
+  def self.GetID(*arg)  # calculate unique ID (hash of whole ID stack + given parameter). e.g. if you want to query into ImGuiStorage yourself
     # arg: 0:str_id(const char*)
     # ret: uint
     return igGetID_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
@@ -4810,7 +4819,7 @@ module ImGui
     $stderr.puts("[Warning] GetID : No matching functions found (#{arg})")
   end
 
-  def self.IsRectVisible(*arg)
+  def self.IsRectVisible(*arg)  # test if rectangle (in screen space) is visible / not clipped. to perform coarse clipping on user's side.
     # arg: 0:size(ImVec2)
     # ret: bool
     return igIsRectVisible_Nil(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
@@ -4830,7 +4839,7 @@ module ImGui
     $stderr.puts("[Warning] ListBox : No matching functions found (#{arg})")
   end
 
-  def self.MenuItem(*arg)
+  def self.MenuItem(*arg)  # Implied shortcut = NULL, selected = false, enabled = true
     # arg: 0:label(const char*), 1:shortcut(const char*), 2:selected(bool), 3:enabled(bool)
     # ret: bool
     return igMenuItem_Bool(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
@@ -4840,7 +4849,16 @@ module ImGui
     $stderr.puts("[Warning] MenuItem : No matching functions found (#{arg})")
   end
 
-  def self.OpenPopup(*arg)
+  #
+  # Popups: open/close functions
+  #  - OpenPopup(): set popup state to open. ImGuiPopupFlags are available for opening options.
+  #  - If not modal: they can be closed by clicking anywhere outside them, or by pressing ESCAPE.
+  #  - CloseCurrentPopup(): use inside the BeginPopup()/EndPopup() scope to close manually.
+  #  - CloseCurrentPopup() is called by default by Selectable()/MenuItem() when activated (FIXME: need some options).
+  #  - Use ImGuiPopupFlags_NoOpenOverExistingPopup to avoid opening a popup if there's already one at the same level. This is equivalent to e.g. testing for !IsAnyPopupOpen() prior to OpenPopup().
+  #  - Use IsWindowAppearing() after BeginPopup() to tell if a window just opened.
+  #  - IMPORTANT: Notice that for OpenPopupOnItemClick() we exceptionally default flags to 1 (== ImGuiPopupFlags_MouseButtonRight) for backward compatibility with older API taking 'int mouse_button = 1' parameter
+  def self.OpenPopup(*arg)  # call to mark popup as open (don't call every frame!).
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: void
     return igOpenPopup_Str(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
@@ -4850,7 +4868,7 @@ module ImGui
     $stderr.puts("[Warning] OpenPopup : No matching functions found (#{arg})")
   end
 
-  def self.PlotHistogram(*arg)
+  def self.PlotHistogram(*arg)  # Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0), stride = sizeof(float)
     # arg: 0:label(const char*), 1:values(const float*), 2:values_count(int), 3:values_offset(int), 4:overlay_text(const char*), 5:scale_min(float), 6:scale_max(float), 7:graph_size(ImVec2), 8:stride(int)
     # ret: void
     return igPlotHistogram_FloatPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2) && arg[8].kind_of?(Integer))
@@ -4860,7 +4878,10 @@ module ImGui
     $stderr.puts("[Warning] PlotHistogram : No matching functions found (#{arg})")
   end
 
-  def self.PlotLines(*arg)
+  #
+  # Widgets: Data Plotting
+  # - Consider using ImPlot (https://github.com/epezent/implot) which is much better!
+  def self.PlotLines(*arg)  # Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0), stride = sizeof(float)
     # arg: 0:label(const char*), 1:values(const float*), 2:values_count(int), 3:values_offset(int), 4:overlay_text(const char*), 5:scale_min(float), 6:scale_max(float), 7:graph_size(ImVec2), 8:stride(int)
     # ret: void
     return igPlotLines_FloatPtr(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2) && arg[8].kind_of?(Integer))
@@ -4870,7 +4891,19 @@ module ImGui
     $stderr.puts("[Warning] PlotLines : No matching functions found (#{arg})")
   end
 
-  def self.PushID(*arg)
+  #
+  # ID stack/scopes
+  # Read the FAQ (docs/FAQ.md or http://dearimgui.org/faq) for more details about how ID are handled in dear imgui.
+  # - Those questions are answered and impacted by understanding of the ID stack system:
+  #   - "Q: Why is my widget not reacting when I click on it?"
+  #   - "Q: How can I have widgets with an empty label?"
+  #   - "Q: How can I have multiple widgets with the same label?"
+  # - Short version: ID are hashes of the entire ID stack. If you are creating widgets in a loop you most likely
+  #   want to push a unique identifier (e.g. object pointer, loop index) to uniquely differentiate them.
+  # - You can also use the "Label##foobar" syntax within widget label to distinguish them from each others.
+  # - In this header file we use the "label"/"name" terminology to denote a string that will be displayed + used as an ID,
+  #   whereas "str_id" denote a string that is only used as an ID and not normally displayed.
+  def self.PushID(*arg)  # push string into the ID stack (will hash string).
     # arg: 0:str_id(const char*)
     # ret: void
     return igPushID_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
@@ -4886,7 +4919,7 @@ module ImGui
     $stderr.puts("[Warning] PushID : No matching functions found (#{arg})")
   end
 
-  def self.PushStyleColor(*arg)
+  def self.PushStyleColor(*arg)  # modify a style color. always use this if you modify the style after NewFrame().
     # arg: 0:idx(ImGuiCol), 1:col(ImU32)
     # ret: void
     return igPushStyleColor_U32(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
@@ -4896,7 +4929,7 @@ module ImGui
     $stderr.puts("[Warning] PushStyleColor : No matching functions found (#{arg})")
   end
 
-  def self.PushStyleVar(*arg)
+  def self.PushStyleVar(*arg)  # modify a style float variable. always use this if you modify the style after NewFrame().
     # arg: 0:idx(ImGuiStyleVar), 1:val(float)
     # ret: void
     return igPushStyleVar_Float(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
@@ -4906,7 +4939,7 @@ module ImGui
     $stderr.puts("[Warning] PushStyleVar : No matching functions found (#{arg})")
   end
 
-  def self.RadioButton(*arg)
+  def self.RadioButton(*arg)  # use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; }
     # arg: 0:label(const char*), 1:active(bool)
     # ret: bool
     return igRadioButton_Bool(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
@@ -4916,7 +4949,11 @@ module ImGui
     $stderr.puts("[Warning] RadioButton : No matching functions found (#{arg})")
   end
 
-  def self.Selectable(*arg)
+  #
+  # Widgets: Selectables
+  # - A selectable highlights when hovered, and can display another color when selected.
+  # - Neighbors selectable extend their highlight bounds in order to leave no gap between them. This is so a series of selected Selectable appear contiguous.
+  def self.Selectable(*arg)  # Implied selected = false, flags = 0, size = ImVec2(0, 0)
     # arg: 0:label(const char*), 1:selected(bool), 2:flags(ImGuiSelectableFlags), 3:size(ImVec2)
     # ret: bool
     return igSelectable_Bool(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
@@ -4926,7 +4963,7 @@ module ImGui
     $stderr.puts("[Warning] Selectable : No matching functions found (#{arg})")
   end
 
-  def self.SetWindowCollapsed(*arg)
+  def self.SetWindowCollapsed(*arg)  # (not recommended) set current window collapsed state. prefer using SetNextWindowCollapsed().
     # arg: 0:collapsed(bool), 1:cond(ImGuiCond)
     # ret: void
     return igSetWindowCollapsed_Bool(arg[0], arg[1]) if arg.length == 2 && ((arg[0].is_a?(TrueClass) || arg[0].is_a?(FalseClass)) && arg[1].kind_of?(Integer))
@@ -4936,7 +4973,7 @@ module ImGui
     $stderr.puts("[Warning] SetWindowCollapsed : No matching functions found (#{arg})")
   end
 
-  def self.SetWindowFocus(*arg)
+  def self.SetWindowFocus(*arg)  # (not recommended) set current window to be focused / top-most. prefer using SetNextWindowFocus().
     # arg: 
     # ret: void
     return igSetWindowFocus_Nil() if arg.length == 0 && ()
@@ -4946,7 +4983,7 @@ module ImGui
     $stderr.puts("[Warning] SetWindowFocus : No matching functions found (#{arg})")
   end
 
-  def self.SetWindowPos(*arg)
+  def self.SetWindowPos(*arg)  # (not recommended) set current window position - call within Begin()/End(). prefer using SetNextWindowPos(), as this may incur tearing and side-effects.
     # arg: 0:pos(ImVec2), 1:cond(ImGuiCond)
     # ret: void
     return igSetWindowPos_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
@@ -4956,7 +4993,7 @@ module ImGui
     $stderr.puts("[Warning] SetWindowPos : No matching functions found (#{arg})")
   end
 
-  def self.SetWindowSize(*arg)
+  def self.SetWindowSize(*arg)  # (not recommended) set current window size - call within Begin()/End(). set to ImVec2(0, 0) to force an auto-fit. prefer using SetNextWindowSize(), as this may incur tearing and minor side-effects.
     # arg: 0:size(ImVec2), 1:cond(ImGuiCond)
     # ret: void
     return igSetWindowSize_Vec2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
@@ -4966,6 +5003,9 @@ module ImGui
     $stderr.puts("[Warning] SetWindowSize : No matching functions found (#{arg})")
   end
 
+  #
+  # Widgets: Trees
+  # - TreeNode functions return true when the node is open, in which case you need to also call TreePop() when you are finished displaying the tree node contents.
   def self.TreeNode(*arg)
     # arg: 0:label(const char*)
     # ret: bool
@@ -4992,7 +5032,7 @@ module ImGui
     $stderr.puts("[Warning] TreeNodeEx : No matching functions found (#{arg})")
   end
 
-  def self.TreePush(*arg)
+  def self.TreePush(*arg)  # ~ Indent()+PushId(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
     # arg: 0:str_id(const char*)
     # ret: void
     return igTreePush_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))

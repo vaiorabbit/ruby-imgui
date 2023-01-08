@@ -485,7 +485,7 @@ module Generator
     end
   end
 
-  def self.write_overload_module_methods(out, funcs_map, typedefs_map)
+  def self.write_overload_module_methods(out, funcs_map, typedefs_map, functions_comment_entries = nil)
 
     # extract function names that require overload definition
     original_funcnames = funcs_map.collect {|func| func.original_funcname}.filter {|original_funcname| !original_funcname.empty?}
@@ -501,7 +501,26 @@ module Generator
     overload_funcnames.each do |ofn|
       ovl_funcs = funcs_map.filter {|func| func.original_funcname == ofn}
 
-      out.write("def self.#{ofn}(*arg)\n")
+      function_comment_entry = if functions_comment_entries
+                                 functions_comment_entries["ImGui_#{ofn}"]
+                               else
+                                 nil
+                               end
+
+      if function_comment_entry && !function_comment_entry.comments[:preceding].empty?
+        out.write("#\n")
+        preceding_comments = function_comment_entry.comments[:preceding].split("\n")
+        preceding_comments.each do |preceding_comment|
+          out.write("#{preceding_comment}\n")
+        end
+      end
+
+      if function_comment_entry && !function_comment_entry.comments[:attached].empty?
+        out.write("def self.#{ofn}(*arg) #{function_comment_entry.comments[:attached]}\n")
+      else
+        out.write("def self.#{ofn}(*arg)\n")
+      end
+
       out.push_indent
       ovl_funcs.each do |ovl_func|
 
@@ -785,7 +804,7 @@ end
       Generator.write_module_method(out, func, comments_map['functions'])
     end
 
-    Generator.write_overload_module_methods(out, funcs_map, typedefs_map)
+    Generator.write_overload_module_methods(out, funcs_map, typedefs_map, comments_map['functions'])
 
     #
     # Epilogue
