@@ -1,3 +1,7 @@
+2023-01-09  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* Added Linux binaries (Only tested on aarch64 Chromebook Linux)
+
 2023-01-08  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* Generate function comments in bindings codes

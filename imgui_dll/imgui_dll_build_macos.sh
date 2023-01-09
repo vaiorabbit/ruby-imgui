@@ -1,6 +1,3 @@
-#
-# For Mac OS X + Xcode + CMake users.
-#
 mkdir build
 cd build
 export MACOSX_DEPLOYMENT_TARGET=11.5

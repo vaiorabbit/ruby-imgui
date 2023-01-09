@@ -12,7 +12,10 @@ when /darwin/
   ImGui.import_internal_symbols()
   ImNodes.load_lib(Dir.pwd + '/../lib/' + 'imnodes.dylib')
 when /linux/
-  ImGui.load_lib(Dir.pwd + '/../lib/' + 'imgui.so')
+  arch = RUBY_PLATFORM.split('-')[0]
+  ImGui.load_lib(Dir.pwd + '/../lib/' + "imgui.#{arch}.so")
+  ImGui.import_internal_symbols()
+  ImNodes.load_lib(Dir.pwd + '/../lib/' + "imnodes.#{arch}.so")
 else
   raise RuntimeError, "setup_dll.rb : Unknown OS: #{RUBY_PLATFORM}"
 end

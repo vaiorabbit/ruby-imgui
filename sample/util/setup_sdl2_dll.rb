@@ -23,7 +23,7 @@ when /mswin|msys|mingw|cygwin/
 when /darwin/
   SDL.load_lib(Dir.pwd + '/' + 'libSDL2.dylib')
 when /linux/
-  SDL.load_lib('/usr/local/lib/libSDL2.so') # not tested
+  SDL.load_lib("/usr/lib/#{RUBY_PLATFORM}-gnu/libSDL2.so")
 else
   raise RuntimeError, "Unknown OS: #{RUBY_PLATFORM}"
 end
