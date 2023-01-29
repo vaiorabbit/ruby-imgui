@@ -1,5 +1,7 @@
 backup/*
-imgui_dll/*build*
-imnodes_dll/*build*
+imgui_dll/build/*
+imgui_dll/bak/*
+imnodes_dll/build/*
+imnodes_dll/bak/*
 third_party/SDL2-*
 third_party/glfw/*
