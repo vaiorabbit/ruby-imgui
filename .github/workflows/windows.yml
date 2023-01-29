@@ -1,0 +1,59 @@
+name: Build (Windows)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: 'update'
+        fetch-depth: 1
+        submodules: recursive
+
+    - name: Install MSYS2 luajit
+      continue-on-error: true
+      shell: cmd
+      run: |
+        C:\msys64\usr\bin\pacman -S --noconfirm mingw-w64-x86_64-luajit
+        C:\msys64\mingw64\bin\luajit.exe -v
+
+    - name: Generate cimgui code
+      shell: cmd
+      run: |
+        cd imgui_dll\cimgui\generator
+        C:\msys64\mingw64\bin\luajit.exe generator.lua gcc "" glfw opengl3 opengl2 sdl
+        git diff
+        cd ..\..\..
+
+    - name: Build imgui dll
+      shell: cmd
+      run: |
+        cd imgui_dll
+        build_imgui_windows.cmd cmake
+        cd ..
+
+    - name: Build imnodes dll
+      shell: cmd
+      run: |
+        cd imnodes_dll
+        build_imnodes_windows.cmd cmake
+        cd ..
+
+    - name: Commit new libraries
+      continue-on-error: true
+      run: |
+        git config user.name "bot"
+        git config user.email "bot"
+        git add lib/*
+        git commit -a -m "commit by bot"
+        git push --force-with-lease -u origin update
