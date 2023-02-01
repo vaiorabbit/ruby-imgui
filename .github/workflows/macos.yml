@@ -1,0 +1,54 @@
+name: Build (macOS)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: 'update'
+        fetch-depth: 1
+        submodules: recursive
+
+    - name: Install luajit
+      continue-on-error: true
+      run: |
+        sudo brew install luajit
+        luajit -v
+
+    - name: Generate cimgui code
+      run: |
+        cd imgui_dll/cimgui/generator
+        luajit generator.lua gcc "" glfw opengl3 opengl2 sdl
+        cd ../../..
+
+    - name: Build imgui so
+      run: |
+        cd imgui_dll
+        bash ./build_imgui_macos.sh
+        cd ..
+
+    - name: Build imnodes so
+      run: |
+        cd imnodes_dll
+        bash ./build_imnodes_macos.sh
+        cd ..
+
+    - name: Commit new libraries
+      continue-on-error: true
+      run: |
+        git config user.name "bot"
+        git config user.email "bot"
+        git add lib/*
+        git commit -a -m "commit by bot"
+        git push --force-with-lease -u origin update
