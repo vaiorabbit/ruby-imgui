@@ -7,16 +7,14 @@ jobs:
   build:
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       max-parallel: 1
 
     steps:
     - name: Install luajit
-      continue-on-error: false
       run: |
-        brew update
         brew install luajit
         luajit -v
 
