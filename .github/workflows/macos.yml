@@ -13,18 +13,19 @@ jobs:
       max-parallel: 1
 
     steps:
+    - name: Install luajit
+      continue-on-error: false
+      run: |
+        brew update
+        brew install luajit
+        luajit -v
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
         ref: 'update'
         fetch-depth: 1
         submodules: recursive
-
-    - name: Install luajit
-      continue-on-error: true
-      run: |
-        sudo brew install luajit
-        luajit -v
 
     - name: Generate cimgui code
       run: |
