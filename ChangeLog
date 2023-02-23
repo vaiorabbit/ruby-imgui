@@ -1,6 +1,7 @@
 2023-02-23  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* ImGui v1.89.3
+	* sample/basic_usage.rb: Added ImGui::SeparatorText demo
 
 2023-01-09  vaiorabbit  <http://twitter.com/vaiorabbit>
 

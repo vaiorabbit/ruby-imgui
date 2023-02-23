@@ -90,6 +90,7 @@ if __FILE__ == $PROGRAM_NAME
     ImGuiDemo::MainMenuBarWindow::Show()
     ImGuiDemo::ClippingAndDummyWindow::Show()
     ImGuiDemo::StackToolWindow::Show()
+    ImGuiDemo::SeparatorTextWindow::Show()
     ok_clicked = ImGuiDemo::PopupWindow::Show()
     done = true if ok_clicked
 

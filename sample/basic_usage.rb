@@ -865,6 +865,25 @@ end
 
 ####################################################################################################
 
+# Available since v1.89.3
+module ImGuiDemo::SeparatorTextWindow
+  def self.Show(is_open = nil)
+    ImGui::PushFont(ImGuiDemo::GetFont())
+    ImGui::Begin("セパレーター")
+
+    ImGui::Separator()
+    ImGui::Text("通常のセパレーター")
+
+    ImGui::SeparatorText("Hello")
+    ImGui::Text("テキスト付きセパレーター")
+
+    ImGui::End()
+    ImGui::PopFont()
+  end
+end
+
+####################################################################################################
+
 module ImGuiDemo::PopupWindow
 
   def self.Show(is_open = nil)
