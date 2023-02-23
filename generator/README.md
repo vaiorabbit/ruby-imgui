@@ -21,7 +21,7 @@ Generate JSON (definitions.json, etc.) files that contain only public definition
     ~/ruby-imgui
 
     $ cd cimgui/generator
-    $ luajit ./generator.lua {clang|gcc} "" glfw opengl3 opengl2 sdl
+    $ luajit ./generator.lua {clang|gcc} ""
 
 ## Run generator ##
 

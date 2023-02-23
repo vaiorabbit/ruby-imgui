@@ -584,32 +584,35 @@ ImGuiSortDirection_Descending = 2 # 2 # Descending = 9->0, Z->A etc.
 #   In Visual Studio IDE: CTRL+comma ("Edit.GoToAll") can follow symbols in comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
 #   With Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols in comments.
 # - When changing this enum, you need to update the associated internal table GStyleVarInfo[] accordingly. This is where we link enum values to members offset/type.
-ImGuiStyleVar_Alpha = 0                # 0 # float     Alpha
-ImGuiStyleVar_DisabledAlpha = 1        # 1 # float     DisabledAlpha
-ImGuiStyleVar_WindowPadding = 2        # 2 # ImVec2    WindowPadding
-ImGuiStyleVar_WindowRounding = 3       # 3 # float     WindowRounding
-ImGuiStyleVar_WindowBorderSize = 4     # 4 # float     WindowBorderSize
-ImGuiStyleVar_WindowMinSize = 5        # 5 # ImVec2    WindowMinSize
-ImGuiStyleVar_WindowTitleAlign = 6     # 6 # ImVec2    WindowTitleAlign
-ImGuiStyleVar_ChildRounding = 7        # 7 # float     ChildRounding
-ImGuiStyleVar_ChildBorderSize = 8      # 8 # float     ChildBorderSize
-ImGuiStyleVar_PopupRounding = 9        # 9 # float     PopupRounding
-ImGuiStyleVar_PopupBorderSize = 10     # 10 # float     PopupBorderSize
-ImGuiStyleVar_FramePadding = 11        # 11 # ImVec2    FramePadding
-ImGuiStyleVar_FrameRounding = 12       # 12 # float     FrameRounding
-ImGuiStyleVar_FrameBorderSize = 13     # 13 # float     FrameBorderSize
-ImGuiStyleVar_ItemSpacing = 14         # 14 # ImVec2    ItemSpacing
-ImGuiStyleVar_ItemInnerSpacing = 15    # 15 # ImVec2    ItemInnerSpacing
-ImGuiStyleVar_IndentSpacing = 16       # 16 # float     IndentSpacing
-ImGuiStyleVar_CellPadding = 17         # 17 # ImVec2    CellPadding
-ImGuiStyleVar_ScrollbarSize = 18       # 18 # float     ScrollbarSize
-ImGuiStyleVar_ScrollbarRounding = 19   # 19 # float     ScrollbarRounding
-ImGuiStyleVar_GrabMinSize = 20         # 20 # float     GrabMinSize
-ImGuiStyleVar_GrabRounding = 21        # 21 # float     GrabRounding
-ImGuiStyleVar_TabRounding = 22         # 22 # float     TabRounding
-ImGuiStyleVar_ButtonTextAlign = 23     # 23 # ImVec2    ButtonTextAlign
-ImGuiStyleVar_SelectableTextAlign = 24 # 24 # ImVec2    SelectableTextAlign
-ImGuiStyleVar_COUNT = 25               # 25
+ImGuiStyleVar_Alpha = 0                    # 0 # float     Alpha
+ImGuiStyleVar_DisabledAlpha = 1            # 1 # float     DisabledAlpha
+ImGuiStyleVar_WindowPadding = 2            # 2 # ImVec2    WindowPadding
+ImGuiStyleVar_WindowRounding = 3           # 3 # float     WindowRounding
+ImGuiStyleVar_WindowBorderSize = 4         # 4 # float     WindowBorderSize
+ImGuiStyleVar_WindowMinSize = 5            # 5 # ImVec2    WindowMinSize
+ImGuiStyleVar_WindowTitleAlign = 6         # 6 # ImVec2    WindowTitleAlign
+ImGuiStyleVar_ChildRounding = 7            # 7 # float     ChildRounding
+ImGuiStyleVar_ChildBorderSize = 8          # 8 # float     ChildBorderSize
+ImGuiStyleVar_PopupRounding = 9            # 9 # float     PopupRounding
+ImGuiStyleVar_PopupBorderSize = 10         # 10 # float     PopupBorderSize
+ImGuiStyleVar_FramePadding = 11            # 11 # ImVec2    FramePadding
+ImGuiStyleVar_FrameRounding = 12           # 12 # float     FrameRounding
+ImGuiStyleVar_FrameBorderSize = 13         # 13 # float     FrameBorderSize
+ImGuiStyleVar_ItemSpacing = 14             # 14 # ImVec2    ItemSpacing
+ImGuiStyleVar_ItemInnerSpacing = 15        # 15 # ImVec2    ItemInnerSpacing
+ImGuiStyleVar_IndentSpacing = 16           # 16 # float     IndentSpacing
+ImGuiStyleVar_CellPadding = 17             # 17 # ImVec2    CellPadding
+ImGuiStyleVar_ScrollbarSize = 18           # 18 # float     ScrollbarSize
+ImGuiStyleVar_ScrollbarRounding = 19       # 19 # float     ScrollbarRounding
+ImGuiStyleVar_GrabMinSize = 20             # 20 # float     GrabMinSize
+ImGuiStyleVar_GrabRounding = 21            # 21 # float     GrabRounding
+ImGuiStyleVar_TabRounding = 22             # 22 # float     TabRounding
+ImGuiStyleVar_ButtonTextAlign = 23         # 23 # ImVec2    ButtonTextAlign
+ImGuiStyleVar_SelectableTextAlign = 24     # 24 # ImVec2    SelectableTextAlign
+ImGuiStyleVar_SeparatorTextBorderSize = 25 # 25 # float  SeparatorTextBorderSize
+ImGuiStyleVar_SeparatorTextAlign = 26      # 26 # ImVec2    SeparatorTextAlign
+ImGuiStyleVar_SeparatorTextPadding = 27    # 27 # ImVec2    SeparatorTextPadding
+ImGuiStyleVar_COUNT = 28                   # 28
 
 # ImGuiTabBarFlags_
 # Flags for ImGui::BeginTabBar()
@@ -1387,8 +1390,10 @@ class ImFont < FFI::Struct
     :ConfigData, :pointer,              # 4-8   // in  //            // Pointer within ContainerAtlas->ConfigData
     :ConfigDataCount, :short,           # 2     // in  // ~ 1        // Number of ImFontConfig involved in creating this font. Bigger than 1 when merging multiple font sources into one ImFont.
     :FallbackChar, :ushort,             # 2     // out // = FFFD/'?' // Character used if a glyph isn't found.
-    :EllipsisChar, :ushort,             # 2     // out // = '...'    // Character used for ellipsis rendering.
-    :DotChar, :ushort,                  # 2     // out // = '.'      // Character used for ellipsis rendering (if a single '...' character isn't found)
+    :EllipsisChar, :ushort,             # 2     // out // = '...'/'.'// Character used for ellipsis rendering.
+    :EllipsisCharCount, :short,         # 1     // out // 1 or 3
+    :EllipsisWidth, :float,             # 4     // out               // Width
+    :EllipsisCharStep, :float,          # 4     // out               // Step between characters when EllipsisCount > 0
     :DirtyLookupTables, :bool,          # 1     // out //
     :Scale, :float,                     # 4     // in  // = 1.f      // Base font scale, multiplied by the per-window font scale which you can adjust with SetWindowFontScale()
     :Ascent, :float,                    # 4+4   // out //            // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize]
@@ -1424,7 +1429,7 @@ class ImFontConfig < FFI::Struct
     :PixelSnapH, :bool,                   # false    // Align every glyph to pixel boundary. Useful e.g. if you are merging a non-pixel aligned font with the default font. If enabled, you can set OversampleH/V to 1.
     :GlyphExtraSpacing, ImVec2.by_value,  # 0, 0     // Extra spacing (in pixels) between glyphs. Only X axis is supported for now.
     :GlyphOffset, ImVec2.by_value,        # 0, 0     // Offset all glyphs from this font input.
-    :GlyphRanges, :pointer,               # NULL     // Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list). THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE.
+    :GlyphRanges, :pointer,               # NULL     // THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE. Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list).
     :GlyphMinAdvanceX, :float,            # 0        // Minimum AdvanceX for glyphs, set Min to align font icons, set both Min/Max to enforce mono-space font
     :GlyphMaxAdvanceX, :float,            # FLT_MAX  // Maximum AdvanceX for glyphs
     :MergeMode, :bool,                    # false    // Merge into previous ImFont, so you can combine multiple inputs font into one ImFont (e.g. ASCII font + icons + Japanese glyphs). You may want to use GlyphOffset.y when merge font of different heights.
@@ -1550,8 +1555,8 @@ class ImGuiIO < FFI::Struct
     :NavInputs, [:float, 16],                     # [LEGACY] Since 1.88, NavInputs[] was removed. Backends from 1.60 to 1.86 won't build. Feed gamepad inputs via io.AddKeyEvent() and ImGuiKey_GamepadXXX enums.
     :MousePos, ImVec2.by_value,                   # Mouse position, in pixels. Set to ImVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)
     :MouseDown, [:bool, 5],                       # Mouse buttons: 0=left, 1=right, 2=middle + extras (ImGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API.
-    :MouseWheel, :float,                          # Mouse wheel Vertical: 1 unit scrolls about 5 lines text.
-    :MouseWheelH, :float,                         # Mouse wheel Horizontal. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends.
+    :MouseWheel, :float,                          # Mouse wheel Vertical: 1 unit scrolls about 5 lines text. >0 scrolls Up, <0 scrolls Down. Hold SHIFT to turn vertical scroll into horizontal scroll.
+    :MouseWheelH, :float,                         # Mouse wheel Horizontal. >0 scrolls Left, <0 scrolls Right. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends.
     :KeyCtrl, :bool,                              # Keyboard modifier down: Control
     :KeyShift, :bool,                             # Keyboard modifier down: Shift
     :KeyAlt, :bool,                               # Keyboard modifier down: Alt
@@ -1613,8 +1618,8 @@ class ImGuiIO < FFI::Struct
     ImGui::ImGuiIO_AddMousePosEvent(self, x, y)
   end
 
-  def AddMouseWheelEvent(wh_x, wh_y)
-    ImGui::ImGuiIO_AddMouseWheelEvent(self, wh_x, wh_y)
+  def AddMouseWheelEvent(wheel_x, wheel_y)
+    ImGui::ImGuiIO_AddMouseWheelEvent(self, wheel_x, wheel_y)
   end
 
   def ClearInputCharacters()
@@ -1723,6 +1728,9 @@ class ImGuiStyle < FFI::Struct
     :ColorButtonPosition, :int,                # Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
     :ButtonTextAlign, ImVec2.by_value,         # Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
     :SelectableTextAlign, ImVec2.by_value,     # Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+    :SeparatorTextBorderSize, :float,          # Thickkness of border in SeparatorText()
+    :SeparatorTextAlign, ImVec2.by_value,      # Alignment of text within the separator. Defaults to (0.0f, 0.5f) (left aligned, center).
+    :SeparatorTextPadding, ImVec2.by_value,    # Horizontal offset of text from each edge of the separator + spacing on other axis. Generally small values. .y is recommended to be == FramePadding.y.
     :DisplayWindowPadding, ImVec2.by_value,    # Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
     :DisplaySafeAreaPadding, ImVec2.by_value,  # If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly!
     :MouseCursorScale, :float,                 # Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
@@ -2275,6 +2283,7 @@ module ImGui
       [:igSelectable_Bool, [:pointer, :bool, :int, ImVec2.by_value], :bool],
       [:igSelectable_BoolPtr, [:pointer, :pointer, :int, ImVec2.by_value], :bool],
       [:igSeparator, [], :void],
+      [:igSeparatorText, [:pointer], :void],
       [:igSetAllocatorFunctions, [:pointer, :pointer, :pointer], :void],
       [:igSetClipboardText, [:pointer], :void],
       [:igSetColorEditOptions, [:int], :void],
@@ -4062,6 +4071,12 @@ module ImGui
   #    Absolute coordinate:        GetCursorScreenPos(), SetCursorScreenPos(), all ImDrawList:: functions.
   def self.Separator()  # separator, generally horizontal. inside a menu bar or in horizontal layout mode, this becomes a vertical separator.
     igSeparator()
+  end
+
+  # arg: label(const char*)
+  # ret: void
+  def self.SeparatorText(label)  # currently: formatted text with an horizontal line
+    igSeparatorText(label)
   end
 
   # arg: alloc_func(ImGuiMemAllocFunc), free_func(ImGuiMemFreeFunc), user_data(void*)

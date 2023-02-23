@@ -2,11 +2,11 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.89.2\""
+            "content": "\"1.89.3\""
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "18920"
+            "content": "18930"
         },
         {
             "name": "IM_MSVC_RUNTIME_CHECKS_OFF",
@@ -3514,6 +3514,24 @@
                     }
                 },
                 {
+                    "name": "ImGuiStyleVar_SeparatorTextBorderSize",
+                    "comments": {
+                        "attached": "// float  SeparatorTextBorderSize"
+                    }
+                },
+                {
+                    "name": "ImGuiStyleVar_SeparatorTextAlign",
+                    "comments": {
+                        "attached": "// ImVec2    SeparatorTextAlign"
+                    }
+                },
+                {
+                    "name": "ImGuiStyleVar_SeparatorTextPadding",
+                    "comments": {
+                        "attached": "// ImVec2    SeparatorTextPadding"
+                    }
+                },
+                {
                     "name": "ImGuiStyleVar_COUNT"
                 }
             ],
@@ -6451,6 +6469,51 @@
                 {
                     "names": [
                         {
+                            "name": "SeparatorTextBorderSize",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "float"
+                    },
+                    "comments": {
+                        "attached": "// Thickkness of border in SeparatorText()"
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "SeparatorTextAlign",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImVec2"
+                    },
+                    "comments": {
+                        "attached": "// Alignment of text within the separator. Defaults to (0.0f, 0.5f) (left aligned, center)."
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "SeparatorTextPadding",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImVec2"
+                    },
+                    "comments": {
+                        "attached": "// Horizontal offset of text from each edge of the separator + spacing on other axis. Generally small values. .y is recommended to be == FramePadding.y."
+                    }
+                },
+                {
+                    "names": [
+                        {
                             "name": "DisplayWindowPadding",
                             "is_array": false
                         }
@@ -7653,7 +7716,7 @@
                         "declaration": "float"
                     },
                     "comments": {
-                        "attached": "// Mouse wheel Vertical: 1 unit scrolls about 5 lines text."
+                        "attached": "// Mouse wheel Vertical: 1 unit scrolls about 5 lines text. >0 scrolls Up, <0 scrolls Down. Hold SHIFT to turn vertical scroll into horizontal scroll."
                     }
                 },
                 {
@@ -7668,7 +7731,7 @@
                         "declaration": "float"
                     },
                     "comments": {
-                        "attached": "// Mouse wheel Horizontal. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends."
+                        "attached": "// Mouse wheel Horizontal. >0 scrolls Left, <0 scrolls Right. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends."
                     }
                 },
                 {
@@ -9969,7 +10032,7 @@
                         "declaration": "const ImWchar*"
                     },
                     "comments": {
-                        "attached": "// NULL     // Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list). THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE."
+                        "attached": "// NULL     // THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE. Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list)."
                     }
                 },
                 {
@@ -10941,22 +11004,52 @@
                         "declaration": "ImWchar"
                     },
                     "comments": {
-                        "attached": "// 2     // out // = '...'    // Character used for ellipsis rendering."
+                        "attached": "// 2     // out // = '...'/'.'// Character used for ellipsis rendering."
                     }
                 },
                 {
                     "names": [
                         {
-                            "name": "DotChar",
+                            "name": "EllipsisCharCount",
                             "is_array": false
                         }
                     ],
                     "is_anonymous": false,
                     "type": {
-                        "declaration": "ImWchar"
+                        "declaration": "short"
                     },
                     "comments": {
-                        "attached": "// 2     // out // = '.'      // Character used for ellipsis rendering (if a single '...' character isn't found)"
+                        "attached": "// 1     // out // 1 or 3"
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "EllipsisWidth",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "float"
+                    },
+                    "comments": {
+                        "attached": "// 4     // out               // Width"
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "EllipsisCharStep",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "float"
+                    },
+                    "comments": {
+                        "attached": "// 4     // out               // Step between characters when EllipsisCount > 0"
                     }
                 },
                 {
@@ -14647,6 +14740,30 @@
             "is_manual_helper": false,
             "is_imstr_helper": false,
             "has_imstr_helper": false
+        },
+        {
+            "name": "ImGui_SeparatorText",
+            "original_fully_qualified_name": "ImGui::SeparatorText",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "label",
+                    "type": {
+                        "declaration": "const char*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "attached": "// currently: formatted text with an horizontal line"
+            }
         },
         {
             "name": "ImGui_Button",
@@ -26361,7 +26478,7 @@
                     "is_varargs": false
                 },
                 {
-                    "name": "wh_x",
+                    "name": "wheel_x",
                     "type": {
                         "declaration": "float"
                     },
@@ -26369,7 +26486,7 @@
                     "is_varargs": false
                 },
                 {
-                    "name": "wh_y",
+                    "name": "wheel_y",
                     "type": {
                         "declaration": "float"
                     },
@@ -26382,7 +26499,7 @@
             "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "attached": "// Queue a mouse wheel update"
+                "attached": "// Queue a mouse wheel update. wheel_y<0: scroll down, wheel_y>0: scroll up, wheel_x<0: scroll right, wheel_x>0: scroll left."
             }
         },
         {
