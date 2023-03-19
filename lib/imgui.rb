@@ -223,7 +223,7 @@ ImGuiCond_Appearing = 8    # 1 << 3 # Set the variable if the object/window is a
 # ImGuiConfigFlags_
 # Configuration flags stored in io.ConfigFlags. Set by user/application.
 ImGuiConfigFlags_None = 0                 # 0
-ImGuiConfigFlags_NavEnableKeyboard = 1    # 1 << 0 # Master keyboard navigation enable flag.
+ImGuiConfigFlags_NavEnableKeyboard = 1    # 1 << 0 # Master keyboard navigation enable flag. Enable full Tabbing + directional arrows + space/enter to activate.
 ImGuiConfigFlags_NavEnableGamepad = 2     # 1 << 1 # Master gamepad navigation enable flag. Backend also needs to set ImGuiBackendFlags_HasGamepad.
 ImGuiConfigFlags_NavEnableSetMousePos = 4 # 1 << 2 # Instruct navigation to move the mouse cursor. May be useful on TV/console systems where moving a virtual mouse is awkward. Will update io.MousePos and set io.WantSetMousePos=true. If enabled you MUST honor io.WantSetMousePos requests in your backend, otherwise ImGui will react as if the mouse is jumping around back and forth.
 ImGuiConfigFlags_NavNoCaptureKeyboard = 8 # 1 << 3 # Instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive is set.
@@ -329,6 +329,7 @@ ImGuiInputTextFlags_EscapeClearsAll = 1048576  # 1 << 20 # Escape key clears con
 # All our named keys are >= 512. Keys value 0 to 511 are left unused as legacy native/opaque key values (< 1.87).
 # Since >= 1.89 we increased typing (went from int to enum), some legacy code may need a cast to ImGuiKey.
 # Read details about the 1.87 and 1.89 transition : https://github.com/ocornut/imgui/issues/4921
+# Note that "Keys" related to physical keys and are not the same concept as input "Characters", the later are submitted via io.AddInputCharacter().
 ImGuiKey_None = 0                  # 0
 ImGuiKey_Tab = 512                 # 512 # == ImGuiKey_NamedKey_BEGIN
 ImGuiKey_LeftArrow = 513           # 513
@@ -482,7 +483,7 @@ ImGuiKey_NamedKey_BEGIN = 512      # 512
 ImGuiKey_NamedKey_END = 652        # ImGuiKey_COUNT
 ImGuiKey_NamedKey_COUNT = 140      # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
 ImGuiKey_KeysData_SIZE = 652       # ImGuiKey_COUNT # Size of KeysData[]: hold legacy 0..512 keycodes + named keys
-ImGuiKey_KeysData_OFFSET = 0       # 0 # First key stored in io.KeysData[0]. Accesses to io.KeysData[] must use (key - ImGuiKey_KeysData_OFFSET).
+ImGuiKey_KeysData_OFFSET = 0       # 0 # Accesses to io.KeysData[] must use (key - ImGuiKey_KeysData_OFFSET) index.
 
 # ImGuiMouseButton_
 # Identify a mouse button.
@@ -1526,6 +1527,8 @@ class ImGuiIO < FFI::Struct
     :ConfigWindowsResizeFromEdges, :bool,         # = true           // Enable resizing of windows from their edges and from the lower-left corner. This requires (io.BackendFlags & ImGuiBackendFlags_HasMouseCursors) because it needs mouse cursor feedback. (This used to be a per-window ImGuiWindowFlags_ResizeFromAnySide flag)
     :ConfigWindowsMoveFromTitleBarOnly, :bool,    # = false       // Enable allowing to move windows only when clicking on their title bar. Does not apply to windows without a title bar.
     :ConfigMemoryCompactTimer, :float,            # = 60.0f          // Timer (in seconds) to free transient windows/tables memory buffers when unused. Set to -1.0f to disable.
+    :ConfigDebugBeginReturnValueOnce, :bool,      # = false         // First-time calls to Begin()/BeginChild() will return false. NEEDS TO BE SET AT APPLICATION BOOT TIME if you don't want to miss windows.
+    :ConfigDebugBeginReturnValueLoop, :bool,      # = false         // Some calls to Begin()/BeginChild() will return false. Will cycle through window depths then repeat. Suggested use: add "io.ConfigDebugBeginReturnValue = io.KeyShift" in your main loop then occasionally press SHIFT. Windows should be flickering while running.
     :BackendPlatformName, :pointer,               # = NULL
     :BackendRendererName, :pointer,               # = NULL
     :BackendPlatformUserData, :pointer,           # = NULL           // User data for platform backend
@@ -1553,6 +1556,7 @@ class ImGuiIO < FFI::Struct
     :KeyMap, [:int, 652],                         # [LEGACY] Input: map of indices into the KeysDown[512] entries array which represent your "native" keyboard state. The first 512 are now unused and should be kept zero. Legacy backend will write into KeyMap[] using ImGuiKey_ indices which are always >512.
     :KeysDown, [:bool, 652],                      # [LEGACY] Input: Keyboard keys that are pressed (ideally left in the "native" order your engine has access to keyboard keys, so you can use your own defines/enums for keys). This used to be [512] sized. It is now ImGuiKey_COUNT to allow legacy io.KeysDown[GetKeyIndex(...)] to work without an overflow.
     :NavInputs, [:float, 16],                     # [LEGACY] Since 1.88, NavInputs[] was removed. Backends from 1.60 to 1.86 won't build. Feed gamepad inputs via io.AddKeyEvent() and ImGuiKey_GamepadXXX enums.
+    :Ctx, :pointer,                               # Parent UI context (needs to be set explicitly by parent).
     :MousePos, ImVec2.by_value,                   # Mouse position, in pixels. Set to ImVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)
     :MouseDown, [:bool, 5],                       # Mouse buttons: 0=left, 1=right, 2=middle + extras (ImGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API.
     :MouseWheel, :float,                          # Mouse wheel Vertical: 1 unit scrolls about 5 lines text. >0 scrolls Up, <0 scrolls Down. Hold SHIFT to turn vertical scroll into horizontal scroll.
@@ -1659,6 +1663,7 @@ end
 # - ImGuiInputTextFlags_CallbackResize:      Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow.
 class ImGuiInputTextCallbackData < FFI::Struct
   layout(
+    :Ctx, :pointer,         # Parent UI context
     :EventFlag, :int,       # One ImGuiInputTextFlags_Callback*    // Read-only
     :Flags, :int,           # What user passed to InputText()      // Read-only
     :UserData, :pointer,    # What user passed to InputText()      // Read-only
@@ -2050,7 +2055,7 @@ module ImGui
       [:igBeginTabBar, [:pointer, :int], :bool],
       [:igBeginTabItem, [:pointer, :pointer, :int], :bool],
       [:igBeginTable, [:pointer, :int, :int, ImVec2.by_value, :float], :bool],
-      [:igBeginTooltip, [], :void],
+      [:igBeginTooltip, [], :bool],
       [:igBullet, [], :void],
       [:igBulletText, [:pointer, :varargs], :void],
       [:igButton, [:pointer, ImVec2.by_value], :bool],
@@ -2249,7 +2254,6 @@ module ImGui
       [:igPlotHistogram_FnFloatPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void],
       [:igPlotLines_FloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void],
       [:igPlotLines_FnFloatPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void],
-      [:igPopAllowKeyboardFocus, [], :void],
       [:igPopButtonRepeat, [], :void],
       [:igPopClipRect, [], :void],
       [:igPopFont, [], :void],
@@ -2257,9 +2261,9 @@ module ImGui
       [:igPopItemWidth, [], :void],
       [:igPopStyleColor, [:int], :void],
       [:igPopStyleVar, [:int], :void],
+      [:igPopTabStop, [], :void],
       [:igPopTextWrapPos, [], :void],
       [:igProgressBar, [:float, ImVec2.by_value, :pointer], :void],
-      [:igPushAllowKeyboardFocus, [:bool], :void],
       [:igPushButtonRepeat, [:bool], :void],
       [:igPushClipRect, [ImVec2.by_value, ImVec2.by_value, :bool], :void],
       [:igPushFont, [:pointer], :void],
@@ -2272,6 +2276,7 @@ module ImGui
       [:igPushStyleColor_Vec4, [:int, ImVec4.by_value], :void],
       [:igPushStyleVar_Float, [:int, :float], :void],
       [:igPushStyleVar_Vec2, [:int, ImVec2.by_value], :void],
+      [:igPushTabStop, [:bool], :void],
       [:igPushTextWrapPos, [:float], :void],
       [:igRadioButton_Bool, [:pointer, :bool], :bool],
       [:igRadioButton_IntPtr, [:pointer, :pointer, :int], :bool],
@@ -2624,7 +2629,7 @@ module ImGui
     igBeginTable(str_id, column, flags, outer_size, inner_width)
   end
 
-  # ret: void
+  # ret: bool
   #
   # Tooltips
   # - Tooltip are windows following the mouse. They do not take focus away.
@@ -3000,7 +3005,7 @@ module ImGui
   end
 
   # ret: void
-  def self.EndTooltip()
+  def self.EndTooltip()  # only call EndTooltip() if BeginTooltip() returns true!
     igEndTooltip()
   end
 
@@ -3864,11 +3869,6 @@ module ImGui
   end
 
   # ret: void
-  def self.PopAllowKeyboardFocus()
-    igPopAllowKeyboardFocus()
-  end
-
-  # ret: void
   def self.PopButtonRepeat()
     igPopButtonRepeat()
   end
@@ -3906,6 +3906,11 @@ module ImGui
   end
 
   # ret: void
+  def self.PopTabStop()
+    igPopTabStop()
+  end
+
+  # ret: void
   def self.PopTextWrapPos()
     igPopTextWrapPos()
   end
@@ -3914,12 +3919,6 @@ module ImGui
   # ret: void
   def self.ProgressBar(fraction, size_arg = ImVec2.create(-FLT_MIN,0), overlay = nil)
     igProgressBar(fraction, size_arg, overlay)
-  end
-
-  # arg: allow_keyboard_focus(bool)
-  # ret: void
-  def self.PushAllowKeyboardFocus(allow_keyboard_focus)  # == tab stop enable. Allow focusing using TAB/Shift-TAB, enabled by default but you can disable it for certain widgets
-    igPushAllowKeyboardFocus(allow_keyboard_focus)
   end
 
   # arg: repeat(bool)
@@ -3999,6 +3998,12 @@ module ImGui
   # ret: void
   def self.PushStyleVar_Vec2(idx, val)
     igPushStyleVar_Vec2(idx, val)
+  end
+
+  # arg: tab_stop(bool)
+  # ret: void
+  def self.PushTabStop(tab_stop)  # == tab stop enable. Allow focusing using TAB/Shift-TAB, enabled by default but you can disable it for certain widgets
+    igPushTabStop(tab_stop)
   end
 
   # arg: wrap_local_pos_x(float)

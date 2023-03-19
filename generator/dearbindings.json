@@ -2,11 +2,11 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.89.3\""
+            "content": "\"1.89.4\""
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "18930"
+            "content": "18940"
         },
         {
             "name": "IM_MSVC_RUNTIME_CHECKS_OFF",
@@ -600,19 +600,6 @@
                     "comments": {
                         "attached": "// Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)"
                     }
-                },
-                {
-                    "name": "ImGuiInputTextFlags_AlwaysInsertMode",
-                    "value": "ImGuiInputTextFlags_AlwaysOverwrite",
-                    "comments": {
-                        "attached": "// [renamed in 1.82] name was not matching behavior"
-                    },
-                    "conditionals": [
-                        {
-                            "condition": "ifndef",
-                            "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
-                        }
-                    ]
                 }
             ],
             "comments": {
@@ -2709,7 +2696,8 @@
                     "comments": {
                         "preceding": [
                             "// [Internal] Prior to 1.87 we required user to fill io.KeysDown[512] using their own native index + the io.KeyMap[] array.",
-                            "// We are ditching this method but keeping a legacy path for user code doing e.g. IsKeyPressed(MY_NATIVE_KEY_CODE)"
+                            "// We are ditching this method but keeping a legacy path for user code doing e.g. IsKeyPressed(MY_NATIVE_KEY_CODE)",
+                            "// If you need to iterate all keys (for e.g. an input mapper) you may use ImGuiKey_NamedKey_BEGIN..ImGuiKey_NamedKey_END."
                         ]
                     },
                     "is_internal": true
@@ -2741,7 +2729,7 @@
                     "name": "ImGuiKey_KeysData_OFFSET",
                     "value": "ImGuiKey_NamedKey_BEGIN",
                     "comments": {
-                        "attached": "// First key stored in io.KeysData[0]. Accesses to io.KeysData[] must use (key - ImGuiKey_KeysData_OFFSET)."
+                        "attached": "// Accesses to io.KeysData[] must use (key - ImGuiKey_KeysData_OFFSET) index."
                     },
                     "conditionals": [
                         {
@@ -2767,7 +2755,7 @@
                     "name": "ImGuiKey_KeysData_OFFSET",
                     "value": "0",
                     "comments": {
-                        "attached": "// First key stored in io.KeysData[0]. Accesses to io.KeysData[] must use (key - ImGuiKey_KeysData_OFFSET)."
+                        "attached": "// Accesses to io.KeysData[] must use (key - ImGuiKey_KeysData_OFFSET) index."
                     },
                     "conditionals": [
                         {
@@ -2838,7 +2826,8 @@
                     "// A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value): can represent Keyboard, Mouse and Gamepad values.",
                     "// All our named keys are >= 512. Keys value 0 to 511 are left unused as legacy native/opaque key values (< 1.87).",
                     "// Since >= 1.89 we increased typing (went from int to enum), some legacy code may need a cast to ImGuiKey.",
-                    "// Read details about the 1.87 and 1.89 transition : https://github.com/ocornut/imgui/issues/4921"
+                    "// Read details about the 1.87 and 1.89 transition : https://github.com/ocornut/imgui/issues/4921",
+                    "// Note that \"Keys\" related to physical keys and are not the same concept as input \"Characters\", the later are submitted via io.AddInputCharacter()."
                 ],
                 "attached": "// Forward declared enum type ImGuiKey"
             }
@@ -3027,7 +3016,7 @@
                     "name": "ImGuiConfigFlags_NavEnableKeyboard",
                     "value": "1<<0",
                     "comments": {
-                        "attached": "// Master keyboard navigation enable flag."
+                        "attached": "// Master keyboard navigation enable flag. Enable full Tabbing + directional arrows + space/enter to activate."
                     }
                 },
                 {
@@ -3854,19 +3843,6 @@
                     "comments": {
                         "attached": "// [Internal] We treat using those bits as being potentially a 'float power' argument from the previous API that has got miscast to this enum, and will trigger an assert if needed."
                     }
-                },
-                {
-                    "name": "ImGuiSliderFlags_ClampOnInput",
-                    "value": "ImGuiSliderFlags_AlwaysClamp",
-                    "comments": {
-                        "attached": "// [renamed in 1.79]"
-                    },
-                    "conditionals": [
-                        {
-                            "condition": "ifndef",
-                            "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
-                        }
-                    ]
                 }
             ],
             "comments": {
@@ -7172,6 +7148,43 @@
                 {
                     "names": [
                         {
+                            "name": "ConfigDebugBeginReturnValueOnce",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "bool"
+                    },
+                    "comments": {
+                        "preceding": [
+                            "// Debug options",
+                            "// - tools to test correct Begin/End and BeginChild/EndChild behaviors.",
+                            "// - presently Begn()/End() and BeginChild()EndChild() needs to ALWAYS be called in tandem, regardless of return value of BeginXXX()",
+                            "//   this is inconsistent with other BeginXXX functions and create confusion for many users.",
+                            "// - we expect to update the API eventually. In the meanwhile we provided tools to facilitate checking user-code behavior."
+                        ],
+                        "attached": "// = false         // First-time calls to Begin()/BeginChild() will return false. NEEDS TO BE SET AT APPLICATION BOOT TIME if you don't want to miss windows."
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "ConfigDebugBeginReturnValueLoop",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "bool"
+                    },
+                    "comments": {
+                        "attached": "// = false         // Some calls to Begin()/BeginChild() will return false. Will cycle through window depths then repeat. Suggested use: add \"io.ConfigDebugBeginReturnValue = io.KeyShift\" in your main loop then occasionally press SHIFT. Windows should be flickering while running."
+                    }
+                },
+                {
+                    "names": [
+                        {
                             "name": "BackendPlatformName",
                             "is_array": false
                         }
@@ -7671,6 +7684,21 @@
                 {
                     "names": [
                         {
+                            "name": "Ctx",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImGuiContext*"
+                    },
+                    "comments": {
+                        "attached": "// Parent UI context (needs to be set explicitly by parent)."
+                    }
+                },
+                {
+                    "names": [
+                        {
                             "name": "MousePos",
                             "is_array": false
                         }
@@ -8165,6 +8193,21 @@
             "forward_declaration": false,
             "is_anonymous": false,
             "fields": [
+                {
+                    "names": [
+                        {
+                            "name": "Ctx",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImGuiContext*"
+                    },
+                    "comments": {
+                        "attached": "// Parent UI context"
+                    }
+                },
                 {
                     "names": [
                         {
@@ -8978,6 +9021,21 @@
             "forward_declaration": false,
             "is_anonymous": false,
             "fields": [
+                {
+                    "names": [
+                        {
+                            "name": "Ctx",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImGuiContext*"
+                    },
+                    "comments": {
+                        "attached": "// Parent UI context"
+                    }
+                },
                 {
                     "names": [
                         {
@@ -13248,14 +13306,14 @@
             "has_imstr_helper": false
         },
         {
-            "name": "ImGui_PushAllowKeyboardFocus",
-            "original_fully_qualified_name": "ImGui::PushAllowKeyboardFocus",
+            "name": "ImGui_PushTabStop",
+            "original_fully_qualified_name": "ImGui::PushTabStop",
             "return_type": {
                 "declaration": "void"
             },
             "arguments": [
                 {
-                    "name": "allow_keyboard_focus",
+                    "name": "tab_stop",
                     "type": {
                         "declaration": "bool"
                     },
@@ -13272,8 +13330,8 @@
             }
         },
         {
-            "name": "ImGui_PopAllowKeyboardFocus",
-            "original_fully_qualified_name": "ImGui::PopAllowKeyboardFocus",
+            "name": "ImGui_PopTabStop",
+            "original_fully_qualified_name": "ImGui::PopTabStop",
             "return_type": {
                 "declaration": "void"
             },
@@ -22343,7 +22401,7 @@
             "name": "ImGui_BeginTooltip",
             "original_fully_qualified_name": "ImGui::BeginTooltip",
             "return_type": {
-                "declaration": "void"
+                "declaration": "bool"
             },
             "arguments": [],
             "is_default_argument_helper": false,
@@ -22368,7 +22426,10 @@
             "is_default_argument_helper": false,
             "is_manual_helper": false,
             "is_imstr_helper": false,
-            "has_imstr_helper": false
+            "has_imstr_helper": false,
+            "comments": {
+                "attached": "// only call EndTooltip() if BeginTooltip() returns true!"
+            }
         },
         {
             "name": "ImGui_SetTooltip",
@@ -31703,156 +31764,6 @@
             }
         },
         {
-            "name": "ImDrawList_AddBezierCurve",
-            "original_fully_qualified_name": "AddBezierCurve",
-            "return_type": {
-                "declaration": "void"
-            },
-            "arguments": [
-                {
-                    "name": "self",
-                    "type": {
-                        "declaration": "ImDrawList*"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "p1",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "p2",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "p3",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "p4",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "col",
-                    "type": {
-                        "declaration": "ImU32"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "thickness",
-                    "type": {
-                        "declaration": "float"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "num_segments",
-                    "type": {
-                        "declaration": "int"
-                    },
-                    "is_array": false,
-                    "is_varargs": false,
-                    "default_value": "0"
-                }
-            ],
-            "is_default_argument_helper": false,
-            "is_manual_helper": false,
-            "is_imstr_helper": false,
-            "has_imstr_helper": false,
-            "comments": {
-                "attached": "// OBSOLETED in 1.80 (Jan 2021)"
-            },
-            "conditionals": [
-                {
-                    "condition": "ifndef",
-                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
-                }
-            ]
-        },
-        {
-            "name": "ImDrawList_PathBezierCurveTo",
-            "original_fully_qualified_name": "PathBezierCurveTo",
-            "return_type": {
-                "declaration": "void"
-            },
-            "arguments": [
-                {
-                    "name": "self",
-                    "type": {
-                        "declaration": "ImDrawList*"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "p2",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "p3",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "p4",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "num_segments",
-                    "type": {
-                        "declaration": "int"
-                    },
-                    "is_array": false,
-                    "is_varargs": false,
-                    "default_value": "0"
-                }
-            ],
-            "is_default_argument_helper": false,
-            "is_manual_helper": false,
-            "is_imstr_helper": false,
-            "has_imstr_helper": false,
-            "comments": {
-                "attached": "// OBSOLETED in 1.80 (Jan 2021)"
-            },
-            "conditionals": [
-                {
-                    "condition": "ifndef",
-                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
-                }
-            ]
-        },
-        {
             "name": "ImDrawList__ResetForNewFrame",
             "original_fully_qualified_name": "_ResetForNewFrame",
             "return_type": {
@@ -34447,6 +34358,56 @@
                 {
                     "condition": "ifdef",
                     "expression": "IMGUI_DISABLE_OBSOLETE_KEYIO"
+                }
+            ]
+        },
+        {
+            "name": "ImGui_PushAllowKeyboardFocus",
+            "original_fully_qualified_name": "ImGui::PushAllowKeyboardFocus",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "tab_stop",
+                    "type": {
+                        "declaration": "bool"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "preceding": [
+                    "// OBSOLETED in 1.89.4 (from March 2023)"
+                ]
+            },
+            "conditionals": [
+                {
+                    "condition": "ifndef",
+                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
+                }
+            ]
+        },
+        {
+            "name": "ImGui_PopAllowKeyboardFocus",
+            "original_fully_qualified_name": "ImGui::PopAllowKeyboardFocus",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "conditionals": [
+                {
+                    "condition": "ifndef",
+                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
                 }
             ]
         },

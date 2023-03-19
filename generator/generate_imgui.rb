@@ -239,7 +239,9 @@ module Generator
                  #
                  # -> entry.type.to_s == entry.name ? FFI::Struct : :pointer
                  #
-                 if typedefs_map[imgui_struct_or_typedef].type.to_s == typedefs_map[imgui_struct_or_typedef].name
+                 typedefmap_entry = typedefs_map[imgui_struct_or_typedef]
+                 handle_as_opaque = ['ImGuiContext'] # Since v1.89.4 : avoid generating ':Ctx, ImGuiContext.ptr' [TODO] remove ImGuiContext when we support imgui_internal
+                 if (typedefmap_entry.type.to_s == typedefmap_entry.name) && !handle_as_opaque.include?(typedefmap_entry.name)
                    # FFI::Struct -> use .ptr
                    "#{imgui_struct_or_typedef}.ptr"
                  else
