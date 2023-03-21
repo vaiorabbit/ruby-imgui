@@ -2,7 +2,27 @@ name: Build (Linux Cross)
 
 on:
   workflow_call:
+    inputs:
+      imgui_commit:
+        description: 'SHA-1 hash to checkout'
+        default: ''
+        required: false
+        type: string
+      fetch_depth:
+        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+        default: '1'
+        required: true
+        type: string
   workflow_dispatch:
+    inputs:
+      imgui_commit:
+        description: 'SHA-1 hash to checkout'
+        default: ''
+        required: false
+      fetch_depth:
+        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+        default: '1'
+        required: true
 
 jobs:
   build:
@@ -40,8 +60,15 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: 'update'
-        fetch-depth: 1
+        fetch-depth: ${{ github.event.inputs.fetch_depth }}
         submodules: recursive
+
+    - name: Checkout specific ImGui commit
+      if: "${{ github.event.inputs.imgui_commit != ''}}"
+      run: |
+        cd imgui_dll/cimgui/imgui
+        git checkout -f --detach ${{ github.event.inputs.imgui_commit }}
+        cd ../../..
 
     - name: Install luajit
       continue-on-error: true
