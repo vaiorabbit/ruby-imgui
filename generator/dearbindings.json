@@ -2,11 +2,11 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.89.4\""
+            "content": "\"1.89.5\""
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "18940"
+            "content": "18950"
         },
         {
             "name": "IM_MSVC_RUNTIME_CHECKS_OFF",
@@ -2437,7 +2437,7 @@
                     "comments": {
                         "preceding": [
                             "// Gamepad (some of those are analog values, 0.0f to 1.0f)                          // NAVIGATION ACTION",
-                            "// (download controller mapping PNG/PSD at http://dearimgui.org/controls_sheets)"
+                            "// (download controller mapping PNG/PSD at http://dearimgui.com/controls_sheets)"
                         ],
                         "attached": "// Menu (Xbox)      + (Switch)   Start/Options (PS)"
                     }
@@ -3953,6 +3953,46 @@
             }
         },
         {
+            "name": "ImGuiMouseSource",
+            "original_fully_qualified_name": "ImGuiMouseSource",
+            "storage_type": {
+                "declaration": "int"
+            },
+            "elements": [
+                {
+                    "name": "ImGuiMouseSource_Mouse",
+                    "value": "0",
+                    "comments": {
+                        "attached": "// Input is coming from an actual mouse."
+                    }
+                },
+                {
+                    "name": "ImGuiMouseSource_TouchScreen",
+                    "comments": {
+                        "attached": "// Input is coming from a touch screen (no hovering prior to initial press, less precise initial press aiming, dual-axis wheeling possible)."
+                    }
+                },
+                {
+                    "name": "ImGuiMouseSource_Pen",
+                    "comments": {
+                        "attached": "// Input is coming from a pressure/magnetic pen (often used in conjunction with high-sampling rates)."
+                    }
+                },
+                {
+                    "name": "ImGuiMouseSource_COUNT"
+                }
+            ],
+            "comments": {
+                "preceding": [
+                    "// Enumeration for AddMouseSourceEvent() actual source of Mouse Input data.",
+                    "// Historically we use \"Mouse\" terminology everywhere to indicate pointer data, e.g. MousePos, IsMousePressed(), io.AddMousePosEvent()",
+                    "// But that \"Mouse\" data can come from different source which occasionally may be useful for application to know about.",
+                    "// You can submit a change of pointer type using io.AddMouseSourceEvent()."
+                ],
+                "attached": "// Forward declared enum type ImGuiMouseSource"
+            }
+        },
+        {
             "name": "ImGuiCond_",
             "original_fully_qualified_name": "ImGuiCond_",
             "elements": [
@@ -4413,6 +4453,15 @@
                     "//   With Visual Assist installed: ALT+G (\"VAssistX.GoToImplementation\") can also follow symbols in comments."
                 ],
                 "attached": "// -> enum ImGuiKey              // Enum: A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value)"
+            }
+        },
+        {
+            "name": "ImGuiMouseSource",
+            "type": {
+                "declaration": "int"
+            },
+            "comments": {
+                "attached": "// -> enum ImGuiMouseSource      // Enum; A mouse input source identifier (Mouse, TouchScreen, Pen)"
             }
         },
         {
@@ -7765,6 +7814,21 @@
                 {
                     "names": [
                         {
+                            "name": "MouseSource",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImGuiMouseSource"
+                    },
+                    "comments": {
+                        "attached": "// Mouse actual input peripheral (Mouse/TouchScreen/Pen)."
+                    }
+                },
+                {
+                    "names": [
+                        {
                             "name": "KeyCtrl",
                             "is_array": false
                         }
@@ -8028,6 +8092,21 @@
                     },
                     "comments": {
                         "attached": "// Track if button was clicked inside a dear imgui window."
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "MouseWheelRequestAxisSwap",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "bool"
+                    },
+                    "comments": {
+                        "attached": "// On a non-Mac system, holding SHIFT requests WheelY to perform the equivalent of a WheelX event. On a Mac system this is already enforced by the system."
                     }
                 },
                 {
@@ -14176,7 +14255,7 @@
             "comments": {
                 "preceding": [
                     "// ID stack/scopes",
-                    "// Read the FAQ (docs/FAQ.md or http://dearimgui.org/faq) for more details about how ID are handled in dear imgui.",
+                    "// Read the FAQ (docs/FAQ.md or http://dearimgui.com/faq) for more details about how ID are handled in dear imgui.",
                     "// - Those questions are answered and impacted by understanding of the ID stack system:",
                     "//   - \"Q: Why is my widget not reacting when I click on it?\"",
                     "//   - \"Q: How can I have widgets with an empty label?\"",
@@ -26561,6 +26640,38 @@
             "has_imstr_helper": false,
             "comments": {
                 "attached": "// Queue a mouse wheel update. wheel_y<0: scroll down, wheel_y>0: scroll up, wheel_x<0: scroll right, wheel_x>0: scroll left."
+            }
+        },
+        {
+            "name": "ImGuiIO_AddMouseSourceEvent",
+            "original_fully_qualified_name": "AddMouseSourceEvent",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "self",
+                    "type": {
+                        "declaration": "ImGuiIO*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                },
+                {
+                    "name": "source",
+                    "type": {
+                        "declaration": "ImGuiMouseSource"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "attached": "// Queue a mouse source change (Mouse/TouchScreen/Pen)"
             }
         },
         {

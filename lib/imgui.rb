@@ -57,6 +57,7 @@ FFI.typedef :ushort, :ImWchar
 FFI.typedef :ushort, :ImWchar16
 FFI.typedef :uint, :ImWchar32
 FFI.typedef :int, :ImGuiKey
+FFI.typedef :int, :ImGuiMouseSource
 
 # ImDrawFlags_
 # Flags for ImDrawList functions
@@ -507,6 +508,16 @@ ImGuiMouseCursor_ResizeNWSE = 6 # 6 # When hovering over the bottom-right corner
 ImGuiMouseCursor_Hand = 7       # 7 # (Unused by Dear ImGui functions. Use for e.g. hyperlinks)
 ImGuiMouseCursor_NotAllowed = 8 # 8 # When hovering something with disallowed interaction. Usually a crossed circle.
 ImGuiMouseCursor_COUNT = 9      # 9
+
+# ImGuiMouseSource
+# Enumeration for AddMouseSourceEvent() actual source of Mouse Input data.
+# Historically we use "Mouse" terminology everywhere to indicate pointer data, e.g. MousePos, IsMousePressed(), io.AddMousePosEvent()
+# But that "Mouse" data can come from different source which occasionally may be useful for application to know about.
+# You can submit a change of pointer type using io.AddMouseSourceEvent().
+ImGuiMouseSource_Mouse = 0       # 0 # Input is coming from an actual mouse.
+ImGuiMouseSource_TouchScreen = 1 # 1 # Input is coming from a touch screen (no hovering prior to initial press, less precise initial press aiming, dual-axis wheeling possible).
+ImGuiMouseSource_Pen = 2         # 2 # Input is coming from a pressure/magnetic pen (often used in conjunction with high-sampling rates).
+ImGuiMouseSource_COUNT = 3       # 3
 
 # ImGuiNavInput
 # OBSOLETED in 1.88 (from July 2022): ImGuiNavInput and io.NavInputs[].
@@ -1561,6 +1572,7 @@ class ImGuiIO < FFI::Struct
     :MouseDown, [:bool, 5],                       # Mouse buttons: 0=left, 1=right, 2=middle + extras (ImGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API.
     :MouseWheel, :float,                          # Mouse wheel Vertical: 1 unit scrolls about 5 lines text. >0 scrolls Up, <0 scrolls Down. Hold SHIFT to turn vertical scroll into horizontal scroll.
     :MouseWheelH, :float,                         # Mouse wheel Horizontal. >0 scrolls Left, <0 scrolls Right. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends.
+    :MouseSource, :int,                           # Mouse actual input peripheral (Mouse/TouchScreen/Pen).
     :KeyCtrl, :bool,                              # Keyboard modifier down: Control
     :KeyShift, :bool,                             # Keyboard modifier down: Shift
     :KeyAlt, :bool,                               # Keyboard modifier down: Alt
@@ -1578,6 +1590,7 @@ class ImGuiIO < FFI::Struct
     :MouseReleased, [:bool, 5],                   # Mouse button went from Down to !Down
     :MouseDownOwned, [:bool, 5],                  # Track if button was clicked inside a dear imgui window or over void blocked by a popup. We don't request mouse capture from the application if click started outside ImGui bounds.
     :MouseDownOwnedUnlessPopupClose, [:bool, 5],  # Track if button was clicked inside a dear imgui window.
+    :MouseWheelRequestAxisSwap, :bool,            # On a non-Mac system, holding SHIFT requests WheelY to perform the equivalent of a WheelX event. On a Mac system this is already enforced by the system.
     :MouseDownDuration, [:float, 5],              # Duration the mouse button has been down (0.0f == just clicked)
     :MouseDownDurationPrev, [:float, 5],          # Previous time the mouse button has been down
     :MouseDragMaxDistanceSqr, [:float, 5],        # Squared maximum distance of how much mouse has traveled from the clicking point (used for moving thresholds)
@@ -1620,6 +1633,10 @@ class ImGuiIO < FFI::Struct
 
   def AddMousePosEvent(x, y)
     ImGui::ImGuiIO_AddMousePosEvent(self, x, y)
+  end
+
+  def AddMouseSourceEvent(source)
+    ImGui::ImGuiIO_AddMouseSourceEvent(self, source)
   end
 
   def AddMouseWheelEvent(wheel_x, wheel_y)
@@ -2009,6 +2026,7 @@ module ImGui
       [:ImGuiIO_AddKeyEvent, [:pointer, :int, :bool], :void],
       [:ImGuiIO_AddMouseButtonEvent, [:pointer, :int, :bool], :void],
       [:ImGuiIO_AddMousePosEvent, [:pointer, :float, :float], :void],
+      [:ImGuiIO_AddMouseSourceEvent, [:pointer, :int], :void],
       [:ImGuiIO_AddMouseWheelEvent, [:pointer, :float, :float], :void],
       [:ImGuiIO_ClearInputCharacters, [:pointer], :void],
       [:ImGuiIO_ClearInputKeys, [:pointer], :void],
@@ -4913,7 +4931,7 @@ module ImGui
 
   #
   # ID stack/scopes
-  # Read the FAQ (docs/FAQ.md or http://dearimgui.org/faq) for more details about how ID are handled in dear imgui.
+  # Read the FAQ (docs/FAQ.md or http://dearimgui.com/faq) for more details about how ID are handled in dear imgui.
   # - Those questions are answered and impacted by understanding of the ID stack system:
   #   - "Q: Why is my widget not reacting when I click on it?"
   #   - "Q: How can I have widgets with an empty label?"
