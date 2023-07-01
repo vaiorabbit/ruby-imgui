@@ -1538,8 +1538,9 @@ class ImGuiIO < FFI::Struct
     :ConfigWindowsResizeFromEdges, :bool,         # = true           // Enable resizing of windows from their edges and from the lower-left corner. This requires (io.BackendFlags & ImGuiBackendFlags_HasMouseCursors) because it needs mouse cursor feedback. (This used to be a per-window ImGuiWindowFlags_ResizeFromAnySide flag)
     :ConfigWindowsMoveFromTitleBarOnly, :bool,    # = false       // Enable allowing to move windows only when clicking on their title bar. Does not apply to windows without a title bar.
     :ConfigMemoryCompactTimer, :float,            # = 60.0f          // Timer (in seconds) to free transient windows/tables memory buffers when unused. Set to -1.0f to disable.
-    :ConfigDebugBeginReturnValueOnce, :bool,      # = false         // First-time calls to Begin()/BeginChild() will return false. NEEDS TO BE SET AT APPLICATION BOOT TIME if you don't want to miss windows.
-    :ConfigDebugBeginReturnValueLoop, :bool,      # = false         // Some calls to Begin()/BeginChild() will return false. Will cycle through window depths then repeat. Suggested use: add "io.ConfigDebugBeginReturnValue = io.KeyShift" in your main loop then occasionally press SHIFT. Windows should be flickering while running.
+    :ConfigDebugBeginReturnValueOnce, :bool,      # = false          // First-time calls to Begin()/BeginChild() will return false. NEEDS TO BE SET AT APPLICATION BOOT TIME if you don't want to miss windows.
+    :ConfigDebugBeginReturnValueLoop, :bool,      # = false          // Some calls to Begin()/BeginChild() will return false. Will cycle through window depths then repeat. Suggested use: add "io.ConfigDebugBeginReturnValue = io.KeyShift" in your main loop then occasionally press SHIFT. Windows should be flickering while running.
+    :ConfigDebugIgnoreFocusLoss, :bool,           # = false          // Ignore io.AddFocusEvent(false), consequently not calling io.ClearInputKeys() in input processing.
     :BackendPlatformName, :pointer,               # = NULL
     :BackendRendererName, :pointer,               # = NULL
     :BackendPlatformUserData, :pointer,           # = NULL           // User data for platform backend

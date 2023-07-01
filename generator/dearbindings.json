@@ -2,11 +2,11 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.89.5\""
+            "content": "\"1.89.6\""
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "18950"
+            "content": "18960"
         },
         {
             "name": "IM_MSVC_RUNTIME_CHECKS_OFF",
@@ -7209,11 +7209,11 @@
                         "preceding": [
                             "// Debug options",
                             "// - tools to test correct Begin/End and BeginChild/EndChild behaviors.",
-                            "// - presently Begn()/End() and BeginChild()EndChild() needs to ALWAYS be called in tandem, regardless of return value of BeginXXX()",
+                            "// - presently Begin()/End() and BeginChild()/EndChild() needs to ALWAYS be called in tandem, regardless of return value of BeginXXX()",
                             "//   this is inconsistent with other BeginXXX functions and create confusion for many users.",
-                            "// - we expect to update the API eventually. In the meanwhile we provided tools to facilitate checking user-code behavior."
+                            "// - we expect to update the API eventually. In the meanwhile we provide tools to facilitate checking user-code behavior."
                         ],
-                        "attached": "// = false         // First-time calls to Begin()/BeginChild() will return false. NEEDS TO BE SET AT APPLICATION BOOT TIME if you don't want to miss windows."
+                        "attached": "// = false          // First-time calls to Begin()/BeginChild() will return false. NEEDS TO BE SET AT APPLICATION BOOT TIME if you don't want to miss windows."
                     }
                 },
                 {
@@ -7228,7 +7228,27 @@
                         "declaration": "bool"
                     },
                     "comments": {
-                        "attached": "// = false         // Some calls to Begin()/BeginChild() will return false. Will cycle through window depths then repeat. Suggested use: add \"io.ConfigDebugBeginReturnValue = io.KeyShift\" in your main loop then occasionally press SHIFT. Windows should be flickering while running."
+                        "attached": "// = false          // Some calls to Begin()/BeginChild() will return false. Will cycle through window depths then repeat. Suggested use: add \"io.ConfigDebugBeginReturnValue = io.KeyShift\" in your main loop then occasionally press SHIFT. Windows should be flickering while running."
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "ConfigDebugIgnoreFocusLoss",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "bool"
+                    },
+                    "comments": {
+                        "preceding": [
+                            "// - option to deactivate io.AddFocusEvent(false) handling. May facilitate interactions with a debugger when focus loss leads to clearing inputs data.",
+                            "// - backends may have other side-effects on focus loss, so this will reduce side-effects but not necessary remove all of them.",
+                            "// - consider using e.g. Win32's IsDebuggerPresent() as an additional filter (or see ImOsIsDebuggerPresent() in imgui_test_engine/imgui_te_utils.cpp for a Unix compatible version)."
+                        ],
+                        "attached": "// = false          // Ignore io.AddFocusEvent(false), consequently not calling io.ClearInputKeys() in input processing."
                     }
                 },
                 {
@@ -28322,6 +28342,50 @@
             }
         },
         {
+            "name": "ImGuiListClipper_IncludeRangeByIndices",
+            "original_fully_qualified_name": "IncludeRangeByIndices",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "self",
+                    "type": {
+                        "declaration": "ImGuiListClipper*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                },
+                {
+                    "name": "item_begin",
+                    "type": {
+                        "declaration": "int"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                },
+                {
+                    "name": "item_end",
+                    "type": {
+                        "declaration": "int"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "preceding": [
+                    "// Call IncludeRangeByIndices() *BEFORE* first call to Step() if you need a range of items to not be clipped, regardless of their visibility.",
+                    "// (Due to alignment / padding of certain items it is possible that an extra item may be included on either end of the display range)."
+                ],
+                "attached": "// item_end is exclusive e.g. use (42, 42+1) to make item 42 never clipped."
+            }
+        },
+        {
             "name": "ImGuiListClipper_ForceDisplayRangeByIndices",
             "original_fully_qualified_name": "ForceDisplayRangeByIndices",
             "return_type": {
@@ -28337,7 +28401,7 @@
                     "is_varargs": false
                 },
                 {
-                    "name": "item_min",
+                    "name": "item_begin",
                     "type": {
                         "declaration": "int"
                     },
@@ -28345,7 +28409,7 @@
                     "is_varargs": false
                 },
                 {
-                    "name": "item_max",
+                    "name": "item_end",
                     "type": {
                         "declaration": "int"
                     },
@@ -28358,11 +28422,14 @@
             "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "preceding": [
-                    "// Call ForceDisplayRangeByIndices() before first call to Step() if you need a range of items to be displayed regardless of visibility."
-                ],
-                "attached": "// item_max is exclusive e.g. use (42, 42+1) to make item 42 always visible BUT due to alignment/padding of certain items it is likely that an extra item may be included on either end of the display range."
-            }
+                "attached": "// [renamed in 1.89.6]"
+            },
+            "conditionals": [
+                {
+                    "condition": "ifndef",
+                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
+                }
+            ]
         },
         {
             "name": "ImColor_SetHSV",
@@ -33121,7 +33188,8 @@
             "comments": {
                 "preceding": [
                     "// Helpers to retrieve list of common Unicode ranges (2 value per range, values are inclusive, zero-terminated list)",
-                    "// NB: Make sure that your string are UTF-8 and NOT in your local code page. In C++11, you can create UTF-8 string literal using the u8\"Hello world\" syntax. See FAQ for details.",
+                    "// NB: Make sure that your string are UTF-8 and NOT in your local code page.",
+                    "// Read https://github.com/ocornut/imgui/blob/master/docs/FONTS.md/#about-utf-8-encoding for details.",
                     "// NB: Consider using ImFontGlyphRangesBuilder to build glyph ranges from textual data."
                 ],
                 "attached": "// Basic Latin, Extended Latin"
@@ -34746,110 +34814,6 @@
                     "// OBSOLETED in 1.85 (from August 2021)"
                 ]
             },
-            "conditionals": [
-                {
-                    "condition": "ifndef",
-                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
-                }
-            ]
-        },
-        {
-            "name": "ImGui_ListBoxHeaderInt",
-            "original_fully_qualified_name": "ImGui::ListBoxHeader",
-            "return_type": {
-                "declaration": "bool"
-            },
-            "arguments": [
-                {
-                    "name": "label",
-                    "type": {
-                        "declaration": "const char*"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "items_count",
-                    "type": {
-                        "declaration": "int"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "height_in_items",
-                    "type": {
-                        "declaration": "int"
-                    },
-                    "is_array": false,
-                    "is_varargs": false,
-                    "default_value": "-1"
-                }
-            ],
-            "is_default_argument_helper": false,
-            "is_manual_helper": false,
-            "is_imstr_helper": false,
-            "has_imstr_helper": false,
-            "comments": {
-                "preceding": [
-                    "// OBSOLETED in 1.81 (from February 2021)"
-                ],
-                "attached": "// Helper to calculate size from items_count and height_in_items"
-            },
-            "conditionals": [
-                {
-                    "condition": "ifndef",
-                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
-                }
-            ]
-        },
-        {
-            "name": "ImGui_ListBoxHeader",
-            "original_fully_qualified_name": "ImGui::ListBoxHeader",
-            "return_type": {
-                "declaration": "bool"
-            },
-            "arguments": [
-                {
-                    "name": "label",
-                    "type": {
-                        "declaration": "const char*"
-                    },
-                    "is_array": false,
-                    "is_varargs": false
-                },
-                {
-                    "name": "size",
-                    "type": {
-                        "declaration": "ImVec2"
-                    },
-                    "is_array": false,
-                    "is_varargs": false,
-                    "default_value": "ImVec2(0, 0)"
-                }
-            ],
-            "is_default_argument_helper": false,
-            "is_manual_helper": false,
-            "is_imstr_helper": false,
-            "has_imstr_helper": false,
-            "conditionals": [
-                {
-                    "condition": "ifndef",
-                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
-                }
-            ]
-        },
-        {
-            "name": "ImGui_ListBoxFooter",
-            "original_fully_qualified_name": "ImGui::ListBoxFooter",
-            "return_type": {
-                "declaration": "void"
-            },
-            "arguments": [],
-            "is_default_argument_helper": false,
-            "is_manual_helper": false,
-            "is_imstr_helper": false,
-            "has_imstr_helper": false,
             "conditionals": [
                 {
                     "condition": "ifndef",
