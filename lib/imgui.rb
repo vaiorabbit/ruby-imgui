@@ -290,14 +290,19 @@ ImGuiHoveredFlags_AnyWindow = 4                      # 1 << 2 # IsWindowHovered(
 ImGuiHoveredFlags_NoPopupHierarchy = 8               # 1 << 3 # IsWindowHovered() only: Do not consider popup hierarchy (do not treat popup emitter as parent of popup) (when used with _ChildWindows or _RootWindow)
 ImGuiHoveredFlags_AllowWhenBlockedByPopup = 32       # 1 << 5 # Return true even if a popup window is normally blocking access to this item/window
 ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 128 # 1 << 7 # Return true even if an active item is blocking access to this item/window. Useful for Drag and Drop patterns.
-ImGuiHoveredFlags_AllowWhenOverlapped = 256          # 1 << 8 # IsItemHovered() only: Return true even if the position is obstructed or overlapped by another window
-ImGuiHoveredFlags_AllowWhenDisabled = 512            # 1 << 9 # IsItemHovered() only: Return true even if the item is disabled
-ImGuiHoveredFlags_NoNavOverride = 1024               # 1 << 10 # Disable using gamepad/keyboard navigation state when active, always query mouse.
-ImGuiHoveredFlags_RectOnly = 416                     # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
+ImGuiHoveredFlags_AllowWhenOverlappedByItem = 256    # 1 << 8 # IsItemHovered() only: Return true even if the item uses AllowOverlap mode and is overlapped by another hoverable item.
+ImGuiHoveredFlags_AllowWhenOverlappedByWindow = 512  # 1 << 9 # IsItemHovered() only: Return true even if the position is obstructed or overlapped by another window.
+ImGuiHoveredFlags_AllowWhenDisabled = 1024           # 1 << 10 # IsItemHovered() only: Return true even if the item is disabled
+ImGuiHoveredFlags_NoNavOverride = 2048               # 1 << 11 # IsItemHovered() only: Disable using gamepad/keyboard navigation state when active, always query mouse
+ImGuiHoveredFlags_AllowWhenOverlapped = 768          # ImGuiHoveredFlags_AllowWhenOverlappedByItem | ImGuiHoveredFlags_AllowWhenOverlappedByWindow
+ImGuiHoveredFlags_RectOnly = 928                     # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
 ImGuiHoveredFlags_RootAndChildWindows = 3            # ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows
-ImGuiHoveredFlags_DelayNormal = 2048                 # 1 << 11 # Return true after io.HoverDelayNormal elapsed (~0.30 sec)
-ImGuiHoveredFlags_DelayShort = 4096                  # 1 << 12 # Return true after io.HoverDelayShort elapsed (~0.10 sec)
-ImGuiHoveredFlags_NoSharedDelay = 8192               # 1 << 13 # Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)
+ImGuiHoveredFlags_ForTooltip = 2048                  # 1 << 11 # Shortcut for standard flags when using IsItemHovered() + SetTooltip() sequence.
+ImGuiHoveredFlags_Stationary = 4096                  # 1 << 12 # Require mouse to be stationary for style.HoverStationaryDelay (~0.15 sec) _at least one time_. After this, can move on same item/window. Using the stationary test tends to reduces the need for a long delay.
+ImGuiHoveredFlags_DelayNone = 8192                   # 1 << 13 # IsItemHovered() only: Return true immediately (default). As this is the default you generally ignore this.
+ImGuiHoveredFlags_DelayShort = 16384                 # 1 << 14 # IsItemHovered() only: Return true after style.HoverDelayShort elapsed (~0.15 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
+ImGuiHoveredFlags_DelayNormal = 32768                # 1 << 15 # IsItemHovered() only: Return true after style.HoverDelayNormal elapsed (~0.40 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
+ImGuiHoveredFlags_NoSharedDelay = 65536              # 1 << 16 # IsItemHovered() only: Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)
 
 # ImGuiInputTextFlags_
 # Flags for ImGui::InputText()
@@ -564,12 +569,12 @@ ImGuiPopupFlags_AnyPopup = 384               # ImGuiPopupFlags_AnyPopupId | ImGu
 
 # ImGuiSelectableFlags_
 # Flags for ImGui::Selectable()
-ImGuiSelectableFlags_None = 0              # 0
-ImGuiSelectableFlags_DontClosePopups = 1   # 1 << 0 # Clicking this doesn't close parent popup window
-ImGuiSelectableFlags_SpanAllColumns = 2    # 1 << 1 # Selectable frame can span all columns (text will still fit in current column)
-ImGuiSelectableFlags_AllowDoubleClick = 4  # 1 << 2 # Generate press events on double clicks too
-ImGuiSelectableFlags_Disabled = 8          # 1 << 3 # Cannot be selected, display grayed out text
-ImGuiSelectableFlags_AllowItemOverlap = 16 # 1 << 4 # (WIP) Hit testing to allow subsequent widgets to overlap this one
+ImGuiSelectableFlags_None = 0             # 0
+ImGuiSelectableFlags_DontClosePopups = 1  # 1 << 0 # Clicking this doesn't close parent popup window
+ImGuiSelectableFlags_SpanAllColumns = 2   # 1 << 1 # Selectable frame can span all columns (text will still fit in current column)
+ImGuiSelectableFlags_AllowDoubleClick = 4 # 1 << 2 # Generate press events on double clicks too
+ImGuiSelectableFlags_Disabled = 8         # 1 << 3 # Cannot be selected, display grayed out text
+ImGuiSelectableFlags_AllowOverlap = 16    # 1 << 4 # (WIP) Hit testing to allow subsequent widgets to overlap this one
 
 # ImGuiSliderFlags_
 # Flags for DragFloat(), DragInt(), SliderFloat(), SliderInt() etc.
@@ -767,7 +772,7 @@ ImGuiTableRowFlags_Headers = 1 # 1 << 0 # Identify header row (set default backg
 ImGuiTreeNodeFlags_None = 0                    # 0
 ImGuiTreeNodeFlags_Selected = 1                # 1 << 0 # Draw as selected
 ImGuiTreeNodeFlags_Framed = 2                  # 1 << 1 # Draw frame with background (e.g. for CollapsingHeader)
-ImGuiTreeNodeFlags_AllowItemOverlap = 4        # 1 << 2 # Hit testing to allow subsequent widgets to overlap this one
+ImGuiTreeNodeFlags_AllowOverlap = 4            # 1 << 2 # Hit testing to allow subsequent widgets to overlap this one
 ImGuiTreeNodeFlags_NoTreePushOnOpen = 8        # 1 << 3 # Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
 ImGuiTreeNodeFlags_NoAutoOpenOnLog = 16        # 1 << 4 # Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
 ImGuiTreeNodeFlags_DefaultOpen = 32            # 1 << 5 # Default node to be open
@@ -1516,13 +1521,6 @@ class ImGuiIO < FFI::Struct
     :IniSavingRate, :float,                       # = 5.0f           // Minimum time between saving positions/sizes to .ini file, in seconds.
     :IniFilename, :pointer,                       # = "imgui.ini"    // Path to .ini file (important: default "imgui.ini" is relative to current working dir!). Set NULL to disable automatic .ini loading/saving or if you want to manually call LoadIniSettingsXXX() / SaveIniSettingsXXX() functions.
     :LogFilename, :pointer,                       # = "imgui_log.txt"// Path to .log file (default parameter to ImGui::LogToFile when no file is specified).
-    :MouseDoubleClickTime, :float,                # = 0.30f          // Time for a double-click, in seconds.
-    :MouseDoubleClickMaxDist, :float,             # = 6.0f           // Distance threshold to stay in to validate a double-click, in pixels.
-    :MouseDragThreshold, :float,                  # = 6.0f           // Distance threshold before considering we are dragging.
-    :KeyRepeatDelay, :float,                      # = 0.275f         // When holding a key/button, time before it starts repeating, in seconds (for buttons in Repeat mode, etc.).
-    :KeyRepeatRate, :float,                       # = 0.050f         // When holding a key/button, rate at which it repeats, in seconds.
-    :HoverDelayNormal, :float,                    # = 0.30 sec       // Delay on hovering before IsItemHovered(ImGuiHoveredFlags_DelayNormal) returns true.
-    :HoverDelayShort, :float,                     # = 0.10 sec       // Delay on hovering before IsItemHovered(ImGuiHoveredFlags_DelayShort) returns true.
     :UserData, :pointer,                          # = NULL           // Store your own data.
     :Fonts, ImFontAtlas.ptr,                      # <auto>           // Font atlas: load, rasterize and pack one or more fonts into a single texture.
     :FontGlobalScale, :float,                     # = 1.0f           // Global scale all fonts
@@ -1538,9 +1536,15 @@ class ImGuiIO < FFI::Struct
     :ConfigWindowsResizeFromEdges, :bool,         # = true           // Enable resizing of windows from their edges and from the lower-left corner. This requires (io.BackendFlags & ImGuiBackendFlags_HasMouseCursors) because it needs mouse cursor feedback. (This used to be a per-window ImGuiWindowFlags_ResizeFromAnySide flag)
     :ConfigWindowsMoveFromTitleBarOnly, :bool,    # = false       // Enable allowing to move windows only when clicking on their title bar. Does not apply to windows without a title bar.
     :ConfigMemoryCompactTimer, :float,            # = 60.0f          // Timer (in seconds) to free transient windows/tables memory buffers when unused. Set to -1.0f to disable.
+    :MouseDoubleClickTime, :float,                # = 0.30f          // Time for a double-click, in seconds.
+    :MouseDoubleClickMaxDist, :float,             # = 6.0f           // Distance threshold to stay in to validate a double-click, in pixels.
+    :MouseDragThreshold, :float,                  # = 6.0f           // Distance threshold before considering we are dragging.
+    :KeyRepeatDelay, :float,                      # = 0.275f         // When holding a key/button, time before it starts repeating, in seconds (for buttons in Repeat mode, etc.).
+    :KeyRepeatRate, :float,                       # = 0.050f         // When holding a key/button, rate at which it repeats, in seconds.
     :ConfigDebugBeginReturnValueOnce, :bool,      # = false          // First-time calls to Begin()/BeginChild() will return false. NEEDS TO BE SET AT APPLICATION BOOT TIME if you don't want to miss windows.
     :ConfigDebugBeginReturnValueLoop, :bool,      # = false          // Some calls to Begin()/BeginChild() will return false. Will cycle through window depths then repeat. Suggested use: add "io.ConfigDebugBeginReturnValue = io.KeyShift" in your main loop then occasionally press SHIFT. Windows should be flickering while running.
     :ConfigDebugIgnoreFocusLoss, :bool,           # = false          // Ignore io.AddFocusEvent(false), consequently not calling io.ClearInputKeys() in input processing.
+    :ConfigDebugIniSettings, :bool,               # = false          // Save .ini data with extra comments (particularly helpful for Docking, but makes saving slower)
     :BackendPlatformName, :pointer,               # = NULL
     :BackendRendererName, :pointer,               # = NULL
     :BackendPlatformUserData, :pointer,           # = NULL           // User data for platform backend
@@ -1762,7 +1766,12 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedFill, :bool,                   # Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
     :CurveTessellationTol, :float,             # Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
     :CircleTessellationMaxError, :float,       # Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
-    :Colors, [ImVec4.by_value, 53]
+    :Colors, [ImVec4.by_value, 53],
+    :HoverStationaryDelay, :float,             # Delay for IsItemHovered(ImGuiHoveredFlags_Stationary). Time required to consider mouse stationary.
+    :HoverDelayShort, :float,                  # Delay for IsItemHovered(ImGuiHoveredFlags_DelayShort). Usually used along with HoverStationaryDelay.
+    :HoverDelayNormal, :float,                 # Delay for IsItemHovered(ImGuiHoveredFlags_DelayNormal). "
+    :HoverFlagsForTooltipMouse, :int,          # Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using mouse.
+    :HoverFlagsForTooltipNav, :int             # Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
   )
 
   def self.create()
@@ -2062,6 +2071,7 @@ module ImGui
       [:igBeginDragDropSource, [:int], :bool],
       [:igBeginDragDropTarget, [], :bool],
       [:igBeginGroup, [], :void],
+      [:igBeginItemTooltip, [], :bool],
       [:igBeginListBox, [:pointer, ImVec2.by_value], :bool],
       [:igBeginMainMenuBar, [], :bool],
       [:igBeginMenu, [:pointer, :bool], :bool],
@@ -2319,12 +2329,13 @@ module ImGui
       [:igSetCursorPosY, [:float], :void],
       [:igSetCursorScreenPos, [ImVec2.by_value], :void],
       [:igSetDragDropPayload, [:pointer, :pointer, :size_t, :int], :bool],
-      [:igSetItemAllowOverlap, [], :void],
       [:igSetItemDefaultFocus, [], :void],
+      [:igSetItemTooltip, [:pointer, :varargs], :void],
       [:igSetKeyboardFocusHere, [:int], :void],
       [:igSetMouseCursor, [:int], :void],
       [:igSetNextFrameWantCaptureKeyboard, [:bool], :void],
       [:igSetNextFrameWantCaptureMouse, [:bool], :void],
+      [:igSetNextItemAllowOverlap, [], :void],
       [:igSetNextItemOpen, [:bool, :int], :void],
       [:igSetNextItemWidth, [:float], :void],
       [:igSetNextWindowBgAlpha, [:float], :void],
@@ -2528,6 +2539,16 @@ module ImGui
     igBeginGroup()
   end
 
+  # ret: bool
+  #
+  # Tooltips: helpers for showing a tooltip when hovering an item
+  # - BeginItemTooltip() is a shortcut for the 'if (IsItemHovered(ImGuiHoveredFlags_Tooltip) && BeginTooltip())' idiom.
+  # - SetItemTooltip() is a shortcut for the 'if (IsItemHovered(ImGuiHoveredFlags_Tooltip)) { SetTooltip(...); }' idiom.
+  # - Where 'ImGuiHoveredFlags_Tooltip' itself is a shortcut to use 'style.HoverFlagsForTooltipMouse' or 'style.HoverFlagsForTooltipNav' depending on active input type. For mouse it defaults to 'ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayShort'.
+  def self.BeginItemTooltip()  # begin/append a tooltip window if preceding item was hovered.
+    igBeginItemTooltip()
+  end
+
   # arg: label(const char*), size(ImVec2)
   # ret: bool
   #
@@ -2651,8 +2672,9 @@ module ImGui
   # ret: bool
   #
   # Tooltips
-  # - Tooltip are windows following the mouse. They do not take focus away.
-  def self.BeginTooltip()  # begin/append a tooltip window. to create full-featured tooltip (with any kind of items).
+  # - Tooltips are windows following the mouse. They do not take focus away.
+  # - A tooltip window can contain items of any types. SetTooltip() is a shortcut for the 'if (BeginTooltip()) { Text(...); EndTooltip(); }' idiom.
+  def self.BeginTooltip()  # begin/append a tooltip window.
     igBeginTooltip()
   end
 
@@ -3024,7 +3046,7 @@ module ImGui
   end
 
   # ret: void
-  def self.EndTooltip()  # only call EndTooltip() if BeginTooltip() returns true!
+  def self.EndTooltip()  # only call EndTooltip() if BeginTooltip()/BeginItemTooltip() returns true!
     igEndTooltip()
   end
 
@@ -4175,16 +4197,17 @@ module ImGui
   end
 
   # ret: void
-  def self.SetItemAllowOverlap()  # allow last item to be overlapped by a subsequent item. sometimes useful with invisible buttons, selectables, etc. to catch unused area.
-    igSetItemAllowOverlap()
-  end
-
-  # ret: void
   #
   # Focus, Activation
   # - Prefer using "SetItemDefaultFocus()" over "if (IsWindowAppearing()) SetScrollHereY()" when applicable to signify "this is the default item"
   def self.SetItemDefaultFocus()  # make last item the default focused item of a window.
     igSetItemDefaultFocus()
+  end
+
+  # arg: fmt(const char*), ...(...)
+  # ret: void
+  def self.SetItemTooltip(fmt, *varargs)  # set a text-only tooltip if preceeding item was hovered. override any previous call to SetTooltip().
+    igSetItemTooltip(fmt, *varargs)
   end
 
   # arg: offset(int)
@@ -4209,6 +4232,13 @@ module ImGui
   # ret: void
   def self.SetNextFrameWantCaptureMouse(want_capture_mouse)  # Override io.WantCaptureMouse flag next frame (said flag is left for your application to handle, typical when true it instucts your app to ignore inputs). This is equivalent to setting "io.WantCaptureMouse = want_capture_mouse;" after the next NewFrame() call.
     igSetNextFrameWantCaptureMouse(want_capture_mouse)
+  end
+
+  # ret: void
+  #
+  # Overlapping mode
+  def self.SetNextItemAllowOverlap()  # allow next item to be overlapped by a subsequent item. Useful with invisible buttons, selectable, treenode covering an area where subsequent items may need to be added. Note that both Selectable() and TreeNode() have dedicated flags doing this.
+    igSetNextItemAllowOverlap()
   end
 
   # arg: is_open(bool), cond(ImGuiCond)
@@ -4323,7 +4353,7 @@ module ImGui
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.SetTooltip(fmt, *varargs)  # set a text-only tooltip, typically use with ImGui::IsItemHovered(). override any previous call to SetTooltip().
+  def self.SetTooltip(fmt, *varargs)  # set a text-only tooltip. Often used after a ImGui::IsItemHovered() check. Override any previous call to SetTooltip().
     igSetTooltip(fmt, *varargs)
   end
 
