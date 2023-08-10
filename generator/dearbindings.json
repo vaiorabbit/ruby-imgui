@@ -2,11 +2,11 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.89.7\""
+            "content": "\"1.89.8\""
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "18971"
+            "content": "18980"
         },
         {
             "name": "IM_MSVC_RUNTIME_CHECKS_OFF",
@@ -1842,7 +1842,7 @@
                 },
                 {
                     "name": "ImGuiHoveredFlags_ForTooltip",
-                    "value": "1<<11",
+                    "value": "1<<12",
                     "comments": {
                         "preceding": [
                             "// Tooltips mode",
@@ -1857,7 +1857,7 @@
                 },
                 {
                     "name": "ImGuiHoveredFlags_Stationary",
-                    "value": "1<<12",
+                    "value": "1<<13",
                     "comments": {
                         "preceding": [
                             "// (Advanced) Mouse Hovering delays.",
@@ -1869,28 +1869,28 @@
                 },
                 {
                     "name": "ImGuiHoveredFlags_DelayNone",
-                    "value": "1<<13",
+                    "value": "1<<14",
                     "comments": {
                         "attached": "// IsItemHovered() only: Return true immediately (default). As this is the default you generally ignore this."
                     }
                 },
                 {
                     "name": "ImGuiHoveredFlags_DelayShort",
-                    "value": "1<<14",
+                    "value": "1<<15",
                     "comments": {
                         "attached": "// IsItemHovered() only: Return true after style.HoverDelayShort elapsed (~0.15 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item)."
                     }
                 },
                 {
                     "name": "ImGuiHoveredFlags_DelayNormal",
-                    "value": "1<<15",
+                    "value": "1<<16",
                     "comments": {
                         "attached": "// IsItemHovered() only: Return true after style.HoverDelayNormal elapsed (~0.40 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item)."
                     }
                 },
                 {
                     "name": "ImGuiHoveredFlags_NoSharedDelay",
-                    "value": "1<<16",
+                    "value": "1<<17",
                     "comments": {
                         "attached": "// IsItemHovered() only: Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)"
                     }
@@ -5791,6 +5791,52 @@
                     "is_anonymous": false,
                     "type": {
                         "declaration": "ImVec2*"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ImVector_ImDrawListPtr",
+            "original_fully_qualified_name": "ImVector<ImDrawList*>",
+            "type": "struct",
+            "by_value": false,
+            "forward_declaration": false,
+            "is_anonymous": false,
+            "fields": [
+                {
+                    "names": [
+                        {
+                            "name": "Size",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "int"
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "Capacity",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "int"
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "Data",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImDrawList**"
                     }
                 }
             ]
@@ -10055,7 +10101,7 @@
                         "declaration": "int"
                     },
                     "comments": {
-                        "attached": "// Number of ImDrawList* to render"
+                        "attached": "// Number of ImDrawList* to render (should always be == CmdLists.size)"
                     }
                 },
                 {
@@ -10097,10 +10143,10 @@
                     ],
                     "is_anonymous": false,
                     "type": {
-                        "declaration": "ImDrawList**"
+                        "declaration": "ImVector_ImDrawListPtr"
                     },
                     "comments": {
-                        "attached": "// Array of ImDrawList* to render. The ImDrawList are owned by ImGuiContext and only pointed to from here."
+                        "attached": "// Array of ImDrawList* to render. The ImDrawLists are owned by ImGuiContext and only pointed to from here."
                     }
                 },
                 {
@@ -10146,6 +10192,21 @@
                     },
                     "comments": {
                         "attached": "// Amount of pixels for each unit of DisplaySize. Based on io.DisplayFramebufferScale. Generally (1,1) on normal display, (2,2) on OSX with Retina display."
+                    }
+                },
+                {
+                    "names": [
+                        {
+                            "name": "OwnerViewport",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImGuiViewport*"
+                    },
+                    "comments": {
+                        "attached": "// Viewport carrying the ImDrawData instance, might be of use to the renderer (generally not)."
                     }
                 }
             ],
@@ -10252,7 +10313,7 @@
                         "declaration": "int"
                     },
                     "comments": {
-                        "attached": "// 3        // Rasterize at higher quality for sub-pixel positioning. Note the difference between 2 and 3 is minimal so you can reduce this to 2 to save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details."
+                        "attached": "// 2        // Rasterize at higher quality for sub-pixel positioning. Note the difference between 2 and 3 is minimal. You can reduce this to 1 for large glyphs save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details."
                     }
                 },
                 {
@@ -27181,8 +27242,8 @@
             }
         },
         {
-            "name": "ImGuiIO_ClearInputCharacters",
-            "original_fully_qualified_name": "ClearInputCharacters",
+            "name": "ImGuiIO_ClearEventsQueue",
+            "original_fully_qualified_name": "ClearEventsQueue",
             "return_type": {
                 "declaration": "void"
             },
@@ -27201,7 +27262,7 @@
             "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "attached": "// [Internal] Clear the text input buffer manually"
+                "attached": "// Clear all incoming events."
             }
         },
         {
@@ -27225,8 +27286,38 @@
             "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "attached": "// [Internal] Release all keys"
+                "attached": "// Clear current keyboard/mouse/gamepad state + current frame text input buffer. Equivalent to releasing all keys/buttons."
             }
+        },
+        {
+            "name": "ImGuiIO_ClearInputCharacters",
+            "original_fully_qualified_name": "ClearInputCharacters",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "self",
+                    "type": {
+                        "declaration": "ImGuiIO*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "attached": "// [Obsolete] Clear the current frame text input buffer. Now included within ClearInputKeys()."
+            },
+            "conditionals": [
+                {
+                    "condition": "ifndef",
+                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
+                }
+            ]
         },
         {
             "name": "ImGuiInputTextCallbackData_DeleteChars",
@@ -32484,9 +32575,38 @@
             "is_default_argument_helper": false,
             "is_manual_helper": false,
             "is_imstr_helper": false,
+            "has_imstr_helper": false
+        },
+        {
+            "name": "ImDrawData_AddDrawList",
+            "original_fully_qualified_name": "AddDrawList",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "self",
+                    "type": {
+                        "declaration": "ImDrawData*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                },
+                {
+                    "name": "draw_list",
+                    "type": {
+                        "declaration": "ImDrawList*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "attached": "// The ImDrawList are owned by ImGuiContext!"
+                "attached": "// Helper to add an external draw list into an existing ImDrawData."
             }
         },
         {

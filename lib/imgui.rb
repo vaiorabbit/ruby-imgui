@@ -297,12 +297,12 @@ ImGuiHoveredFlags_NoNavOverride = 2048               # 1 << 11 # IsItemHovered()
 ImGuiHoveredFlags_AllowWhenOverlapped = 768          # ImGuiHoveredFlags_AllowWhenOverlappedByItem | ImGuiHoveredFlags_AllowWhenOverlappedByWindow
 ImGuiHoveredFlags_RectOnly = 928                     # ImGuiHoveredFlags_AllowWhenBlockedByPopup | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem | ImGuiHoveredFlags_AllowWhenOverlapped
 ImGuiHoveredFlags_RootAndChildWindows = 3            # ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows
-ImGuiHoveredFlags_ForTooltip = 2048                  # 1 << 11 # Shortcut for standard flags when using IsItemHovered() + SetTooltip() sequence.
-ImGuiHoveredFlags_Stationary = 4096                  # 1 << 12 # Require mouse to be stationary for style.HoverStationaryDelay (~0.15 sec) _at least one time_. After this, can move on same item/window. Using the stationary test tends to reduces the need for a long delay.
-ImGuiHoveredFlags_DelayNone = 8192                   # 1 << 13 # IsItemHovered() only: Return true immediately (default). As this is the default you generally ignore this.
-ImGuiHoveredFlags_DelayShort = 16384                 # 1 << 14 # IsItemHovered() only: Return true after style.HoverDelayShort elapsed (~0.15 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
-ImGuiHoveredFlags_DelayNormal = 32768                # 1 << 15 # IsItemHovered() only: Return true after style.HoverDelayNormal elapsed (~0.40 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
-ImGuiHoveredFlags_NoSharedDelay = 65536              # 1 << 16 # IsItemHovered() only: Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)
+ImGuiHoveredFlags_ForTooltip = 4096                  # 1 << 12 # Shortcut for standard flags when using IsItemHovered() + SetTooltip() sequence.
+ImGuiHoveredFlags_Stationary = 8192                  # 1 << 13 # Require mouse to be stationary for style.HoverStationaryDelay (~0.15 sec) _at least one time_. After this, can move on same item/window. Using the stationary test tends to reduces the need for a long delay.
+ImGuiHoveredFlags_DelayNone = 16384                  # 1 << 14 # IsItemHovered() only: Return true immediately (default). As this is the default you generally ignore this.
+ImGuiHoveredFlags_DelayShort = 32768                 # 1 << 15 # IsItemHovered() only: Return true after style.HoverDelayShort elapsed (~0.15 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
+ImGuiHoveredFlags_DelayNormal = 65536                # 1 << 16 # IsItemHovered() only: Return true after style.HoverDelayNormal elapsed (~0.40 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
+ImGuiHoveredFlags_NoSharedDelay = 131072             # 1 << 17 # IsItemHovered() only: Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)
 
 # ImGuiInputTextFlags_
 # Flags for ImGui::InputText()
@@ -1383,13 +1383,14 @@ end
 class ImDrawData < FFI::Struct
   layout(
     :Valid, :bool,                       # Only valid after Render() is called and before the next NewFrame() is called.
-    :CmdListsCount, :int,                # Number of ImDrawList* to render
+    :CmdListsCount, :int,                # Number of ImDrawList* to render (should always be == CmdLists.size)
     :TotalIdxCount, :int,                # For convenience, sum of all ImDrawList's IdxBuffer.Size
     :TotalVtxCount, :int,                # For convenience, sum of all ImDrawList's VtxBuffer.Size
-    :CmdLists, ImDrawList.ptr,           # Array of ImDrawList* to render. The ImDrawList are owned by ImGuiContext and only pointed to from here.
+    :CmdLists, ImVector.by_value,        # Array of ImDrawList* to render. The ImDrawLists are owned by ImGuiContext and only pointed to from here.
     :DisplayPos, ImVec2.by_value,        # Top-left position of the viewport to render (== top-left of the orthogonal projection matrix to use) (== GetMainViewport()->Pos for the main viewport, == (0.0) in most single-viewport applications)
     :DisplaySize, ImVec2.by_value,       # Size of the viewport to render (== GetMainViewport()->Size for the main viewport, == io.DisplaySize in most single-viewport applications)
-    :FramebufferScale, ImVec2.by_value   # Amount of pixels for each unit of DisplaySize. Based on io.DisplayFramebufferScale. Generally (1,1) on normal display, (2,2) on OSX with Retina display.
+    :FramebufferScale, ImVec2.by_value,  # Amount of pixels for each unit of DisplaySize. Based on io.DisplayFramebufferScale. Generally (1,1) on normal display, (2,2) on OSX with Retina display.
+    :OwnerViewport, ImGuiViewport.ptr    # Viewport carrying the ImDrawData instance, might be of use to the renderer (generally not).
   )
 end
 
@@ -1441,7 +1442,7 @@ class ImFontConfig < FFI::Struct
     :FontDataOwnedByAtlas, :bool,         # true     // TTF/OTF data ownership taken by the container ImFontAtlas (will delete memory itself).
     :FontNo, :int,                        # 0        // Index of font within TTF/OTF file
     :SizePixels, :float,                  #          // Size in pixels for rasterizer (more or less maps to the resulting font height).
-    :OversampleH, :int,                   # 3        // Rasterize at higher quality for sub-pixel positioning. Note the difference between 2 and 3 is minimal so you can reduce this to 2 to save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
+    :OversampleH, :int,                   # 2        // Rasterize at higher quality for sub-pixel positioning. Note the difference between 2 and 3 is minimal. You can reduce this to 1 for large glyphs save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
     :OversampleV, :int,                   # 1        // Rasterize at higher quality for sub-pixel positioning. This is not really useful as we don't use sub-pixel positions on the Y axis.
     :PixelSnapH, :bool,                   # false    // Align every glyph to pixel boundary. Useful e.g. if you are merging a non-pixel aligned font with the default font. If enabled, you can set OversampleH/V to 1.
     :GlyphExtraSpacing, ImVec2.by_value,  # 0, 0     // Extra spacing (in pixels) between glyphs. Only X axis is supported for now.
@@ -1648,8 +1649,8 @@ class ImGuiIO < FFI::Struct
     ImGui::ImGuiIO_AddMouseWheelEvent(self, wheel_x, wheel_y)
   end
 
-  def ClearInputCharacters()
-    ImGui::ImGuiIO_ClearInputCharacters(self)
+  def ClearEventsQueue()
+    ImGui::ImGuiIO_ClearEventsQueue(self)
   end
 
   def ClearInputKeys()
@@ -2038,7 +2039,7 @@ module ImGui
       [:ImGuiIO_AddMousePosEvent, [:pointer, :float, :float], :void],
       [:ImGuiIO_AddMouseSourceEvent, [:pointer, :int], :void],
       [:ImGuiIO_AddMouseWheelEvent, [:pointer, :float, :float], :void],
-      [:ImGuiIO_ClearInputCharacters, [:pointer], :void],
+      [:ImGuiIO_ClearEventsQueue, [:pointer], :void],
       [:ImGuiIO_ClearInputKeys, [:pointer], :void],
       [:ImGuiIO_ImGuiIO, [], :pointer],
       [:ImGuiIO_SetAppAcceptingEvents, [:pointer, :bool], :void],
