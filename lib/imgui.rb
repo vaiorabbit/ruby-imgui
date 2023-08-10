@@ -1367,6 +1367,24 @@ class ImGuiKeyData < FFI::Struct
   )
 end
 
+# - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
+# - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
+# - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
+# - About Main Area vs Work Area:
+#   - Main Area = entire viewport.
+#   - Work Area = entire viewport minus sections used by main menu bars (for platform windows), or by task bar (for platform monitor).
+#   - Windows are generally trying to stay within the Work Area of their host viewport.
+class ImGuiViewport < FFI::Struct
+  layout(
+    :Flags, :int,                  # See ImGuiViewportFlags_
+    :Pos, ImVec2.by_value,         # Main Area: Position of the viewport (Dear ImGui coordinates are the same as OS desktop/native coordinates)
+    :Size, ImVec2.by_value,        # Main Area: Size of the viewport.
+    :WorkPos, ImVec2.by_value,     # Work Area: Position of the viewport minus task bars, menus bars, status bars (>= Pos)
+    :WorkSize, ImVec2.by_value,    # Work Area: Size of the viewport minus task bars, menu bars, status bars (<= Size)
+    :PlatformHandleRaw, :pointer   # void* to hold lower-level, platform-native window handle (under Win32 this is expected to be a HWND, unused for other platforms)
+  )
+end
+
 # Helper: ImColor() implicitly converts colors to either ImU32 (packed 4x1 byte) or ImVec4 (4x1 float)
 # Prefer using IM_COL32() macros if you want a guaranteed compile-time ImU32 for usage with ImDrawList API.
 # **Avoid storing ImColor! Store either u32 of ImVec4. This is not a full-featured color class. MAY OBSOLETE.
@@ -1847,24 +1865,6 @@ class ImGuiTextFilter < FFI::Struct
     ImGui::ImGuiTextFilter_destroy(self)
   end
 
-end
-
-# - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
-# - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
-# - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
-# - About Main Area vs Work Area:
-#   - Main Area = entire viewport.
-#   - Work Area = entire viewport minus sections used by main menu bars (for platform windows), or by task bar (for platform monitor).
-#   - Windows are generally trying to stay within the Work Area of their host viewport.
-class ImGuiViewport < FFI::Struct
-  layout(
-    :Flags, :int,                  # See ImGuiViewportFlags_
-    :Pos, ImVec2.by_value,         # Main Area: Position of the viewport (Dear ImGui coordinates are the same as OS desktop/native coordinates)
-    :Size, ImVec2.by_value,        # Main Area: Size of the viewport.
-    :WorkPos, ImVec2.by_value,     # Work Area: Position of the viewport minus task bars, menus bars, status bars (>= Pos)
-    :WorkSize, ImVec2.by_value,    # Work Area: Size of the viewport minus task bars, menu bars, status bars (<= Size)
-    :PlatformHandleRaw, :pointer   # void* to hold lower-level, platform-native window handle (under Win32 this is expected to be a HWND, unused for other platforms)
-  )
 end
 
 class ImGuiStoragePair < FFI::Struct

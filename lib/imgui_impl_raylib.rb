@@ -393,7 +393,7 @@ module ImGui
 
     clip_offset = draw_data[:DisplayPos]
     draw_data[:CmdListsCount].times do |n|
-      cmd_list = ImDrawList.new((draw_data[:CmdLists].pointer + FFI.type_size(:pointer) * n).read_pointer)
+      cmd_list = ImDrawList.new((draw_data[:CmdLists][:Data] + FFI.type_size(:pointer) * n).read_pointer)
       vtx_buffer = cmd_list[:VtxBuffer][:Data] # const ImDrawVert*
       idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
 

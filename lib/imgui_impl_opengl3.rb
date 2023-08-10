@@ -139,7 +139,7 @@ module ImGui
     #  Render command lists
     draw_data[:CmdListsCount].times do |n|
 
-      cmd_list = ImDrawList.new((draw_data[:CmdLists].pointer + 8 * n).read_pointer) # 8 == const ImDrawList*
+      cmd_list = ImDrawList.new((draw_data[:CmdLists][:Data] + 8 * n).read_pointer) # 8 == const ImDrawList*
       # vtx_buffer = ImDrawVert.new(cmd_list[:VtxBuffer][:Data]) # const ImDrawVert*
       # idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
 
