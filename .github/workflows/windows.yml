@@ -59,7 +59,7 @@ jobs:
       shell: cmd
       run: |
         cd imgui_dll\cimgui\generator
-        C:\msys64\mingw64\bin\luajit.exe generator.lua gcc "" glfw opengl3 opengl2 sdl
+        C:\msys64\mingw64\bin\luajit.exe generator.lua gcc ""
         git diff
         cd ..\..\..
 

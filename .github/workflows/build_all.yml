@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       imgui_commit:
-        description: 'SHA-1 hash to checkout'
+        description: 'ImGui SHA-1 commit hash to checkout'
         default: ''
         required: false
       fetch_depth:

@@ -60,7 +60,7 @@ jobs:
     - name: Generate cimgui code
       run: |
         cd imgui_dll/cimgui/generator
-        luajit generator.lua gcc "" glfw opengl3 opengl2 sdl
+        luajit generator.lua gcc ""
         cd ../../..
 
     - name: Build imgui so
