@@ -779,7 +779,7 @@ ImGuiTreeNodeFlags_DefaultOpen = 32            # 1 << 5 # Default node to be ope
 ImGuiTreeNodeFlags_OpenOnDoubleClick = 64      # 1 << 6 # Need double-click to open node
 ImGuiTreeNodeFlags_OpenOnArrow = 128           # 1 << 7 # Only open when clicking on the arrow part. If ImGuiTreeNodeFlags_OpenOnDoubleClick is also set, single-click arrow or double-click all box to open.
 ImGuiTreeNodeFlags_Leaf = 256                  # 1 << 8 # No collapsing, no arrow (use as a convenience for leaf nodes).
-ImGuiTreeNodeFlags_Bullet = 512                # 1 << 9 # Display a bullet instead of arrow
+ImGuiTreeNodeFlags_Bullet = 512                # 1 << 9 # Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
 ImGuiTreeNodeFlags_FramePadding = 1024         # 1 << 10 # Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
 ImGuiTreeNodeFlags_SpanAvailWidth = 2048       # 1 << 11 # Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line. In the future we may refactor the hit system to be front-to-back, allowing natural overlaps and then this can become the default.
 ImGuiTreeNodeFlags_SpanFullWidth = 4096        # 1 << 12 # Extend hit box to the left-most and right-most edges (bypass the indented area).
@@ -869,6 +869,35 @@ class ImDrawListSplitter < FFI::Struct
     :_Count, :int,                  # Number of active channels (1+)
     :_Channels, ImVector.by_value   # Draw channels (not resized down so _Count might be < Channels.Size)
   )
+
+  def Clear()
+    ImGui::ImDrawListSplitter_Clear(self)
+  end
+
+  def ClearFreeMemory()
+    ImGui::ImDrawListSplitter_ClearFreeMemory(self)
+  end
+
+  def self.create()
+    return ImDrawListSplitter.new(ImGui::ImDrawListSplitter_ImDrawListSplitter())
+  end
+
+  def Merge(draw_list)
+    ImGui::ImDrawListSplitter_Merge(self, draw_list)
+  end
+
+  def SetCurrentChannel(draw_list, channel_idx)
+    ImGui::ImDrawListSplitter_SetCurrentChannel(self, draw_list, channel_idx)
+  end
+
+  def Split(draw_list, count)
+    ImGui::ImDrawListSplitter_Split(self, draw_list, count)
+  end
+
+  def destroy()
+    ImGui::ImDrawListSplitter_destroy(self)
+  end
+
 end
 
 # Typically, 1 command = 1 GPU draw call (unless command is a callback)
@@ -886,6 +915,19 @@ class ImDrawCmd < FFI::Struct
     :UserCallback, :pointer,      # 4-8  // If != NULL, call the function instead of rendering the vertices. clip_rect and texture_id will be set normally.
     :UserCallbackData, :pointer   # 4-8  // The draw callback code can access this.
   )
+
+  def GetTexID()
+    ImGui::ImDrawCmd_GetTexID(self)
+  end
+
+  def self.create()
+    return ImDrawCmd.new(ImGui::ImDrawCmd_ImDrawCmd())
+  end
+
+  def destroy()
+    ImGui::ImDrawCmd_destroy(self)
+  end
+
 end
 
 # [Internal] For use by ImDrawList
@@ -1383,6 +1425,27 @@ class ImGuiViewport < FFI::Struct
     :WorkSize, ImVec2.by_value,    # Work Area: Size of the viewport minus task bars, menu bars, status bars (<= Size)
     :PlatformHandleRaw, :pointer   # void* to hold lower-level, platform-native window handle (under Win32 this is expected to be a HWND, unused for other platforms)
   )
+
+  def GetCenter()
+    pOut = ImVec2.new
+    ImGui::ImGuiViewport_GetCenter(pOut, self)
+    return pOut
+  end
+
+  def GetWorkCenter()
+    pOut = ImVec2.new
+    ImGui::ImGuiViewport_GetWorkCenter(pOut, self)
+    return pOut
+  end
+
+  def self.create()
+    return ImGuiViewport.new(ImGui::ImGuiViewport_ImGuiViewport())
+  end
+
+  def destroy()
+    ImGui::ImGuiViewport_destroy(self)
+  end
+
 end
 
 # Helper: ImColor() implicitly converts colors to either ImU32 (packed 4x1 byte) or ImVec4 (4x1 float)
@@ -1410,6 +1473,31 @@ class ImDrawData < FFI::Struct
     :FramebufferScale, ImVec2.by_value,  # Amount of pixels for each unit of DisplaySize. Based on io.DisplayFramebufferScale. Generally (1,1) on normal display, (2,2) on OSX with Retina display.
     :OwnerViewport, ImGuiViewport.ptr    # Viewport carrying the ImDrawData instance, might be of use to the renderer (generally not).
   )
+
+  def AddDrawList(draw_list)
+    ImGui::ImDrawData_AddDrawList(self, draw_list)
+  end
+
+  def Clear()
+    ImGui::ImDrawData_Clear(self)
+  end
+
+  def DeIndexAllBuffers()
+    ImGui::ImDrawData_DeIndexAllBuffers(self)
+  end
+
+  def self.create()
+    return ImDrawData.new(ImGui::ImDrawData_ImDrawData())
+  end
+
+  def ScaleClipRects(fb_scale)
+    ImGui::ImDrawData_ScaleClipRects(self, fb_scale)
+  end
+
+  def destroy()
+    ImGui::ImDrawData_destroy(self)
+  end
+
 end
 
 # Font runtime data and rendering
@@ -1437,6 +1525,81 @@ class ImFont < FFI::Struct
     :MetricsTotalSurface, :int,         # 4     // out //            // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)
     :Used4kPagesMap, [:uchar, 2]        # 2 bytes if ImWchar=ImWchar16, 34 bytes if ImWchar==ImWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.
   )
+
+  def AddGlyph(src_cfg, c, x0, y0, x1, y1, u0, v0, u1, v1, advance_x)
+    ImGui::ImFont_AddGlyph(self, src_cfg, c, x0, y0, x1, y1, u0, v0, u1, v1, advance_x)
+  end
+
+  def AddRemapChar(dst, src, overwrite_dst = true)
+    ImGui::ImFont_AddRemapChar(self, dst, src, overwrite_dst)
+  end
+
+  def BuildLookupTable()
+    ImGui::ImFont_BuildLookupTable(self)
+  end
+
+  def CalcTextSizeA(size, max_width, wrap_width, text_begin, text_end = nil, remaining = nil)
+    pOut = ImVec2.new
+    ImGui::ImFont_CalcTextSizeA(pOut, self, size, max_width, wrap_width, text_begin, text_end, remaining)
+    return pOut
+  end
+
+  def CalcWordWrapPositionA(scale, text, text_end, wrap_width)
+    ImGui::ImFont_CalcWordWrapPositionA(self, scale, text, text_end, wrap_width)
+  end
+
+  def ClearOutputData()
+    ImGui::ImFont_ClearOutputData(self)
+  end
+
+  def FindGlyph(c)
+    ImGui::ImFont_FindGlyph(self, c)
+  end
+
+  def FindGlyphNoFallback(c)
+    ImGui::ImFont_FindGlyphNoFallback(self, c)
+  end
+
+  def GetCharAdvance(c)
+    ImGui::ImFont_GetCharAdvance(self, c)
+  end
+
+  def GetDebugName()
+    ImGui::ImFont_GetDebugName(self)
+  end
+
+  def GrowIndex(new_size)
+    ImGui::ImFont_GrowIndex(self, new_size)
+  end
+
+  def self.create()
+    return ImFont.new(ImGui::ImFont_ImFont())
+  end
+
+  def IsGlyphRangeUnused(c_begin, c_last)
+    ImGui::ImFont_IsGlyphRangeUnused(self, c_begin, c_last)
+  end
+
+  def IsLoaded()
+    ImGui::ImFont_IsLoaded(self)
+  end
+
+  def RenderChar(draw_list, size, pos, col, c)
+    ImGui::ImFont_RenderChar(self, draw_list, size, pos, col, c)
+  end
+
+  def RenderText(draw_list, size, pos, col, clip_rect, text_begin, text_end, wrap_width = 0.0, cpu_fine_clip = false)
+    ImGui::ImFont_RenderText(self, draw_list, size, pos, col, clip_rect, text_begin, text_end, wrap_width, cpu_fine_clip)
+  end
+
+  def SetGlyphVisible(c, visible)
+    ImGui::ImFont_SetGlyphVisible(self, c, visible)
+  end
+
+  def destroy()
+    ImGui::ImFont_destroy(self)
+  end
+
 end
 
 # See ImFontAtlas::AddCustomRectXXX functions.
@@ -1451,6 +1614,19 @@ class ImFontAtlasCustomRect < FFI::Struct
     :GlyphOffset, ImVec2.by_value,  # Input    // For custom font glyphs only: glyph display offset
     :Font, ImFont.ptr               # Input    // For custom font glyphs only: target font
   )
+
+  def self.create()
+    return ImFontAtlasCustomRect.new(ImGui::ImFontAtlasCustomRect_ImFontAtlasCustomRect())
+  end
+
+  def IsPacked()
+    ImGui::ImFontAtlasCustomRect_IsPacked(self)
+  end
+
+  def destroy()
+    ImGui::ImFontAtlasCustomRect_destroy(self)
+  end
+
 end
 
 class ImFontConfig < FFI::Struct
@@ -1484,6 +1660,25 @@ class ImFontConfig < FFI::Struct
     ImGui::ImFontConfig_destroy(self)
   end
 
+end
+
+# Hold rendering data for one glyph.
+# (Note: some language parsers may fail to convert the 31+1 bitfield members, in this case maybe drop store a single u32 or we can rework this)
+class ImFontGlyph < FFI::Struct
+  layout(
+    :Colored, :uint,    # Flag to indicate glyph is colored and should generally ignore tinting (make it usable with no shift on little-endian as this is used in loops)
+    :Visible, :uint,    # Flag to indicate glyph has no visible pixels (e.g. space). Allow early out when rendering.
+    :Codepoint, :uint,  # 0x0000..0x10FFFF
+    :AdvanceX, :float,  # Distance to next character (= data from font + ImFontConfig::GlyphExtraSpacing.x baked in)
+    :X0, :float,        # Glyph corners
+    :Y0, :float,
+    :X1, :float,
+    :Y1, :float,
+    :U0, :float,        # Texture coordinates
+    :V0, :float,
+    :U1, :float,
+    :V1, :float
+  )
 end
 
 # Helper to build glyph ranges from text/string data. Feed your application strings/characters to it then call BuildRanges().
@@ -1574,6 +1769,7 @@ class ImGuiIO < FFI::Struct
     :ClipboardUserData, :pointer,
     :SetPlatformImeDataFn, :pointer,
     :_UnusedPadding, :pointer,
+    :PlatformLocaleDecimalPoint, :ushort,         # '.'              // [Experimental] Configure decimal point e.g. '.' or ',' useful for some languages (e.g. German), generally pulled from *localeconv()->decimal_point
     :WantCaptureMouse, :bool,                     # Set when Dear ImGui will use mouse inputs, in this case do not dispatch them to your main game/application (either way, always pass on mouse inputs to imgui). (e.g. unclicked mouse is hovering over an imgui window, widget is active, mouse was clicked over an imgui window, etc.).
     :WantCaptureKeyboard, :bool,                  # Set when Dear ImGui will use keyboard inputs, in this case do not dispatch them to your main game/application (either way, always pass keyboard inputs to imgui). (e.g. InputText active, or an imgui window is focused and navigation is enabled, etc.).
     :WantTextInput, :bool,                        # Mobile/console: when set, you may display an on-screen keyboard. This is set by Dear ImGui when it wants textual keyboard input to happen (e.g. when a InputText widget is active).
@@ -1718,6 +1914,135 @@ class ImGuiInputTextCallbackData < FFI::Struct
     :SelectionStart, :int,  #                                      // Read-write   // [Completion,History,Always] == to SelectionEnd when no selection)
     :SelectionEnd, :int     #                                      // Read-write   // [Completion,History,Always]
   )
+
+  def ClearSelection()
+    ImGui::ImGuiInputTextCallbackData_ClearSelection(self)
+  end
+
+  def DeleteChars(pos, bytes_count)
+    ImGui::ImGuiInputTextCallbackData_DeleteChars(self, pos, bytes_count)
+  end
+
+  def HasSelection()
+    ImGui::ImGuiInputTextCallbackData_HasSelection(self)
+  end
+
+  def self.create()
+    return ImGuiInputTextCallbackData.new(ImGui::ImGuiInputTextCallbackData_ImGuiInputTextCallbackData())
+  end
+
+  def InsertChars(pos, text, text_end = nil)
+    ImGui::ImGuiInputTextCallbackData_InsertChars(self, pos, text, text_end)
+  end
+
+  def SelectAll()
+    ImGui::ImGuiInputTextCallbackData_SelectAll(self)
+  end
+
+  def destroy()
+    ImGui::ImGuiInputTextCallbackData_destroy(self)
+  end
+
+end
+
+# Helper: Manually clip large list of items.
+# If you have lots evenly spaced items and you have random access to the list, you can perform coarse
+# clipping based on visibility to only submit items that are in view.
+# The clipper calculates the range of visible items and advance the cursor to compensate for the non-visible items we have skipped.
+# (Dear ImGui already clip items based on their bounds but: it needs to first layout the item to do so, and generally
+#  fetching/submitting your own data incurs additional cost. Coarse clipping using ImGuiListClipper allows you to easily
+#  scale using lists with tens of thousands of items without a problem)
+# Usage:
+#   ImGuiListClipper clipper;
+#   clipper.Begin(1000);         // We have 1000 elements, evenly spaced.
+#   while (clipper.Step())
+#       for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+#           ImGui::Text("line number %d", i);
+# Generally what happens is:
+# - Clipper lets you process the first element (DisplayStart = 0, DisplayEnd = 1) regardless of it being visible or not.
+# - User code submit that one element.
+# - Clipper can measure the height of the first element
+# - Clipper calculate the actual range of elements to display based on the current clipping rectangle, position the cursor before the first visible element.
+# - User code submit visible elements.
+# - The clipper also handles various subtleties related to keyboard/gamepad navigation, wrapping etc.
+class ImGuiListClipper < FFI::Struct
+  layout(
+    :Ctx, :pointer,        # Parent UI context
+    :DisplayStart, :int,   # First item to display, updated by each call to Step()
+    :DisplayEnd, :int,     # End of items to display (exclusive)
+    :ItemsCount, :int,     # [Internal] Number of items
+    :ItemsHeight, :float,  # [Internal] Height of item after a first step and item submission can calculate it
+    :StartPosY, :float,    # [Internal] Cursor position at the time of Begin() or after table frozen rows are all processed
+    :TempData, :pointer    # [Internal] Internal data
+  )
+
+  def Begin(items_count, items_height = -1.0)
+    ImGui::ImGuiListClipper_Begin(self, items_count, items_height)
+  end
+
+  def End()
+    ImGui::ImGuiListClipper_End(self)
+  end
+
+  def self.create()
+    return ImGuiListClipper.new(ImGui::ImGuiListClipper_ImGuiListClipper())
+  end
+
+  def IncludeItemByIndex(item_index)
+    ImGui::ImGuiListClipper_IncludeItemByIndex(self, item_index)
+  end
+
+  def IncludeItemsByIndex(item_begin, item_end)
+    ImGui::ImGuiListClipper_IncludeItemsByIndex(self, item_begin, item_end)
+  end
+
+  def Step()
+    ImGui::ImGuiListClipper_Step(self)
+  end
+
+  def destroy()
+    ImGui::ImGuiListClipper_destroy(self)
+  end
+
+end
+
+# Data payload for Drag and Drop operations: AcceptDragDropPayload(), GetDragDropPayload()
+class ImGuiPayload < FFI::Struct
+  layout(
+    :Data, :pointer,         # Data (copied and owned by dear imgui)
+    :DataSize, :int,         # Data size
+    :SourceId, :uint,        # Source item id
+    :SourceParentId, :uint,  # Source parent id (if available)
+    :DataFrameCount, :int,   # Data timestamp
+    :DataType, [:char, 33],  # Data type tag (short user-supplied string, 32 characters max)
+    :Preview, :bool,         # Set when AcceptDragDropPayload() was called and mouse has been hovering the target item (nb: handle overlapping drag targets)
+    :Delivery, :bool         # Set when AcceptDragDropPayload() was called and mouse button is released over the target item.
+  )
+
+  def Clear()
+    ImGui::ImGuiPayload_Clear(self)
+  end
+
+  def self.create()
+    return ImGuiPayload.new(ImGui::ImGuiPayload_ImGuiPayload())
+  end
+
+  def IsDataType(type)
+    ImGui::ImGuiPayload_IsDataType(self, type)
+  end
+
+  def IsDelivery()
+    ImGui::ImGuiPayload_IsDelivery(self)
+  end
+
+  def IsPreview()
+    ImGui::ImGuiPayload_IsPreview(self)
+  end
+
+  def destroy()
+    ImGui::ImGuiPayload_destroy(self)
+  end
+
 end
 
 # (Optional) Support for IME (Input Method Editor) via the io.SetPlatformImeDataFn() function.
@@ -1727,6 +2052,15 @@ class ImGuiPlatformImeData < FFI::Struct
     :InputPos, ImVec2.by_value,  # Position of the input cursor
     :InputLineHeight, :float     # Line height
   )
+
+  def self.create()
+    return ImGuiPlatformImeData.new(ImGui::ImGuiPlatformImeData_ImGuiPlatformImeData())
+  end
+
+  def destroy()
+    ImGui::ImGuiPlatformImeData_destroy(self)
+  end
+
 end
 
 # Resizing callback data to apply custom constraint. As enabled by SetNextWindowSizeConstraints(). Callback is called during the next Begin().
@@ -1738,6 +2072,81 @@ class ImGuiSizeCallbackData < FFI::Struct
     :CurrentSize, ImVec2.by_value,  # Read-only.   Current window size.
     :DesiredSize, ImVec2.by_value   # Read-write.  Desired size, based on user's mouse position. Write to this field to restrain resizing.
   )
+end
+
+# Helper: Key->Value storage
+# Typically you don't have to worry about this since a storage is held within each Window.
+# We use it to e.g. store collapse state for a tree (Int 0/1)
+# This is optimized for efficient lookup (dichotomy into a contiguous buffer) and rare insertion (typically tied to user interactions aka max once a frame)
+# You can use it as custom user storage for temporary values. Declare your own storage if, for example:
+# - You want to manipulate the open/close state of a particular sub-tree in your interface (tree node uses Int 0/1 to store their state).
+# - You want to store custom debug data easily without adding or editing structures in your code (probably not efficient, but convenient)
+# Types are NOT stored, so it is up to you to make sure your Key don't collide with different types.
+class ImGuiStorage < FFI::Struct
+  layout(
+    :Data, ImVector.by_value
+  )
+
+  def BuildSortByKey()
+    ImGui::ImGuiStorage_BuildSortByKey(self)
+  end
+
+  def Clear()
+    ImGui::ImGuiStorage_Clear(self)
+  end
+
+  def GetBool(key, default_val = false)
+    ImGui::ImGuiStorage_GetBool(self, key, default_val)
+  end
+
+  def GetBoolRef(key, default_val = false)
+    ImGui::ImGuiStorage_GetBoolRef(self, key, default_val)
+  end
+
+  def GetFloat(key, default_val = 0.0)
+    ImGui::ImGuiStorage_GetFloat(self, key, default_val)
+  end
+
+  def GetFloatRef(key, default_val = 0.0)
+    ImGui::ImGuiStorage_GetFloatRef(self, key, default_val)
+  end
+
+  def GetInt(key, default_val = 0)
+    ImGui::ImGuiStorage_GetInt(self, key, default_val)
+  end
+
+  def GetIntRef(key, default_val = 0)
+    ImGui::ImGuiStorage_GetIntRef(self, key, default_val)
+  end
+
+  def GetVoidPtr(key)
+    ImGui::ImGuiStorage_GetVoidPtr(self, key)
+  end
+
+  def GetVoidPtrRef(key, default_val = nil)
+    ImGui::ImGuiStorage_GetVoidPtrRef(self, key, default_val)
+  end
+
+  def SetAllInt(val)
+    ImGui::ImGuiStorage_SetAllInt(self, val)
+  end
+
+  def SetBool(key, val)
+    ImGui::ImGuiStorage_SetBool(self, key, val)
+  end
+
+  def SetFloat(key, val)
+    ImGui::ImGuiStorage_SetFloat(self, key, val)
+  end
+
+  def SetInt(key, val)
+    ImGui::ImGuiStorage_SetInt(self, key, val)
+  end
+
+  def SetVoidPtr(key, val)
+    ImGui::ImGuiStorage_SetVoidPtr(self, key, val)
+  end
+
 end
 
 class ImGuiStyle < FFI::Struct
@@ -1759,7 +2168,7 @@ class ImGuiStyle < FFI::Struct
     :FrameBorderSize, :float,                  # Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
     :ItemSpacing, ImVec2.by_value,             # Horizontal and vertical spacing between widgets/lines.
     :ItemInnerSpacing, ImVec2.by_value,        # Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
-    :CellPadding, ImVec2.by_value,             # Padding within a table cell
+    :CellPadding, ImVec2.by_value,             # Padding within a table cell. CellPadding.y may be altered between different rows.
     :TouchExtraPadding, ImVec2.by_value,       # Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
     :IndentSpacing, :float,                    # Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
     :ColumnsMinSpacing, :float,                # Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
@@ -1815,6 +2224,15 @@ class ImGuiTableColumnSortSpecs < FFI::Struct
     :SortOrder, :short,    # Index within parent ImGuiTableSortSpecs (always stored in order starting from 0, tables sorted on a single criteria will always have a 0 here)
     :SortDirection, :int   # ImGuiSortDirection_Ascending or ImGuiSortDirection_Descending (you can use this or SortSign, whichever is more convenient for your sort function)
   )
+
+  def self.create()
+    return ImGuiTableColumnSortSpecs.new(ImGui::ImGuiTableColumnSortSpecs_ImGuiTableColumnSortSpecs())
+  end
+
+  def destroy()
+    ImGui::ImGuiTableColumnSortSpecs_destroy(self)
+  end
+
 end
 
 # Sorting specifications for a table (often handling sort specs for a single column, occasionally more)
@@ -1827,6 +2245,68 @@ class ImGuiTableSortSpecs < FFI::Struct
     :SpecsCount, :int,   # Sort spec count. Most often 1. May be > 1 when ImGuiTableFlags_SortMulti is enabled. May be == 0 when ImGuiTableFlags_SortTristate is enabled.
     :SpecsDirty, :bool   # Set to true when specs have changed since last time! Use this to sort again, then clear the flag.
   )
+
+  def self.create()
+    return ImGuiTableSortSpecs.new(ImGui::ImGuiTableSortSpecs_ImGuiTableSortSpecs())
+  end
+
+  def destroy()
+    ImGui::ImGuiTableSortSpecs_destroy(self)
+  end
+
+end
+
+# Helper: Growable text buffer for logging/accumulating text
+# (this could be called 'ImGuiTextBuilder' / 'ImGuiStringBuilder')
+class ImGuiTextBuffer < FFI::Struct
+  layout(
+    :Buf, ImVector.by_value
+  )
+
+  def self.create()
+    return ImGuiTextBuffer.new(ImGui::ImGuiTextBuffer_ImGuiTextBuffer())
+  end
+
+  def append(str, str_end = nil)
+    ImGui::ImGuiTextBuffer_append(self, str, str_end)
+  end
+
+  def appendf(fmt, *varargs)
+    ImGui::ImGuiTextBuffer_appendf(self, fmt, *varargs)
+  end
+
+  def begin()
+    ImGui::ImGuiTextBuffer_begin(self)
+  end
+
+  def c_str()
+    ImGui::ImGuiTextBuffer_c_str(self)
+  end
+
+  def clear()
+    ImGui::ImGuiTextBuffer_clear(self)
+  end
+
+  def destroy()
+    ImGui::ImGuiTextBuffer_destroy(self)
+  end
+
+  def empty()
+    ImGui::ImGuiTextBuffer_empty(self)
+  end
+
+  def end()
+    ImGui::ImGuiTextBuffer_end(self)
+  end
+
+  def reserve(capacity)
+    ImGui::ImGuiTextBuffer_reserve(self, capacity)
+  end
+
+  def size()
+    ImGui::ImGuiTextBuffer_size(self)
+  end
+
 end
 
 # Helper: Parse and apply text filters. In format "aaaaa[,bbbb][,ccccc]"
@@ -1867,11 +2347,56 @@ class ImGuiTextFilter < FFI::Struct
 
 end
 
+class ImGuiTextRange < FFI::Struct
+  layout(
+    :b, :pointer,
+    :e, :pointer
+  )
+
+  def self.create()
+    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRange_Nil())
+  end
+
+  def self.create(_b, _e)
+    return ImGuiTextRange.new(ImGui::ImGuiTextRange_ImGuiTextRange_Str(_b, _e))
+  end
+
+  def destroy()
+    ImGui::ImGuiTextRange_destroy(self)
+  end
+
+  def empty()
+    ImGui::ImGuiTextRange_empty(self)
+  end
+
+  def split(separator, out)
+    ImGui::ImGuiTextRange_split(self, separator, out)
+  end
+
+end
+
 class ImGuiStoragePair < FFI::Struct
   layout(
     :key, :uint,
     :val_p, :pointer
   )
+
+  def self.create(_key, _val_i)
+    return ImGuiStoragePair.new(ImGui::ImGuiStoragePair_ImGuiStoragePair_Int(_key, _val_i))
+  end
+
+  def self.create(_key, _val_f)
+    return ImGuiStoragePair.new(ImGui::ImGuiStoragePair_ImGuiStoragePair_Float(_key, _val_f))
+  end
+
+  def self.create(_key, _val_p)
+    return ImGuiStoragePair.new(ImGui::ImGuiStoragePair_ImGuiStoragePair_Ptr(_key, _val_p))
+  end
+
+  def destroy()
+    ImGui::ImGuiStoragePair_destroy(self)
+  end
+
 end
 
 # shorthand initializer
@@ -1923,6 +2448,22 @@ module ImGui
     callback :ImGuiSizeCallback, [ImGuiSizeCallbackData], :void
 
     entries = [
+      [:ImDrawCmd_GetTexID, [:pointer], :pointer],
+      [:ImDrawCmd_ImDrawCmd, [], :pointer],
+      [:ImDrawCmd_destroy, [:pointer], :void],
+      [:ImDrawData_AddDrawList, [:pointer, :pointer], :void],
+      [:ImDrawData_Clear, [:pointer], :void],
+      [:ImDrawData_DeIndexAllBuffers, [:pointer], :void],
+      [:ImDrawData_ImDrawData, [], :pointer],
+      [:ImDrawData_ScaleClipRects, [:pointer, ImVec2.by_value], :void],
+      [:ImDrawData_destroy, [:pointer], :void],
+      [:ImDrawListSplitter_Clear, [:pointer], :void],
+      [:ImDrawListSplitter_ClearFreeMemory, [:pointer], :void],
+      [:ImDrawListSplitter_ImDrawListSplitter, [], :pointer],
+      [:ImDrawListSplitter_Merge, [:pointer, :pointer], :void],
+      [:ImDrawListSplitter_SetCurrentChannel, [:pointer, :pointer, :int], :void],
+      [:ImDrawListSplitter_Split, [:pointer, :pointer, :int], :void],
+      [:ImDrawListSplitter_destroy, [:pointer], :void],
       [:ImDrawList_AddBezierCubic, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void],
       [:ImDrawList_AddBezierQuadratic, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void],
       [:ImDrawList_AddCallback, [:pointer, :ImDrawCallback, :pointer], :void],
@@ -1987,6 +2528,9 @@ module ImGui
       [:ImDrawList__ResetForNewFrame, [:pointer], :void],
       [:ImDrawList__TryMergeDrawCmds, [:pointer], :void],
       [:ImDrawList_destroy, [:pointer], :void],
+      [:ImFontAtlasCustomRect_ImFontAtlasCustomRect, [], :pointer],
+      [:ImFontAtlasCustomRect_IsPacked, [:pointer], :bool],
+      [:ImFontAtlasCustomRect_destroy, [:pointer], :void],
       [:ImFontAtlas_AddCustomRectFontGlyph, [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value], :int],
       [:ImFontAtlas_AddCustomRectRegular, [:pointer, :int, :int], :int],
       [:ImFontAtlas_AddFont, [:pointer, :pointer], :pointer],
@@ -2029,6 +2573,24 @@ module ImGui
       [:ImFontGlyphRangesBuilder_ImFontGlyphRangesBuilder, [], :pointer],
       [:ImFontGlyphRangesBuilder_SetBit, [:pointer, :size_t], :void],
       [:ImFontGlyphRangesBuilder_destroy, [:pointer], :void],
+      [:ImFont_AddGlyph, [:pointer, :pointer, :ushort, :float, :float, :float, :float, :float, :float, :float, :float, :float], :void],
+      [:ImFont_AddRemapChar, [:pointer, :ushort, :ushort, :bool], :void],
+      [:ImFont_BuildLookupTable, [:pointer], :void],
+      [:ImFont_CalcTextSizeA, [:pointer, :pointer, :float, :float, :float, :pointer, :pointer, :pointer], :void],
+      [:ImFont_CalcWordWrapPositionA, [:pointer, :float, :pointer, :pointer, :float], :pointer],
+      [:ImFont_ClearOutputData, [:pointer], :void],
+      [:ImFont_FindGlyph, [:pointer, :ushort], :pointer],
+      [:ImFont_FindGlyphNoFallback, [:pointer, :ushort], :pointer],
+      [:ImFont_GetCharAdvance, [:pointer, :ushort], :float],
+      [:ImFont_GetDebugName, [:pointer], :pointer],
+      [:ImFont_GrowIndex, [:pointer, :int], :void],
+      [:ImFont_ImFont, [], :pointer],
+      [:ImFont_IsGlyphRangeUnused, [:pointer, :uint, :uint], :bool],
+      [:ImFont_IsLoaded, [:pointer], :bool],
+      [:ImFont_RenderChar, [:pointer, :pointer, :float, ImVec2.by_value, :uint, :ushort], :void],
+      [:ImFont_RenderText, [:pointer, :pointer, :float, ImVec2.by_value, :uint, ImVec4.by_value, :pointer, :pointer, :float, :bool], :void],
+      [:ImFont_SetGlyphVisible, [:pointer, :ushort, :bool], :void],
+      [:ImFont_destroy, [:pointer], :void],
       [:ImGuiIO_AddFocusEvent, [:pointer, :bool], :void],
       [:ImGuiIO_AddInputCharacter, [:pointer, :uint], :void],
       [:ImGuiIO_AddInputCharacterUTF16, [:pointer, :ushort], :void],
@@ -2045,9 +2607,67 @@ module ImGui
       [:ImGuiIO_SetAppAcceptingEvents, [:pointer, :bool], :void],
       [:ImGuiIO_SetKeyEventNativeData, [:pointer, :int, :int, :int, :int], :void],
       [:ImGuiIO_destroy, [:pointer], :void],
+      [:ImGuiInputTextCallbackData_ClearSelection, [:pointer], :void],
+      [:ImGuiInputTextCallbackData_DeleteChars, [:pointer, :int, :int], :void],
+      [:ImGuiInputTextCallbackData_HasSelection, [:pointer], :bool],
+      [:ImGuiInputTextCallbackData_ImGuiInputTextCallbackData, [], :pointer],
+      [:ImGuiInputTextCallbackData_InsertChars, [:pointer, :int, :pointer, :pointer], :void],
+      [:ImGuiInputTextCallbackData_SelectAll, [:pointer], :void],
+      [:ImGuiInputTextCallbackData_destroy, [:pointer], :void],
+      [:ImGuiListClipper_Begin, [:pointer, :int, :float], :void],
+      [:ImGuiListClipper_End, [:pointer], :void],
+      [:ImGuiListClipper_ImGuiListClipper, [], :pointer],
+      [:ImGuiListClipper_IncludeItemByIndex, [:pointer, :int], :void],
+      [:ImGuiListClipper_IncludeItemsByIndex, [:pointer, :int, :int], :void],
+      [:ImGuiListClipper_Step, [:pointer], :bool],
+      [:ImGuiListClipper_destroy, [:pointer], :void],
+      [:ImGuiOnceUponAFrame_ImGuiOnceUponAFrame, [], :pointer],
+      [:ImGuiOnceUponAFrame_destroy, [:pointer], :void],
+      [:ImGuiPayload_Clear, [:pointer], :void],
+      [:ImGuiPayload_ImGuiPayload, [], :pointer],
+      [:ImGuiPayload_IsDataType, [:pointer, :pointer], :bool],
+      [:ImGuiPayload_IsDelivery, [:pointer], :bool],
+      [:ImGuiPayload_IsPreview, [:pointer], :bool],
+      [:ImGuiPayload_destroy, [:pointer], :void],
+      [:ImGuiPlatformImeData_ImGuiPlatformImeData, [], :pointer],
+      [:ImGuiPlatformImeData_destroy, [:pointer], :void],
+      [:ImGuiStoragePair_ImGuiStoragePair_Int, [:uint, :int], :pointer],
+      [:ImGuiStoragePair_ImGuiStoragePair_Float, [:uint, :float], :pointer],
+      [:ImGuiStoragePair_ImGuiStoragePair_Ptr, [:uint, :pointer], :pointer],
+      [:ImGuiStoragePair_destroy, [:pointer], :void],
+      [:ImGuiStorage_BuildSortByKey, [:pointer], :void],
+      [:ImGuiStorage_Clear, [:pointer], :void],
+      [:ImGuiStorage_GetBool, [:pointer, :uint, :bool], :bool],
+      [:ImGuiStorage_GetBoolRef, [:pointer, :uint, :bool], :pointer],
+      [:ImGuiStorage_GetFloat, [:pointer, :uint, :float], :float],
+      [:ImGuiStorage_GetFloatRef, [:pointer, :uint, :float], :pointer],
+      [:ImGuiStorage_GetInt, [:pointer, :uint, :int], :int],
+      [:ImGuiStorage_GetIntRef, [:pointer, :uint, :int], :pointer],
+      [:ImGuiStorage_GetVoidPtr, [:pointer, :uint], :pointer],
+      [:ImGuiStorage_GetVoidPtrRef, [:pointer, :uint, :pointer], :pointer],
+      [:ImGuiStorage_SetAllInt, [:pointer, :int], :void],
+      [:ImGuiStorage_SetBool, [:pointer, :uint, :bool], :void],
+      [:ImGuiStorage_SetFloat, [:pointer, :uint, :float], :void],
+      [:ImGuiStorage_SetInt, [:pointer, :uint, :int], :void],
+      [:ImGuiStorage_SetVoidPtr, [:pointer, :uint, :pointer], :void],
       [:ImGuiStyle_ImGuiStyle, [], :pointer],
       [:ImGuiStyle_ScaleAllSizes, [:pointer, :float], :void],
       [:ImGuiStyle_destroy, [:pointer], :void],
+      [:ImGuiTableColumnSortSpecs_ImGuiTableColumnSortSpecs, [], :pointer],
+      [:ImGuiTableColumnSortSpecs_destroy, [:pointer], :void],
+      [:ImGuiTableSortSpecs_ImGuiTableSortSpecs, [], :pointer],
+      [:ImGuiTableSortSpecs_destroy, [:pointer], :void],
+      [:ImGuiTextBuffer_ImGuiTextBuffer, [], :pointer],
+      [:ImGuiTextBuffer_append, [:pointer, :pointer, :pointer], :void],
+      [:ImGuiTextBuffer_appendf, [:pointer, :pointer, :varargs], :void],
+      [:ImGuiTextBuffer_begin, [:pointer], :pointer],
+      [:ImGuiTextBuffer_c_str, [:pointer], :pointer],
+      [:ImGuiTextBuffer_clear, [:pointer], :void],
+      [:ImGuiTextBuffer_destroy, [:pointer], :void],
+      [:ImGuiTextBuffer_empty, [:pointer], :bool],
+      [:ImGuiTextBuffer_end, [:pointer], :pointer],
+      [:ImGuiTextBuffer_reserve, [:pointer, :int], :void],
+      [:ImGuiTextBuffer_size, [:pointer], :int],
       [:ImGuiTextFilter_Build, [:pointer], :void],
       [:ImGuiTextFilter_Clear, [:pointer], :void],
       [:ImGuiTextFilter_Draw, [:pointer, :pointer, :float], :bool],
@@ -2060,6 +2680,10 @@ module ImGui
       [:ImGuiTextRange_destroy, [:pointer], :void],
       [:ImGuiTextRange_empty, [:pointer], :bool],
       [:ImGuiTextRange_split, [:pointer, :char, :pointer], :void],
+      [:ImGuiViewport_GetCenter, [:pointer, :pointer], :void],
+      [:ImGuiViewport_GetWorkCenter, [:pointer, :pointer], :void],
+      [:ImGuiViewport_ImGuiViewport, [], :pointer],
+      [:ImGuiViewport_destroy, [:pointer], :void],
       [:igAcceptDragDropPayload, [:pointer, :int], :pointer],
       [:igAlignTextToFramePadding, [], :void],
       [:igArrowButton, [:pointer, :int], :bool],
@@ -3429,14 +4053,14 @@ module ImGui
   end
 
   # ret: void
-  def self.GetWindowPos()  # get current window position in screen space (useful if you want to do your own drawing via the DrawList API)
+  def self.GetWindowPos()  # get current window position in screen space (note: it is unlikely you need to use this. Consider using current layout pos instead, GetScreenCursorPos())
     pOut = ImVec2.new
     igGetWindowPos(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetWindowSize()  # get current window size
+  def self.GetWindowSize()  # get current window size (note: it is unlikely you need to use this. Consider using GetScreenCursorPos() and e.g. GetContentRegionAvail() instead)
     pOut = ImVec2.new
     igGetWindowSize(pOut)
     return pOut

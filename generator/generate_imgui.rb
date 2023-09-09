@@ -617,43 +617,31 @@ if __FILE__ == $PROGRAM_NAME
 
   # Omit needless/unusable data
   omit_structs = [
-    'CustomRect',
-    'GlyphRangesBuilder',
     'ImDrawChannel',
-  # 'ImDrawCmd',
-  # 'ImDrawData',
-  # 'ImDrawList',
     'ImDrawListSharedData',
-  # 'ImDrawVert',
-  # 'ImFont',
-  # 'ImFontAtlas',
-  # 'ImFontConfig',
-    'ImFontGlyph',
-  # 'ImGuiInputTextCallbackData',
-    'ImGuiListClipper',
     'ImGuiOnceUponAFrame',
-    'ImGuiPayload',
-  # 'ImGuiSizeCallbackData',
-    'ImGuiStorage',
-    'ImGuiTextBuffer',
-  # 'ImGuiTextFilter',
-    'ImGuiTextRange',
-    'Pair',
-  # 'ImVector',
   ]
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
 
+=begin
   # end-user API only
   funcs_base_map.delete_if {|func|
     !(func.name.start_with?('ig') ||
+      func.name.start_with?('ImDrawList_') ||
       func.name.start_with?('ImFontAtlas_') ||
-      func.name.start_with?('ImGuiStyle_') ||
-      func.name.start_with?('ImGuiIO_') ||
-      func.name.start_with?('ImGuiTextFilter_') ||
-      func.name.start_with?('ImGuiTextRange_') ||
-      func.name.start_with?('ImFontGlyphRangesBuilder_') ||
       func.name.start_with?('ImFontConfig_') ||
-      func.name.start_with?('ImDrawList_'))
+      func.name.start_with?('ImFontGlyphRangesBuilder_') ||
+      func.name.start_with?('ImGuiIO_') ||
+      func.name.start_with?('ImGuiListClipper_') ||
+      func.name.start_with?('ImGuiStyle_') ||
+      func.name.start_with?('ImGuiTextFilter_') ||
+      func.name.start_with?('ImGuiTextRange_'))
+  }
+=end
+  funcs_base_map.delete_if {|func|
+    (func.name.start_with?('ImColor_') ||
+     func.name.start_with?('ImVec2_') ||
+     func.name.start_with?('ImVec4_'))
   }
 
   # funcs_impl_map.delete_if {|func| func.name.include?('OpenGL2')}

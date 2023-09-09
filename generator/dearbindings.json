@@ -2,11 +2,11 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.89.8\""
+            "content": "\"1.89.9\""
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "18980"
+            "content": "18990"
         },
         {
             "name": "IM_MSVC_RUNTIME_CHECKS_OFF",
@@ -684,7 +684,7 @@
                     "name": "ImGuiTreeNodeFlags_Bullet",
                     "value": "1<<9",
                     "comments": {
-                        "attached": "// Display a bullet instead of arrow"
+                        "attached": "// Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!"
                     }
                 },
                 {
@@ -6392,7 +6392,7 @@
                         "declaration": "ImVec2"
                     },
                     "comments": {
-                        "attached": "// Padding within a table cell"
+                        "attached": "// Padding within a table cell. CellPadding.y may be altered between different rows."
                     }
                 },
                 {
@@ -7657,6 +7657,24 @@
                             "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
                         }
                     ]
+                },
+                {
+                    "names": [
+                        {
+                            "name": "PlatformLocaleDecimalPoint",
+                            "is_array": false
+                        }
+                    ],
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "ImWchar"
+                    },
+                    "comments": {
+                        "preceding": [
+                            "// Optional: Platform locale"
+                        ],
+                        "attached": "// '.'              // [Experimental] Configure decimal point e.g. '.' or ',' useful for some languages (e.g. German), generally pulled from *localeconv()->decimal_point"
+                    }
                 },
                 {
                     "names": [
@@ -12456,7 +12474,7 @@
             "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "attached": "// get current window position in screen space (useful if you want to do your own drawing via the DrawList API)"
+                "attached": "// get current window position in screen space (note: it is unlikely you need to use this. Consider using current layout pos instead, GetScreenCursorPos())"
             }
         },
         {
@@ -12471,7 +12489,7 @@
             "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "attached": "// get current window size"
+                "attached": "// get current window size (note: it is unlikely you need to use this. Consider using GetScreenCursorPos() and e.g. GetContentRegionAvail() instead)"
             }
         },
         {
@@ -28654,6 +28672,81 @@
             }
         },
         {
+            "name": "ImGuiListClipper_IncludeItemByIndex",
+            "original_fully_qualified_name": "IncludeItemByIndex",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "self",
+                    "type": {
+                        "declaration": "ImGuiListClipper*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                },
+                {
+                    "name": "item_index",
+                    "type": {
+                        "declaration": "int"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "preceding": [
+                    "// Call IncludeItemByIndex() or IncludeItemsByIndex() *BEFORE* first call to Step() if you need a range of items to not be clipped, regardless of their visibility.",
+                    "// (Due to alignment / padding of certain items it is possible that an extra item may be included on either end of the display range)."
+                ]
+            }
+        },
+        {
+            "name": "ImGuiListClipper_IncludeItemsByIndex",
+            "original_fully_qualified_name": "IncludeItemsByIndex",
+            "return_type": {
+                "declaration": "void"
+            },
+            "arguments": [
+                {
+                    "name": "self",
+                    "type": {
+                        "declaration": "ImGuiListClipper*"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                },
+                {
+                    "name": "item_begin",
+                    "type": {
+                        "declaration": "int"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                },
+                {
+                    "name": "item_end",
+                    "type": {
+                        "declaration": "int"
+                    },
+                    "is_array": false,
+                    "is_varargs": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "comments": {
+                "attached": "// item_end is exclusive e.g. use (42, 42+1) to make item 42 never clipped."
+            }
+        },
+        {
             "name": "ImGuiListClipper_IncludeRangeByIndices",
             "original_fully_qualified_name": "IncludeRangeByIndices",
             "return_type": {
@@ -28690,12 +28783,14 @@
             "is_imstr_helper": false,
             "has_imstr_helper": false,
             "comments": {
-                "preceding": [
-                    "// Call IncludeRangeByIndices() *BEFORE* first call to Step() if you need a range of items to not be clipped, regardless of their visibility.",
-                    "// (Due to alignment / padding of certain items it is possible that an extra item may be included on either end of the display range)."
-                ],
-                "attached": "// item_end is exclusive e.g. use (42, 42+1) to make item 42 never clipped."
-            }
+                "attached": "// [renamed in 1.89.9]"
+            },
+            "conditionals": [
+                {
+                    "condition": "ifndef",
+                    "expression": "IMGUI_DISABLE_OBSOLETE_FUNCTIONS"
+                }
+            ]
         },
         {
             "name": "ImGuiListClipper_ForceDisplayRangeByIndices",
@@ -31792,7 +31887,7 @@
                     "// Advanced: Channels",
                     "// - Use to split render into layers. By switching channels to can render out-of-order (e.g. submit FG primitives before BG primitives)",
                     "// - Use to minimize draw calls (e.g. if going back-and-forth between multiple clipping rectangles, prefer to append into separate channels then merge at the end)",
-                    "// - FIXME-OBSOLETE: This API shouldn't have been in ImDrawList in the first place!",
+                    "// - This API shouldn't have been in ImDrawList in the first place!",
                     "//   Prefer using your own persistent instance of ImDrawListSplitter as you can stack them.",
                     "//   Using the ImDrawList::ChannelsXXXX you cannot stack a split over another."
                 ]
