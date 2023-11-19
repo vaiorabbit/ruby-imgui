@@ -373,8 +373,10 @@ module ImGuiBindings
                                         else
                                           ''
                                         end
-          struct_field_comment_entry = ImGuiCommentEntry.new(name: json_field['names'][0]['name'], comments: {:preceding => '', :attached => json_field_attached_comment}, children: nil)
-          struct_comment_entry.children[struct_field_comment_entry.name] = struct_field_comment_entry
+          if json_field['names']
+            struct_field_comment_entry = ImGuiCommentEntry.new(name: json_field['names'][0]['name'], comments: {:preceding => '', :attached => json_field_attached_comment}, children: nil)
+            struct_comment_entry.children[struct_field_comment_entry.name] = struct_field_comment_entry
+          end
         end
         comments['structs'][json_struct['name']] = struct_comment_entry
       end
