@@ -1,7 +1,11 @@
 backup/*
 imgui_dll/build/*
+imgui_dll/build_x86_64/*
+imgui_dll/build_arm64/*
 imgui_dll/bak/*
 imnodes_dll/build/*
+imnodes_dll/build_x86_64/*
+imnodes_dll/build_arm64/*
 imnodes_dll/bak/*
 third_party/SDL2-*
 third_party/glfw/*

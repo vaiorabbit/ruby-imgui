@@ -8,9 +8,10 @@ when /mswin|msys|mingw|cygwin/
   ImGui.import_internal_symbols()
   ImNodes.load_lib(Dir.pwd + '/../lib/' + 'imnodes.dll')
 when /darwin/
-  ImGui.load_lib(Dir.pwd + '/../lib/' + 'imgui.dylib')
+  arch = RUBY_PLATFORM.split('-')[0]
+  ImGui.load_lib(Dir.pwd + '/../lib/' + "imgui.#{arch}.dylib")
   ImGui.import_internal_symbols()
-  ImNodes.load_lib(Dir.pwd + '/../lib/' + 'imnodes.dylib')
+  ImNodes.load_lib(Dir.pwd + '/../lib/' + "imnodes.#{arch}.dylib")
 when /linux/
   arch = RUBY_PLATFORM.split('-')[0]
   ImGui.load_lib(Dir.pwd + '/../lib/' + "imgui.#{arch}.so")
