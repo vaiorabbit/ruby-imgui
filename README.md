@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2023-12-10
+*   Last modified : 2024-01-12
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -16,7 +16,7 @@
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [x64-mingw-ucrt]
         *   [macOS]
-            *   ruby 3.2.1 (2023-02-08 revision 31819e82c8) [arm64-darwin22]
+            *   ruby 3.3.0 (2023-12-25 revision 5124f9ac75) [arm64-darwin23]
         *   [Linux]
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [aarch64-linux]
 *   Ruby Gems
@@ -42,6 +42,7 @@
             *   ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [x64-mingw32]
             *   ruby 2.7.1p83 (2020-03-31 revision a0c7c23c9c) [x64-mingw32]
         *   [macOS]
+            *   ruby 3.2.1 (2023-02-08 revision 31819e82c8) [arm64-darwin22]
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [arm64-darwin21]
             *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [arm64-darwin21]
             *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [arm64-darwin21]
@@ -95,7 +96,7 @@ All ruby codes here are available under the terms of the zlib/libpng License ( h
 
 ```
 Ruby-Imgui : Yet another ImGui wrapper for Ruby
-Copyright (c) 2019-2023 vaiorabbit <http://twitter.com/vaiorabbit>
+Copyright (c) 2019-2024 vaiorabbit <http://twitter.com/vaiorabbit>
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

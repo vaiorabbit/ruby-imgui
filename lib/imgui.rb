@@ -143,15 +143,15 @@ ImGuiCol_BorderShadow = 6           # 6
 ImGuiCol_FrameBg = 7                # 7 # Background of checkbox, radio button, plot, slider, text input
 ImGuiCol_FrameBgHovered = 8         # 8
 ImGuiCol_FrameBgActive = 9          # 9
-ImGuiCol_TitleBg = 10               # 10
-ImGuiCol_TitleBgActive = 11         # 11
-ImGuiCol_TitleBgCollapsed = 12      # 12
+ImGuiCol_TitleBg = 10               # 10 # Title bar
+ImGuiCol_TitleBgActive = 11         # 11 # Title bar when focused
+ImGuiCol_TitleBgCollapsed = 12      # 12 # Title bar when collapsed
 ImGuiCol_MenuBarBg = 13             # 13
 ImGuiCol_ScrollbarBg = 14           # 14
 ImGuiCol_ScrollbarGrab = 15         # 15
 ImGuiCol_ScrollbarGrabHovered = 16  # 16
 ImGuiCol_ScrollbarGrabActive = 17   # 17
-ImGuiCol_CheckMark = 18             # 18
+ImGuiCol_CheckMark = 18             # 18 # Checkbox tick and RadioButton circle
 ImGuiCol_SliderGrab = 19            # 19
 ImGuiCol_SliderGrabActive = 20      # 20
 ImGuiCol_Button = 21                # 21
@@ -234,7 +234,7 @@ ImGuiComboFlags_WidthFitPreview = 128 # 1 << 7 # Width dynamically calculated fr
 ImGuiComboFlags_HeightMask_ = 30      # ImGuiComboFlags_HeightSmall | ImGuiComboFlags_HeightRegular | ImGuiComboFlags_HeightLarge | ImGuiComboFlags_HeightLargest
 
 # ImGuiCond_
-# Enumeration for ImGui::SetWindow***(), SetNextWindow***(), SetNextItem***() functions
+# Enumeration for ImGui::SetNextWindow***(), SetWindow***(), SetNextItem***() functions
 # Represent a condition.
 # Important: Treat as a regular enum! Do NOT combine multiple values using binary operators! All the functions above treat 0 as a shortcut to ImGuiCond_Always.
 ImGuiCond_None = 0         # 0 # No condition (always set the variable), same as _Always
@@ -358,6 +358,7 @@ ImGuiInputTextFlags_EscapeClearsAll = 1048576  # 1 << 20 # Escape key clears con
 # Since >= 1.89 we increased typing (went from int to enum), some legacy code may need a cast to ImGuiKey.
 # Read details about the 1.87 and 1.89 transition : https://github.com/ocornut/imgui/issues/4921
 # Note that "Keys" related to physical keys and are not the same concept as input "Characters", the later are submitted via io.AddInputCharacter().
+# The keyboard key enum values are named after the keys on a standard US keyboard, and on other keyboard types the keys reported may not match the keycaps.
 ImGuiKey_None = 0                  # 0
 ImGuiKey_Tab = 512                 # 512 # == ImGuiKey_NamedKey_BEGIN
 ImGuiKey_LeftArrow = 513           # 513
@@ -652,7 +653,7 @@ ImGuiTabBarFlags_None = 0                         # 0
 ImGuiTabBarFlags_Reorderable = 1                  # 1 << 0 # Allow manually dragging tabs to re-order them + New tabs are appended at the end of list
 ImGuiTabBarFlags_AutoSelectNewTabs = 2            # 1 << 1 # Automatically select new tabs when they appear
 ImGuiTabBarFlags_TabListPopupButton = 4           # 1 << 2 # Disable buttons to open the tab list popup
-ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 8 # 1 << 3 # Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You can still repro this behavior on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
+ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 8 # 1 << 3 # Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
 ImGuiTabBarFlags_NoTabListScrollingButtons = 16   # 1 << 4 # Disable scrolling buttons (apply when fitting policy is ImGuiTabBarFlags_FittingPolicyScroll)
 ImGuiTabBarFlags_NoTooltip = 32                   # 1 << 5 # Disable tooltips when hovering a tab
 ImGuiTabBarFlags_FittingPolicyResizeDown = 64     # 1 << 6 # Resize tabs when they don't fit
@@ -663,14 +664,15 @@ ImGuiTabBarFlags_FittingPolicyDefault_ = 64       # ImGuiTabBarFlags_FittingPoli
 # ImGuiTabItemFlags_
 # Flags for ImGui::BeginTabItem()
 ImGuiTabItemFlags_None = 0                         # 0
-ImGuiTabItemFlags_UnsavedDocument = 1              # 1 << 0 # Display a dot next to the title + tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed when pressing the X, so if you keep submitting the tab may reappear at end of tab bar.
+ImGuiTabItemFlags_UnsavedDocument = 1              # 1 << 0 # Display a dot next to the title + set ImGuiTabItemFlags_NoAssumedClosure.
 ImGuiTabItemFlags_SetSelected = 2                  # 1 << 1 # Trigger flag to programmatically make the tab selected when calling BeginTabItem()
-ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4 # 1 << 2 # Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You can still repro this behavior on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
-ImGuiTabItemFlags_NoPushId = 8                     # 1 << 3 # Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem()
+ImGuiTabItemFlags_NoCloseWithMiddleMouseButton = 4 # 1 << 2 # Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
+ImGuiTabItemFlags_NoPushId = 8                     # 1 << 3 # Don't call PushID()/PopID() on BeginTabItem()/EndTabItem()
 ImGuiTabItemFlags_NoTooltip = 16                   # 1 << 4 # Disable tooltip for the given tab
 ImGuiTabItemFlags_NoReorder = 32                   # 1 << 5 # Disable reordering this tab or having another tab cross over this tab
 ImGuiTabItemFlags_Leading = 64                     # 1 << 6 # Enforce the tab position to the left of the tab bar (after the tab list popup button)
 ImGuiTabItemFlags_Trailing = 128                   # 1 << 7 # Enforce the tab position to the right of the tab bar (before the scrolling buttons)
+ImGuiTabItemFlags_NoAssumedClosure = 256           # 1 << 8 # Tab is selected when trying to close + closure is not immediately assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed when pressing the X, so if you keep submitting the tab may reappear at end of tab bar.
 
 # ImGuiTableBgTarget_
 # Enum for ImGui::TableSetBgColor()
@@ -837,7 +839,7 @@ ImGuiWindowFlags_UnsavedDocument = 262144          # 1 << 18 # Display a dot nex
 ImGuiWindowFlags_NoNav = 196608                    # ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
 ImGuiWindowFlags_NoDecoration = 43                 # ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse
 ImGuiWindowFlags_NoInputs = 197120                 # ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
-ImGuiWindowFlags_NavFlattened = 8388608            # 1 << 23 # [BETA] On child window: allow gamepad/keyboard navigation to cross over parent border to this child or between sibling child windows.
+ImGuiWindowFlags_NavFlattened = 8388608            # 1 << 23 # [BETA] On child window: share focus scope, allow gamepad/keyboard navigation to cross over parent border to this child or between sibling child windows.
 ImGuiWindowFlags_ChildWindow = 16777216            # 1 << 24 # Don't use! For internal use by BeginChild()
 ImGuiWindowFlags_Tooltip = 33554432                # 1 << 25 # Don't use! For internal use by BeginTooltip()
 ImGuiWindowFlags_Popup = 67108864                  # 1 << 26 # Don't use! For internal use by BeginPopup()
@@ -1785,6 +1787,7 @@ class ImGuiIO < FFI::Struct
     :MouseDragThreshold, :float,
     :KeyRepeatDelay, :float,
     :KeyRepeatRate, :float,
+    :ConfigDebugIsDebuggerPresent, :bool,
     :ConfigDebugBeginReturnValueOnce, :bool,
     :ConfigDebugBeginReturnValueLoop, :bool,
     :ConfigDebugIgnoreFocusLoss, :bool,
@@ -2766,6 +2769,7 @@ module ImGui
       [:igCombo_FnStrPtr, [:pointer, :pointer, :pointer, :pointer, :int, :int], :bool],
       [:igCreateContext, [:pointer], :pointer],
       [:igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool],
+      [:igDebugFlashStyleColor, [:int], :void],
       [:igDebugTextEncoding, [:pointer], :void],
       [:igDestroyContext, [:pointer], :void],
       [:igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool],
@@ -3237,8 +3241,15 @@ module ImGui
   # arg: str_id(const char*), flags(ImGuiWindowFlags)
   # ret: bool
   #
-  # Popups: begin/end functions
-  #  - BeginPopup(): query popup state, if open start appending into the window. Call EndPopup() afterwards. ImGuiWindowFlags are forwarded to the window.
+  # Popups, Modals
+  #  - They block normal mouse hovering detection (and therefore most mouse interactions) behind them.
+  #  - If not modal: they can be closed by clicking anywhere outside them, or by pressing ESCAPE.
+  #  - Their visibility state (~bool) is held internally instead of being held by the programmer as we are used to with regular Begin*() calls.
+  #  - The 3 properties above are related: we need to retain popup visibility state in the library because popups may be closed as any time.
+  #  - You can bypass the hovering restriction by using ImGuiHoveredFlags_AllowWhenBlockedByPopup when calling IsItemHovered() or IsWindowHovered().
+  #  - IMPORTANT: Popup identifiers are relative to the current ID stack, so OpenPopup and BeginPopup generally needs to be at the same level of the stack.
+  #    This is sometimes leading to confusing mistakes. May rework this in the future.
+  #  - BeginPopup(): query popup state, if open start appending into the window. Call EndPopup() afterwards if returned true. ImGuiWindowFlags are forwarded to the window.
   #  - BeginPopupModal(): block every interaction behind the window, cannot be closed by user, add a dimming background, has a title bar.
   def self.BeginPopup(str_id, flags = 0)  # return true if the popup is open, and you can start outputting to it.
     igBeginPopup(str_id, flags)
@@ -3308,12 +3319,10 @@ module ImGui
   #      TableNextColumn() will automatically wrap-around into the next row if needed.
   #    - IMPORTANT: Comparatively to the old Columns() API, we need to call TableNextColumn() for the first column!
   #    - Summary of possible call flow:
-  #        --------------------------------------------------------------------------------------------------------
-  #        TableNextRow() -> TableSetColumnIndex(0) -> Text("Hello 0") -> TableSetColumnIndex(1) -> Text("Hello 1")  // OK
-  #        TableNextRow() -> TableNextColumn()      -> Text("Hello 0") -> TableNextColumn()      -> Text("Hello 1")  // OK
-  #                          TableNextColumn()      -> Text("Hello 0") -> TableNextColumn()      -> Text("Hello 1")  // OK: TableNextColumn() automatically gets to next row!
-  #        TableNextRow()                           -> Text("Hello 0")                                               // Not OK! Missing TableSetColumnIndex() or TableNextColumn()! Text will not appear!
-  #        --------------------------------------------------------------------------------------------------------
+  #        - TableNextRow() -> TableSetColumnIndex(0) -> Text("Hello 0") -> TableSetColumnIndex(1) -> Text("Hello 1")  // OK
+  #        - TableNextRow() -> TableNextColumn()      -> Text("Hello 0") -> TableNextColumn()      -> Text("Hello 1")  // OK
+  #        -                   TableNextColumn()      -> Text("Hello 0") -> TableNextColumn()      -> Text("Hello 1")  // OK: TableNextColumn() automatically gets to next row!
+  #        - TableNextRow()                           -> Text("Hello 0")                                               // Not OK! Missing TableSetColumnIndex() or TableNextColumn()! Text will not appear!
   # - 5. Call EndTable()
   def self.BeginTable(str_id, column, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)  # Implied outer_size = ImVec2(0.0f, 0.0f), inner_width = 0.0f
     igBeginTable(str_id, column, flags, outer_size, inner_width)
@@ -3505,10 +3514,17 @@ module ImGui
     igDebugCheckVersionAndDataLayout(version_str, sz_io, sz_style, sz_vec2, sz_vec4, sz_drawvert, sz_drawidx)
   end
 
+  # arg: idx(ImGuiCol)
+  # ret: void
+  def self.DebugFlashStyleColor(idx)
+    igDebugFlashStyleColor(idx)
+  end
+
   # arg: text(const char*)
   # ret: void
   #
   # Debug Utilities
+  # - Your main debugging friend is the ShowMetricsWindow() function, which is also accessible from Demo->Tools->Metrics Debugger
   def self.DebugTextEncoding(text)
     igDebugTextEncoding(text)
   end
@@ -4016,7 +4032,7 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetStyle()  # access the Style structure (colors, sizes). Always use PushStyleCol(), PushStyleVar() to modify style mid-frame!
+  def self.GetStyle()  # access the Style structure (colors, sizes). Always use PushStyleColor(), PushStyleVar() to modify style mid-frame!
     igGetStyle()
   end
 
@@ -4100,14 +4116,15 @@ module ImGui
     igGetWindowWidth()
   end
 
-  # arg: user_texture_id(ImTextureID), size(ImVec2), uv0(ImVec2), uv1(ImVec2), tint_col(ImVec4), border_col(ImVec4)
+  # arg: user_texture_id(ImTextureID), image_size(ImVec2), uv0(ImVec2), uv1(ImVec2), tint_col(ImVec4), border_col(ImVec4)
   # ret: void
   #
   # Widgets: Images
   # - Read about ImTextureID here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
-  # - Note that ImageButton() adds style.FramePadding*2.0f to provided size. This is in order to facilitate fitting an image in a button.
-  def self.Image(user_texture_id, size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), tint_col = ImVec4.create(1,1,1,1), border_col = ImVec4.create(0,0,0,0))  # Implied uv0 = ImVec2(0, 0), uv1 = ImVec2(1, 1), tint_col = ImVec4(1, 1, 1, 1), border_col = ImVec4(0, 0, 0, 0)
-    igImage(user_texture_id, size, uv0, uv1, tint_col, border_col)
+  # - 'uv0' and 'uv1' are texture coordinates. Read about them from the same link above.
+  # - Note that Image() may add +2.0f to provided size if a border is visible, ImageButton() adds style.FramePadding*2.0f to provided size.
+  def self.Image(user_texture_id, image_size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), tint_col = ImVec4.create(1,1,1,1), border_col = ImVec4.create(0,0,0,0))  # Implied uv0 = ImVec2(0, 0), uv1 = ImVec2(1, 1), tint_col = ImVec4(1, 1, 1, 1), border_col = ImVec4(0, 0, 0, 0)
+    igImage(user_texture_id, image_size, uv0, uv1, tint_col, border_col)
   end
 
   # arg: str_id(const char*), user_texture_id(ImTextureID), image_size(ImVec2), uv0(ImVec2), uv1(ImVec2), bg_col(ImVec4), tint_col(ImVec4)
@@ -5404,7 +5421,7 @@ module ImGui
   end
 
   # ret: void
-  def self.TreePop()  # ~ Unindent()+PopId()
+  def self.TreePop()  # ~ Unindent()+PopID()
     igTreePop()
   end
 
@@ -5771,7 +5788,7 @@ module ImGui
     $stderr.puts("[Warning] TreeNodeEx : No matching functions found (#{arg})")
   end
 
-  def self.TreePush(*arg)  # ~ Indent()+PushId(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
+  def self.TreePush(*arg)  # ~ Indent()+PushID(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
     # arg: 0:str_id(const char*)
     # ret: void
     return igTreePush_Str(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
