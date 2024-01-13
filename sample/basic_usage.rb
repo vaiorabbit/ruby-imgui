@@ -631,7 +631,7 @@ module ImGuiDemo::ChildWindow
     # 第3引数をtrueにすることで外枠が表示されます。
     # [2021-10-16] GetWindowContentRegionWidth was removed in v1.85 https://github.com/ocornut/imgui/releases/tag/v1.85
     content_region_width = ImGui::GetWindowContentRegionMax()[:x] - ImGui::GetWindowContentRegionMin()[:x]
-    ImGui::BeginChild("ChildID", ImVec2.create(content_region_width * 0.5, 260), true, flag)
+    ImGui::BeginChild("ChildID", ImVec2.create(content_region_width * 0.5, 260), ImGuiChildFlags_None, flag)
     if ImGui::BeginMenuBar()
       if ImGui::BeginMenu("Menu")
         # "Menu"をクリックしたら開くメニュー項目を書いていきます。
@@ -858,7 +858,7 @@ end
 module ImGuiDemo::StackToolWindow
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
-    ImGui::ShowStackToolWindow()
+    ImGui::ShowIDStackToolWindow()
     ImGui::PopFont()
   end
 end
