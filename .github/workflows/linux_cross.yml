@@ -69,7 +69,7 @@ jobs:
         # sudo apt -y install libopengl-dev:arm64 libxrandr-dev:arm64 mesa-common-dev:arm64 libxinerama-dev:arm64 libxcursor-dev:arm64 libxi-dev:arm64
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: 'update'
         fetch-depth: ${{ github.event.inputs.fetch_depth }}

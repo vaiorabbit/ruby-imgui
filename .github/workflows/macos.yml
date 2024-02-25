@@ -40,7 +40,7 @@ jobs:
         luajit -v
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: 'update'
         fetch-depth: ${{ github.event.inputs.fetch_depth }}
