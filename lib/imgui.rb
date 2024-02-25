@@ -113,7 +113,7 @@ ImGuiButtonFlags_MouseButtonDefault_ = 1 # ImGuiButtonFlags_MouseButtonLeft
 
 # ImGuiChildFlags_
 # Flags for ImGui::BeginChild()
-# (Legacy: bot 0 must always correspond to ImGuiChildFlags_Border to be backward compatible with old API using 'bool border = false'.
+# (Legacy: bit 0 must always correspond to ImGuiChildFlags_Border to be backward compatible with old API using 'bool border = false'.
 # About using AutoResizeX/AutoResizeY flags:
 # - May be combined with SetNextWindowSizeConstraints() to set a min/max size for each axis (see "Demo->Child->Auto-resize with Constraints").
 # - Size measurement for a given axis is only performed when the child window is within visible boundaries, or is just appearing.
@@ -122,7 +122,7 @@ ImGuiButtonFlags_MouseButtonDefault_ = 1 # ImGuiButtonFlags_MouseButtonLeft
 #   - You may also use ImGuiChildFlags_AlwaysAutoResize to force an update even when child window is not in view.
 #     HOWEVER PLEASE UNDERSTAND THAT DOING SO WILL PREVENT BeginChild() FROM EVER RETURNING FALSE, disabling benefits of coarse clipping.
 ImGuiChildFlags_None = 0                   # 0
-ImGuiChildFlags_Border = 1                 # 1 << 0 # Show an outer border and enable WindowPadding. (Important: this is always == 1 == true for legacy reason)
+ImGuiChildFlags_Border = 1                 # 1 << 0 # Show an outer border and enable WindowPadding. (IMPORTANT: this is always == 1 == true for legacy reason)
 ImGuiChildFlags_AlwaysUseWindowPadding = 2 # 1 << 1 # Pad with style.WindowPadding even if no border are drawn (no padding by default for non-bordered child windows because it makes more sense)
 ImGuiChildFlags_ResizeX = 4                # 1 << 2 # Allow resize from right border (layout direction). Enable .ini saving (unless ImGuiWindowFlags_NoSavedSettings passed to window flags)
 ImGuiChildFlags_ResizeY = 8                # 1 << 3 # Allow resize from bottom border (layout direction). "
@@ -563,24 +563,25 @@ ImGuiMouseSource_COUNT = 3       # 3
 
 # ImGuiPopupFlags_
 # Flags for OpenPopup*(), BeginPopupContext*(), IsPopupOpen() functions.
-# - To be backward compatible with older API which took an 'int mouse_button = 1' argument, we need to treat
-#   small flags values as a mouse button index, so we encode the mouse button in the first few bits of the flags.
+# - To be backward compatible with older API which took an 'int mouse_button = 1' argument instead of 'ImGuiPopupFlags flags',
+#   we need to treat small flags values as a mouse button index, so we encode the mouse button in the first few bits of the flags.
 #   It is therefore guaranteed to be legal to pass a mouse button index in ImGuiPopupFlags.
 # - For the same reason, we exceptionally default the ImGuiPopupFlags argument of BeginPopupContextXXX functions to 1 instead of 0.
 #   IMPORTANT: because the default parameter is 1 (==ImGuiPopupFlags_MouseButtonRight), if you rely on the default parameter
 #   and want to use another flag, you need to pass in the ImGuiPopupFlags_MouseButtonRight flag explicitly.
 # - Multiple buttons currently cannot be combined/or-ed in those functions (we could allow it later).
-ImGuiPopupFlags_None = 0                     # 0
-ImGuiPopupFlags_MouseButtonLeft = 0          # 0 # For BeginPopupContext*(): open on Left Mouse release. Guaranteed to always be == 0 (same as ImGuiMouseButton_Left)
-ImGuiPopupFlags_MouseButtonRight = 1         # 1 # For BeginPopupContext*(): open on Right Mouse release. Guaranteed to always be == 1 (same as ImGuiMouseButton_Right)
-ImGuiPopupFlags_MouseButtonMiddle = 2        # 2 # For BeginPopupContext*(): open on Middle Mouse release. Guaranteed to always be == 2 (same as ImGuiMouseButton_Middle)
-ImGuiPopupFlags_MouseButtonMask_ = 31        # 0x1F
-ImGuiPopupFlags_MouseButtonDefault_ = 1      # 1
-ImGuiPopupFlags_NoOpenOverExistingPopup = 32 # 1 << 5 # For OpenPopup*(), BeginPopupContext*(): don't open if there's already a popup at the same level of the popup stack
-ImGuiPopupFlags_NoOpenOverItems = 64         # 1 << 6 # For BeginPopupContextWindow(): don't return true when hovering items, only when hovering empty space
-ImGuiPopupFlags_AnyPopupId = 128             # 1 << 7 # For IsPopupOpen(): ignore the ImGuiID parameter and test for any popup.
-ImGuiPopupFlags_AnyPopupLevel = 256          # 1 << 8 # For IsPopupOpen(): search/test at any level of the popup stack (default test in the current level)
-ImGuiPopupFlags_AnyPopup = 384               # ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel
+ImGuiPopupFlags_None = 0                      # 0
+ImGuiPopupFlags_MouseButtonLeft = 0           # 0 # For BeginPopupContext*(): open on Left Mouse release. Guaranteed to always be == 0 (same as ImGuiMouseButton_Left)
+ImGuiPopupFlags_MouseButtonRight = 1          # 1 # For BeginPopupContext*(): open on Right Mouse release. Guaranteed to always be == 1 (same as ImGuiMouseButton_Right)
+ImGuiPopupFlags_MouseButtonMiddle = 2         # 2 # For BeginPopupContext*(): open on Middle Mouse release. Guaranteed to always be == 2 (same as ImGuiMouseButton_Middle)
+ImGuiPopupFlags_MouseButtonMask_ = 31         # 0x1F
+ImGuiPopupFlags_MouseButtonDefault_ = 1       # 1
+ImGuiPopupFlags_NoReopen = 32                 # 1 << 5 # For OpenPopup*(), BeginPopupContext*(): don't reopen same popup if already open (won't reposition, won't reinitialize navigation)
+ImGuiPopupFlags_NoOpenOverExistingPopup = 128 # 1 << 7 # For OpenPopup*(), BeginPopupContext*(): don't open if there's already a popup at the same level of the popup stack
+ImGuiPopupFlags_NoOpenOverItems = 256         # 1 << 8 # For BeginPopupContextWindow(): don't return true when hovering items, only when hovering empty space
+ImGuiPopupFlags_AnyPopupId = 1024             # 1 << 10 # For IsPopupOpen(): ignore the ImGuiID parameter and test for any popup.
+ImGuiPopupFlags_AnyPopupLevel = 2048          # 1 << 11 # For IsPopupOpen(): search/test at any level of the popup stack (default test in the current level)
+ImGuiPopupFlags_AnyPopup = 3072               # ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel
 
 # ImGuiSelectableFlags_
 # Flags for ImGui::Selectable()
@@ -1449,6 +1450,7 @@ end
 #   - Windows are generally trying to stay within the Work Area of their host viewport.
 class ImGuiViewport < FFI::Struct
   layout(
+    :ID, :uint,
     :Flags, :int,
     :Pos, ImVec2.by_value,
     :Size, ImVec2.by_value,
@@ -1815,7 +1817,6 @@ class ImGuiIO < FFI::Struct
     :MetricsRenderWindows, :int,
     :MetricsActiveWindows, :int,
     :MouseDelta, ImVec2.by_value,
-    :_UnusedPadding, :pointer,
     :Ctx, :pointer,
     :MousePos, ImVec2.by_value,
     :MouseDown, [:bool, 5],
@@ -2770,6 +2771,7 @@ module ImGui
       [:igCreateContext, [:pointer], :pointer],
       [:igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool],
       [:igDebugFlashStyleColor, [:int], :void],
+      [:igDebugStartItemPicker, [], :void],
       [:igDebugTextEncoding, [:pointer], :void],
       [:igDestroyContext, [:pointer], :void],
       [:igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool],
@@ -2807,7 +2809,7 @@ module ImGui
       [:igGetClipboardText, [], :pointer],
       [:igGetColorU32_Col, [:int, :float], :uint],
       [:igGetColorU32_Vec4, [ImVec4.by_value], :uint],
-      [:igGetColorU32_U32, [:uint], :uint],
+      [:igGetColorU32_U32, [:uint, :float], :uint],
       [:igGetColumnIndex, [], :int],
       [:igGetColumnOffset, [:int], :float],
       [:igGetColumnWidth, [:int], :float],
@@ -3520,6 +3522,11 @@ module ImGui
     igDebugFlashStyleColor(idx)
   end
 
+  # ret: void
+  def self.DebugStartItemPicker()
+    igDebugStartItemPicker()
+  end
+
   # arg: text(const char*)
   # ret: void
   #
@@ -3744,10 +3751,10 @@ module ImGui
     igGetColorU32_Vec4(col)
   end
 
-  # arg: col(ImU32)
+  # arg: col(ImU32), alpha_mul(float)
   # ret: uint
-  def self.GetColorU32_U32(col)
-    igGetColorU32_U32(col)
+  def self.GetColorU32_U32(col, alpha_mul = 1.0)
+    igGetColorU32_U32(col, alpha_mul)
   end
 
   # ret: int
@@ -5492,7 +5499,7 @@ module ImGui
   # - Use child windows to begin into a self-contained independent scrolling/clipping regions within a host window. Child windows can embed their own child.
   # - Before 1.90 (November 2023), the "ImGuiChildFlags child_flags = 0" parameter was "bool border = false".
   #   This API is backward compatible with old code, as we guarantee that ImGuiChildFlags_Border == true.
-  #   Consider updating your old call sites:
+  #   Consider updating your old code:
   #      BeginChild("Name", size, false)   -> Begin("Name", size, 0); or Begin("Name", size, ImGuiChildFlags_None);
   #      BeginChild("Name", size, true)    -> Begin("Name", size, ImGuiChildFlags_Border);
   # - Manual sizing (each axis can use a different setting e.g. ImVec2(0.0f, 400.0f)):
@@ -5556,9 +5563,9 @@ module ImGui
     # arg: 0:col(ImVec4)
     # ret: uint
     return igGetColorU32_Vec4(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImVec4))
-    # arg: 0:col(ImU32)
+    # arg: 0:col(ImU32), 1:alpha_mul(float)
     # ret: uint
-    return igGetColorU32_U32(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    return igGetColorU32_U32(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] GetColorU32 : No matching functions found (#{arg})")
   end
 
