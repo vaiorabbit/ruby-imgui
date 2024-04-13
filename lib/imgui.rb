@@ -21,6 +21,7 @@ FFI.typedef :int, :ImGuiCond
 FFI.typedef :int, :ImGuiConfigFlags
 FFI.typedef :int, :ImGuiDataType
 FFI.typedef :int, :ImGuiDir
+FFI.typedef :int, :ImGuiDockNodeFlags
 FFI.typedef :int, :ImGuiDragDropFlags
 FFI.typedef :int, :ImGuiFocusedFlags
 FFI.typedef :int, :ImGuiHoveredFlags
@@ -96,11 +97,14 @@ ImFontAtlasFlags_NoBakedLines = 4       # 1 << 2 # Don't build thick line textur
 
 # ImGuiBackendFlags_
 # Backend capabilities flags stored in io.BackendFlags. Set by imgui_impl_xxx or custom backend.
-ImGuiBackendFlags_None = 0                 # 0
-ImGuiBackendFlags_HasGamepad = 1           # 1 << 0 # Backend Platform supports gamepad and currently has one connected.
-ImGuiBackendFlags_HasMouseCursors = 2      # 1 << 1 # Backend Platform supports honoring GetMouseCursor() value to change the OS cursor shape.
-ImGuiBackendFlags_HasSetMousePos = 4       # 1 << 2 # Backend Platform supports io.WantSetMousePos requests to reposition the OS mouse position (only used if ImGuiConfigFlags_NavEnableSetMousePos is set).
-ImGuiBackendFlags_RendererHasVtxOffset = 8 # 1 << 3 # Backend Renderer supports ImDrawCmd::VtxOffset. This enables output of large meshes (64K+ vertices) while still using 16-bit indices.
+ImGuiBackendFlags_None = 0                       # 0
+ImGuiBackendFlags_HasGamepad = 1                 # 1 << 0 # Backend Platform supports gamepad and currently has one connected.
+ImGuiBackendFlags_HasMouseCursors = 2            # 1 << 1 # Backend Platform supports honoring GetMouseCursor() value to change the OS cursor shape.
+ImGuiBackendFlags_HasSetMousePos = 4             # 1 << 2 # Backend Platform supports io.WantSetMousePos requests to reposition the OS mouse position (only used if ImGuiConfigFlags_NavEnableSetMousePos is set).
+ImGuiBackendFlags_RendererHasVtxOffset = 8       # 1 << 3 # Backend Renderer supports ImDrawCmd::VtxOffset. This enables output of large meshes (64K+ vertices) while still using 16-bit indices.
+ImGuiBackendFlags_PlatformHasViewports = 1024    # 1 << 10 # Backend Platform supports multiple viewports.
+ImGuiBackendFlags_HasMouseHoveredViewport = 2048 # 1 << 11 # Backend Platform supports calling io.AddMouseViewportEvent() with the viewport under the mouse. IF POSSIBLE, ignore viewports with the ImGuiViewportFlags_NoInputs flag (Win32 backend, GLFW 3.30+ backend can do this, SDL backend cannot). If this cannot be done, Dear ImGui needs to use a flawed heuristic to find the viewport under.
+ImGuiBackendFlags_RendererHasViewports = 4096    # 1 << 12 # Backend Renderer supports multiple viewports.
 
 # ImGuiButtonFlags_
 # Flags for InvisibleButton() [extended in imgui_internal.h]
@@ -171,22 +175,24 @@ ImGuiCol_TabHovered = 34            # 34
 ImGuiCol_TabActive = 35             # 35
 ImGuiCol_TabUnfocused = 36          # 36
 ImGuiCol_TabUnfocusedActive = 37    # 37
-ImGuiCol_PlotLines = 38             # 38
-ImGuiCol_PlotLinesHovered = 39      # 39
-ImGuiCol_PlotHistogram = 40         # 40
-ImGuiCol_PlotHistogramHovered = 41  # 41
-ImGuiCol_TableHeaderBg = 42         # 42 # Table header background
-ImGuiCol_TableBorderStrong = 43     # 43 # Table outer and header borders (prefer using Alpha=1.0 here)
-ImGuiCol_TableBorderLight = 44      # 44 # Table inner borders (prefer using Alpha=1.0 here)
-ImGuiCol_TableRowBg = 45            # 45 # Table row background (even rows)
-ImGuiCol_TableRowBgAlt = 46         # 46 # Table row background (odd rows)
-ImGuiCol_TextSelectedBg = 47        # 47
-ImGuiCol_DragDropTarget = 48        # 48 # Rectangle highlighting a drop target
-ImGuiCol_NavHighlight = 49          # 49 # Gamepad/keyboard: current highlighted item
-ImGuiCol_NavWindowingHighlight = 50 # 50 # Highlight window when using CTRL+TAB
-ImGuiCol_NavWindowingDimBg = 51     # 51 # Darken/colorize entire screen behind the CTRL+TAB window list, when active
-ImGuiCol_ModalWindowDimBg = 52      # 52 # Darken/colorize entire screen behind a modal window, when one is active
-ImGuiCol_COUNT = 53                 # 53
+ImGuiCol_DockingPreview = 38        # 38 # Preview overlay color when about to docking something
+ImGuiCol_DockingEmptyBg = 39        # 39 # Background color for empty node (e.g. CentralNode with no window docked into it)
+ImGuiCol_PlotLines = 40             # 40
+ImGuiCol_PlotLinesHovered = 41      # 41
+ImGuiCol_PlotHistogram = 42         # 42
+ImGuiCol_PlotHistogramHovered = 43  # 43
+ImGuiCol_TableHeaderBg = 44         # 44 # Table header background
+ImGuiCol_TableBorderStrong = 45     # 45 # Table outer and header borders (prefer using Alpha=1.0 here)
+ImGuiCol_TableBorderLight = 46      # 46 # Table inner borders (prefer using Alpha=1.0 here)
+ImGuiCol_TableRowBg = 47            # 47 # Table row background (even rows)
+ImGuiCol_TableRowBgAlt = 48         # 48 # Table row background (odd rows)
+ImGuiCol_TextSelectedBg = 49        # 49
+ImGuiCol_DragDropTarget = 50        # 50 # Rectangle highlighting a drop target
+ImGuiCol_NavHighlight = 51          # 51 # Gamepad/keyboard: current highlighted item
+ImGuiCol_NavWindowingHighlight = 52 # 52 # Highlight window when using CTRL+TAB
+ImGuiCol_NavWindowingDimBg = 53     # 53 # Darken/colorize entire screen behind the CTRL+TAB window list, when active
+ImGuiCol_ModalWindowDimBg = 54      # 54 # Darken/colorize entire screen behind a modal window, when one is active
+ImGuiCol_COUNT = 55                 # 55
 
 # ImGuiColorEditFlags_
 # Flags for ColorEdit3() / ColorEdit4() / ColorPicker3() / ColorPicker4() / ColorButton()
@@ -245,15 +251,19 @@ ImGuiCond_Appearing = 8    # 1 << 3 # Set the variable if the object/window is a
 
 # ImGuiConfigFlags_
 # Configuration flags stored in io.ConfigFlags. Set by user/application.
-ImGuiConfigFlags_None = 0                 # 0
-ImGuiConfigFlags_NavEnableKeyboard = 1    # 1 << 0 # Master keyboard navigation enable flag. Enable full Tabbing + directional arrows + space/enter to activate.
-ImGuiConfigFlags_NavEnableGamepad = 2     # 1 << 1 # Master gamepad navigation enable flag. Backend also needs to set ImGuiBackendFlags_HasGamepad.
-ImGuiConfigFlags_NavEnableSetMousePos = 4 # 1 << 2 # Instruct navigation to move the mouse cursor. May be useful on TV/console systems where moving a virtual mouse is awkward. Will update io.MousePos and set io.WantSetMousePos=true. If enabled you MUST honor io.WantSetMousePos requests in your backend, otherwise ImGui will react as if the mouse is jumping around back and forth.
-ImGuiConfigFlags_NavNoCaptureKeyboard = 8 # 1 << 3 # Instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive is set.
-ImGuiConfigFlags_NoMouse = 16             # 1 << 4 # Instruct imgui to clear mouse position/buttons in NewFrame(). This allows ignoring the mouse information set by the backend.
-ImGuiConfigFlags_NoMouseCursorChange = 32 # 1 << 5 # Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
-ImGuiConfigFlags_IsSRGB = 1048576         # 1 << 20 # Application is SRGB-aware.
-ImGuiConfigFlags_IsTouchScreen = 2097152  # 1 << 21 # Application is using a touch screen instead of a mouse.
+ImGuiConfigFlags_None = 0                        # 0
+ImGuiConfigFlags_NavEnableKeyboard = 1           # 1 << 0 # Master keyboard navigation enable flag. Enable full Tabbing + directional arrows + space/enter to activate.
+ImGuiConfigFlags_NavEnableGamepad = 2            # 1 << 1 # Master gamepad navigation enable flag. Backend also needs to set ImGuiBackendFlags_HasGamepad.
+ImGuiConfigFlags_NavEnableSetMousePos = 4        # 1 << 2 # Instruct navigation to move the mouse cursor. May be useful on TV/console systems where moving a virtual mouse is awkward. Will update io.MousePos and set io.WantSetMousePos=true. If enabled you MUST honor io.WantSetMousePos requests in your backend, otherwise ImGui will react as if the mouse is jumping around back and forth.
+ImGuiConfigFlags_NavNoCaptureKeyboard = 8        # 1 << 3 # Instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive is set.
+ImGuiConfigFlags_NoMouse = 16                    # 1 << 4 # Instruct imgui to clear mouse position/buttons in NewFrame(). This allows ignoring the mouse information set by the backend.
+ImGuiConfigFlags_NoMouseCursorChange = 32        # 1 << 5 # Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
+ImGuiConfigFlags_DockingEnable = 64              # 1 << 6 # Docking enable flags.
+ImGuiConfigFlags_ViewportsEnable = 1024          # 1 << 10 # Viewport enable flags (require both ImGuiBackendFlags_PlatformHasViewports + ImGuiBackendFlags_RendererHasViewports set by the respective backends)
+ImGuiConfigFlags_DpiEnableScaleViewports = 16384 # 1 << 14 # [BETA: Don't use] FIXME-DPI: Reposition and resize imgui windows when the DpiScale of a viewport changed (mostly useful for the main viewport hosting other window). Note that resizing the main window itself is up to your application.
+ImGuiConfigFlags_DpiEnableScaleFonts = 32768     # 1 << 15 # [BETA: Don't use] FIXME-DPI: Request bitmap-scaled fonts to match DpiScale. This is a very low-quality workaround. The correct way to handle DPI is _currently_ to replace the atlas and/or fonts in the Platform_OnChangedViewport callback, but this is all early work in progress.
+ImGuiConfigFlags_IsSRGB = 1048576                # 1 << 20 # Application is SRGB-aware.
+ImGuiConfigFlags_IsTouchScreen = 2097152         # 1 << 21 # Application is using a touch screen instead of a mouse.
 
 # ImGuiDataType_
 # A primary data type
@@ -278,6 +288,19 @@ ImGuiDir_Up = 2    # 2
 ImGuiDir_Down = 3  # 3
 ImGuiDir_COUNT = 4 # 4
 
+# ImGuiDockNodeFlags_
+# Flags for ImGui::DockSpace(), shared/inherited by child nodes.
+# (Some flags can be applied to individual nodes directly)
+# FIXME-DOCK: Also see ImGuiDockNodeFlagsPrivate_ which may involve using the WIP and internal DockBuilder api.
+ImGuiDockNodeFlags_None = 0                     # 0
+ImGuiDockNodeFlags_KeepAliveOnly = 1            # 1 << 0 #       // Don't display the dockspace node but keep it alive. Windows docked into this dockspace node won't be undocked.
+ImGuiDockNodeFlags_NoDockingOverCentralNode = 4 # 1 << 2 #       // Disable docking over the Central Node, which will be always kept empty.
+ImGuiDockNodeFlags_PassthruCentralNode = 8      # 1 << 3 #       // Enable passthru dockspace: 1) DockSpace() will render a ImGuiCol_WindowBg background covering everything excepted the Central Node when empty. Meaning the host window should probably use SetNextWindowBgAlpha(0.0f) prior to Begin() when using this. 2) When Central Node is empty: let inputs pass-through + won't display a DockingEmptyBg background. See demo for details.
+ImGuiDockNodeFlags_NoDockingSplit = 16          # 1 << 4 #       // Disable other windows/nodes from splitting this node.
+ImGuiDockNodeFlags_NoResize = 32                # 1 << 5 # Saved // Disable resizing node using the splitter/separators. Useful with programmatically setup dockspaces.
+ImGuiDockNodeFlags_AutoHideTabBar = 64          # 1 << 6 #       // Tab bar will automatically hide when there is a single window in the dock node.
+ImGuiDockNodeFlags_NoUndocking = 128            # 1 << 7 #       // Disable undocking this node.
+
 # ImGuiDragDropFlags_
 # Flags for ImGui::BeginDragDropSource(), ImGui::AcceptDragDropPayload()
 ImGuiDragDropFlags_None = 0                       # 0
@@ -299,6 +322,7 @@ ImGuiFocusedFlags_ChildWindows = 1        # 1 << 0 # Return true if any children
 ImGuiFocusedFlags_RootWindow = 2          # 1 << 1 # Test from root window (top most parent of the current hierarchy)
 ImGuiFocusedFlags_AnyWindow = 4           # 1 << 2 # Return true if any window is focused. Important: If you are trying to tell how to dispatch your low-level inputs, do NOT use this. Use 'io.WantCaptureMouse' instead! Please read the FAQ!
 ImGuiFocusedFlags_NoPopupHierarchy = 8    # 1 << 3 # Do not consider popup hierarchy (do not treat popup emitter as parent of popup) (when used with _ChildWindows or _RootWindow)
+ImGuiFocusedFlags_DockHierarchy = 16      # 1 << 4 # Consider docking hierarchy (treat dockspace host as parent of docked window) (when used with _ChildWindows or _RootWindow)
 ImGuiFocusedFlags_RootAndChildWindows = 3 # ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_ChildWindows
 
 # ImGuiHoveredFlags_
@@ -310,6 +334,7 @@ ImGuiHoveredFlags_ChildWindows = 1                   # 1 << 0 # IsWindowHovered(
 ImGuiHoveredFlags_RootWindow = 2                     # 1 << 1 # IsWindowHovered() only: Test from root window (top most parent of the current hierarchy)
 ImGuiHoveredFlags_AnyWindow = 4                      # 1 << 2 # IsWindowHovered() only: Return true if any window is hovered
 ImGuiHoveredFlags_NoPopupHierarchy = 8               # 1 << 3 # IsWindowHovered() only: Do not consider popup hierarchy (do not treat popup emitter as parent of popup) (when used with _ChildWindows or _RootWindow)
+ImGuiHoveredFlags_DockHierarchy = 16                 # 1 << 4 # IsWindowHovered() only: Consider docking hierarchy (treat dockspace host as parent of docked window) (when used with _ChildWindows or _RootWindow)
 ImGuiHoveredFlags_AllowWhenBlockedByPopup = 32       # 1 << 5 # Return true even if a popup window is normally blocking access to this item/window
 ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 128 # 1 << 7 # Return true even if an active item is blocking access to this item/window. Useful for Drag and Drop patterns.
 ImGuiHoveredFlags_AllowWhenOverlappedByItem = 256    # 1 << 8 # IsItemHovered() only: Return true even if the item uses AllowOverlap mode and is overlapped by another hoverable item.
@@ -614,8 +639,9 @@ ImGuiSortDirection_Descending = 2 # 2 # Descending = 9->0, Z->A etc.
 # - The enum only refers to fields of ImGuiStyle which makes sense to be pushed/popped inside UI code.
 #   During initialization or between frames, feel free to just poke into ImGuiStyle directly.
 # - Tip: Use your programming IDE navigation facilities on the names in the _second column_ below to find the actual members and their description.
-#   In Visual Studio IDE: CTRL+comma ("Edit.GoToAll") can follow symbols in comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
-#   With Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols in comments.
+#   - In Visual Studio: CTRL+comma ("Edit.GoToAll") can follow symbols inside comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
+#   - In Visual Studio w/ Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols inside comments.
+#   - In VS Code, CLion, etc.: CTRL+click can follow symbols inside comments.
 # - When changing this enum, you need to update the associated internal table GStyleVarInfo[] accordingly. This is where we link enum values to members offset/type.
 ImGuiStyleVar_Alpha = 0                    # 0 # float     Alpha
 ImGuiStyleVar_DisabledAlpha = 1            # 1 # float     DisabledAlpha
@@ -640,13 +666,16 @@ ImGuiStyleVar_ScrollbarRounding = 19       # 19 # float     ScrollbarRounding
 ImGuiStyleVar_GrabMinSize = 20             # 20 # float     GrabMinSize
 ImGuiStyleVar_GrabRounding = 21            # 21 # float     GrabRounding
 ImGuiStyleVar_TabRounding = 22             # 22 # float     TabRounding
-ImGuiStyleVar_TabBarBorderSize = 23        # 23 # float     TabBarBorderSize
-ImGuiStyleVar_ButtonTextAlign = 24         # 24 # ImVec2    ButtonTextAlign
-ImGuiStyleVar_SelectableTextAlign = 25     # 25 # ImVec2    SelectableTextAlign
-ImGuiStyleVar_SeparatorTextBorderSize = 26 # 26 # float  SeparatorTextBorderSize
-ImGuiStyleVar_SeparatorTextAlign = 27      # 27 # ImVec2    SeparatorTextAlign
-ImGuiStyleVar_SeparatorTextPadding = 28    # 28 # ImVec2    SeparatorTextPadding
-ImGuiStyleVar_COUNT = 29                   # 29
+ImGuiStyleVar_TabBorderSize = 23           # 23 # float     TabBorderSize
+ImGuiStyleVar_TabBarBorderSize = 24        # 24 # float     TabBarBorderSize
+ImGuiStyleVar_TableAngledHeadersAngle = 25 # 25 # float  TableAngledHeadersAngle
+ImGuiStyleVar_ButtonTextAlign = 26         # 26 # ImVec2    ButtonTextAlign
+ImGuiStyleVar_SelectableTextAlign = 27     # 27 # ImVec2    SelectableTextAlign
+ImGuiStyleVar_SeparatorTextBorderSize = 28 # 28 # float  SeparatorTextBorderSize
+ImGuiStyleVar_SeparatorTextAlign = 29      # 29 # ImVec2    SeparatorTextAlign
+ImGuiStyleVar_SeparatorTextPadding = 30    # 30 # ImVec2    SeparatorTextPadding
+ImGuiStyleVar_DockingSeparatorSize = 31    # 31 # float     DockingSeparatorSize
+ImGuiStyleVar_COUNT = 32                   # 32
 
 # ImGuiTabBarFlags_
 # Flags for ImGui::BeginTabBar()
@@ -809,10 +838,21 @@ ImGuiTreeNodeFlags_CollapsingHeader = 26        # ImGuiTreeNodeFlags_Framed | Im
 
 # ImGuiViewportFlags_
 # Flags stored in ImGuiViewport::Flags, giving indications to the platform backends.
-ImGuiViewportFlags_None = 0              # 0
-ImGuiViewportFlags_IsPlatformWindow = 1  # 1 << 0 # Represent a Platform Window
-ImGuiViewportFlags_IsPlatformMonitor = 2 # 1 << 1 # Represent a Platform Monitor (unused yet)
-ImGuiViewportFlags_OwnedByApp = 4        # 1 << 2 # Platform Window: is created/managed by the application (rather than a dear imgui backend)
+ImGuiViewportFlags_None = 0                   # 0
+ImGuiViewportFlags_IsPlatformWindow = 1       # 1 << 0 # Represent a Platform Window
+ImGuiViewportFlags_IsPlatformMonitor = 2      # 1 << 1 # Represent a Platform Monitor (unused yet)
+ImGuiViewportFlags_OwnedByApp = 4             # 1 << 2 # Platform Window: Was created/managed by the user application? (rather than our backend)
+ImGuiViewportFlags_NoDecoration = 8           # 1 << 3 # Platform Window: Disable platform decorations: title bar, borders, etc. (generally set all windows, but if ImGuiConfigFlags_ViewportsDecoration is set we only set this on popups/tooltips)
+ImGuiViewportFlags_NoTaskBarIcon = 16         # 1 << 4 # Platform Window: Disable platform task bar icon (generally set on popups/tooltips, or all windows if ImGuiConfigFlags_ViewportsNoTaskBarIcon is set)
+ImGuiViewportFlags_NoFocusOnAppearing = 32    # 1 << 5 # Platform Window: Don't take focus when created.
+ImGuiViewportFlags_NoFocusOnClick = 64        # 1 << 6 # Platform Window: Don't take focus when clicked on.
+ImGuiViewportFlags_NoInputs = 128             # 1 << 7 # Platform Window: Make mouse pass through so we can drag this window while peaking behind it.
+ImGuiViewportFlags_NoRendererClear = 256      # 1 << 8 # Platform Window: Renderer doesn't need to clear the framebuffer ahead (because we will fill it entirely).
+ImGuiViewportFlags_NoAutoMerge = 512          # 1 << 9 # Platform Window: Avoid merging this window into another host window. This can only be set via ImGuiWindowClass viewport flags override (because we need to now ahead if we are going to create a viewport in the first place!).
+ImGuiViewportFlags_TopMost = 1024             # 1 << 10 # Platform Window: Display on top (for tooltips only).
+ImGuiViewportFlags_CanHostOtherWindows = 2048 # 1 << 11 # Viewport can host multiple imgui windows (secondary viewports are associated to a single window). // FIXME: In practice there's still probably code making the assumption that this is always and only on the MainViewport. Will fix once we add support for "no main viewport".
+ImGuiViewportFlags_IsMinimized = 4096         # 1 << 12 # Platform Window: Window is minimized, can skip render. When minimized we tend to avoid using the viewport pos/size for clipping window or testing if they are contained in the viewport.
+ImGuiViewportFlags_IsFocused = 8192           # 1 << 13 # Platform Window: Window is focused (last call to Platform_GetWindowFocus() returned true)
 
 # ImGuiWindowFlags_
 # Flags for ImGui::Begin()
@@ -837,6 +877,7 @@ ImGuiWindowFlags_AlwaysHorizontalScrollbar = 32768 # 1<< 15 # Always show horizo
 ImGuiWindowFlags_NoNavInputs = 65536               # 1 << 16 # No gamepad/keyboard navigation within the window
 ImGuiWindowFlags_NoNavFocus = 131072               # 1 << 17 # No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB)
 ImGuiWindowFlags_UnsavedDocument = 262144          # 1 << 18 # Display a dot next to the title. When used in a tab/docking context, tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed when pressing the X, so if you keep submitting the tab may reappear at end of tab bar.
+ImGuiWindowFlags_NoDocking = 524288                # 1 << 19 # Disable docking of this window
 ImGuiWindowFlags_NoNav = 196608                    # ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
 ImGuiWindowFlags_NoDecoration = 43                 # ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse
 ImGuiWindowFlags_NoInputs = 197120                 # ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
@@ -846,6 +887,7 @@ ImGuiWindowFlags_Tooltip = 33554432                # 1 << 25 # Don't use! For in
 ImGuiWindowFlags_Popup = 67108864                  # 1 << 26 # Don't use! For internal use by BeginPopup()
 ImGuiWindowFlags_Modal = 134217728                 # 1 << 27 # Don't use! For internal use by BeginPopupModal()
 ImGuiWindowFlags_ChildMenu = 268435456             # 1 << 28 # Don't use! For internal use by BeginMenu()
+ImGuiWindowFlags_DockNodeHost = 536870912          # 1 << 29 # Don't use! For internal use by Begin()/NewFrame()
 
 
 class ImVec2 < FFI::Struct
@@ -1007,6 +1049,10 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddCircleFilled(self, center, radius, col, num_segments)
   end
 
+  def AddConcavePolyFilled(points, num_points, col)
+    ImGui::ImDrawList_AddConcavePolyFilled(self, points, num_points, col)
+  end
+
   def AddConvexPolyFilled(points, num_points, col)
     ImGui::ImDrawList_AddConvexPolyFilled(self, points, num_points, col)
   end
@@ -1015,12 +1061,12 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddDrawCmd(self)
   end
 
-  def AddEllipse(center, radius_x, radius_y, col, rot = 0.0, num_segments = 0, thickness = 1.0)
-    ImGui::ImDrawList_AddEllipse(self, center, radius_x, radius_y, col, rot, num_segments, thickness)
+  def AddEllipse(center, radius, col, rot = 0.0, num_segments = 0, thickness = 1.0)
+    ImGui::ImDrawList_AddEllipse(self, center, radius, col, rot, num_segments, thickness)
   end
 
-  def AddEllipseFilled(center, radius_x, radius_y, col, rot = 0.0, num_segments = 0)
-    ImGui::ImDrawList_AddEllipseFilled(self, center, radius_x, radius_y, col, rot, num_segments)
+  def AddEllipseFilled(center, radius, col, rot = 0.0, num_segments = 0)
+    ImGui::ImDrawList_AddEllipseFilled(self, center, radius, col, rot, num_segments)
   end
 
   def AddImage(user_texture_id, p_min, p_max, uv_min = ImVec2.create(0,0), uv_max = ImVec2.create(1,1), col = ImColor.col32(255,255,255,255))
@@ -1139,8 +1185,12 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PathClear(self)
   end
 
-  def PathEllipticalArcTo(center, radius_x, radius_y, rot, a_min, a_max, num_segments = 0)
-    ImGui::ImDrawList_PathEllipticalArcTo(self, center, radius_x, radius_y, rot, a_min, a_max, num_segments)
+  def PathEllipticalArcTo(center, radius, rot, a_min, a_max, num_segments = 0)
+    ImGui::ImDrawList_PathEllipticalArcTo(self, center, radius, rot, a_min, a_max, num_segments)
+  end
+
+  def PathFillConcave(col)
+    ImGui::ImDrawList_PathFillConcave(self, col)
   end
 
   def PathFillConvex(col)
@@ -1442,7 +1492,7 @@ class ImGuiKeyData < FFI::Struct
 end
 
 # - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
-# - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
+# - With multi-viewport enabled, we extend this concept to have multiple active viewports.
 # - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
 # - About Main Area vs Work Area:
 #   - Main Area = entire viewport.
@@ -1456,7 +1506,17 @@ class ImGuiViewport < FFI::Struct
     :Size, ImVec2.by_value,
     :WorkPos, ImVec2.by_value,
     :WorkSize, ImVec2.by_value,
-    :PlatformHandleRaw, :pointer
+    :DpiScale, :float,
+    :ParentViewportId, :uint,
+    :DrawData, ImDrawData.ptr,
+    :RendererUserData, :pointer,
+    :PlatformUserData, :pointer,
+    :PlatformHandle, :pointer,
+    :PlatformHandleRaw, :pointer,
+    :PlatformWindowCreated, :bool,
+    :PlatformRequestMove, :bool,
+    :PlatformRequestResize, :bool,
+    :PlatformRequestClose, :bool
   )
 
   def GetCenter()
@@ -1775,6 +1835,14 @@ class ImGuiIO < FFI::Struct
     :FontAllowUserScaling, :bool,
     :FontDefault, ImFont.ptr,
     :DisplayFramebufferScale, ImVec2.by_value,
+    :ConfigDockingNoSplit, :bool,
+    :ConfigDockingWithShift, :bool,
+    :ConfigDockingAlwaysTabBar, :bool,
+    :ConfigDockingTransparentPayload, :bool,
+    :ConfigViewportsNoAutoMerge, :bool,
+    :ConfigViewportsNoTaskBarIcon, :bool,
+    :ConfigViewportsNoDecoration, :bool,
+    :ConfigViewportsNoDefaultParent, :bool,
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
     :ConfigInputTrickleEventQueue, :bool,
@@ -1823,6 +1891,7 @@ class ImGuiIO < FFI::Struct
     :MouseWheel, :float,
     :MouseWheelH, :float,
     :MouseSource, :int,
+    :MouseHoveredViewport, :uint,
     :KeyCtrl, :bool,
     :KeyShift, :bool,
     :KeyAlt, :bool,
@@ -1843,6 +1912,7 @@ class ImGuiIO < FFI::Struct
     :MouseWheelRequestAxisSwap, :bool,
     :MouseDownDuration, [:float, 5],
     :MouseDownDurationPrev, [:float, 5],
+    :MouseDragMaxDistanceAbs, [ImVec2.by_value, 5],
     :MouseDragMaxDistanceSqr, [:float, 5],
     :PenPressure, :float,
     :AppFocusLost, :bool,
@@ -1887,6 +1957,10 @@ class ImGuiIO < FFI::Struct
 
   def AddMouseSourceEvent(source)
     ImGui::ImGuiIO_AddMouseSourceEvent(self, source)
+  end
+
+  def AddMouseViewportEvent(id)
+    ImGui::ImGuiIO_AddMouseViewportEvent(self, id)
   end
 
   def AddMouseWheelEvent(wheel_x, wheel_y)
@@ -2093,6 +2167,28 @@ class ImGuiPlatformImeData < FFI::Struct
 
 end
 
+# (Optional) This is required when enabling multi-viewport. Represent the bounds of each connected monitor/display and their DPI.
+# We use this information for multiple DPI support + clamping the position of popups and tooltips so they don't straddle multiple monitors.
+class ImGuiPlatformMonitor < FFI::Struct
+  layout(
+    :MainPos, ImVec2.by_value,
+    :MainSize, ImVec2.by_value,
+    :WorkPos, ImVec2.by_value,
+    :WorkSize, ImVec2.by_value,
+    :DpiScale, :float,
+    :PlatformHandle, :pointer
+  )
+
+  def self.create()
+    return ImGuiPlatformMonitor.new(ImGui::ImGuiPlatformMonitor_ImGuiPlatformMonitor())
+  end
+
+  def destroy()
+    ImGui::ImGuiPlatformMonitor_destroy(self)
+  end
+
+end
+
 # Resizing callback data to apply custom constraint. As enabled by SetNextWindowSizeConstraints(). Callback is called during the next Begin().
 # NB: For basic min/max size constraint on each axis you don't need to use the callback! The SetNextWindowSizeConstraints() parameters are enough.
 class ImGuiSizeCallbackData < FFI::Struct
@@ -2220,13 +2316,14 @@ class ImGuiStyle < FFI::Struct
     :SeparatorTextPadding, ImVec2.by_value,
     :DisplayWindowPadding, ImVec2.by_value,
     :DisplaySafeAreaPadding, ImVec2.by_value,
+    :DockingSeparatorSize, :float,
     :MouseCursorScale, :float,
     :AntiAliasedLines, :bool,
     :AntiAliasedLinesUseTex, :bool,
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
     :CircleTessellationMaxError, :float,
-    :Colors, [ImVec4.by_value, 53],
+    :Colors, [ImVec4.by_value, 55],
     :HoverStationaryDelay, :float,
     :HoverDelayShort, :float,
     :HoverDelayNormal, :float,
@@ -2407,6 +2504,36 @@ class ImGuiTextRange < FFI::Struct
 
 end
 
+# [ALPHA] Rarely used / very advanced uses only. Use with SetNextWindowClass() and DockSpace() functions.
+# Important: the content of this class is still highly WIP and likely to change and be refactored
+# before we stabilize Docking features. Please be mindful if using this.
+# Provide hints:
+# - To the platform backend via altered viewport flags (enable/disable OS decoration, OS task bar icons, etc.)
+# - To the platform backend for OS level parent/child relationships of viewport.
+# - To the docking system for various options and filtering.
+class ImGuiWindowClass < FFI::Struct
+  layout(
+    :ClassId, :uint,
+    :ParentViewportId, :uint,
+    :FocusRouteParentWindowId, :uint,
+    :ViewportFlagsOverrideSet, :int,
+    :ViewportFlagsOverrideClear, :int,
+    :TabItemFlagsOverrideSet, :int,
+    :DockNodeFlagsOverrideSet, :int,
+    :DockingAlwaysTabBar, :bool,
+    :DockingAllowUnclassed, :bool
+  )
+
+  def self.create()
+    return ImGuiWindowClass.new(ImGui::ImGuiWindowClass_ImGuiWindowClass())
+  end
+
+  def destroy()
+    ImGui::ImGuiWindowClass_destroy(self)
+  end
+
+end
+
 class ImGuiStoragePair < FFI::Struct
   layout(
     :key, :uint,
@@ -2501,10 +2628,11 @@ module ImGui
       [:ImDrawList_AddCallback, [:pointer, :ImDrawCallback, :pointer], :void],
       [:ImDrawList_AddCircle, [:pointer, ImVec2.by_value, :float, :uint, :int, :float], :void],
       [:ImDrawList_AddCircleFilled, [:pointer, ImVec2.by_value, :float, :uint, :int], :void],
+      [:ImDrawList_AddConcavePolyFilled, [:pointer, :pointer, :int, :uint], :void],
       [:ImDrawList_AddConvexPolyFilled, [:pointer, :pointer, :int, :uint], :void],
       [:ImDrawList_AddDrawCmd, [:pointer], :void],
-      [:ImDrawList_AddEllipse, [:pointer, ImVec2.by_value, :float, :float, :uint, :float, :int, :float], :void],
-      [:ImDrawList_AddEllipseFilled, [:pointer, ImVec2.by_value, :float, :float, :uint, :float, :int], :void],
+      [:ImDrawList_AddEllipse, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float], :void],
+      [:ImDrawList_AddEllipseFilled, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void],
       [:ImDrawList_AddImage, [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void],
       [:ImDrawList_AddImageQuad, [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint], :void],
       [:ImDrawList_AddImageRounded, [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void],
@@ -2533,7 +2661,8 @@ module ImGui
       [:ImDrawList_PathBezierCubicCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int], :void],
       [:ImDrawList_PathBezierQuadraticCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, :int], :void],
       [:ImDrawList_PathClear, [:pointer], :void],
-      [:ImDrawList_PathEllipticalArcTo, [:pointer, ImVec2.by_value, :float, :float, :float, :float, :float, :int], :void],
+      [:ImDrawList_PathEllipticalArcTo, [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :float, :float, :int], :void],
+      [:ImDrawList_PathFillConcave, [:pointer, :uint], :void],
       [:ImDrawList_PathFillConvex, [:pointer, :uint], :void],
       [:ImDrawList_PathLineTo, [:pointer, ImVec2.by_value], :void],
       [:ImDrawList_PathLineToMergeDuplicate, [:pointer, ImVec2.by_value], :void],
@@ -2635,6 +2764,7 @@ module ImGui
       [:ImGuiIO_AddMouseButtonEvent, [:pointer, :int, :bool], :void],
       [:ImGuiIO_AddMousePosEvent, [:pointer, :float, :float], :void],
       [:ImGuiIO_AddMouseSourceEvent, [:pointer, :int], :void],
+      [:ImGuiIO_AddMouseViewportEvent, [:pointer, :uint], :void],
       [:ImGuiIO_AddMouseWheelEvent, [:pointer, :float, :float], :void],
       [:ImGuiIO_ClearEventsQueue, [:pointer], :void],
       [:ImGuiIO_ClearInputKeys, [:pointer], :void],
@@ -2664,8 +2794,12 @@ module ImGui
       [:ImGuiPayload_IsDelivery, [:pointer], :bool],
       [:ImGuiPayload_IsPreview, [:pointer], :bool],
       [:ImGuiPayload_destroy, [:pointer], :void],
+      [:ImGuiPlatformIO_ImGuiPlatformIO, [], :pointer],
+      [:ImGuiPlatformIO_destroy, [:pointer], :void],
       [:ImGuiPlatformImeData_ImGuiPlatformImeData, [], :pointer],
       [:ImGuiPlatformImeData_destroy, [:pointer], :void],
+      [:ImGuiPlatformMonitor_ImGuiPlatformMonitor, [], :pointer],
+      [:ImGuiPlatformMonitor_destroy, [:pointer], :void],
       [:ImGuiStoragePair_ImGuiStoragePair_Int, [:uint, :int], :pointer],
       [:ImGuiStoragePair_ImGuiStoragePair_Float, [:uint, :float], :pointer],
       [:ImGuiStoragePair_ImGuiStoragePair_Ptr, [:uint, :pointer], :pointer],
@@ -2719,6 +2853,8 @@ module ImGui
       [:ImGuiViewport_GetWorkCenter, [:pointer, :pointer], :void],
       [:ImGuiViewport_ImGuiViewport, [], :pointer],
       [:ImGuiViewport_destroy, [:pointer], :void],
+      [:ImGuiWindowClass_ImGuiWindowClass, [], :pointer],
+      [:ImGuiWindowClass_destroy, [:pointer], :void],
       [:igAcceptDragDropPayload, [:pointer, :int], :pointer],
       [:igAlignTextToFramePadding, [], :void],
       [:igArrowButton, [:pointer, :int], :bool],
@@ -2774,6 +2910,9 @@ module ImGui
       [:igDebugStartItemPicker, [], :void],
       [:igDebugTextEncoding, [:pointer], :void],
       [:igDestroyContext, [:pointer], :void],
+      [:igDestroyPlatformWindows, [], :void],
+      [:igDockSpace, [:uint, ImVec2.by_value, :int, :pointer], :uint],
+      [:igDockSpaceOverViewport, [:pointer, :int, :pointer], :uint],
       [:igDragFloat, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool],
       [:igDragFloat2, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool],
       [:igDragFloat3, [:pointer, :pointer, :float, :float, :float, :pointer, :int], :bool],
@@ -2804,8 +2943,11 @@ module ImGui
       [:igEndTabItem, [], :void],
       [:igEndTable, [], :void],
       [:igEndTooltip, [], :void],
+      [:igFindViewportByID, [:uint], :pointer],
+      [:igFindViewportByPlatformHandle, [:pointer], :pointer],
       [:igGetAllocatorFunctions, [:pointer, :pointer, :pointer], :void],
-      [:igGetBackgroundDrawList, [], :pointer],
+      [:igGetBackgroundDrawList_Nil, [], :pointer],
+      [:igGetBackgroundDrawList_ViewportPtr, [:pointer], :pointer],
       [:igGetClipboardText, [], :pointer],
       [:igGetColorU32_Col, [:int, :float], :uint],
       [:igGetColorU32_Vec4, [ImVec4.by_value], :uint],
@@ -2828,7 +2970,8 @@ module ImGui
       [:igGetFont, [], :pointer],
       [:igGetFontSize, [], :float],
       [:igGetFontTexUvWhitePixel, [:pointer], :void],
-      [:igGetForegroundDrawList, [], :pointer],
+      [:igGetForegroundDrawList_Nil, [], :pointer],
+      [:igGetForegroundDrawList_ViewportPtr, [:pointer], :pointer],
       [:igGetFrameCount, [], :int],
       [:igGetFrameHeight, [], :float],
       [:igGetFrameHeightWithSpacing, [], :float],
@@ -2840,7 +2983,6 @@ module ImGui
       [:igGetItemRectMax, [:pointer], :void],
       [:igGetItemRectMin, [:pointer], :void],
       [:igGetItemRectSize, [:pointer], :void],
-      [:igGetKeyIndex, [:int], :int],
       [:igGetKeyName, [:int], :pointer],
       [:igGetKeyPressedAmount, [:int, :float, :float], :int],
       [:igGetMainViewport, [], :pointer],
@@ -2849,6 +2991,7 @@ module ImGui
       [:igGetMouseDragDelta, [:pointer, :int, :float], :void],
       [:igGetMousePos, [:pointer], :void],
       [:igGetMousePosOnOpeningCurrentPopup, [:pointer], :void],
+      [:igGetPlatformIO, [], :pointer],
       [:igGetScrollMaxX, [], :float],
       [:igGetScrollMaxY, [], :float],
       [:igGetScrollX, [], :float],
@@ -2864,10 +3007,13 @@ module ImGui
       [:igGetVersion, [], :pointer],
       [:igGetWindowContentRegionMax, [:pointer], :void],
       [:igGetWindowContentRegionMin, [:pointer], :void],
+      [:igGetWindowDockID, [], :uint],
+      [:igGetWindowDpiScale, [], :float],
       [:igGetWindowDrawList, [], :pointer],
       [:igGetWindowHeight, [], :float],
       [:igGetWindowPos, [:pointer], :void],
       [:igGetWindowSize, [:pointer], :void],
+      [:igGetWindowViewport, [], :pointer],
       [:igGetWindowWidth, [], :float],
       [:igImage, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value], :void],
       [:igImageButton, [:pointer, :pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value], :bool],
@@ -2917,6 +3063,7 @@ module ImGui
       [:igIsRectVisible_Vec2, [ImVec2.by_value, ImVec2.by_value], :bool],
       [:igIsWindowAppearing, [], :bool],
       [:igIsWindowCollapsed, [], :bool],
+      [:igIsWindowDocked, [], :bool],
       [:igIsWindowFocused, [:int], :bool],
       [:igIsWindowHovered, [:int], :bool],
       [:igLabelText, [:pointer, :pointer, :varargs], :void],
@@ -2971,6 +3118,7 @@ module ImGui
       [:igRadioButton_Bool, [:pointer, :bool], :bool],
       [:igRadioButton_IntPtr, [:pointer, :pointer, :int], :bool],
       [:igRender, [], :void],
+      [:igRenderPlatformWindowsDefault, [:pointer, :pointer], :void],
       [:igResetMouseDragDelta, [:int], :void],
       [:igSameLine, [:float, :float], :void],
       [:igSaveIniSettingsToDisk, [:pointer], :void],
@@ -3000,13 +3148,16 @@ module ImGui
       [:igSetNextItemOpen, [:bool, :int], :void],
       [:igSetNextItemWidth, [:float], :void],
       [:igSetNextWindowBgAlpha, [:float], :void],
+      [:igSetNextWindowClass, [:pointer], :void],
       [:igSetNextWindowCollapsed, [:bool, :int], :void],
       [:igSetNextWindowContentSize, [ImVec2.by_value], :void],
+      [:igSetNextWindowDockID, [:uint, :int], :void],
       [:igSetNextWindowFocus, [], :void],
       [:igSetNextWindowPos, [ImVec2.by_value, :int, ImVec2.by_value], :void],
       [:igSetNextWindowScroll, [ImVec2.by_value], :void],
       [:igSetNextWindowSize, [ImVec2.by_value, :int], :void],
       [:igSetNextWindowSizeConstraints, [ImVec2.by_value, ImVec2.by_value, :ImGuiSizeCallback, :pointer], :void],
+      [:igSetNextWindowViewport, [:uint], :void],
       [:igSetScrollFromPosX, [:float, :float], :void],
       [:igSetScrollFromPosY, [:float, :float], :void],
       [:igSetScrollHereX, [:float], :void],
@@ -3082,6 +3233,7 @@ module ImGui
       [:igTreePush_Str, [:pointer], :void],
       [:igTreePush_Ptr, [:pointer], :void],
       [:igUnindent, [:float], :void],
+      [:igUpdatePlatformWindows, [], :void],
       [:igVSliderFloat, [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :int], :bool],
       [:igVSliderInt, [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer, :int], :bool],
       [:igVSliderScalar, [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :int], :bool],
@@ -3542,6 +3694,37 @@ module ImGui
     igDestroyContext(ctx)
   end
 
+  # ret: void
+  def self.DestroyPlatformWindows()  # call DestroyWindow platform functions for all viewports. call from backend Shutdown() if you need to close platform windows before imgui shutdown. otherwise will be called by DestroyContext().
+    igDestroyPlatformWindows()
+  end
+
+  # arg: id(ImGuiID), size(ImVec2), flags(ImGuiDockNodeFlags), window_class(const ImGuiWindowClass*)
+  # ret: uint
+  #
+  # Docking
+  # [BETA API] Enable with io.ConfigFlags |= ImGuiConfigFlags_DockingEnable.
+  # Note: You can use most Docking facilities without calling any API. You DO NOT need to call DockSpace() to use Docking!
+  # - Drag from window title bar or their tab to dock/undock. Hold SHIFT to disable docking.
+  # - Drag from window menu button (upper-left button) to undock an entire node (all windows).
+  # - When io.ConfigDockingWithShift == true, you instead need to hold SHIFT to enable docking.
+  # About dockspaces:
+  # - Use DockSpaceOverViewport() to create an explicit dock node covering the screen or a specific viewport.
+  #   This is often used with ImGuiDockNodeFlags_PassthruCentralNode to make it transparent.
+  # - Use DockSpace() to create an explicit dock node _within_ an existing window. See Docking demo for details.
+  # - Important: Dockspaces need to be submitted _before_ any window they can host. Submit it early in your frame!
+  # - Important: Dockspaces need to be kept alive if hidden, otherwise windows docked into it will be undocked.
+  #   e.g. if you have multiple tabs with a dockspace inside each tab: submit the non-visible dockspaces with ImGuiDockNodeFlags_KeepAliveOnly.
+  def self.DockSpace(id, size = ImVec2.create(0,0), flags = 0, window_class = nil)  # Implied size = ImVec2(0, 0), flags = 0, window_class = NULL
+    igDockSpace(id, size, flags, window_class)
+  end
+
+  # arg: viewport(const ImGuiViewport*), flags(ImGuiDockNodeFlags), window_class(const ImGuiWindowClass*)
+  # ret: uint
+  def self.DockSpaceOverViewport(viewport = nil, flags = 0, window_class = nil)  # Implied viewport = NULL, flags = 0, window_class = NULL
+    igDockSpaceOverViewport(viewport, flags, window_class)
+  end
+
   # arg: label(const char*), v(float*), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
   #
@@ -3718,6 +3901,18 @@ module ImGui
     igEndTooltip()
   end
 
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.FindViewportByID(id)  # this is a helper for backends.
+    igFindViewportByID(id)
+  end
+
+  # arg: platform_handle(void*)
+  # ret: pointer
+  def self.FindViewportByPlatformHandle(platform_handle)  # this is a helper for backends. the type platform_handle is decided by the backend (e.g. HWND, MyWindow*, GLFWwindow* etc.)
+    igFindViewportByPlatformHandle(platform_handle)
+  end
+
   # arg: p_alloc_func(ImGuiMemAllocFunc*), p_free_func(ImGuiMemFreeFunc*), p_user_data(void**)
   # ret: void
   def self.GetAllocatorFunctions(p_alloc_func, p_free_func, p_user_data)
@@ -3725,10 +3920,14 @@ module ImGui
   end
 
   # ret: pointer
-  #
-  # Background/Foreground Draw Lists
-  def self.GetBackgroundDrawList()  # this draw list will be the first rendered one. Useful to quickly draw shapes/text behind dear imgui contents.
-    igGetBackgroundDrawList()
+  def self.GetBackgroundDrawList_Nil()
+    igGetBackgroundDrawList_Nil()
+  end
+
+  # arg: viewport(ImGuiViewport*)
+  # ret: pointer
+  def self.GetBackgroundDrawList_ViewportPtr(viewport)
+    igGetBackgroundDrawList_ViewportPtr(viewport)
   end
 
   # ret: pointer
@@ -3878,8 +4077,14 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetForegroundDrawList()  # this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
-    igGetForegroundDrawList()
+  def self.GetForegroundDrawList_Nil()
+    igGetForegroundDrawList_Nil()
+  end
+
+  # arg: viewport(ImGuiViewport*)
+  # ret: pointer
+  def self.GetForegroundDrawList_ViewportPtr(viewport)
+    igGetForegroundDrawList_ViewportPtr(viewport)
   end
 
   # ret: int
@@ -3949,12 +4154,6 @@ module ImGui
   end
 
   # arg: key(ImGuiKey)
-  # ret: int
-  def self.GetKeyIndex(key)
-    igGetKeyIndex(key)
-  end
-
-  # arg: key(ImGuiKey)
   # ret: pointer
   def self.GetKeyName(key)  # [DEBUG] returns English name of the key. Those names a provided for debugging purpose and are not meant to be saved persistently not compared.
     igGetKeyName(key)
@@ -4007,6 +4206,15 @@ module ImGui
     pOut = ImVec2.new
     igGetMousePosOnOpeningCurrentPopup(pOut)
     return pOut
+  end
+
+  # ret: pointer
+  #
+  # (Optional) Platform/OS interface for multi-viewport support
+  # Read comments around the ImGuiPlatformIO structure for more details.
+  # Note: You may use GetWindowViewport() to get the current viewport of the current window.
+  def self.GetPlatformIO()  # platform/renderer functions, for backend to setup + viewports list.
+    igGetPlatformIO()
   end
 
   # ret: float
@@ -4094,6 +4302,16 @@ module ImGui
     return pOut
   end
 
+  # ret: uint
+  def self.GetWindowDockID()
+    igGetWindowDockID()
+  end
+
+  # ret: float
+  def self.GetWindowDpiScale()  # get DPI scale currently associated to the current window's viewport.
+    igGetWindowDpiScale()
+  end
+
   # ret: pointer
   def self.GetWindowDrawList()  # get draw list associated to the current window, to append your own drawing primitives
     igGetWindowDrawList()
@@ -4116,6 +4334,11 @@ module ImGui
     pOut = ImVec2.new
     igGetWindowSize(pOut)
     return pOut
+  end
+
+  # ret: pointer
+  def self.GetWindowViewport()  # get viewport currently associated to the current window.
+    igGetWindowViewport()
   end
 
   # ret: float
@@ -4427,6 +4650,11 @@ module ImGui
   # ret: bool
   def self.IsWindowCollapsed()
     igIsWindowCollapsed()
+  end
+
+  # ret: bool
+  def self.IsWindowDocked()  # is current window docked into another window?
+    igIsWindowDocked()
   end
 
   # arg: flags(ImGuiFocusedFlags)
@@ -4755,6 +4983,12 @@ module ImGui
     igRender()
   end
 
+  # arg: platform_render_arg(void*), renderer_render_arg(void*)
+  # ret: void
+  def self.RenderPlatformWindowsDefault(platform_render_arg = nil, renderer_render_arg = nil)  # Implied platform_render_arg = NULL, renderer_render_arg = NULL
+    igRenderPlatformWindowsDefault(platform_render_arg, renderer_render_arg)
+  end
+
   # arg: button(ImGuiMouseButton)
   # ret: void
   def self.ResetMouseDragDelta(button = 0)  # Implied button = 0
@@ -4938,6 +5172,12 @@ module ImGui
     igSetNextWindowBgAlpha(alpha)
   end
 
+  # arg: window_class(const ImGuiWindowClass*)
+  # ret: void
+  def self.SetNextWindowClass(window_class)  # set next window class (control docking compatibility + provide hints to platform backend via custom viewport flags and platform parent/child relationship)
+    igSetNextWindowClass(window_class)
+  end
+
   # arg: collapsed(bool), cond(ImGuiCond)
   # ret: void
   def self.SetNextWindowCollapsed(collapsed, cond = 0)  # set next window collapsed state. call before Begin()
@@ -4948,6 +5188,12 @@ module ImGui
   # ret: void
   def self.SetNextWindowContentSize(size)  # set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations (title bar, menu bar, etc.) nor WindowPadding. set an axis to 0.0f to leave it automatic. call before Begin()
     igSetNextWindowContentSize(size)
+  end
+
+  # arg: dock_id(ImGuiID), cond(ImGuiCond)
+  # ret: void
+  def self.SetNextWindowDockID(dock_id, cond = 0)  # set next window dock id
+    igSetNextWindowDockID(dock_id, cond)
   end
 
   # ret: void
@@ -4980,6 +5226,12 @@ module ImGui
   # ret: void
   def self.SetNextWindowSizeConstraints(size_min, size_max, custom_callback = nil, custom_callback_data = nil)  # set next window size limits. use 0.0f or FLT_MAX if you don't want limits. Use -1 for both min and max of same axis to preserve current size (which itself is a constraint). Use callback to apply non-trivial programmatic constraints.
     igSetNextWindowSizeConstraints(size_min, size_max, custom_callback, custom_callback_data)
+  end
+
+  # arg: viewport_id(ImGuiID)
+  # ret: void
+  def self.SetNextWindowViewport(viewport_id)  # set next window viewport
+    igSetNextWindowViewport(viewport_id)
   end
 
   # arg: local_x(float), center_x_ratio(float)
@@ -5450,6 +5702,11 @@ module ImGui
     igUnindent(indent_w)
   end
 
+  # ret: void
+  def self.UpdatePlatformWindows()  # call in main loop. will call CreateWindow/ResizeWindow/etc. platform functions for each secondary viewport, and DestroyWindow for each inactive viewport.
+    igUpdatePlatformWindows()
+  end
+
   # arg: label(const char*), size(ImVec2), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
   # ret: bool
   def self.VSliderFloat(label, size, v, v_min, v_max, format = "%.3f", flags = 0)  # Implied format = "%.3f", flags = 0
@@ -5556,6 +5813,18 @@ module ImGui
     $stderr.puts("[Warning] Combo : No matching functions found (#{arg})")
   end
 
+  #
+  # Background/Foreground Draw Lists
+  def self.GetBackgroundDrawList(*arg)  # get background draw list for the viewport associated to the current window. this draw list will be the first rendering one. Useful to quickly draw shapes/text behind dear imgui contents.
+    # arg: 
+    # ret: pointer
+    return igGetBackgroundDrawList_Nil() if arg.length == 0 && ()
+    # arg: 0:viewport(ImGuiViewport*)
+    # ret: pointer
+    return igGetBackgroundDrawList_ViewportPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] GetBackgroundDrawList : No matching functions found (#{arg})")
+  end
+
   def self.GetColorU32(*arg)  # Implied alpha_mul = 1.0f
     # arg: 0:idx(ImGuiCol), 1:alpha_mul(float)
     # ret: uint
@@ -5567,6 +5836,16 @@ module ImGui
     # ret: uint
     return igGetColorU32_U32(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] GetColorU32 : No matching functions found (#{arg})")
+  end
+
+  def self.GetForegroundDrawList(*arg)  # get foreground draw list for the viewport associated to the current window. this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
+    # arg: 
+    # ret: pointer
+    return igGetForegroundDrawList_Nil() if arg.length == 0 && ()
+    # arg: 0:viewport(ImGuiViewport*)
+    # ret: pointer
+    return igGetForegroundDrawList_ViewportPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] GetForegroundDrawList : No matching functions found (#{arg})")
   end
 
   def self.GetID(*arg)  # calculate unique ID (hash of whole ID stack + given parameter). e.g. if you want to query into ImGuiStorage yourself

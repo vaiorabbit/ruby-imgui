@@ -620,6 +620,7 @@ if __FILE__ == $PROGRAM_NAME
     'ImDrawChannel',
     'ImDrawListSharedData',
     'ImGuiOnceUponAFrame',
+    'ImGuiPlatformIO',
   ]
   structs_map.delete_if {|struct| omit_structs.include?(struct.name)}
 
