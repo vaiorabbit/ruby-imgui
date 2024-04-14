@@ -45,6 +45,7 @@ jobs:
       if: "${{ github.event.inputs.imgui_commit != ''}}"
       run: |
         cd imgui_dll/cimgui/imgui
+        git switch master
         git checkout -f --detach ${{ github.event.inputs.imgui_commit }}
         cd ../../..
 
