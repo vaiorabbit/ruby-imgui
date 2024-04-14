@@ -1,5 +1,5 @@
 #!/bin/sh
-export MACOSX_DEPLOYMENT_TARGET=13.0
+export CMAKE_OSX_DEPLOYMENT_TARGET=14.0
 
 mkdir -p build_x86_64
 cd build_x86_64
