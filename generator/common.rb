@@ -114,6 +114,8 @@ module ImGuiBindings
       end
     end
 
+    @@imGuiToCTypeMap = type_map
+
     File.open(structs_and_enums_json_filename) do |file|
       json = JSON.load(file)
       json_enumtypes = json['enumtypes'] # [2022-11-17] for ImGuiKey
@@ -122,8 +124,6 @@ module ImGuiBindings
         type_map[enumtypes_name] = ImGuiTypedefMapEntry.new(name: enumtypes_name, type: get_ffi_type(json_enumtypes[enumtypes_name]), callback_signature: nil)
       end
     end
-
-    @@imGuiToCTypeMap = type_map
 
     return type_map
   end

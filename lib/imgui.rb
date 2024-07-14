@@ -20,11 +20,11 @@ FFI.typedef :int, :ImGuiComboFlags
 FFI.typedef :int, :ImGuiCond
 FFI.typedef :int, :ImGuiConfigFlags
 FFI.typedef :int, :ImGuiDataType
-FFI.typedef :int, :ImGuiDir
 FFI.typedef :int, :ImGuiDragDropFlags
 FFI.typedef :int, :ImGuiFocusedFlags
 FFI.typedef :int, :ImGuiHoveredFlags
 FFI.typedef :uint, :ImGuiID
+FFI.typedef :int, :ImGuiInputFlags
 FFI.typedef :int, :ImGuiInputTextFlags
 FFI.typedef :int, :ImGuiKeyChord
 FFI.typedef :pointer, :ImGuiMemAllocFunc
@@ -34,7 +34,6 @@ FFI.typedef :int, :ImGuiMouseCursor
 FFI.typedef :int, :ImGuiPopupFlags
 FFI.typedef :int, :ImGuiSelectableFlags
 FFI.typedef :int, :ImGuiSliderFlags
-FFI.typedef :int, :ImGuiSortDirection
 FFI.typedef :int, :ImGuiStyleVar
 FFI.typedef :int, :ImGuiTabBarFlags
 FFI.typedef :int, :ImGuiTabItemFlags
@@ -57,8 +56,10 @@ FFI.typedef :uchar, :ImU8
 FFI.typedef :ushort, :ImWchar
 FFI.typedef :ushort, :ImWchar16
 FFI.typedef :uint, :ImWchar32
+FFI.typedef :int, :ImGuiDir
 FFI.typedef :int, :ImGuiKey
 FFI.typedef :int, :ImGuiMouseSource
+FFI.typedef :uchar, :ImGuiSortDirection
 
 # ImDrawFlags_
 # Flags for ImDrawList functions
@@ -104,12 +105,11 @@ ImGuiBackendFlags_RendererHasVtxOffset = 8 # 1 << 3 # Backend Renderer supports 
 
 # ImGuiButtonFlags_
 # Flags for InvisibleButton() [extended in imgui_internal.h]
-ImGuiButtonFlags_None = 0                # 0
-ImGuiButtonFlags_MouseButtonLeft = 1     # 1 << 0 # React on left mouse button (default)
-ImGuiButtonFlags_MouseButtonRight = 2    # 1 << 1 # React on right mouse button
-ImGuiButtonFlags_MouseButtonMiddle = 4   # 1 << 2 # React on center mouse button
-ImGuiButtonFlags_MouseButtonMask_ = 7    # ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle
-ImGuiButtonFlags_MouseButtonDefault_ = 1 # ImGuiButtonFlags_MouseButtonLeft
+ImGuiButtonFlags_None = 0              # 0
+ImGuiButtonFlags_MouseButtonLeft = 1   # 1 << 0 # React on left mouse button (default)
+ImGuiButtonFlags_MouseButtonRight = 2  # 1 << 1 # React on right mouse button
+ImGuiButtonFlags_MouseButtonMiddle = 4 # 1 << 2 # React on center mouse button
+ImGuiButtonFlags_MouseButtonMask_ = 7  # ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle
 
 # ImGuiChildFlags_
 # Flags for ImGui::BeginChild()
@@ -130,63 +130,67 @@ ImGuiChildFlags_AutoResizeX = 16           # 1 << 4 # Enable auto-resizing width
 ImGuiChildFlags_AutoResizeY = 32           # 1 << 5 # Enable auto-resizing height. Read "IMPORTANT: Size measurement" details above.
 ImGuiChildFlags_AlwaysAutoResize = 64      # 1 << 6 # Combined with AutoResizeX/AutoResizeY. Always measure size even when child is hidden, always return true, always disable clipping optimization! NOT RECOMMENDED.
 ImGuiChildFlags_FrameStyle = 128           # 1 << 7 # Style the child window like a framed item: use FrameBg, FrameRounding, FrameBorderSize, FramePadding instead of ChildBg, ChildRounding, ChildBorderSize, WindowPadding.
+ImGuiChildFlags_NavFlattened = 256         # 1 << 8
 
 # ImGuiCol_
 # Enumeration for PushStyleColor() / PopStyleColor()
-ImGuiCol_Text = 0                   # 0
-ImGuiCol_TextDisabled = 1           # 1
-ImGuiCol_WindowBg = 2               # 2 # Background of normal windows
-ImGuiCol_ChildBg = 3                # 3 # Background of child windows
-ImGuiCol_PopupBg = 4                # 4 # Background of popups, menus, tooltips windows
-ImGuiCol_Border = 5                 # 5
-ImGuiCol_BorderShadow = 6           # 6
-ImGuiCol_FrameBg = 7                # 7 # Background of checkbox, radio button, plot, slider, text input
-ImGuiCol_FrameBgHovered = 8         # 8
-ImGuiCol_FrameBgActive = 9          # 9
-ImGuiCol_TitleBg = 10               # 10 # Title bar
-ImGuiCol_TitleBgActive = 11         # 11 # Title bar when focused
-ImGuiCol_TitleBgCollapsed = 12      # 12 # Title bar when collapsed
-ImGuiCol_MenuBarBg = 13             # 13
-ImGuiCol_ScrollbarBg = 14           # 14
-ImGuiCol_ScrollbarGrab = 15         # 15
-ImGuiCol_ScrollbarGrabHovered = 16  # 16
-ImGuiCol_ScrollbarGrabActive = 17   # 17
-ImGuiCol_CheckMark = 18             # 18 # Checkbox tick and RadioButton circle
-ImGuiCol_SliderGrab = 19            # 19
-ImGuiCol_SliderGrabActive = 20      # 20
-ImGuiCol_Button = 21                # 21
-ImGuiCol_ButtonHovered = 22         # 22
-ImGuiCol_ButtonActive = 23          # 23
-ImGuiCol_Header = 24                # 24 # Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
-ImGuiCol_HeaderHovered = 25         # 25
-ImGuiCol_HeaderActive = 26          # 26
-ImGuiCol_Separator = 27             # 27
-ImGuiCol_SeparatorHovered = 28      # 28
-ImGuiCol_SeparatorActive = 29       # 29
-ImGuiCol_ResizeGrip = 30            # 30 # Resize grip in lower-right and lower-left corners of windows.
-ImGuiCol_ResizeGripHovered = 31     # 31
-ImGuiCol_ResizeGripActive = 32      # 32
-ImGuiCol_Tab = 33                   # 33 # TabItem in a TabBar
-ImGuiCol_TabHovered = 34            # 34
-ImGuiCol_TabActive = 35             # 35
-ImGuiCol_TabUnfocused = 36          # 36
-ImGuiCol_TabUnfocusedActive = 37    # 37
-ImGuiCol_PlotLines = 38             # 38
-ImGuiCol_PlotLinesHovered = 39      # 39
-ImGuiCol_PlotHistogram = 40         # 40
-ImGuiCol_PlotHistogramHovered = 41  # 41
-ImGuiCol_TableHeaderBg = 42         # 42 # Table header background
-ImGuiCol_TableBorderStrong = 43     # 43 # Table outer and header borders (prefer using Alpha=1.0 here)
-ImGuiCol_TableBorderLight = 44      # 44 # Table inner borders (prefer using Alpha=1.0 here)
-ImGuiCol_TableRowBg = 45            # 45 # Table row background (even rows)
-ImGuiCol_TableRowBgAlt = 46         # 46 # Table row background (odd rows)
-ImGuiCol_TextSelectedBg = 47        # 47
-ImGuiCol_DragDropTarget = 48        # 48 # Rectangle highlighting a drop target
-ImGuiCol_NavHighlight = 49          # 49 # Gamepad/keyboard: current highlighted item
-ImGuiCol_NavWindowingHighlight = 50 # 50 # Highlight window when using CTRL+TAB
-ImGuiCol_NavWindowingDimBg = 51     # 51 # Darken/colorize entire screen behind the CTRL+TAB window list, when active
-ImGuiCol_ModalWindowDimBg = 52      # 52 # Darken/colorize entire screen behind a modal window, when one is active
-ImGuiCol_COUNT = 53                 # 53
+ImGuiCol_Text = 0                       # 0
+ImGuiCol_TextDisabled = 1               # 1
+ImGuiCol_WindowBg = 2                   # 2 # Background of normal windows
+ImGuiCol_ChildBg = 3                    # 3 # Background of child windows
+ImGuiCol_PopupBg = 4                    # 4 # Background of popups, menus, tooltips windows
+ImGuiCol_Border = 5                     # 5
+ImGuiCol_BorderShadow = 6               # 6
+ImGuiCol_FrameBg = 7                    # 7 # Background of checkbox, radio button, plot, slider, text input
+ImGuiCol_FrameBgHovered = 8             # 8
+ImGuiCol_FrameBgActive = 9              # 9
+ImGuiCol_TitleBg = 10                   # 10 # Title bar
+ImGuiCol_TitleBgActive = 11             # 11 # Title bar when focused
+ImGuiCol_TitleBgCollapsed = 12          # 12 # Title bar when collapsed
+ImGuiCol_MenuBarBg = 13                 # 13
+ImGuiCol_ScrollbarBg = 14               # 14
+ImGuiCol_ScrollbarGrab = 15             # 15
+ImGuiCol_ScrollbarGrabHovered = 16      # 16
+ImGuiCol_ScrollbarGrabActive = 17       # 17
+ImGuiCol_CheckMark = 18                 # 18 # Checkbox tick and RadioButton circle
+ImGuiCol_SliderGrab = 19                # 19
+ImGuiCol_SliderGrabActive = 20          # 20
+ImGuiCol_Button = 21                    # 21
+ImGuiCol_ButtonHovered = 22             # 22
+ImGuiCol_ButtonActive = 23              # 23
+ImGuiCol_Header = 24                    # 24 # Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
+ImGuiCol_HeaderHovered = 25             # 25
+ImGuiCol_HeaderActive = 26              # 26
+ImGuiCol_Separator = 27                 # 27
+ImGuiCol_SeparatorHovered = 28          # 28
+ImGuiCol_SeparatorActive = 29           # 29
+ImGuiCol_ResizeGrip = 30                # 30 # Resize grip in lower-right and lower-left corners of windows.
+ImGuiCol_ResizeGripHovered = 31         # 31
+ImGuiCol_ResizeGripActive = 32          # 32
+ImGuiCol_TabHovered = 33                # 33
+ImGuiCol_Tab = 34                       # 34 # TabItem in a TabBar
+ImGuiCol_TabSelected = 35               # 35
+ImGuiCol_TabSelectedOverline = 36       # 36
+ImGuiCol_TabDimmed = 37                 # 37
+ImGuiCol_TabDimmedSelected = 38         # 38
+ImGuiCol_TabDimmedSelectedOverline = 39 # 39
+ImGuiCol_PlotLines = 40                 # 40
+ImGuiCol_PlotLinesHovered = 41          # 41
+ImGuiCol_PlotHistogram = 42             # 42
+ImGuiCol_PlotHistogramHovered = 43      # 43
+ImGuiCol_TableHeaderBg = 44             # 44 # Table header background
+ImGuiCol_TableBorderStrong = 45         # 45 # Table outer and header borders (prefer using Alpha=1.0 here)
+ImGuiCol_TableBorderLight = 46          # 46 # Table inner borders (prefer using Alpha=1.0 here)
+ImGuiCol_TableRowBg = 47                # 47 # Table row background (even rows)
+ImGuiCol_TableRowBgAlt = 48             # 48 # Table row background (odd rows)
+ImGuiCol_TextLink = 49                  # 49
+ImGuiCol_TextSelectedBg = 50            # 50
+ImGuiCol_DragDropTarget = 51            # 51 # Rectangle highlighting a drop target
+ImGuiCol_NavHighlight = 52              # 52 # Gamepad/keyboard: current highlighted item
+ImGuiCol_NavWindowingHighlight = 53     # 53 # Highlight window when using CTRL+TAB
+ImGuiCol_NavWindowingDimBg = 54         # 54 # Darken/colorize entire screen behind the CTRL+TAB window list, when active
+ImGuiCol_ModalWindowDimBg = 55          # 55 # Darken/colorize entire screen behind a modal window, when one is active
+ImGuiCol_COUNT = 56                     # 56
 
 # ImGuiColorEditFlags_
 # Flags for ColorEdit3() / ColorEdit4() / ColorPicker3() / ColorPicker4() / ColorButton()
@@ -252,6 +256,7 @@ ImGuiConfigFlags_NavEnableSetMousePos = 4 # 1 << 2 # Instruct navigation to move
 ImGuiConfigFlags_NavNoCaptureKeyboard = 8 # 1 << 3 # Instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive is set.
 ImGuiConfigFlags_NoMouse = 16             # 1 << 4 # Instruct imgui to clear mouse position/buttons in NewFrame(). This allows ignoring the mouse information set by the backend.
 ImGuiConfigFlags_NoMouseCursorChange = 32 # 1 << 5 # Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
+ImGuiConfigFlags_NoKeyboard = 64          # 1 << 6
 ImGuiConfigFlags_IsSRGB = 1048576         # 1 << 20 # Application is SRGB-aware.
 ImGuiConfigFlags_IsTouchScreen = 2097152  # 1 << 21 # Application is using a touch screen instead of a mouse.
 
@@ -269,8 +274,7 @@ ImGuiDataType_Float = 8  # 8 # float
 ImGuiDataType_Double = 9 # 9 # double
 ImGuiDataType_COUNT = 10 # 10
 
-# ImGuiDir_
-# A cardinal direction
+# ImGuiDir
 ImGuiDir_None = -1 # -1
 ImGuiDir_Left = 0  # 0
 ImGuiDir_Right = 1 # 1
@@ -286,7 +290,9 @@ ImGuiDragDropFlags_SourceNoDisableHover = 2       # 1 << 1 # By default, when dr
 ImGuiDragDropFlags_SourceNoHoldToOpenOthers = 4   # 1 << 2 # Disable the behavior that allows to open tree nodes and collapsing header by holding over them while dragging a source item.
 ImGuiDragDropFlags_SourceAllowNullID = 8          # 1 << 3 # Allow items such as Text(), Image() that have no unique identifier to be used as drag source, by manufacturing a temporary identifier based on their window-relative position. This is extremely unusual within the dear imgui ecosystem and so we made it explicit.
 ImGuiDragDropFlags_SourceExtern = 16              # 1 << 4 # External source (from outside of dear imgui), won't attempt to read current item/window info. Will always return true. Only one Extern source can be active simultaneously.
-ImGuiDragDropFlags_SourceAutoExpirePayload = 32   # 1 << 5 # Automatically expire the payload if the source cease to be submitted (otherwise payloads are persisting while being dragged)
+ImGuiDragDropFlags_PayloadAutoExpire = 32         # 1 << 5
+ImGuiDragDropFlags_PayloadNoCrossContext = 64     # 1 << 6
+ImGuiDragDropFlags_PayloadNoCrossProcess = 128    # 1 << 7
 ImGuiDragDropFlags_AcceptBeforeDelivery = 1024    # 1 << 10 # AcceptDragDropPayload() will returns true even before the mouse button is released. You can then call IsDelivery() to test if the payload needs to be delivered.
 ImGuiDragDropFlags_AcceptNoDrawDefaultRect = 2048 # 1 << 11 # Do not draw the default highlight rectangle when hovering over target.
 ImGuiDragDropFlags_AcceptNoPreviewTooltip = 4096  # 1 << 12 # Request hiding the BeginDragDropSource tooltip from the BeginDragDropTarget site.
@@ -326,31 +332,46 @@ ImGuiHoveredFlags_DelayShort = 32768                 # 1 << 15 # IsItemHovered()
 ImGuiHoveredFlags_DelayNormal = 65536                # 1 << 16 # IsItemHovered() only: Return true after style.HoverDelayNormal elapsed (~0.40 sec) (shared between items) + requires mouse to be stationary for style.HoverStationaryDelay (once per item).
 ImGuiHoveredFlags_NoSharedDelay = 131072             # 1 << 17 # IsItemHovered() only: Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)
 
+# ImGuiInputFlags_
+ImGuiInputFlags_None = 0                     # 0
+ImGuiInputFlags_Repeat = 1                   # 1 << 0
+ImGuiInputFlags_RouteActive = 1024           # 1 << 10
+ImGuiInputFlags_RouteFocused = 2048          # 1 << 11
+ImGuiInputFlags_RouteGlobal = 4096           # 1 << 12
+ImGuiInputFlags_RouteAlways = 8192           # 1 << 13
+ImGuiInputFlags_RouteOverFocused = 16384     # 1 << 14
+ImGuiInputFlags_RouteOverActive = 32768      # 1 << 15
+ImGuiInputFlags_RouteUnlessBgFocused = 65536 # 1 << 16
+ImGuiInputFlags_RouteFromRootWindow = 131072 # 1 << 17
+ImGuiInputFlags_Tooltip = 262144             # 1 << 18
+
 # ImGuiInputTextFlags_
 # Flags for ImGui::InputText()
 # (Those are per-item flags. There are shared flags in ImGuiIO: io.ConfigInputTextCursorBlink and io.ConfigInputTextEnterKeepActive)
-ImGuiInputTextFlags_None = 0                   # 0
-ImGuiInputTextFlags_CharsDecimal = 1           # 1 << 0 # Allow 0123456789.+-*/
-ImGuiInputTextFlags_CharsHexadecimal = 2       # 1 << 1 # Allow 0123456789ABCDEFabcdef
-ImGuiInputTextFlags_CharsUppercase = 4         # 1 << 2 # Turn a..z into A..Z
-ImGuiInputTextFlags_CharsNoBlank = 8           # 1 << 3 # Filter out spaces, tabs
-ImGuiInputTextFlags_AutoSelectAll = 16         # 1 << 4 # Select entire text when first taking mouse focus
-ImGuiInputTextFlags_EnterReturnsTrue = 32      # 1 << 5 # Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider looking at the IsItemDeactivatedAfterEdit() function.
-ImGuiInputTextFlags_CallbackCompletion = 64    # 1 << 6 # Callback on pressing TAB (for completion handling)
-ImGuiInputTextFlags_CallbackHistory = 128      # 1 << 7 # Callback on pressing Up/Down arrows (for history handling)
-ImGuiInputTextFlags_CallbackAlways = 256       # 1 << 8 # Callback on each iteration. User code may query cursor position, modify text buffer.
-ImGuiInputTextFlags_CallbackCharFilter = 512   # 1 << 9 # Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
-ImGuiInputTextFlags_AllowTabInput = 1024       # 1 << 10 # Pressing TAB input a '\t' character into the text field
-ImGuiInputTextFlags_CtrlEnterForNewLine = 2048 # 1 << 11 # In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter).
-ImGuiInputTextFlags_NoHorizontalScroll = 4096  # 1 << 12 # Disable following the cursor horizontally
-ImGuiInputTextFlags_AlwaysOverwrite = 8192     # 1 << 13 # Overwrite mode
-ImGuiInputTextFlags_ReadOnly = 16384           # 1 << 14 # Read-only mode
-ImGuiInputTextFlags_Password = 32768           # 1 << 15 # Password mode, display all characters as '*'
-ImGuiInputTextFlags_NoUndoRedo = 65536         # 1 << 16 # Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
-ImGuiInputTextFlags_CharsScientific = 131072   # 1 << 17 # Allow 0123456789.+-*/eE (Scientific notation input)
-ImGuiInputTextFlags_CallbackResize = 262144    # 1 << 18 # Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
-ImGuiInputTextFlags_CallbackEdit = 524288      # 1 << 19 # Callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)
-ImGuiInputTextFlags_EscapeClearsAll = 1048576  # 1 << 20 # Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)
+ImGuiInputTextFlags_None = 0                     # 0
+ImGuiInputTextFlags_CharsDecimal = 1             # 1 << 0 # Allow 0123456789.+-*/
+ImGuiInputTextFlags_CharsHexadecimal = 2         # 1 << 1 # Allow 0123456789ABCDEFabcdef
+ImGuiInputTextFlags_CharsScientific = 4          # 1 << 2 # Allow 0123456789.+-*/eE (Scientific notation input)
+ImGuiInputTextFlags_CharsUppercase = 8           # 1 << 3 # Turn a..z into A..Z
+ImGuiInputTextFlags_CharsNoBlank = 16            # 1 << 4 # Filter out spaces, tabs
+ImGuiInputTextFlags_AllowTabInput = 32           # 1 << 5 # Pressing TAB input a '\t' character into the text field
+ImGuiInputTextFlags_EnterReturnsTrue = 64        # 1 << 6 # Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider looking at the IsItemDeactivatedAfterEdit() function.
+ImGuiInputTextFlags_EscapeClearsAll = 128        # 1 << 7 # Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)
+ImGuiInputTextFlags_CtrlEnterForNewLine = 256    # 1 << 8 # In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter).
+ImGuiInputTextFlags_ReadOnly = 512               # 1 << 9 # Read-only mode
+ImGuiInputTextFlags_Password = 1024              # 1 << 10 # Password mode, display all characters as '*'
+ImGuiInputTextFlags_AlwaysOverwrite = 2048       # 1 << 11 # Overwrite mode
+ImGuiInputTextFlags_AutoSelectAll = 4096         # 1 << 12 # Select entire text when first taking mouse focus
+ImGuiInputTextFlags_ParseEmptyRefVal = 8192      # 1 << 13
+ImGuiInputTextFlags_DisplayEmptyRefVal = 16384   # 1 << 14
+ImGuiInputTextFlags_NoHorizontalScroll = 32768   # 1 << 15 # Disable following the cursor horizontally
+ImGuiInputTextFlags_NoUndoRedo = 65536           # 1 << 16 # Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
+ImGuiInputTextFlags_CallbackCompletion = 131072  # 1 << 17 # Callback on pressing TAB (for completion handling)
+ImGuiInputTextFlags_CallbackHistory = 262144     # 1 << 18 # Callback on pressing Up/Down arrows (for history handling)
+ImGuiInputTextFlags_CallbackAlways = 524288      # 1 << 19 # Callback on each iteration. User code may query cursor position, modify text buffer.
+ImGuiInputTextFlags_CallbackCharFilter = 1048576 # 1 << 20 # Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
+ImGuiInputTextFlags_CallbackResize = 2097152     # 1 << 21 # Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
+ImGuiInputTextFlags_CallbackEdit = 4194304       # 1 << 22 # Callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)
 
 # ImGuiKey
 # A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value): can represent Keyboard, Mouse and Gamepad values.
@@ -520,8 +541,7 @@ ImGuiMod_Ctrl = 4096               # 1 << 12 # Ctrl
 ImGuiMod_Shift = 8192              # 1 << 13 # Shift
 ImGuiMod_Alt = 16384               # 1 << 14 # Option/Menu
 ImGuiMod_Super = 32768             # 1 << 15 # Cmd/Super/Windows
-ImGuiMod_Shortcut = 2048           # 1 << 11 # Alias for Ctrl (non-macOS) _or_ Super (macOS).
-ImGuiMod_Mask_ = 63488             # 0xF800 # 5-bits
+ImGuiMod_Mask_ = 61440             # 0xF000 # 5-bits
 ImGuiKey_NamedKey_BEGIN = 512      # 512
 ImGuiKey_NamedKey_END = 666        # ImGuiKey_COUNT
 ImGuiKey_NamedKey_COUNT = 154      # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
@@ -601,13 +621,13 @@ ImGuiSliderFlags_AlwaysClamp = 16          # 1 << 4 # Clamp value to min/max bou
 ImGuiSliderFlags_Logarithmic = 32          # 1 << 5 # Make the widget logarithmic (linear otherwise). Consider using ImGuiSliderFlags_NoRoundToFormat with this if using a format-string with small amount of digits.
 ImGuiSliderFlags_NoRoundToFormat = 64      # 1 << 6 # Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits)
 ImGuiSliderFlags_NoInput = 128             # 1 << 7 # Disable CTRL+Click or Enter key allowing to input text directly into the widget
+ImGuiSliderFlags_WrapAround = 256          # 1 << 8
 ImGuiSliderFlags_InvalidMask_ = 1879048207 # 0x7000000F # [Internal] We treat using those bits as being potentially a 'float power' argument from the previous API that has got miscast to this enum, and will trigger an assert if needed.
 
-# ImGuiSortDirection_
-# A sorting direction
+# ImGuiSortDirection
 ImGuiSortDirection_None = 0       # 0
-ImGuiSortDirection_Ascending = 1  # 1 # Ascending = 0->9, A->Z etc.
-ImGuiSortDirection_Descending = 2 # 2 # Descending = 9->0, Z->A etc.
+ImGuiSortDirection_Ascending = 1  # 1
+ImGuiSortDirection_Descending = 2 # 2
 
 # ImGuiStyleVar_
 # Enumeration for PushStyleVar() / PopStyleVar() to temporarily modify the ImGuiStyle structure.
@@ -618,38 +638,39 @@ ImGuiSortDirection_Descending = 2 # 2 # Descending = 9->0, Z->A etc.
 #   - In Visual Studio w/ Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols inside comments.
 #   - In VS Code, CLion, etc.: CTRL+click can follow symbols inside comments.
 # - When changing this enum, you need to update the associated internal table GStyleVarInfo[] accordingly. This is where we link enum values to members offset/type.
-ImGuiStyleVar_Alpha = 0                    # 0 # float     Alpha
-ImGuiStyleVar_DisabledAlpha = 1            # 1 # float     DisabledAlpha
-ImGuiStyleVar_WindowPadding = 2            # 2 # ImVec2    WindowPadding
-ImGuiStyleVar_WindowRounding = 3           # 3 # float     WindowRounding
-ImGuiStyleVar_WindowBorderSize = 4         # 4 # float     WindowBorderSize
-ImGuiStyleVar_WindowMinSize = 5            # 5 # ImVec2    WindowMinSize
-ImGuiStyleVar_WindowTitleAlign = 6         # 6 # ImVec2    WindowTitleAlign
-ImGuiStyleVar_ChildRounding = 7            # 7 # float     ChildRounding
-ImGuiStyleVar_ChildBorderSize = 8          # 8 # float     ChildBorderSize
-ImGuiStyleVar_PopupRounding = 9            # 9 # float     PopupRounding
-ImGuiStyleVar_PopupBorderSize = 10         # 10 # float     PopupBorderSize
-ImGuiStyleVar_FramePadding = 11            # 11 # ImVec2    FramePadding
-ImGuiStyleVar_FrameRounding = 12           # 12 # float     FrameRounding
-ImGuiStyleVar_FrameBorderSize = 13         # 13 # float     FrameBorderSize
-ImGuiStyleVar_ItemSpacing = 14             # 14 # ImVec2    ItemSpacing
-ImGuiStyleVar_ItemInnerSpacing = 15        # 15 # ImVec2    ItemInnerSpacing
-ImGuiStyleVar_IndentSpacing = 16           # 16 # float     IndentSpacing
-ImGuiStyleVar_CellPadding = 17             # 17 # ImVec2    CellPadding
-ImGuiStyleVar_ScrollbarSize = 18           # 18 # float     ScrollbarSize
-ImGuiStyleVar_ScrollbarRounding = 19       # 19 # float     ScrollbarRounding
-ImGuiStyleVar_GrabMinSize = 20             # 20 # float     GrabMinSize
-ImGuiStyleVar_GrabRounding = 21            # 21 # float     GrabRounding
-ImGuiStyleVar_TabRounding = 22             # 22 # float     TabRounding
-ImGuiStyleVar_TabBorderSize = 23           # 23 # float     TabBorderSize
-ImGuiStyleVar_TabBarBorderSize = 24        # 24 # float     TabBarBorderSize
-ImGuiStyleVar_TableAngledHeadersAngle = 25 # 25 # float  TableAngledHeadersAngle
-ImGuiStyleVar_ButtonTextAlign = 26         # 26 # ImVec2    ButtonTextAlign
-ImGuiStyleVar_SelectableTextAlign = 27     # 27 # ImVec2    SelectableTextAlign
-ImGuiStyleVar_SeparatorTextBorderSize = 28 # 28 # float  SeparatorTextBorderSize
-ImGuiStyleVar_SeparatorTextAlign = 29      # 29 # ImVec2    SeparatorTextAlign
-ImGuiStyleVar_SeparatorTextPadding = 30    # 30 # ImVec2    SeparatorTextPadding
-ImGuiStyleVar_COUNT = 31                   # 31
+ImGuiStyleVar_Alpha = 0                        # 0 # float     Alpha
+ImGuiStyleVar_DisabledAlpha = 1                # 1 # float     DisabledAlpha
+ImGuiStyleVar_WindowPadding = 2                # 2 # ImVec2    WindowPadding
+ImGuiStyleVar_WindowRounding = 3               # 3 # float     WindowRounding
+ImGuiStyleVar_WindowBorderSize = 4             # 4 # float     WindowBorderSize
+ImGuiStyleVar_WindowMinSize = 5                # 5 # ImVec2    WindowMinSize
+ImGuiStyleVar_WindowTitleAlign = 6             # 6 # ImVec2    WindowTitleAlign
+ImGuiStyleVar_ChildRounding = 7                # 7 # float     ChildRounding
+ImGuiStyleVar_ChildBorderSize = 8              # 8 # float     ChildBorderSize
+ImGuiStyleVar_PopupRounding = 9                # 9 # float     PopupRounding
+ImGuiStyleVar_PopupBorderSize = 10             # 10 # float     PopupBorderSize
+ImGuiStyleVar_FramePadding = 11                # 11 # ImVec2    FramePadding
+ImGuiStyleVar_FrameRounding = 12               # 12 # float     FrameRounding
+ImGuiStyleVar_FrameBorderSize = 13             # 13 # float     FrameBorderSize
+ImGuiStyleVar_ItemSpacing = 14                 # 14 # ImVec2    ItemSpacing
+ImGuiStyleVar_ItemInnerSpacing = 15            # 15 # ImVec2    ItemInnerSpacing
+ImGuiStyleVar_IndentSpacing = 16               # 16 # float     IndentSpacing
+ImGuiStyleVar_CellPadding = 17                 # 17 # ImVec2    CellPadding
+ImGuiStyleVar_ScrollbarSize = 18               # 18 # float     ScrollbarSize
+ImGuiStyleVar_ScrollbarRounding = 19           # 19 # float     ScrollbarRounding
+ImGuiStyleVar_GrabMinSize = 20                 # 20 # float     GrabMinSize
+ImGuiStyleVar_GrabRounding = 21                # 21 # float     GrabRounding
+ImGuiStyleVar_TabRounding = 22                 # 22 # float     TabRounding
+ImGuiStyleVar_TabBorderSize = 23               # 23 # float     TabBorderSize
+ImGuiStyleVar_TabBarBorderSize = 24            # 24 # float     TabBarBorderSize
+ImGuiStyleVar_TableAngledHeadersAngle = 25     # 25 # float  TableAngledHeadersAngle
+ImGuiStyleVar_TableAngledHeadersTextAlign = 26 # 26
+ImGuiStyleVar_ButtonTextAlign = 27             # 27 # ImVec2    ButtonTextAlign
+ImGuiStyleVar_SelectableTextAlign = 28         # 28 # ImVec2    SelectableTextAlign
+ImGuiStyleVar_SeparatorTextBorderSize = 29     # 29 # float  SeparatorTextBorderSize
+ImGuiStyleVar_SeparatorTextAlign = 30          # 30 # ImVec2    SeparatorTextAlign
+ImGuiStyleVar_SeparatorTextPadding = 31        # 31 # ImVec2    SeparatorTextPadding
+ImGuiStyleVar_COUNT = 32                       # 32
 
 # ImGuiTabBarFlags_
 # Flags for ImGui::BeginTabBar()
@@ -660,10 +681,11 @@ ImGuiTabBarFlags_TabListPopupButton = 4           # 1 << 2 # Disable buttons to 
 ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 8 # 1 << 3 # Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
 ImGuiTabBarFlags_NoTabListScrollingButtons = 16   # 1 << 4 # Disable scrolling buttons (apply when fitting policy is ImGuiTabBarFlags_FittingPolicyScroll)
 ImGuiTabBarFlags_NoTooltip = 32                   # 1 << 5 # Disable tooltips when hovering a tab
-ImGuiTabBarFlags_FittingPolicyResizeDown = 64     # 1 << 6 # Resize tabs when they don't fit
-ImGuiTabBarFlags_FittingPolicyScroll = 128        # 1 << 7 # Add scroll buttons when tabs don't fit
-ImGuiTabBarFlags_FittingPolicyMask_ = 192         # ImGuiTabBarFlags_FittingPolicyResizeDown | ImGuiTabBarFlags_FittingPolicyScroll
-ImGuiTabBarFlags_FittingPolicyDefault_ = 64       # ImGuiTabBarFlags_FittingPolicyResizeDown
+ImGuiTabBarFlags_DrawSelectedOverline = 64        # 1 << 6
+ImGuiTabBarFlags_FittingPolicyResizeDown = 128    # 1 << 7 # Resize tabs when they don't fit
+ImGuiTabBarFlags_FittingPolicyScroll = 256        # 1 << 8 # Add scroll buttons when tabs don't fit
+ImGuiTabBarFlags_FittingPolicyMask_ = 384         # ImGuiTabBarFlags_FittingPolicyResizeDown | ImGuiTabBarFlags_FittingPolicyScroll
+ImGuiTabBarFlags_FittingPolicyDefault_ = 128      # ImGuiTabBarFlags_FittingPolicyResizeDown
 
 # ImGuiTabItemFlags_
 # Flags for ImGui::BeginTabItem()
@@ -806,8 +828,9 @@ ImGuiTreeNodeFlags_Bullet = 512                 # 1 << 9 # Display a bullet inst
 ImGuiTreeNodeFlags_FramePadding = 1024          # 1 << 10 # Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
 ImGuiTreeNodeFlags_SpanAvailWidth = 2048        # 1 << 11 # Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line. In the future we may refactor the hit system to be front-to-back, allowing natural overlaps and then this can become the default.
 ImGuiTreeNodeFlags_SpanFullWidth = 4096         # 1 << 12 # Extend hit box to the left-most and right-most edges (bypass the indented area).
-ImGuiTreeNodeFlags_SpanAllColumns = 8192        # 1 << 13 # Frame will span all columns of its container table (text will still fit in current column)
-ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 16384 # 1 << 14 # (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
+ImGuiTreeNodeFlags_SpanTextWidth = 8192         # 1 << 13
+ImGuiTreeNodeFlags_SpanAllColumns = 16384       # 1 << 14 # Frame will span all columns of its container table (text will still fit in current column)
+ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 32768 # 1 << 15 # (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
 ImGuiTreeNodeFlags_CollapsingHeader = 26        # ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_NoAutoOpenOnLog
 
 # ImGuiViewportFlags_
@@ -815,7 +838,7 @@ ImGuiTreeNodeFlags_CollapsingHeader = 26        # ImGuiTreeNodeFlags_Framed | Im
 ImGuiViewportFlags_None = 0              # 0
 ImGuiViewportFlags_IsPlatformWindow = 1  # 1 << 0 # Represent a Platform Window
 ImGuiViewportFlags_IsPlatformMonitor = 2 # 1 << 1 # Represent a Platform Monitor (unused yet)
-ImGuiViewportFlags_OwnedByApp = 4        # 1 << 2 # Platform Window: Was created/managed by the user application? (rather than our backend)
+ImGuiViewportFlags_OwnedByApp = 4        # 1 << 2 # Platform Window: is created/managed by the application (rather than a dear imgui backend)
 
 # ImGuiWindowFlags_
 # Flags for ImGui::Begin()
@@ -843,7 +866,6 @@ ImGuiWindowFlags_UnsavedDocument = 262144          # 1 << 18 # Display a dot nex
 ImGuiWindowFlags_NoNav = 196608                    # ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
 ImGuiWindowFlags_NoDecoration = 43                 # ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse
 ImGuiWindowFlags_NoInputs = 197120                 # ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
-ImGuiWindowFlags_NavFlattened = 8388608            # 1 << 23 # [BETA] On child window: share focus scope, allow gamepad/keyboard navigation to cross over parent border to this child or between sibling child windows.
 ImGuiWindowFlags_ChildWindow = 16777216            # 1 << 24 # Don't use! For internal use by BeginChild()
 ImGuiWindowFlags_Tooltip = 33554432                # 1 << 25 # Don't use! For internal use by BeginTooltip()
 ImGuiWindowFlags_Popup = 67108864                  # 1 << 26 # Don't use! For internal use by BeginPopup()
@@ -979,15 +1001,15 @@ class ImDrawList < FFI::Struct
     :Flags, :int,
     :_VtxCurrentIdx, :uint,
     :_Data, :pointer,
-    :_OwnerName, :pointer,
     :_VtxWritePtr, ImDrawVert.ptr,
     :_IdxWritePtr, :pointer,
-    :_ClipRectStack, ImVector.by_value,
-    :_TextureIdStack, ImVector.by_value,
     :_Path, ImVector.by_value,
     :_CmdHeader, ImDrawCmdHeader.by_value,
     :_Splitter, ImDrawListSplitter.by_value,
-    :_FringeScale, :float
+    :_ClipRectStack, ImVector.by_value,
+    :_TextureIdStack, ImVector.by_value,
+    :_FringeScale, :float,
+    :_OwnerName, :pointer
   )
 
   def AddBezierCubic(p1, p2, p3, p4, col, thickness, num_segments = 0)
@@ -1453,7 +1475,7 @@ class ImGuiKeyData < FFI::Struct
 end
 
 # - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
-# - With multi-viewport enabled, we extend this concept to have multiple active viewports.
+# - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
 # - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
 # - About Main Area vs Work Area:
 #   - Main Area = entire viewport.
@@ -1467,6 +1489,7 @@ class ImGuiViewport < FFI::Struct
     :Size, ImVec2.by_value,
     :WorkPos, ImVec2.by_value,
     :WorkSize, ImVec2.by_value,
+    :PlatformHandle, :pointer,
     :PlatformHandleRaw, :pointer
   )
 
@@ -1813,7 +1836,9 @@ class ImGuiIO < FFI::Struct
     :GetClipboardTextFn, :pointer,
     :SetClipboardTextFn, :pointer,
     :ClipboardUserData, :pointer,
-    :SetPlatformImeDataFn, :pointer,
+    :PlatformOpenInShellFn, :pointer,
+    :PlatformOpenInShellUserData, :pointer,
+    :PlatformSetImeDataFn, :pointer,
     :PlatformLocaleDecimalPoint, :ushort,
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
@@ -1852,6 +1877,7 @@ class ImGuiIO < FFI::Struct
     :MouseDownOwned, [:bool, 5],
     :MouseDownOwnedUnlessPopupClose, [:bool, 5],
     :MouseWheelRequestAxisSwap, :bool,
+    :MouseCtrlLeftAsRightClick, :bool,
     :MouseDownDuration, [:float, 5],
     :MouseDownDurationPrev, [:float, 5],
     :MouseDragMaxDistanceSqr, [:float, 5],
@@ -1910,6 +1936,10 @@ class ImGuiIO < FFI::Struct
 
   def ClearInputKeys()
     ImGui::ImGuiIO_ClearInputKeys(self)
+  end
+
+  def ClearInputMouse()
+    ImGui::ImGuiIO_ClearInputMouse(self)
   end
 
   def self.create()
@@ -2223,6 +2253,7 @@ class ImGuiStyle < FFI::Struct
     :TabMinWidthForCloseButton, :float,
     :TabBarBorderSize, :float,
     :TableAngledHeadersAngle, :float,
+    :TableAngledHeadersTextAlign, ImVec2.by_value,
     :ColorButtonPosition, :int,
     :ButtonTextAlign, ImVec2.by_value,
     :SelectableTextAlign, ImVec2.by_value,
@@ -2237,7 +2268,7 @@ class ImGuiStyle < FFI::Struct
     :AntiAliasedFill, :bool,
     :CurveTessellationTol, :float,
     :CircleTessellationMaxError, :float,
-    :Colors, [ImVec4.by_value, 53],
+    :Colors, [ImVec4.by_value, 56],
     :HoverStationaryDelay, :float,
     :HoverDelayShort, :float,
     :HoverDelayNormal, :float,
@@ -2265,7 +2296,7 @@ class ImGuiTableColumnSortSpecs < FFI::Struct
     :ColumnUserID, :uint,
     :ColumnIndex, :short,
     :SortOrder, :short,
-    :SortDirection, :int
+    :SortDirection, :uchar
   )
 
   def self.create()
@@ -2651,6 +2682,7 @@ module ImGui
       [:ImGuiIO_AddMouseWheelEvent, [:pointer, :float, :float], :void],
       [:ImGuiIO_ClearEventsQueue, [:pointer], :void],
       [:ImGuiIO_ClearInputKeys, [:pointer], :void],
+      [:ImGuiIO_ClearInputMouse, [:pointer], :void],
       [:ImGuiIO_ImGuiIO, [], :pointer],
       [:ImGuiIO_SetAppAcceptingEvents, [:pointer, :bool], :void],
       [:ImGuiIO_SetKeyEventNativeData, [:pointer, :int, :int, :int, :int], :void],
@@ -2784,6 +2816,7 @@ module ImGui
       [:igCreateContext, [:pointer], :pointer],
       [:igDebugCheckVersionAndDataLayout, [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t], :bool],
       [:igDebugFlashStyleColor, [:int], :void],
+      [:igDebugLog, [:pointer, :varargs], :void],
       [:igDebugStartItemPicker, [], :void],
       [:igDebugTextEncoding, [:pointer], :void],
       [:igDestroyContext, [:pointer], :void],
@@ -3010,6 +3043,7 @@ module ImGui
       [:igSetNextFrameWantCaptureMouse, [:bool], :void],
       [:igSetNextItemAllowOverlap, [], :void],
       [:igSetNextItemOpen, [:bool, :int], :void],
+      [:igSetNextItemShortcut, [:int, :int], :void],
       [:igSetNextItemWidth, [:float], :void],
       [:igSetNextWindowBgAlpha, [:float], :void],
       [:igSetNextWindowCollapsed, [:bool, :int], :void],
@@ -3037,6 +3071,7 @@ module ImGui
       [:igSetWindowPos_Str, [:pointer, ImVec2.by_value, :int], :void],
       [:igSetWindowSize_Vec2, [ImVec2.by_value, :int], :void],
       [:igSetWindowSize_Str, [:pointer, ImVec2.by_value, :int], :void],
+      [:igShortcut, [:int, :int], :bool],
       [:igShowAboutWindow, [:pointer], :void],
       [:igShowDebugLogWindow, [:pointer], :void],
       [:igShowDemoWindow, [:pointer], :void],
@@ -3068,6 +3103,7 @@ module ImGui
       [:igTableGetColumnFlags, [:int], :int],
       [:igTableGetColumnIndex, [], :int],
       [:igTableGetColumnName, [:int], :pointer],
+      [:igTableGetHoveredColumn, [], :int],
       [:igTableGetRowIndex, [], :int],
       [:igTableGetSortSpecs, [], :pointer],
       [:igTableHeader, [:pointer], :void],
@@ -3082,6 +3118,8 @@ module ImGui
       [:igText, [:pointer, :varargs], :void],
       [:igTextColored, [ImVec4.by_value, :pointer, :varargs], :void],
       [:igTextDisabled, [:pointer, :varargs], :void],
+      [:igTextLink, [:pointer], :bool],
+      [:igTextLinkOpenURL, [:pointer, :pointer], :void],
       [:igTextUnformatted, [:pointer, :pointer], :void],
       [:igTextWrapped, [:pointer, :varargs], :void],
       [:igTreeNode_Str, [:pointer], :bool],
@@ -3314,7 +3352,7 @@ module ImGui
     igBeginTabItem(label, p_open, flags)
   end
 
-  # arg: str_id(const char*), column(int), flags(ImGuiTableFlags), outer_size(ImVec2), inner_width(float)
+  # arg: str_id(const char*), columns(int), flags(ImGuiTableFlags), outer_size(ImVec2), inner_width(float)
   # ret: bool
   #
   # Tables
@@ -3338,8 +3376,8 @@ module ImGui
   #        -                   TableNextColumn()      -> Text("Hello 0") -> TableNextColumn()      -> Text("Hello 1")  // OK: TableNextColumn() automatically gets to next row!
   #        - TableNextRow()                           -> Text("Hello 0")                                               // Not OK! Missing TableSetColumnIndex() or TableNextColumn()! Text will not appear!
   # - 5. Call EndTable()
-  def self.BeginTable(str_id, column, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)  # Implied outer_size = ImVec2(0.0f, 0.0f), inner_width = 0.0f
-    igBeginTable(str_id, column, flags, outer_size, inner_width)
+  def self.BeginTable(str_id, columns, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)  # Implied outer_size = ImVec2(0.0f, 0.0f), inner_width = 0.0f
+    igBeginTable(str_id, columns, flags, outer_size, inner_width)
   end
 
   # ret: bool
@@ -3532,6 +3570,12 @@ module ImGui
   # ret: void
   def self.DebugFlashStyleColor(idx)
     igDebugFlashStyleColor(idx)
+  end
+
+  # arg: fmt(const char*), ...(...)
+  # ret: void
+  def self.DebugLog(fmt, *varargs)
+    igDebugLog(fmt, *varargs)
   end
 
   # ret: void
@@ -3739,7 +3783,7 @@ module ImGui
   # ret: pointer
   #
   # Background/Foreground Draw Lists
-  def self.GetBackgroundDrawList()  # get background draw list for the viewport associated to the current window. this draw list will be the first rendering one. Useful to quickly draw shapes/text behind dear imgui contents.
+  def self.GetBackgroundDrawList()  # this draw list will be the first rendered one. Useful to quickly draw shapes/text behind dear imgui contents.
     igGetBackgroundDrawList()
   end
 
@@ -3890,7 +3934,7 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetForegroundDrawList()  # get foreground draw list for the viewport associated to the current window. this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
+  def self.GetForegroundDrawList()  # this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
     igGetForegroundDrawList()
   end
 
@@ -4932,6 +4976,12 @@ module ImGui
     igSetNextItemOpen(is_open, cond)
   end
 
+  # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags)
+  # ret: void
+  def self.SetNextItemShortcut(key_chord, flags = 0)
+    igSetNextItemShortcut(key_chord, flags)
+  end
+
   # arg: item_width(float)
   # ret: void
   def self.SetNextItemWidth(item_width)  # set width of the _next_ common large "item+label" widget. >0.0f: width in pixels, <0.0f align xx pixels to the right of window (so -FLT_MIN always align width to the right side)
@@ -5093,6 +5143,12 @@ module ImGui
   # ret: void
   def self.SetWindowSize_Str(name, size, cond = 0)
     igSetWindowSize_Str(name, size, cond)
+  end
+
+  # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags)
+  # ret: bool
+  def self.Shortcut(key_chord, flags = 0)
+    igShortcut(key_chord, flags)
   end
 
   # arg: p_open(bool*)
@@ -5288,6 +5344,11 @@ module ImGui
   end
 
   # ret: int
+  def self.TableGetHoveredColumn()
+    igTableGetHoveredColumn()
+  end
+
+  # ret: int
   def self.TableGetRowIndex()  # return current row index.
     igTableGetRowIndex()
   end
@@ -5381,6 +5442,18 @@ module ImGui
   # ret: void
   def self.TextDisabled(fmt, *varargs)  # shortcut for PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]); Text(fmt, ...); PopStyleColor();
     igTextDisabled(fmt, *varargs)
+  end
+
+  # arg: label(const char*)
+  # ret: bool
+  def self.TextLink(label)
+    igTextLink(label)
+  end
+
+  # arg: label(const char*), url(const char*)
+  # ret: void
+  def self.TextLinkOpenURL(label, url = nil)
+    igTextLinkOpenURL(label, url)
   end
 
   # arg: text(const char*), text_end(const char*)

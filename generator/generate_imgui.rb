@@ -128,6 +128,7 @@ module Generator
 
   def self.write_typedef(out, typedef)
     return if typedef[1].callback_signature != nil
+    return if typedef[1].type == nil
     out.write("FFI.typedef :#{typedef[1].type}, :#{typedef[0]}\n") # typedef[1].class == ImGuiTypedefMapEntry
   end
 
