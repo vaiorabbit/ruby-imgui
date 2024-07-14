@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2024-04-13
+*   Last modified : 2024-07-14
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -16,7 +16,7 @@
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [x64-mingw-ucrt]
         *   [macOS]
-            *   ruby 3.3.0 (2023-12-25 revision 5124f9ac75) [arm64-darwin23]
+            *   ruby 3.3.3 (2024-06-12 revision f1c7b6f435) [arm64-darwin23]
         *   [Linux]
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [aarch64-linux]
 *   Ruby Gems
@@ -27,7 +27,7 @@
 *   Compiler
     *   Tested on:
         *   [Windows] gcc (Rev7, Built by MSYS2 project) 12.2.0
-        *   [macOS] Apple clang version 14.0.0 (clang-1400.0.29.202), Target: arm64-apple-darwin22.2.0
+        *   [macOS] Apple clang version 15.0.0 (clang-1500.3.9.4)
         *   [Linux] gcc (Debian 10.2.1-6) 10.2.1 20210110
 *   CMake https://cmake.org/download/
 
@@ -42,6 +42,7 @@
             *   ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [x64-mingw32]
             *   ruby 2.7.1p83 (2020-03-31 revision a0c7c23c9c) [x64-mingw32]
         *   [macOS]
+            *   ruby 3.3.0 (2023-12-25 revision 5124f9ac75) [arm64-darwin23]
             *   ruby 3.2.1 (2023-02-08 revision 31819e82c8) [arm64-darwin22]
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [arm64-darwin21]
             *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [arm64-darwin21]
@@ -57,6 +58,7 @@
     *   Tested on:
         *   [Windows] gcc (Rev10, Built by MSYS2 project) 11.2.0
         *   [Windows] gcc (Rev1, Built by MSYS2 project) 8.2.1 20181214
+        *   [macOS] Apple clang version 14.0.0 (clang-1400.0.29.202), Target: arm64-apple-darwin22.2.0
         *   [macOS] clang (Apple clang version 13.1.6 (clang-1316.0.21.2.5), Target: arm64-apple-darwin21.5.0)
         *   [macOS] clang (Apple clang version 12.0.5 (clang-1205.0.22.11), Target: arm64-apple-darwin20.6.0)
 </details>
