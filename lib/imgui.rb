@@ -1602,6 +1602,81 @@ class ImGuiViewport < FFI::Struct
 
 end
 
+# Helper: Key->Value storage
+# Typically you don't have to worry about this since a storage is held within each Window.
+# We use it to e.g. store collapse state for a tree (Int 0/1)
+# This is optimized for efficient lookup (dichotomy into a contiguous buffer) and rare insertion (typically tied to user interactions aka max once a frame)
+# You can use it as custom user storage for temporary values. Declare your own storage if, for example:
+# - You want to manipulate the open/close state of a particular sub-tree in your interface (tree node uses Int 0/1 to store their state).
+# - You want to store custom debug data easily without adding or editing structures in your code (probably not efficient, but convenient)
+# Types are NOT stored, so it is up to you to make sure your Key don't collide with different types.
+class ImGuiStorage < FFI::Struct
+  layout(
+    :Data, ImVector.by_value
+  )
+
+  def BuildSortByKey()
+    ImGui::ImGuiStorage_BuildSortByKey(self)
+  end
+
+  def Clear()
+    ImGui::ImGuiStorage_Clear(self)
+  end
+
+  def GetBool(key, default_val = false)
+    ImGui::ImGuiStorage_GetBool(self, key, default_val)
+  end
+
+  def GetBoolRef(key, default_val = false)
+    ImGui::ImGuiStorage_GetBoolRef(self, key, default_val)
+  end
+
+  def GetFloat(key, default_val = 0.0)
+    ImGui::ImGuiStorage_GetFloat(self, key, default_val)
+  end
+
+  def GetFloatRef(key, default_val = 0.0)
+    ImGui::ImGuiStorage_GetFloatRef(self, key, default_val)
+  end
+
+  def GetInt(key, default_val = 0)
+    ImGui::ImGuiStorage_GetInt(self, key, default_val)
+  end
+
+  def GetIntRef(key, default_val = 0)
+    ImGui::ImGuiStorage_GetIntRef(self, key, default_val)
+  end
+
+  def GetVoidPtr(key)
+    ImGui::ImGuiStorage_GetVoidPtr(self, key)
+  end
+
+  def GetVoidPtrRef(key, default_val = nil)
+    ImGui::ImGuiStorage_GetVoidPtrRef(self, key, default_val)
+  end
+
+  def SetAllInt(val)
+    ImGui::ImGuiStorage_SetAllInt(self, val)
+  end
+
+  def SetBool(key, val)
+    ImGui::ImGuiStorage_SetBool(self, key, val)
+  end
+
+  def SetFloat(key, val)
+    ImGui::ImGuiStorage_SetFloat(self, key, val)
+  end
+
+  def SetInt(key, val)
+    ImGui::ImGuiStorage_SetInt(self, key, val)
+  end
+
+  def SetVoidPtr(key, val)
+    ImGui::ImGuiStorage_SetVoidPtr(self, key, val)
+  end
+
+end
+
 # Helper: ImColor() implicitly converts colors to either ImU32 (packed 4x1 byte) or ImVec4 (4x1 float)
 # Prefer using IM_COL32() macros if you want a guaranteed compile-time ImU32 for usage with ImDrawList API.
 # **Avoid storing ImColor! Store either u32 of ImVec4. This is not a full-featured color class. MAY OBSOLETE.
@@ -2349,81 +2424,6 @@ class ImGuiSizeCallbackData < FFI::Struct
     :CurrentSize, ImVec2.by_value,
     :DesiredSize, ImVec2.by_value
   )
-end
-
-# Helper: Key->Value storage
-# Typically you don't have to worry about this since a storage is held within each Window.
-# We use it to e.g. store collapse state for a tree (Int 0/1)
-# This is optimized for efficient lookup (dichotomy into a contiguous buffer) and rare insertion (typically tied to user interactions aka max once a frame)
-# You can use it as custom user storage for temporary values. Declare your own storage if, for example:
-# - You want to manipulate the open/close state of a particular sub-tree in your interface (tree node uses Int 0/1 to store their state).
-# - You want to store custom debug data easily without adding or editing structures in your code (probably not efficient, but convenient)
-# Types are NOT stored, so it is up to you to make sure your Key don't collide with different types.
-class ImGuiStorage < FFI::Struct
-  layout(
-    :Data, ImVector.by_value
-  )
-
-  def BuildSortByKey()
-    ImGui::ImGuiStorage_BuildSortByKey(self)
-  end
-
-  def Clear()
-    ImGui::ImGuiStorage_Clear(self)
-  end
-
-  def GetBool(key, default_val = false)
-    ImGui::ImGuiStorage_GetBool(self, key, default_val)
-  end
-
-  def GetBoolRef(key, default_val = false)
-    ImGui::ImGuiStorage_GetBoolRef(self, key, default_val)
-  end
-
-  def GetFloat(key, default_val = 0.0)
-    ImGui::ImGuiStorage_GetFloat(self, key, default_val)
-  end
-
-  def GetFloatRef(key, default_val = 0.0)
-    ImGui::ImGuiStorage_GetFloatRef(self, key, default_val)
-  end
-
-  def GetInt(key, default_val = 0)
-    ImGui::ImGuiStorage_GetInt(self, key, default_val)
-  end
-
-  def GetIntRef(key, default_val = 0)
-    ImGui::ImGuiStorage_GetIntRef(self, key, default_val)
-  end
-
-  def GetVoidPtr(key)
-    ImGui::ImGuiStorage_GetVoidPtr(self, key)
-  end
-
-  def GetVoidPtrRef(key, default_val = nil)
-    ImGui::ImGuiStorage_GetVoidPtrRef(self, key, default_val)
-  end
-
-  def SetAllInt(val)
-    ImGui::ImGuiStorage_SetAllInt(self, val)
-  end
-
-  def SetBool(key, val)
-    ImGui::ImGuiStorage_SetBool(self, key, val)
-  end
-
-  def SetFloat(key, val)
-    ImGui::ImGuiStorage_SetFloat(self, key, val)
-  end
-
-  def SetInt(key, val)
-    ImGui::ImGuiStorage_SetInt(self, key, val)
-  end
-
-  def SetVoidPtr(key, val)
-    ImGui::ImGuiStorage_SetVoidPtr(self, key, val)
-  end
-
 end
 
 class ImGuiStyle < FFI::Struct
