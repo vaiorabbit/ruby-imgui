@@ -26,13 +26,16 @@ FFI.typedef :int, :ImGuiHoveredFlags
 FFI.typedef :uint, :ImGuiID
 FFI.typedef :int, :ImGuiInputFlags
 FFI.typedef :int, :ImGuiInputTextFlags
+FFI.typedef :int, :ImGuiItemFlags
 FFI.typedef :int, :ImGuiKeyChord
 FFI.typedef :pointer, :ImGuiMemAllocFunc
 FFI.typedef :pointer, :ImGuiMemFreeFunc
 FFI.typedef :int, :ImGuiMouseButton
 FFI.typedef :int, :ImGuiMouseCursor
+FFI.typedef :int, :ImGuiMultiSelectFlags
 FFI.typedef :int, :ImGuiPopupFlags
 FFI.typedef :int, :ImGuiSelectableFlags
+FFI.typedef :int64, :ImGuiSelectionUserData
 FFI.typedef :int, :ImGuiSliderFlags
 FFI.typedef :int, :ImGuiStyleVar
 FFI.typedef :int, :ImGuiTabBarFlags
@@ -60,6 +63,46 @@ FFI.typedef :int, :ImGuiDir
 FFI.typedef :int, :ImGuiKey
 FFI.typedef :int, :ImGuiMouseSource
 FFI.typedef :uchar, :ImGuiSortDirection
+
+FFI.typedef :int32, :ImDrawFlags_
+FFI.typedef :int32, :ImDrawListFlags_
+FFI.typedef :int32, :ImFontAtlasFlags_
+FFI.typedef :int32, :ImGuiBackendFlags_
+FFI.typedef :int32, :ImGuiButtonFlags_
+FFI.typedef :int32, :ImGuiChildFlags_
+FFI.typedef :int32, :ImGuiCol_
+FFI.typedef :int32, :ImGuiColorEditFlags_
+FFI.typedef :int32, :ImGuiComboFlags_
+FFI.typedef :int32, :ImGuiCond_
+FFI.typedef :int32, :ImGuiConfigFlags_
+FFI.typedef :int32, :ImGuiDataType_
+FFI.typedef :int32, :ImGuiDir
+FFI.typedef :int32, :ImGuiDragDropFlags_
+FFI.typedef :int32, :ImGuiFocusedFlags_
+FFI.typedef :int32, :ImGuiHoveredFlags_
+FFI.typedef :int32, :ImGuiInputFlags_
+FFI.typedef :int32, :ImGuiInputTextFlags_
+FFI.typedef :int32, :ImGuiItemFlags_
+FFI.typedef :int32, :ImGuiKey
+FFI.typedef :int32, :ImGuiMouseButton_
+FFI.typedef :int32, :ImGuiMouseCursor_
+FFI.typedef :int32, :ImGuiMouseSource
+FFI.typedef :int32, :ImGuiMultiSelectFlags_
+FFI.typedef :int32, :ImGuiPopupFlags_
+FFI.typedef :int32, :ImGuiSelectableFlags_
+FFI.typedef :int32, :ImGuiSelectionRequestType
+FFI.typedef :int32, :ImGuiSliderFlags_
+FFI.typedef :int32, :ImGuiSortDirection
+FFI.typedef :int32, :ImGuiStyleVar_
+FFI.typedef :int32, :ImGuiTabBarFlags_
+FFI.typedef :int32, :ImGuiTabItemFlags_
+FFI.typedef :int32, :ImGuiTableBgTarget_
+FFI.typedef :int32, :ImGuiTableColumnFlags_
+FFI.typedef :int32, :ImGuiTableFlags_
+FFI.typedef :int32, :ImGuiTableRowFlags_
+FFI.typedef :int32, :ImGuiTreeNodeFlags_
+FFI.typedef :int32, :ImGuiViewportFlags_
+FFI.typedef :int32, :ImGuiWindowFlags_
 
 # ImDrawFlags_
 # Flags for ImDrawList functions
@@ -109,7 +152,7 @@ ImGuiButtonFlags_None = 0              # 0
 ImGuiButtonFlags_MouseButtonLeft = 1   # 1 << 0 # React on left mouse button (default)
 ImGuiButtonFlags_MouseButtonRight = 2  # 1 << 1 # React on right mouse button
 ImGuiButtonFlags_MouseButtonMiddle = 4 # 1 << 2 # React on center mouse button
-ImGuiButtonFlags_MouseButtonMask_ = 7  # ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle
+ImGuiButtonFlags_MouseButtonMask_ = 7  # ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle # [Internal]
 
 # ImGuiChildFlags_
 # Flags for ImGui::BeginChild()
@@ -130,7 +173,7 @@ ImGuiChildFlags_AutoResizeX = 16           # 1 << 4 # Enable auto-resizing width
 ImGuiChildFlags_AutoResizeY = 32           # 1 << 5 # Enable auto-resizing height. Read "IMPORTANT: Size measurement" details above.
 ImGuiChildFlags_AlwaysAutoResize = 64      # 1 << 6 # Combined with AutoResizeX/AutoResizeY. Always measure size even when child is hidden, always return true, always disable clipping optimization! NOT RECOMMENDED.
 ImGuiChildFlags_FrameStyle = 128           # 1 << 7 # Style the child window like a framed item: use FrameBg, FrameRounding, FrameBorderSize, FramePadding instead of ChildBg, ChildRounding, ChildBorderSize, WindowPadding.
-ImGuiChildFlags_NavFlattened = 256         # 1 << 8
+ImGuiChildFlags_NavFlattened = 256         # 1 << 8 # [BETA] Share focus scope, allow gamepad/keyboard navigation to cross over parent border to this child or between sibling child windows.
 
 # ImGuiCol_
 # Enumeration for PushStyleColor() / PopStyleColor()
@@ -167,13 +210,13 @@ ImGuiCol_SeparatorActive = 29           # 29
 ImGuiCol_ResizeGrip = 30                # 30 # Resize grip in lower-right and lower-left corners of windows.
 ImGuiCol_ResizeGripHovered = 31         # 31
 ImGuiCol_ResizeGripActive = 32          # 32
-ImGuiCol_TabHovered = 33                # 33
-ImGuiCol_Tab = 34                       # 34 # TabItem in a TabBar
-ImGuiCol_TabSelected = 35               # 35
-ImGuiCol_TabSelectedOverline = 36       # 36
-ImGuiCol_TabDimmed = 37                 # 37
-ImGuiCol_TabDimmedSelected = 38         # 38
-ImGuiCol_TabDimmedSelectedOverline = 39 # 39
+ImGuiCol_TabHovered = 33                # 33 # Tab background, when hovered
+ImGuiCol_Tab = 34                       # 34 # Tab background, when tab-bar is focused & tab is unselected
+ImGuiCol_TabSelected = 35               # 35 # Tab background, when tab-bar is focused & tab is selected
+ImGuiCol_TabSelectedOverline = 36       # 36 # Tab horizontal overline, when tab-bar is focused & tab is selected
+ImGuiCol_TabDimmed = 37                 # 37 # Tab background, when tab-bar is unfocused & tab is unselected
+ImGuiCol_TabDimmedSelected = 38         # 38 # Tab background, when tab-bar is unfocused & tab is selected
+ImGuiCol_TabDimmedSelectedOverline = 39 # 39 #..horizontal overline, when tab-bar is unfocused & tab is selected
 ImGuiCol_PlotLines = 40                 # 40
 ImGuiCol_PlotLinesHovered = 41          # 41
 ImGuiCol_PlotHistogram = 42             # 42
@@ -183,7 +226,7 @@ ImGuiCol_TableBorderStrong = 45         # 45 # Table outer and header borders (p
 ImGuiCol_TableBorderLight = 46          # 46 # Table inner borders (prefer using Alpha=1.0 here)
 ImGuiCol_TableRowBg = 47                # 47 # Table row background (even rows)
 ImGuiCol_TableRowBgAlt = 48             # 48 # Table row background (odd rows)
-ImGuiCol_TextLink = 49                  # 49
+ImGuiCol_TextLink = 49                  # 49 # Hyperlink color
 ImGuiCol_TextSelectedBg = 50            # 50
 ImGuiCol_DragDropTarget = 51            # 51 # Rectangle highlighting a drop target
 ImGuiCol_NavHighlight = 52              # 52 # Gamepad/keyboard: current highlighted item
@@ -254,9 +297,9 @@ ImGuiConfigFlags_NavEnableKeyboard = 1    # 1 << 0 # Master keyboard navigation 
 ImGuiConfigFlags_NavEnableGamepad = 2     # 1 << 1 # Master gamepad navigation enable flag. Backend also needs to set ImGuiBackendFlags_HasGamepad.
 ImGuiConfigFlags_NavEnableSetMousePos = 4 # 1 << 2 # Instruct navigation to move the mouse cursor. May be useful on TV/console systems where moving a virtual mouse is awkward. Will update io.MousePos and set io.WantSetMousePos=true. If enabled you MUST honor io.WantSetMousePos requests in your backend, otherwise ImGui will react as if the mouse is jumping around back and forth.
 ImGuiConfigFlags_NavNoCaptureKeyboard = 8 # 1 << 3 # Instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive is set.
-ImGuiConfigFlags_NoMouse = 16             # 1 << 4 # Instruct imgui to clear mouse position/buttons in NewFrame(). This allows ignoring the mouse information set by the backend.
+ImGuiConfigFlags_NoMouse = 16             # 1 << 4 # Instruct dear imgui to disable mouse inputs and interactions.
 ImGuiConfigFlags_NoMouseCursorChange = 32 # 1 << 5 # Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
-ImGuiConfigFlags_NoKeyboard = 64          # 1 << 6
+ImGuiConfigFlags_NoKeyboard = 64          # 1 << 6 # Instruct dear imgui to disable keyboard inputs and interactions. This is done by ignoring keyboard events and clearing existing states.
 ImGuiConfigFlags_IsSRGB = 1048576         # 1 << 20 # Application is SRGB-aware.
 ImGuiConfigFlags_IsTouchScreen = 2097152  # 1 << 21 # Application is using a touch screen instead of a mouse.
 
@@ -272,9 +315,11 @@ ImGuiDataType_S64 = 6    # 6 # long long / __int64
 ImGuiDataType_U64 = 7    # 7 # unsigned long long / unsigned __int64
 ImGuiDataType_Float = 8  # 8 # float
 ImGuiDataType_Double = 9 # 9 # double
-ImGuiDataType_COUNT = 10 # 10
+ImGuiDataType_Bool = 10  # 10 # bool (provided for user convenience, not supported by scalar widgets)
+ImGuiDataType_COUNT = 11 # 11
 
 # ImGuiDir
+# A cardinal direction
 ImGuiDir_None = -1 # -1
 ImGuiDir_Left = 0  # 0
 ImGuiDir_Right = 1 # 1
@@ -290,9 +335,9 @@ ImGuiDragDropFlags_SourceNoDisableHover = 2       # 1 << 1 # By default, when dr
 ImGuiDragDropFlags_SourceNoHoldToOpenOthers = 4   # 1 << 2 # Disable the behavior that allows to open tree nodes and collapsing header by holding over them while dragging a source item.
 ImGuiDragDropFlags_SourceAllowNullID = 8          # 1 << 3 # Allow items such as Text(), Image() that have no unique identifier to be used as drag source, by manufacturing a temporary identifier based on their window-relative position. This is extremely unusual within the dear imgui ecosystem and so we made it explicit.
 ImGuiDragDropFlags_SourceExtern = 16              # 1 << 4 # External source (from outside of dear imgui), won't attempt to read current item/window info. Will always return true. Only one Extern source can be active simultaneously.
-ImGuiDragDropFlags_PayloadAutoExpire = 32         # 1 << 5
-ImGuiDragDropFlags_PayloadNoCrossContext = 64     # 1 << 6
-ImGuiDragDropFlags_PayloadNoCrossProcess = 128    # 1 << 7
+ImGuiDragDropFlags_PayloadAutoExpire = 32         # 1 << 5 # Automatically expire the payload if the source cease to be submitted (otherwise payloads are persisting while being dragged)
+ImGuiDragDropFlags_PayloadNoCrossContext = 64     # 1 << 6 # Hint to specify that the payload may not be copied outside current dear imgui context.
+ImGuiDragDropFlags_PayloadNoCrossProcess = 128    # 1 << 7 # Hint to specify that the payload may not be copied outside current process.
 ImGuiDragDropFlags_AcceptBeforeDelivery = 1024    # 1 << 10 # AcceptDragDropPayload() will returns true even before the mouse button is released. You can then call IsDelivery() to test if the payload needs to be delivered.
 ImGuiDragDropFlags_AcceptNoDrawDefaultRect = 2048 # 1 << 11 # Do not draw the default highlight rectangle when hovering over target.
 ImGuiDragDropFlags_AcceptNoPreviewTooltip = 4096  # 1 << 12 # Request hiding the BeginDragDropSource tooltip from the BeginDragDropTarget site.
@@ -333,17 +378,20 @@ ImGuiHoveredFlags_DelayNormal = 65536                # 1 << 16 # IsItemHovered()
 ImGuiHoveredFlags_NoSharedDelay = 131072             # 1 << 17 # IsItemHovered() only: Disable shared delay system where moving from one item to the next keeps the previous timer for a short time (standard for tooltips with long delays)
 
 # ImGuiInputFlags_
+# Flags for Shortcut(), SetNextItemShortcut(),
+# (and for upcoming extended versions of IsKeyPressed(), IsMouseClicked(), Shortcut(), SetKeyOwner(), SetItemKeyOwner() that are still in imgui_internal.h)
+# Don't mistake with ImGuiInputTextFlags! (which is for ImGui::InputText() function)
 ImGuiInputFlags_None = 0                     # 0
-ImGuiInputFlags_Repeat = 1                   # 1 << 0
-ImGuiInputFlags_RouteActive = 1024           # 1 << 10
-ImGuiInputFlags_RouteFocused = 2048          # 1 << 11
-ImGuiInputFlags_RouteGlobal = 4096           # 1 << 12
-ImGuiInputFlags_RouteAlways = 8192           # 1 << 13
-ImGuiInputFlags_RouteOverFocused = 16384     # 1 << 14
-ImGuiInputFlags_RouteOverActive = 32768      # 1 << 15
-ImGuiInputFlags_RouteUnlessBgFocused = 65536 # 1 << 16
-ImGuiInputFlags_RouteFromRootWindow = 131072 # 1 << 17
-ImGuiInputFlags_Tooltip = 262144             # 1 << 18
+ImGuiInputFlags_Repeat = 1                   # 1 << 0 # Enable repeat. Return true on successive repeats. Default for legacy IsKeyPressed(). NOT Default for legacy IsMouseClicked(). MUST BE == 1.
+ImGuiInputFlags_RouteActive = 1024           # 1 << 10 # Route to active item only.
+ImGuiInputFlags_RouteFocused = 2048          # 1 << 11 # Route to windows in the focus stack (DEFAULT). Deep-most focused window takes inputs. Active item takes inputs over deep-most focused window.
+ImGuiInputFlags_RouteGlobal = 4096           # 1 << 12 # Global route (unless a focused window or active item registered the route).
+ImGuiInputFlags_RouteAlways = 8192           # 1 << 13 # Do not register route, poll keys directly.
+ImGuiInputFlags_RouteOverFocused = 16384     # 1 << 14 # Option: global route: higher priority than focused route (unless active item in focused route).
+ImGuiInputFlags_RouteOverActive = 32768      # 1 << 15 # Option: global route: higher priority than active item. Unlikely you need to use that: will interfere with every active items, e.g. CTRL+A registered by InputText will be overridden by this. May not be fully honored as user/internal code is likely to always assume they can access keys when active.
+ImGuiInputFlags_RouteUnlessBgFocused = 65536 # 1 << 16 # Option: global route: will not be applied if underlying background/void is focused (== no Dear ImGui windows are focused). Useful for overlay applications.
+ImGuiInputFlags_RouteFromRootWindow = 131072 # 1 << 17 # Option: route evaluated from the point of view of root window rather than current window.
+ImGuiInputFlags_Tooltip = 262144             # 1 << 18 # Automatically display a tooltip when hovering item [BETA] Unsure of right api (opt-in/opt-out)
 
 # ImGuiInputTextFlags_
 # Flags for ImGui::InputText()
@@ -357,13 +405,13 @@ ImGuiInputTextFlags_CharsNoBlank = 16            # 1 << 4 # Filter out spaces, t
 ImGuiInputTextFlags_AllowTabInput = 32           # 1 << 5 # Pressing TAB input a '\t' character into the text field
 ImGuiInputTextFlags_EnterReturnsTrue = 64        # 1 << 6 # Return 'true' when Enter is pressed (as opposed to every time the value was modified). Consider looking at the IsItemDeactivatedAfterEdit() function.
 ImGuiInputTextFlags_EscapeClearsAll = 128        # 1 << 7 # Escape key clears content if not empty, and deactivate otherwise (contrast to default behavior of Escape to revert)
-ImGuiInputTextFlags_CtrlEnterForNewLine = 256    # 1 << 8 # In multi-line mode, unfocus with Enter, add new line with Ctrl+Enter (default is opposite: unfocus with Ctrl+Enter, add line with Enter).
+ImGuiInputTextFlags_CtrlEnterForNewLine = 256    # 1 << 8 # In multi-line mode, validate with Enter, add new line with Ctrl+Enter (default is opposite: validate with Ctrl+Enter, add line with Enter).
 ImGuiInputTextFlags_ReadOnly = 512               # 1 << 9 # Read-only mode
-ImGuiInputTextFlags_Password = 1024              # 1 << 10 # Password mode, display all characters as '*'
+ImGuiInputTextFlags_Password = 1024              # 1 << 10 # Password mode, display all characters as '*', disable copy
 ImGuiInputTextFlags_AlwaysOverwrite = 2048       # 1 << 11 # Overwrite mode
 ImGuiInputTextFlags_AutoSelectAll = 4096         # 1 << 12 # Select entire text when first taking mouse focus
-ImGuiInputTextFlags_ParseEmptyRefVal = 8192      # 1 << 13
-ImGuiInputTextFlags_DisplayEmptyRefVal = 16384   # 1 << 14
+ImGuiInputTextFlags_ParseEmptyRefVal = 8192      # 1 << 13 # InputFloat(), InputInt(), InputScalar() etc. only: parse empty string as zero value.
+ImGuiInputTextFlags_DisplayEmptyRefVal = 16384   # 1 << 14 # InputFloat(), InputInt(), InputScalar() etc. only: when value is zero, do not display it. Generally used with ImGuiInputTextFlags_ParseEmptyRefVal.
 ImGuiInputTextFlags_NoHorizontalScroll = 32768   # 1 << 15 # Disable following the cursor horizontally
 ImGuiInputTextFlags_NoUndoRedo = 65536           # 1 << 16 # Disable undo/redo. Note that input text owns the text data while active, if you want to provide your own undo/redo stack you need e.g. to call ClearActiveID().
 ImGuiInputTextFlags_CallbackCompletion = 131072  # 1 << 17 # Callback on pressing TAB (for completion handling)
@@ -372,6 +420,16 @@ ImGuiInputTextFlags_CallbackAlways = 524288      # 1 << 19 # Callback on each it
 ImGuiInputTextFlags_CallbackCharFilter = 1048576 # 1 << 20 # Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
 ImGuiInputTextFlags_CallbackResize = 2097152     # 1 << 21 # Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
 ImGuiInputTextFlags_CallbackEdit = 4194304       # 1 << 22 # Callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)
+
+# ImGuiItemFlags_
+# Flags for ImGui::PushItemFlag()
+# (Those are shared by all items)
+ImGuiItemFlags_None = 0              # 0 # (Default)
+ImGuiItemFlags_NoTabStop = 1         # 1 << 0 # false    // Disable keyboard tabbing. This is a "lighter" version of ImGuiItemFlags_NoNav.
+ImGuiItemFlags_NoNav = 2             # 1 << 1 # false    // Disable any form of focusing (keyboard/gamepad directional navigation and SetKeyboardFocusHere() calls).
+ImGuiItemFlags_NoNavDefaultFocus = 4 # 1 << 2 # false    // Disable item being a candidate for default focus (e.g. used by title bar items).
+ImGuiItemFlags_ButtonRepeat = 8      # 1 << 3 # false    // Any button-like behavior will have repeat mode enabled (based on io.KeyRepeatDelay and io.KeyRepeatRate values). Note that you can also call IsItemActive() after any button to tell if it is being held.
+ImGuiItemFlags_AutoClosePopups = 16  # 1 << 4 # true     // MenuItem()/Selectable() automatically close their parent popup window.
 
 # ImGuiKey
 # A key identifier (ImGuiKey_XXX or ImGuiMod_XXX value): can represent Keyboard, Mouse and Gamepad values.
@@ -537,11 +595,11 @@ ImGuiKey_ReservedForModAlt = 664   # 664
 ImGuiKey_ReservedForModSuper = 665 # 665
 ImGuiKey_COUNT = 666               # 666
 ImGuiMod_None = 0                  # 0
-ImGuiMod_Ctrl = 4096               # 1 << 12 # Ctrl
+ImGuiMod_Ctrl = 4096               # 1 << 12 # Ctrl (non-macOS), Cmd (macOS)
 ImGuiMod_Shift = 8192              # 1 << 13 # Shift
 ImGuiMod_Alt = 16384               # 1 << 14 # Option/Menu
-ImGuiMod_Super = 32768             # 1 << 15 # Cmd/Super/Windows
-ImGuiMod_Mask_ = 61440             # 0xF000 # 5-bits
+ImGuiMod_Super = 32768             # 1 << 15 # Windows/Super (non-macOS), Ctrl (macOS)
+ImGuiMod_Mask_ = 61440             # 0xF000 # 4-bits
 ImGuiKey_NamedKey_BEGIN = 512      # 512
 ImGuiKey_NamedKey_END = 666        # ImGuiKey_COUNT
 ImGuiKey_NamedKey_COUNT = 154      # ImGuiKey_NamedKey_END - ImGuiKey_NamedKey_BEGIN
@@ -581,6 +639,26 @@ ImGuiMouseSource_TouchScreen = 1 # 1 # Input is coming from a touch screen (no h
 ImGuiMouseSource_Pen = 2         # 2 # Input is coming from a pressure/magnetic pen (often used in conjunction with high-sampling rates).
 ImGuiMouseSource_COUNT = 3       # 3
 
+# ImGuiMultiSelectFlags_
+# Flags for BeginMultiSelect()
+ImGuiMultiSelectFlags_None = 0                     # 0
+ImGuiMultiSelectFlags_SingleSelect = 1             # 1 << 0 # Disable selecting more than one item. This is available to allow single-selection code to share same code/logic if desired. It essentially disables the main purpose of BeginMultiSelect() tho!
+ImGuiMultiSelectFlags_NoSelectAll = 2              # 1 << 1 # Disable CTRL+A shortcut to select all.
+ImGuiMultiSelectFlags_NoRangeSelect = 4            # 1 << 2 # Disable Shift+selection mouse/keyboard support (useful for unordered 2D selection). With BoxSelect is also ensure contiguous SetRange requests are not combined into one. This allows not handling interpolation in SetRange requests.
+ImGuiMultiSelectFlags_NoAutoSelect = 8             # 1 << 3 # Disable selecting items when navigating (useful for e.g. supporting range-select in a list of checkboxes).
+ImGuiMultiSelectFlags_NoAutoClear = 16             # 1 << 4 # Disable clearing selection when navigating or selecting another one (generally used with ImGuiMultiSelectFlags_NoAutoSelect. useful for e.g. supporting range-select in a list of checkboxes).
+ImGuiMultiSelectFlags_NoAutoClearOnReselect = 32   # 1 << 5 # Disable clearing selection when clicking/selecting an already selected item.
+ImGuiMultiSelectFlags_BoxSelect1d = 64             # 1 << 6 # Enable box-selection with same width and same x pos items (e.g. full row Selectable()). Box-selection works better with little bit of spacing between items hit-box in order to be able to aim at empty space.
+ImGuiMultiSelectFlags_BoxSelect2d = 128            # 1 << 7 # Enable box-selection with varying width or varying x pos items support (e.g. different width labels, or 2D layout/grid). This is slower: alters clipping logic so that e.g. horizontal movements will update selection of normally clipped items.
+ImGuiMultiSelectFlags_BoxSelectNoScroll = 256      # 1 << 8 # Disable scrolling when box-selecting near edges of scope.
+ImGuiMultiSelectFlags_ClearOnEscape = 512          # 1 << 9 # Clear selection when pressing Escape while scope is focused.
+ImGuiMultiSelectFlags_ClearOnClickVoid = 1024      # 1 << 10 # Clear selection when clicking on empty location within scope.
+ImGuiMultiSelectFlags_ScopeWindow = 2048           # 1 << 11 # Scope for _BoxSelect and _ClearOnClickVoid is whole window (Default). Use if BeginMultiSelect() covers a whole window or used a single time in same window.
+ImGuiMultiSelectFlags_ScopeRect = 4096             # 1 << 12 # Scope for _BoxSelect and _ClearOnClickVoid is rectangle encompassing BeginMultiSelect()/EndMultiSelect(). Use if BeginMultiSelect() is called multiple times in same window.
+ImGuiMultiSelectFlags_SelectOnClick = 8192         # 1 << 13 # Apply selection on mouse down when clicking on unselected item. (Default)
+ImGuiMultiSelectFlags_SelectOnClickRelease = 16384 # 1 << 14 # Apply selection on mouse release when clicking an unselected item. Allow dragging an unselected item without altering selection.
+ImGuiMultiSelectFlags_NavWrapX = 65536             # 1 << 16 # [Temporary] Enable navigation wrapping on X axis. Provided as a convenience because we don't have a design for the general Nav API for this yet. When the more general feature be public we may obsolete this flag in favor of new one.
+
 # ImGuiPopupFlags_
 # Flags for OpenPopup*(), BeginPopupContext*(), IsPopupOpen() functions.
 # - To be backward compatible with older API which took an 'int mouse_button = 1' argument instead of 'ImGuiPopupFlags flags',
@@ -605,12 +683,19 @@ ImGuiPopupFlags_AnyPopup = 3072               # ImGuiPopupFlags_AnyPopupId | ImG
 
 # ImGuiSelectableFlags_
 # Flags for ImGui::Selectable()
-ImGuiSelectableFlags_None = 0             # 0
-ImGuiSelectableFlags_DontClosePopups = 1  # 1 << 0 # Clicking this doesn't close parent popup window
-ImGuiSelectableFlags_SpanAllColumns = 2   # 1 << 1 # Frame will span all columns of its container table (text will still fit in current column)
-ImGuiSelectableFlags_AllowDoubleClick = 4 # 1 << 2 # Generate press events on double clicks too
-ImGuiSelectableFlags_Disabled = 8         # 1 << 3 # Cannot be selected, display grayed out text
-ImGuiSelectableFlags_AllowOverlap = 16    # 1 << 4 # (WIP) Hit testing to allow subsequent widgets to overlap this one
+ImGuiSelectableFlags_None = 0              # 0
+ImGuiSelectableFlags_NoAutoClosePopups = 1 # 1 << 0 # Clicking this doesn't close parent popup window (overrides ImGuiItemFlags_AutoClosePopups)
+ImGuiSelectableFlags_SpanAllColumns = 2    # 1 << 1 # Frame will span all columns of its container table (text will still fit in current column)
+ImGuiSelectableFlags_AllowDoubleClick = 4  # 1 << 2 # Generate press events on double clicks too
+ImGuiSelectableFlags_Disabled = 8          # 1 << 3 # Cannot be selected, display grayed out text
+ImGuiSelectableFlags_AllowOverlap = 16     # 1 << 4 # (WIP) Hit testing to allow subsequent widgets to overlap this one
+ImGuiSelectableFlags_Highlight = 32        # 1 << 5 # Make the item be displayed as if it is hovered
+
+# ImGuiSelectionRequestType
+# Selection request type
+ImGuiSelectionRequestType_None = 0     # 0
+ImGuiSelectionRequestType_SetAll = 1   # 1 # Request app to clear selection (if Selected==false) or select all items (if Selected==true). We cannot set RangeFirstItem/RangeLastItem as its contents is entirely up to user (not necessarily an index)
+ImGuiSelectionRequestType_SetRange = 2 # 2 # Request app to select/unselect [RangeFirstItem..RangeLastItem] items (inclusive) based on value of Selected. Only EndMultiSelect() request this, app code can read after BeginMultiSelect() and it will always be false.
 
 # ImGuiSliderFlags_
 # Flags for DragFloat(), DragInt(), SliderFloat(), SliderInt() etc.
@@ -619,15 +704,16 @@ ImGuiSelectableFlags_AllowOverlap = 16    # 1 << 4 # (WIP) Hit testing to allow 
 ImGuiSliderFlags_None = 0                  # 0
 ImGuiSliderFlags_AlwaysClamp = 16          # 1 << 4 # Clamp value to min/max bounds when input manually with CTRL+Click. By default CTRL+Click allows going out of bounds.
 ImGuiSliderFlags_Logarithmic = 32          # 1 << 5 # Make the widget logarithmic (linear otherwise). Consider using ImGuiSliderFlags_NoRoundToFormat with this if using a format-string with small amount of digits.
-ImGuiSliderFlags_NoRoundToFormat = 64      # 1 << 6 # Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits)
-ImGuiSliderFlags_NoInput = 128             # 1 << 7 # Disable CTRL+Click or Enter key allowing to input text directly into the widget
-ImGuiSliderFlags_WrapAround = 256          # 1 << 8
+ImGuiSliderFlags_NoRoundToFormat = 64      # 1 << 6 # Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits).
+ImGuiSliderFlags_NoInput = 128             # 1 << 7 # Disable CTRL+Click or Enter key allowing to input text directly into the widget.
+ImGuiSliderFlags_WrapAround = 256          # 1 << 8 # Enable wrapping around from max to min and from min to max (only supported by DragXXX() functions for now.
 ImGuiSliderFlags_InvalidMask_ = 1879048207 # 0x7000000F # [Internal] We treat using those bits as being potentially a 'float power' argument from the previous API that has got miscast to this enum, and will trigger an assert if needed.
 
 # ImGuiSortDirection
+# A sorting direction
 ImGuiSortDirection_None = 0       # 0
-ImGuiSortDirection_Ascending = 1  # 1
-ImGuiSortDirection_Descending = 2 # 2
+ImGuiSortDirection_Ascending = 1  # 1 # Ascending = 0->9, A->Z etc.
+ImGuiSortDirection_Descending = 2 # 2 # Descending = 9->0, Z->A etc.
 
 # ImGuiStyleVar_
 # Enumeration for PushStyleVar() / PopStyleVar() to temporarily modify the ImGuiStyle structure.
@@ -663,14 +749,15 @@ ImGuiStyleVar_GrabRounding = 21                # 21 # float     GrabRounding
 ImGuiStyleVar_TabRounding = 22                 # 22 # float     TabRounding
 ImGuiStyleVar_TabBorderSize = 23               # 23 # float     TabBorderSize
 ImGuiStyleVar_TabBarBorderSize = 24            # 24 # float     TabBarBorderSize
-ImGuiStyleVar_TableAngledHeadersAngle = 25     # 25 # float  TableAngledHeadersAngle
-ImGuiStyleVar_TableAngledHeadersTextAlign = 26 # 26
-ImGuiStyleVar_ButtonTextAlign = 27             # 27 # ImVec2    ButtonTextAlign
-ImGuiStyleVar_SelectableTextAlign = 28         # 28 # ImVec2    SelectableTextAlign
-ImGuiStyleVar_SeparatorTextBorderSize = 29     # 29 # float  SeparatorTextBorderSize
-ImGuiStyleVar_SeparatorTextAlign = 30          # 30 # ImVec2    SeparatorTextAlign
-ImGuiStyleVar_SeparatorTextPadding = 31        # 31 # ImVec2    SeparatorTextPadding
-ImGuiStyleVar_COUNT = 32                       # 32
+ImGuiStyleVar_TabBarOverlineSize = 25          # 25 # float     TabBarOverlineSize
+ImGuiStyleVar_TableAngledHeadersAngle = 26     # 26 # float     TableAngledHeadersAngle
+ImGuiStyleVar_TableAngledHeadersTextAlign = 27 # 27 # ImVec2  TableAngledHeadersTextAlign
+ImGuiStyleVar_ButtonTextAlign = 28             # 28 # ImVec2    ButtonTextAlign
+ImGuiStyleVar_SelectableTextAlign = 29         # 29 # ImVec2    SelectableTextAlign
+ImGuiStyleVar_SeparatorTextBorderSize = 30     # 30 # float     SeparatorTextBorderSize
+ImGuiStyleVar_SeparatorTextAlign = 31          # 31 # ImVec2    SeparatorTextAlign
+ImGuiStyleVar_SeparatorTextPadding = 32        # 32 # ImVec2    SeparatorTextPadding
+ImGuiStyleVar_COUNT = 33                       # 33
 
 # ImGuiTabBarFlags_
 # Flags for ImGui::BeginTabBar()
@@ -681,7 +768,7 @@ ImGuiTabBarFlags_TabListPopupButton = 4           # 1 << 2 # Disable buttons to 
 ImGuiTabBarFlags_NoCloseWithMiddleMouseButton = 8 # 1 << 3 # Disable behavior of closing tabs (that are submitted with p_open != NULL) with middle mouse button. You may handle this behavior manually on user's side with if (IsItemHovered() && IsMouseClicked(2)) *p_open = false.
 ImGuiTabBarFlags_NoTabListScrollingButtons = 16   # 1 << 4 # Disable scrolling buttons (apply when fitting policy is ImGuiTabBarFlags_FittingPolicyScroll)
 ImGuiTabBarFlags_NoTooltip = 32                   # 1 << 5 # Disable tooltips when hovering a tab
-ImGuiTabBarFlags_DrawSelectedOverline = 64        # 1 << 6
+ImGuiTabBarFlags_DrawSelectedOverline = 64        # 1 << 6 # Draw selected overline markers over selected tab
 ImGuiTabBarFlags_FittingPolicyResizeDown = 128    # 1 << 7 # Resize tabs when they don't fit
 ImGuiTabBarFlags_FittingPolicyScroll = 256        # 1 << 8 # Add scroll buttons when tabs don't fit
 ImGuiTabBarFlags_FittingPolicyMask_ = 384         # ImGuiTabBarFlags_FittingPolicyResizeDown | ImGuiTabBarFlags_FittingPolicyScroll
@@ -825,10 +912,10 @@ ImGuiTreeNodeFlags_OpenOnDoubleClick = 64       # 1 << 6 # Need double-click to 
 ImGuiTreeNodeFlags_OpenOnArrow = 128            # 1 << 7 # Only open when clicking on the arrow part. If ImGuiTreeNodeFlags_OpenOnDoubleClick is also set, single-click arrow or double-click all box to open.
 ImGuiTreeNodeFlags_Leaf = 256                   # 1 << 8 # No collapsing, no arrow (use as a convenience for leaf nodes).
 ImGuiTreeNodeFlags_Bullet = 512                 # 1 << 9 # Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
-ImGuiTreeNodeFlags_FramePadding = 1024          # 1 << 10 # Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding().
-ImGuiTreeNodeFlags_SpanAvailWidth = 2048        # 1 << 11 # Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line. In the future we may refactor the hit system to be front-to-back, allowing natural overlaps and then this can become the default.
-ImGuiTreeNodeFlags_SpanFullWidth = 4096         # 1 << 12 # Extend hit box to the left-most and right-most edges (bypass the indented area).
-ImGuiTreeNodeFlags_SpanTextWidth = 8192         # 1 << 13
+ImGuiTreeNodeFlags_FramePadding = 1024          # 1 << 10 # Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding() before the node.
+ImGuiTreeNodeFlags_SpanAvailWidth = 2048        # 1 << 11 # Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line without using AllowOverlap mode.
+ImGuiTreeNodeFlags_SpanFullWidth = 4096         # 1 << 12 # Extend hit box to the left-most and right-most edges (cover the indent area).
+ImGuiTreeNodeFlags_SpanTextWidth = 8192         # 1 << 13 # Narrow hit box + narrow hovering highlight, will only cover the label text.
 ImGuiTreeNodeFlags_SpanAllColumns = 16384       # 1 << 14 # Frame will span all columns of its container table (text will still fit in current column)
 ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 32768 # 1 << 15 # (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
 ImGuiTreeNodeFlags_CollapsingHeader = 26        # ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_NoAutoOpenOnLog
@@ -1811,6 +1898,7 @@ class ImGuiIO < FFI::Struct
     :DisplayFramebufferScale, ImVec2.by_value,
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
+    :ConfigNavSwapGamepadButtons, :bool,
     :ConfigInputTrickleEventQueue, :bool,
     :ConfigInputTextCursorBlink, :bool,
     :ConfigInputTextEnterKeepActive, :bool,
@@ -2044,6 +2132,7 @@ class ImGuiListClipper < FFI::Struct
     :ItemsCount, :int,
     :ItemsHeight, :float,
     :StartPosY, :float,
+    :StartSeekOffsetY, :double,
     :TempData, :pointer
   )
 
@@ -2067,6 +2156,10 @@ class ImGuiListClipper < FFI::Struct
     ImGui::ImGuiListClipper_IncludeItemsByIndex(self, item_begin, item_end)
   end
 
+  def SeekCursorForItem(item_index)
+    ImGui::ImGuiListClipper_SeekCursorForItem(self, item_index)
+  end
+
   def Step()
     ImGui::ImGuiListClipper_Step(self)
   end
@@ -2075,6 +2168,22 @@ class ImGuiListClipper < FFI::Struct
     ImGui::ImGuiListClipper_destroy(self)
   end
 
+end
+
+# Main IO structure returned by BeginMultiSelect()/EndMultiSelect().
+# This mainly contains a list of selection requests.
+# - Use 'Demo->Tools->Debug Log->Selection' to see requests as they happen.
+# - Some fields are only useful if your list is dynamic and allows deletion (getting post-deletion focus/state right is shown in the demo)
+# - Below: who reads/writes each fields? 'r'=read, 'w'=write, 'ms'=multi-select code, 'app'=application/user code.
+class ImGuiMultiSelectIO < FFI::Struct
+  layout(
+    :Requests, ImVector.by_value,
+    :RangeSrcItem, :int64,
+    :NavIdItem, :int64,
+    :NavIdSelected, :bool,
+    :RangeSrcReset, :bool,
+    :ItemsCount, :int
+  )
 end
 
 # Data payload for Drag and Drop operations: AcceptDragDropPayload(), GetDragDropPayload()
@@ -2116,7 +2225,7 @@ class ImGuiPayload < FFI::Struct
 
 end
 
-# (Optional) Support for IME (Input Method Editor) via the io.SetPlatformImeDataFn() function.
+# (Optional) Support for IME (Input Method Editor) via the io.PlatformSetImeDataFn() function.
 class ImGuiPlatformImeData < FFI::Struct
   layout(
     :WantVisible, :bool,
@@ -2132,6 +2241,103 @@ class ImGuiPlatformImeData < FFI::Struct
     ImGui::ImGuiPlatformImeData_destroy(self)
   end
 
+end
+
+# Optional helper to store multi-selection state + apply multi-selection requests.
+# - Used by our demos and provided as a convenience to easily implement basic multi-selection.
+# - Iterate selection with 'void* it = NULL; ImGuiID id; while (selection.GetNextSelectedItem(&it, &id)) { ... }'
+#   Or you can check 'if (Contains(id)) { ... }' for each possible object if their number is not too high to iterate.
+# - USING THIS IS NOT MANDATORY. This is only a helper and not a required API.
+# To store a multi-selection, in your application you could:
+# - Use this helper as a convenience. We use our simple key->value ImGuiStorage as a std::set<ImGuiID> replacement.
+# - Use your own external storage: e.g. std::set<MyObjectId>, std::vector<MyObjectId>, interval trees, intrusively stored selection etc.
+# In ImGuiSelectionBasicStorage we:
+# - always use indices in the multi-selection API (passed to SetNextItemSelectionUserData(), retrieved in ImGuiMultiSelectIO)
+# - use the AdapterIndexToStorageId() indirection layer to abstract how persistent selection data is derived from an index.
+# - use decently optimized logic to allow queries and insertion of very large selection sets.
+# - do not preserve selection order.
+# Many combinations are possible depending on how you prefer to store your items and how you prefer to store your selection.
+# Large applications are likely to eventually want to get rid of this indirection layer and do their own thing.
+# See https://github.com/ocornut/imgui/wiki/Multi-Select for details and pseudo-code using this helper.
+class ImGuiSelectionBasicStorage < FFI::Struct
+  layout(
+    :Size, :int,
+    :PreserveOrder, :bool,
+    :UserData, :pointer,
+    :AdapterIndexToStorageId, :pointer,
+    :_SelectionOrder, :int,
+    :_Storage, ImGuiStorage.by_value
+  )
+
+  def ApplyRequests(ms_io)
+    ImGui::ImGuiSelectionBasicStorage_ApplyRequests(self, ms_io)
+  end
+
+  def Clear()
+    ImGui::ImGuiSelectionBasicStorage_Clear(self)
+  end
+
+  def Contains(id)
+    ImGui::ImGuiSelectionBasicStorage_Contains(self, id)
+  end
+
+  def GetNextSelectedItem(opaque_it, out_id)
+    ImGui::ImGuiSelectionBasicStorage_GetNextSelectedItem(self, opaque_it, out_id)
+  end
+
+  def GetStorageIdFromIndex(idx)
+    ImGui::ImGuiSelectionBasicStorage_GetStorageIdFromIndex(self, idx)
+  end
+
+  def self.create()
+    return ImGuiSelectionBasicStorage.new(ImGui::ImGuiSelectionBasicStorage_ImGuiSelectionBasicStorage())
+  end
+
+  def SetItemSelected(id, selected)
+    ImGui::ImGuiSelectionBasicStorage_SetItemSelected(self, id, selected)
+  end
+
+  def Swap(r)
+    ImGui::ImGuiSelectionBasicStorage_Swap(self, r)
+  end
+
+  def destroy()
+    ImGui::ImGuiSelectionBasicStorage_destroy(self)
+  end
+
+end
+
+# Optional helper to apply multi-selection requests to existing randomly accessible storage.
+# Convenient if you want to quickly wire multi-select API on e.g. an array of bool or items storing their own selection state.
+class ImGuiSelectionExternalStorage < FFI::Struct
+  layout(
+    :UserData, :pointer,
+    :AdapterSetItemSelected, :pointer
+  )
+
+  def ApplyRequests(ms_io)
+    ImGui::ImGuiSelectionExternalStorage_ApplyRequests(self, ms_io)
+  end
+
+  def self.create()
+    return ImGuiSelectionExternalStorage.new(ImGui::ImGuiSelectionExternalStorage_ImGuiSelectionExternalStorage())
+  end
+
+  def destroy()
+    ImGui::ImGuiSelectionExternalStorage_destroy(self)
+  end
+
+end
+
+# Selection request item
+class ImGuiSelectionRequest < FFI::Struct
+  layout(
+    :Type, :ImGuiSelectionRequestType,
+    :Selected, :bool,
+    :RangeDirection, :char,
+    :RangeFirstItem, :int64,
+    :RangeLastItem, :int64
+  )
 end
 
 # Resizing callback data to apply custom constraint. As enabled by SetNextWindowSizeConstraints(). Callback is called during the next Begin().
@@ -2252,6 +2458,7 @@ class ImGuiStyle < FFI::Struct
     :TabBorderSize, :float,
     :TabMinWidthForCloseButton, :float,
     :TabBarBorderSize, :float,
+    :TabBarOverlineSize, :float,
     :TableAngledHeadersAngle, :float,
     :TableAngledHeadersTextAlign, ImVec2.by_value,
     :ColorButtonPosition, :int,
@@ -2449,6 +2656,7 @@ class ImGuiTextRange < FFI::Struct
 
 end
 
+# [Internal] Key+Value for ImGuiStorage
 class ImGuiStoragePair < FFI::Struct
   layout(
     :key, :uint,
@@ -2699,6 +2907,7 @@ module ImGui
       [:ImGuiListClipper_ImGuiListClipper, [], :pointer],
       [:ImGuiListClipper_IncludeItemByIndex, [:pointer, :int], :void],
       [:ImGuiListClipper_IncludeItemsByIndex, [:pointer, :int, :int], :void],
+      [:ImGuiListClipper_SeekCursorForItem, [:pointer, :int], :void],
       [:ImGuiListClipper_Step, [:pointer], :bool],
       [:ImGuiListClipper_destroy, [:pointer], :void],
       [:ImGuiOnceUponAFrame_ImGuiOnceUponAFrame, [], :pointer],
@@ -2711,6 +2920,18 @@ module ImGui
       [:ImGuiPayload_destroy, [:pointer], :void],
       [:ImGuiPlatformImeData_ImGuiPlatformImeData, [], :pointer],
       [:ImGuiPlatformImeData_destroy, [:pointer], :void],
+      [:ImGuiSelectionBasicStorage_ApplyRequests, [:pointer, :pointer], :void],
+      [:ImGuiSelectionBasicStorage_Clear, [:pointer], :void],
+      [:ImGuiSelectionBasicStorage_Contains, [:pointer, :uint], :bool],
+      [:ImGuiSelectionBasicStorage_GetNextSelectedItem, [:pointer, :pointer, :pointer], :bool],
+      [:ImGuiSelectionBasicStorage_GetStorageIdFromIndex, [:pointer, :int], :uint],
+      [:ImGuiSelectionBasicStorage_ImGuiSelectionBasicStorage, [], :pointer],
+      [:ImGuiSelectionBasicStorage_SetItemSelected, [:pointer, :uint, :bool], :void],
+      [:ImGuiSelectionBasicStorage_Swap, [:pointer, :pointer], :void],
+      [:ImGuiSelectionBasicStorage_destroy, [:pointer], :void],
+      [:ImGuiSelectionExternalStorage_ApplyRequests, [:pointer, :pointer], :void],
+      [:ImGuiSelectionExternalStorage_ImGuiSelectionExternalStorage, [], :pointer],
+      [:ImGuiSelectionExternalStorage_destroy, [:pointer], :void],
       [:ImGuiStoragePair_ImGuiStoragePair_Int, [:uint, :int], :pointer],
       [:ImGuiStoragePair_ImGuiStoragePair_Float, [:uint, :float], :pointer],
       [:ImGuiStoragePair_ImGuiStoragePair_Ptr, [:uint, :pointer], :pointer],
@@ -2780,6 +3001,7 @@ module ImGui
       [:igBeginMainMenuBar, [], :bool],
       [:igBeginMenu, [:pointer, :bool], :bool],
       [:igBeginMenuBar, [], :bool],
+      [:igBeginMultiSelect, [:int, :int, :int], :pointer],
       [:igBeginPopup, [:pointer, :int], :bool],
       [:igBeginPopupContextItem, [:pointer, :int], :bool],
       [:igBeginPopupContextVoid, [:pointer, :int], :bool],
@@ -2845,6 +3067,7 @@ module ImGui
       [:igEndMainMenuBar, [], :void],
       [:igEndMenu, [], :void],
       [:igEndMenuBar, [], :void],
+      [:igEndMultiSelect, [], :pointer],
       [:igEndPopup, [], :void],
       [:igEndTabBar, [], :void],
       [:igEndTabItem, [], :void],
@@ -2861,7 +3084,6 @@ module ImGui
       [:igGetColumnWidth, [:int], :float],
       [:igGetColumnsCount, [], :int],
       [:igGetContentRegionAvail, [:pointer], :void],
-      [:igGetContentRegionMax, [:pointer], :void],
       [:igGetCurrentContext, [], :pointer],
       [:igGetCursorPos, [:pointer], :void],
       [:igGetCursorPosX, [], :float],
@@ -2881,6 +3103,7 @@ module ImGui
       [:igGetID_Str, [:pointer], :uint],
       [:igGetID_StrStr, [:pointer, :pointer], :uint],
       [:igGetID_Ptr, [:pointer], :uint],
+      [:igGetID_Int, [:int], :uint],
       [:igGetIO, [], :pointer],
       [:igGetItemID, [], :uint],
       [:igGetItemRectMax, [:pointer], :void],
@@ -2907,8 +3130,6 @@ module ImGui
       [:igGetTime, [], :double],
       [:igGetTreeNodeToLabelSpacing, [], :float],
       [:igGetVersion, [], :pointer],
-      [:igGetWindowContentRegionMax, [:pointer], :void],
-      [:igGetWindowContentRegionMin, [:pointer], :void],
       [:igGetWindowDrawList, [], :pointer],
       [:igGetWindowHeight, [], :float],
       [:igGetWindowPos, [:pointer], :void],
@@ -2945,6 +3166,7 @@ module ImGui
       [:igIsItemFocused, [], :bool],
       [:igIsItemHovered, [:int], :bool],
       [:igIsItemToggledOpen, [], :bool],
+      [:igIsItemToggledSelection, [], :bool],
       [:igIsItemVisible, [], :bool],
       [:igIsKeyChordPressed, [:int], :bool],
       [:igIsKeyDown, [:int], :bool],
@@ -2989,29 +3211,27 @@ module ImGui
       [:igPlotHistogram_FnFloatPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void],
       [:igPlotLines_FloatPtr, [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int], :void],
       [:igPlotLines_FnFloatPtr, [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value], :void],
-      [:igPopButtonRepeat, [], :void],
       [:igPopClipRect, [], :void],
       [:igPopFont, [], :void],
       [:igPopID, [], :void],
+      [:igPopItemFlag, [], :void],
       [:igPopItemWidth, [], :void],
       [:igPopStyleColor, [:int], :void],
       [:igPopStyleVar, [:int], :void],
-      [:igPopTabStop, [], :void],
       [:igPopTextWrapPos, [], :void],
       [:igProgressBar, [:float, ImVec2.by_value, :pointer], :void],
-      [:igPushButtonRepeat, [:bool], :void],
       [:igPushClipRect, [ImVec2.by_value, ImVec2.by_value, :bool], :void],
       [:igPushFont, [:pointer], :void],
       [:igPushID_Str, [:pointer], :void],
       [:igPushID_StrStr, [:pointer, :pointer], :void],
       [:igPushID_Ptr, [:pointer], :void],
       [:igPushID_Int, [:int], :void],
+      [:igPushItemFlag, [:int, :bool], :void],
       [:igPushItemWidth, [:float], :void],
       [:igPushStyleColor_U32, [:int, :uint], :void],
       [:igPushStyleColor_Vec4, [:int, ImVec4.by_value], :void],
       [:igPushStyleVar_Float, [:int, :float], :void],
       [:igPushStyleVar_Vec2, [:int, ImVec2.by_value], :void],
-      [:igPushTabStop, [:bool], :void],
       [:igPushTextWrapPos, [:float], :void],
       [:igRadioButton_Bool, [:pointer, :bool], :bool],
       [:igRadioButton_IntPtr, [:pointer, :pointer, :int], :bool],
@@ -3036,6 +3256,7 @@ module ImGui
       [:igSetCursorScreenPos, [ImVec2.by_value], :void],
       [:igSetDragDropPayload, [:pointer, :pointer, :size_t, :int], :bool],
       [:igSetItemDefaultFocus, [], :void],
+      [:igSetItemKeyOwner, [:int], :void],
       [:igSetItemTooltip, [:pointer, :varargs], :void],
       [:igSetKeyboardFocusHere, [:int], :void],
       [:igSetMouseCursor, [:int], :void],
@@ -3043,7 +3264,9 @@ module ImGui
       [:igSetNextFrameWantCaptureMouse, [:bool], :void],
       [:igSetNextItemAllowOverlap, [], :void],
       [:igSetNextItemOpen, [:bool, :int], :void],
+      [:igSetNextItemSelectionUserData, [:int64], :void],
       [:igSetNextItemShortcut, [:int, :int], :void],
+      [:igSetNextItemStorageID, [:uint], :void],
       [:igSetNextItemWidth, [:float], :void],
       [:igSetNextWindowBgAlpha, [:float], :void],
       [:igSetNextWindowCollapsed, [:bool, :int], :void],
@@ -3218,6 +3441,7 @@ module ImGui
   # Disabling [BETA API]
   # - Disable all user interactions and dim items visuals (applying style.DisabledAlpha over current colors)
   # - Those can be nested but it cannot be used to enable an already disabled section (a single BeginDisabled(true) in the stack is enough to keep everything disabled)
+  # - Tooltips windows by exception are opted out of disabling.
   # - BeginDisabled(false) essentially does nothing useful but is provided to facilitate use of boolean expressions. If you can avoid calling BeginDisabled(False)/EndDisabled() best to avoid it.
   def self.BeginDisabled(disabled = true)
     igBeginDisabled(disabled)
@@ -3288,6 +3512,20 @@ module ImGui
   # - Not that MenuItem() keyboardshortcuts are displayed as a convenience but _not processed_ by Dear ImGui at the moment.
   def self.BeginMenuBar()  # append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window).
     igBeginMenuBar()
+  end
+
+  # arg: flags(ImGuiMultiSelectFlags), selection_size(int), items_count(int)
+  # ret: pointer
+  #
+  # Multi-selection system for Selectable(), Checkbox(), TreeNode() functions [BETA]
+  # - This enables standard multi-selection/range-selection idioms (CTRL+Mouse/Keyboard, SHIFT+Mouse/Keyboard, etc.) in a way that also allow a clipper to be used.
+  # - ImGuiSelectionUserData is often used to store your item index within the current view (but may store something else).
+  # - Read comments near ImGuiMultiSelectIO for instructions/details and see 'Demo->Widgets->Selection State & Multi-Select' for demo.
+  # - TreeNode() is technically supported but... using this correctly is more complicated. You need some sort of linear/random access to your tree,
+  #   which is suited to advanced trees setups already implementing filters and clipper. We will work simplifying the current demo.
+  # - 'selection_size' and 'items_count' parameters are optional and used by a few features. If they are costly for you to compute, you may avoid them.
+  def self.BeginMultiSelect(flags, selection_size = -1, items_count = -1)  # Implied selection_size = -1, items_count = -1
+    igBeginMultiSelect(flags, selection_size, items_count)
   end
 
   # arg: str_id(const char*), flags(ImGuiWindowFlags)
@@ -3384,7 +3622,8 @@ module ImGui
   #
   # Tooltips
   # - Tooltips are windows following the mouse. They do not take focus away.
-  # - A tooltip window can contain items of any types. SetTooltip() is a shortcut for the 'if (BeginTooltip()) { Text(...); EndTooltip(); }' idiom.
+  # - A tooltip window can contain items of any types.
+  # - SetTooltip() is more or less a shortcut for the 'if (BeginTooltip()) { Text(...); EndTooltip(); }' idiom (with a subtlety that it discard any previously submitted tooltip)
   def self.BeginTooltip()  # begin/append a tooltip window.
     igBeginTooltip()
   end
@@ -3574,7 +3813,7 @@ module ImGui
 
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.DebugLog(fmt, *varargs)
+  def self.DebugLog(fmt, *varargs)  # Call via IMGUI_DEBUG_LOG() for maximum stripping in caller code!
     igDebugLog(fmt, *varargs)
   end
 
@@ -3749,6 +3988,11 @@ module ImGui
     igEndMenuBar()
   end
 
+  # ret: pointer
+  def self.EndMultiSelect()
+    igEndMultiSelect()
+  end
+
   # ret: void
   def self.EndPopup()  # only call EndPopup() if BeginPopupXXX() returns true!
     igEndPopup()
@@ -3836,20 +4080,9 @@ module ImGui
   end
 
   # ret: void
-  #
-  # Content region
-  # - Retrieve available space from a given point. GetContentRegionAvail() is frequently useful.
-  # - Those functions are bound to be redesigned (they are confusing, incomplete and the Min/Max return values are in local window coordinates which increases confusion)
-  def self.GetContentRegionAvail()  # == GetContentRegionMax() - GetCursorPos()
+  def self.GetContentRegionAvail()  # available space from current position. THIS IS YOUR BEST FRIEND.
     pOut = ImVec2.new
     igGetContentRegionAvail(pOut)
-    return pOut
-  end
-
-  # ret: void
-  def self.GetContentRegionMax()  # current content boundaries (typically window boundaries including scrolling, or current column boundaries), in windows coordinates
-    pOut = ImVec2.new
-    igGetContentRegionMax(pOut)
     return pOut
   end
 
@@ -3859,7 +4092,7 @@ module ImGui
   end
 
   # ret: void
-  def self.GetCursorPos()  # [window-local] cursor position in window coordinates (relative to window position)
+  def self.GetCursorPos()  # [window-local] cursor position in window-local coordinates. This is not your best friend.
     pOut = ImVec2.new
     igGetCursorPos(pOut)
     return pOut
@@ -3881,18 +4114,20 @@ module ImGui
   # - By "cursor" we mean the current output position.
   # - The typical widget behavior is to output themselves at the current cursor position, then move the cursor one line down.
   # - You can call SameLine() between widgets to undo the last carriage return and output at the right of the preceding widget.
+  # - YOU CAN DO 99% OF WHAT YOU NEED WITH ONLY GetCursorScreenPos() and GetContentRegionAvail().
   # - Attention! We currently have inconsistencies between window-local and absolute positions we will aim to fix with future API:
   #    - Absolute coordinate:        GetCursorScreenPos(), SetCursorScreenPos(), all ImDrawList:: functions. -> this is the preferred way forward.
-  #    - Window-local coordinates:   SameLine(), GetCursorPos(), SetCursorPos(), GetCursorStartPos(), GetContentRegionMax(), GetWindowContentRegion*(), PushTextWrapPos()
-  # - GetCursorScreenPos() = GetCursorPos() + GetWindowPos(). GetWindowPos() is almost only ever useful to convert from window-local to absolute coordinates.
-  def self.GetCursorScreenPos()  # cursor position in absolute coordinates (prefer using this, also more useful to work with ImDrawList API).
+  #    - Window-local coordinates:   SameLine(offset), GetCursorPos(), SetCursorPos(), GetCursorStartPos(), PushTextWrapPos()
+  #    - Window-local coordinates:   GetContentRegionMax(), GetWindowContentRegionMin(), GetWindowContentRegionMax() --> all obsoleted. YOU DON'T NEED THEM.
+  # - GetCursorScreenPos() = GetCursorPos() + GetWindowPos(). GetWindowPos() is almost only ever useful to convert from window-local to absolute coordinates. Try not to use it.
+  def self.GetCursorScreenPos()  # cursor position, absolute coordinates. THIS IS YOUR BEST FRIEND (prefer using this rather than GetCursorPos(), also more useful to work with ImDrawList API).
     pOut = ImVec2.new
     igGetCursorScreenPos(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetCursorStartPos()  # [window-local] initial cursor position, in window coordinates
+  def self.GetCursorStartPos()  # [window-local] initial cursor position, in window-local coordinates. Call GetCursorScreenPos() after Begin() to get the absolute coordinates version.
     pOut = ImVec2.new
     igGetCursorStartPos(pOut)
     return pOut
@@ -3971,6 +4206,12 @@ module ImGui
     igGetID_Ptr(ptr_id)
   end
 
+  # arg: int_id(int)
+  # ret: uint
+  def self.GetID_Int(int_id)
+    igGetID_Int(int_id)
+  end
+
   # ret: pointer
   #
   # Main
@@ -4039,7 +4280,7 @@ module ImGui
 
   # arg: button(ImGuiMouseButton), lock_threshold(float)
   # ret: void
-  def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)  # return the delta from the initial clicking position while the mouse button is pressed or was just released. This is locked and return 0.0f until the mouse moves past a distance threshold at least once (if lock_threshold < -1.0f, uses io.MouseDraggingThreshold)
+  def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)  # return the delta from the initial clicking position while the mouse button is pressed or was just released. This is locked and return 0.0f until the mouse moves past a distance threshold at least once (uses io.MouseDraggingThreshold if lock_threshold < 0.0f)
     pOut = ImVec2.new
     igGetMouseDragDelta(pOut, button, lock_threshold)
     return pOut
@@ -4130,46 +4371,32 @@ module ImGui
     igGetVersion()
   end
 
-  # ret: void
-  def self.GetWindowContentRegionMax()  # content boundaries max for the full window (roughly (0,0)+Size-Scroll) where Size can be overridden with SetNextWindowContentSize(), in window coordinates
-    pOut = ImVec2.new
-    igGetWindowContentRegionMax(pOut)
-    return pOut
-  end
-
-  # ret: void
-  def self.GetWindowContentRegionMin()  # content boundaries min for the full window (roughly (0,0)-Scroll), in window coordinates
-    pOut = ImVec2.new
-    igGetWindowContentRegionMin(pOut)
-    return pOut
-  end
-
   # ret: pointer
   def self.GetWindowDrawList()  # get draw list associated to the current window, to append your own drawing primitives
     igGetWindowDrawList()
   end
 
   # ret: float
-  def self.GetWindowHeight()  # get current window height (shortcut for GetWindowSize().y)
+  def self.GetWindowHeight()  # get current window height (IT IS UNLIKELY YOU EVER NEED TO USE THIS). Shortcut for GetWindowSize().y.
     igGetWindowHeight()
   end
 
   # ret: void
-  def self.GetWindowPos()  # get current window position in screen space (note: it is unlikely you need to use this. Consider using current layout pos instead, GetCursorScreenPos())
+  def self.GetWindowPos()  # get current window position in screen space (IT IS UNLIKELY YOU EVER NEED TO USE THIS. Consider always using GetCursorScreenPos() and GetContentRegionAvail() instead)
     pOut = ImVec2.new
     igGetWindowPos(pOut)
     return pOut
   end
 
   # ret: void
-  def self.GetWindowSize()  # get current window size (note: it is unlikely you need to use this. Consider using GetCursorScreenPos() and e.g. GetContentRegionAvail() instead)
+  def self.GetWindowSize()  # get current window size (IT IS UNLIKELY YOU EVER NEED TO USE THIS. Consider always using GetCursorScreenPos() and GetContentRegionAvail() instead)
     pOut = ImVec2.new
     igGetWindowSize(pOut)
     return pOut
   end
 
   # ret: float
-  def self.GetWindowWidth()  # get current window width (shortcut for GetWindowSize().x)
+  def self.GetWindowWidth()  # get current window width (IT IS UNLIKELY YOU EVER NEED TO USE THIS). Shortcut for GetWindowSize().x.
     igGetWindowWidth()
   end
 
@@ -4362,6 +4589,11 @@ module ImGui
   end
 
   # ret: bool
+  def self.IsItemToggledSelection()  # Was the last item selection state toggled? Useful if you need the per-item information _before_ reaching EndMultiSelect(). We only returns toggle _event_ in order to handle clipping correctly.
+    igIsItemToggledSelection()
+  end
+
+  # ret: bool
   def self.IsItemVisible()  # is the last item visible? (items may be out of sight because of clipping/scrolling)
     igIsItemVisible()
   end
@@ -4421,7 +4653,7 @@ module ImGui
 
   # arg: button(ImGuiMouseButton), lock_threshold(float)
   # ret: bool
-  def self.IsMouseDragging(button, lock_threshold = -1.0)  # is mouse dragging? (if lock_threshold < -1.0f, uses io.MouseDraggingThreshold)
+  def self.IsMouseDragging(button, lock_threshold = -1.0)  # is mouse dragging? (uses io.MouseDraggingThreshold if lock_threshold < 0.0f)
     igIsMouseDragging(button, lock_threshold)
   end
 
@@ -4645,11 +4877,6 @@ module ImGui
   end
 
   # ret: void
-  def self.PopButtonRepeat()
-    igPopButtonRepeat()
-  end
-
-  # ret: void
   def self.PopClipRect()
     igPopClipRect()
   end
@@ -4662,6 +4889,11 @@ module ImGui
   # ret: void
   def self.PopID()  # pop from the ID stack.
     igPopID()
+  end
+
+  # ret: void
+  def self.PopItemFlag()
+    igPopItemFlag()
   end
 
   # ret: void
@@ -4682,11 +4914,6 @@ module ImGui
   end
 
   # ret: void
-  def self.PopTabStop()
-    igPopTabStop()
-  end
-
-  # ret: void
   def self.PopTextWrapPos()
     igPopTextWrapPos()
   end
@@ -4695,12 +4922,6 @@ module ImGui
   # ret: void
   def self.ProgressBar(fraction, size_arg = ImVec2.create(-FLT_MIN,0), overlay = nil)
     igProgressBar(fraction, size_arg, overlay)
-  end
-
-  # arg: repeat(bool)
-  # ret: void
-  def self.PushButtonRepeat(repeat)  # in 'repeat' mode, Button*() functions return repeated true in a typematic manner (using io.KeyRepeatDelay/io.KeyRepeatRate setting). Note that you can call IsItemActive() after any Button() to tell if the button is held in the current frame.
-    igPushButtonRepeat(repeat)
   end
 
   # arg: clip_rect_min(ImVec2), clip_rect_max(ImVec2), intersect_with_current_clip_rect(bool)
@@ -4744,6 +4965,12 @@ module ImGui
     igPushID_Int(int_id)
   end
 
+  # arg: option(ImGuiItemFlags), enabled(bool)
+  # ret: void
+  def self.PushItemFlag(option, enabled)  # modify specified shared item flag, e.g. PushItemFlag(ImGuiItemFlags_NoTabStop, true)
+    igPushItemFlag(option, enabled)
+  end
+
   # arg: item_width(float)
   # ret: void
   #
@@ -4774,12 +5001,6 @@ module ImGui
   # ret: void
   def self.PushStyleVar_Vec2(idx, val)
     igPushStyleVar_Vec2(idx, val)
-  end
-
-  # arg: tab_stop(bool)
-  # ret: void
-  def self.PushTabStop(tab_stop)  # == tab stop enable. Allow focusing using TAB/Shift-TAB, enabled by default but you can disable it for certain widgets
-    igPushTabStop(tab_stop)
   end
 
   # arg: wrap_local_pos_x(float)
@@ -4915,7 +5136,7 @@ module ImGui
 
   # arg: pos(ImVec2)
   # ret: void
-  def self.SetCursorScreenPos(pos)  # cursor position in absolute coordinates
+  def self.SetCursorScreenPos(pos)  # cursor position, absolute coordinates. THIS IS YOUR BEST FRIEND.
     igSetCursorScreenPos(pos)
   end
 
@@ -4933,9 +5154,22 @@ module ImGui
     igSetItemDefaultFocus()
   end
 
+  # arg: key(ImGuiKey)
+  # ret: void
+  #
+  # Inputs Utilities: Key/Input Ownership [BETA]
+  # - One common use case would be to allow your items to disable standard inputs behaviors such
+  #   as Tab or Alt key handling, Mouse Wheel scrolling, etc.
+  #   e.g. Button(...); SetItemKeyOwner(ImGuiKey_MouseWheelY); to make hovering/activating a button disable wheel for scrolling.
+  # - Reminder ImGuiKey enum include access to mouse buttons and gamepad, so key ownership can apply to them.
+  # - Many related features are still in imgui_internal.h. For instance, most IsKeyXXX()/IsMouseXXX() functions have an owner-id-aware version.
+  def self.SetItemKeyOwner(key)  # Set key owner to last item ID if it is hovered or active. Equivalent to 'if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID());'.
+    igSetItemKeyOwner(key)
+  end
+
   # arg: fmt(const char*), ...(...)
   # ret: void
-  def self.SetItemTooltip(fmt, *varargs)  # set a text-only tooltip if preceeding item was hovered. override any previous call to SetTooltip().
+  def self.SetItemTooltip(fmt, *varargs)  # set a text-only tooltip if preceding item was hovered. override any previous call to SetTooltip().
     igSetItemTooltip(fmt, *varargs)
   end
 
@@ -4976,10 +5210,22 @@ module ImGui
     igSetNextItemOpen(is_open, cond)
   end
 
+  # arg: selection_user_data(ImGuiSelectionUserData)
+  # ret: void
+  def self.SetNextItemSelectionUserData(selection_user_data)
+    igSetNextItemSelectionUserData(selection_user_data)
+  end
+
   # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags)
   # ret: void
   def self.SetNextItemShortcut(key_chord, flags = 0)
     igSetNextItemShortcut(key_chord, flags)
+  end
+
+  # arg: storage_id(ImGuiID)
+  # ret: void
+  def self.SetNextItemStorageID(storage_id)  # set id to use for open/close storage (default to same as item id).
+    igSetNextItemStorageID(storage_id)
   end
 
   # arg: item_width(float)
@@ -5147,6 +5393,22 @@ module ImGui
 
   # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags)
   # ret: bool
+  #
+  # Inputs Utilities: Shortcut Testing & Routing [BETA]
+  # - ImGuiKeyChord = a ImGuiKey + optional ImGuiMod_Alt/ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Super.
+  #       ImGuiKey_C                          // Accepted by functions taking ImGuiKey or ImGuiKeyChord arguments)
+  #       ImGuiMod_Ctrl | ImGuiKey_C          // Accepted by functions taking ImGuiKeyChord arguments)
+  #   only ImGuiMod_XXX values are legal to combine with an ImGuiKey. You CANNOT combine two ImGuiKey values.
+  # - The general idea is that several callers may register interest in a shortcut, and only one owner gets it.
+  #      Parent   -> call Shortcut(Ctrl+S)    // When Parent is focused, Parent gets the shortcut.
+  #        Child1 -> call Shortcut(Ctrl+S)    // When Child1 is focused, Child1 gets the shortcut (Child1 overrides Parent shortcuts)
+  #        Child2 -> no call                  // When Child2 is focused, Parent gets the shortcut.
+  #   The whole system is order independent, so if Child1 makes its calls before Parent, results will be identical.
+  #   This is an important property as it facilitate working with foreign code or larger codebase.
+  # - To understand the difference:
+  #   - IsKeyChordPressed() compares mods and call IsKeyPressed() -> function has no side-effect.
+  #   - Shortcut() submits a route, routes are resolved, if it currently can be routed it calls IsKeyChordPressed() -> function has (desirable) side-effects as it can prevents another call from getting the route.
+  # - Visualize registered routes in 'Metrics/Debugger->Inputs'.
   def self.Shortcut(key_chord, flags = 0)
     igShortcut(key_chord, flags)
   end
@@ -5344,7 +5606,7 @@ module ImGui
   end
 
   # ret: int
-  def self.TableGetHoveredColumn()
+  def self.TableGetHoveredColumn()  # return hovered column. return -1 when table is not hovered. return columns_count if the unused space at the right of visible columns is hovered. Can also use (TableGetColumnFlags() & ImGuiTableColumnFlags_IsHovered) instead.
     igTableGetHoveredColumn()
   end
 
@@ -5446,13 +5708,13 @@ module ImGui
 
   # arg: label(const char*)
   # ret: bool
-  def self.TextLink(label)
+  def self.TextLink(label)  # hyperlink text button, return true when clicked
     igTextLink(label)
   end
 
   # arg: label(const char*), url(const char*)
   # ret: void
-  def self.TextLinkOpenURL(label, url = nil)
+  def self.TextLinkOpenURL(label, url = nil)  # Implied url = NULL
     igTextLinkOpenURL(label, url)
   end
 
@@ -5658,6 +5920,9 @@ module ImGui
     # arg: 0:ptr_id(const void*)
     # ret: uint
     return igGetID_Ptr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    # arg: 0:int_id(int)
+    # ret: uint
+    return igGetID_Int(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] GetID : No matching functions found (#{arg})")
   end
 

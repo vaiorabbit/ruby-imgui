@@ -43,6 +43,17 @@ module ImGuiBindings
     '...' => :varargs,
   }
 
+  ImGuiBasicTytpTOFFITypeMap = {
+    "ImS8" => :char,
+    "ImS16" => :short,
+    "ImS32" => :int32,
+    "ImS64" => :int64,
+    "ImU8" => :uchar,
+    "ImU16" => :ushort,
+    "ImU32" => :uint32,
+    "ImU64" => :uint64,
+  }
+
   @@imGuiToCTypeMap = nil
 
   IgnoredTypedefs = [
@@ -233,6 +244,9 @@ module ImGuiBindings
 
     if @@imGuiToCTypeMap != nil && @@imGuiToCTypeMap.has_key?(type_name)
       return @@imGuiToCTypeMap[type_name].type
+    end
+    if ImGuiBasicTytpTOFFITypeMap.has_key?(type_name)
+      return ImGuiBasicTytpTOFFITypeMap[type_name]
     end
     return CToFFITypeMap[type_name]
   end

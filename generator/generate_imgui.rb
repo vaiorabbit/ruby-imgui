@@ -220,7 +220,9 @@ module Generator
                  "[:#{m.type}, #{m.size}]"
                end
       else
-        args = if m.type.to_s.start_with?('Im') # e.g.) :MouseDelta, ImVec2.by_value,
+        args = if m.type == nil
+                 ":#{m.type_str}" # ImGuiSelectionRequestType
+               elsif m.type.to_s.start_with?('Im') # e.g.) :MouseDelta, ImVec2.by_value,
                  "#{m.type}.by_value"
                elsif m.type_str.start_with?('Im') && (m.type_str.include?('*') || m.type_str.include?('&')) # e.g.) :Fonts, ImFontAtlas.ptr,
                  imgui_struct_or_typedef = m.type_str.gsub(/[*&]+/, '') # omit asterisk, etc. e.g.) ImDrawList** -> ImDrawList
@@ -242,7 +244,9 @@ module Generator
                  #
                  typedefmap_entry = typedefs_map[imgui_struct_or_typedef]
                  handle_as_opaque = ['ImGuiContext'] # Since v1.89.4 : avoid generating ':Ctx, ImGuiContext.ptr' [TODO] remove ImGuiContext when we support imgui_internal
-                 if (typedefmap_entry.type.to_s == typedefmap_entry.name) && !handle_as_opaque.include?(typedefmap_entry.name)
+                 if typedefmap_entry == nil
+                   ":pointer"
+                 elsif (typedefmap_entry.type.to_s == typedefmap_entry.name) && !handle_as_opaque.include?(typedefmap_entry.name)
                    # FFI::Struct -> use .ptr
                    "#{imgui_struct_or_typedef}.ptr"
                  else
@@ -557,7 +561,6 @@ module Generator
                           typedefs_map[type_name][0] # e.g.) ImVec2, ImVec4
                         end
                       else
-                        pp type_name
                         type_name # bool
                       end
           if has_bool
@@ -681,6 +684,12 @@ require 'ffi'
       if typedef[0] != typedef[1].type.to_s
         Generator.write_typedef(out, typedef)
       end
+    end
+    out.newline
+
+    enums_map.each do |enum|
+      typedef = [enum.name, ImGuiTypedefMapEntry.new(name: enum.name, type: :int32)]
+      Generator.write_typedef(out, typedef)
     end
     out.newline
 
