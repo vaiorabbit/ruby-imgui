@@ -156,7 +156,7 @@ ImGuiButtonFlags_MouseButtonMask_ = 7  # ImGuiButtonFlags_MouseButtonLeft | ImGu
 
 # ImGuiChildFlags_
 # Flags for ImGui::BeginChild()
-# (Legacy: bit 0 must always correspond to ImGuiChildFlags_Border to be backward compatible with old API using 'bool border = false'.
+# (Legacy: bit 0 must always correspond to ImGuiChildFlags_Borders to be backward compatible with old API using 'bool border = false'.
 # About using AutoResizeX/AutoResizeY flags:
 # - May be combined with SetNextWindowSizeConstraints() to set a min/max size for each axis (see "Demo->Child->Auto-resize with Constraints").
 # - Size measurement for a given axis is only performed when the child window is within visible boundaries, or is just appearing.
@@ -165,7 +165,7 @@ ImGuiButtonFlags_MouseButtonMask_ = 7  # ImGuiButtonFlags_MouseButtonLeft | ImGu
 #   - You may also use ImGuiChildFlags_AlwaysAutoResize to force an update even when child window is not in view.
 #     HOWEVER PLEASE UNDERSTAND THAT DOING SO WILL PREVENT BeginChild() FROM EVER RETURNING FALSE, disabling benefits of coarse clipping.
 ImGuiChildFlags_None = 0                   # 0
-ImGuiChildFlags_Border = 1                 # 1 << 0 # Show an outer border and enable WindowPadding. (IMPORTANT: this is always == 1 == true for legacy reason)
+ImGuiChildFlags_Borders = 1                # 1 << 0 # Show an outer border and enable WindowPadding. (IMPORTANT: this is always == 1 == true for legacy reason)
 ImGuiChildFlags_AlwaysUseWindowPadding = 2 # 1 << 1 # Pad with style.WindowPadding even if no border are drawn (no padding by default for non-bordered child windows because it makes more sense)
 ImGuiChildFlags_ResizeX = 4                # 1 << 2 # Allow resize from right border (layout direction). Enable .ini saving (unless ImGuiWindowFlags_NoSavedSettings passed to window flags)
 ImGuiChildFlags_ResizeY = 8                # 1 << 3 # Allow resize from bottom border (layout direction). "
@@ -817,7 +817,7 @@ ImGuiTableColumnFlags_NoClip = 256                 # 1 << 8 # Disable clipping f
 ImGuiTableColumnFlags_NoSort = 512                 # 1 << 9 # Disable ability to sort on this field (even if ImGuiTableFlags_Sortable is set on the table).
 ImGuiTableColumnFlags_NoSortAscending = 1024       # 1 << 10 # Disable ability to sort in the ascending direction.
 ImGuiTableColumnFlags_NoSortDescending = 2048      # 1 << 11 # Disable ability to sort in the descending direction.
-ImGuiTableColumnFlags_NoHeaderLabel = 4096         # 1 << 12 # TableHeadersRow() will not submit horizontal label for this column. Convenient for some small columns. Name will still appear in context menu or in angled headers.
+ImGuiTableColumnFlags_NoHeaderLabel = 4096         # 1 << 12 # TableHeadersRow() will submit an empty label for this column. Convenient for some small columns. Name will still appear in context menu or in angled headers. You may append into this cell by calling TableSetColumnIndex() right after the TableHeadersRow() call.
 ImGuiTableColumnFlags_NoHeaderWidth = 8192         # 1 << 13 # Disable header text width contribution to automatic column width.
 ImGuiTableColumnFlags_PreferSortAscending = 16384  # 1 << 14 # Make the initial sort direction Ascending when first sorting on this column (default).
 ImGuiTableColumnFlags_PreferSortDescending = 32768 # 1 << 15 # Make the initial sort direction Descending when first sorting on this column.
@@ -908,8 +908,8 @@ ImGuiTreeNodeFlags_AllowOverlap = 4             # 1 << 2 # Hit testing to allow 
 ImGuiTreeNodeFlags_NoTreePushOnOpen = 8         # 1 << 3 # Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
 ImGuiTreeNodeFlags_NoAutoOpenOnLog = 16         # 1 << 4 # Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
 ImGuiTreeNodeFlags_DefaultOpen = 32             # 1 << 5 # Default node to be open
-ImGuiTreeNodeFlags_OpenOnDoubleClick = 64       # 1 << 6 # Need double-click to open node
-ImGuiTreeNodeFlags_OpenOnArrow = 128            # 1 << 7 # Only open when clicking on the arrow part. If ImGuiTreeNodeFlags_OpenOnDoubleClick is also set, single-click arrow or double-click all box to open.
+ImGuiTreeNodeFlags_OpenOnDoubleClick = 64       # 1 << 6 # Open on double-click instead of simple click (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
+ImGuiTreeNodeFlags_OpenOnArrow = 128            # 1 << 7 # Open when clicking on the arrow part (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
 ImGuiTreeNodeFlags_Leaf = 256                   # 1 << 8 # No collapsing, no arrow (use as a convenience for leaf nodes).
 ImGuiTreeNodeFlags_Bullet = 512                 # 1 << 9 # Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
 ImGuiTreeNodeFlags_FramePadding = 1024          # 1 << 10 # Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding() before the node.
@@ -925,7 +925,7 @@ ImGuiTreeNodeFlags_CollapsingHeader = 26        # ImGuiTreeNodeFlags_Framed | Im
 ImGuiViewportFlags_None = 0              # 0
 ImGuiViewportFlags_IsPlatformWindow = 1  # 1 << 0 # Represent a Platform Window
 ImGuiViewportFlags_IsPlatformMonitor = 2 # 1 << 1 # Represent a Platform Monitor (unused yet)
-ImGuiViewportFlags_OwnedByApp = 4        # 1 << 2 # Platform Window: is created/managed by the application (rather than a dear imgui backend)
+ImGuiViewportFlags_OwnedByApp = 4        # 1 << 2 # Platform Window: Is created/managed by the user application? (rather than our backend)
 
 # ImGuiWindowFlags_
 # Flags for ImGui::Begin()
@@ -1371,6 +1371,10 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList__ResetForNewFrame(self)
   end
 
+  def _SetTextureID(texture_id)
+    ImGui::ImDrawList__SetTextureID(self, texture_id)
+  end
+
   def _TryMergeDrawCmds()
     ImGui::ImDrawList__TryMergeDrawCmds(self)
   end
@@ -1562,7 +1566,7 @@ class ImGuiKeyData < FFI::Struct
 end
 
 # - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
-# - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
+# - With multi-viewport enabled, we extend this concept to have multiple active viewports.
 # - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
 # - About Main Area vs Work Area:
 #   - Main Area = entire viewport.
@@ -1996,13 +2000,6 @@ class ImGuiIO < FFI::Struct
     :BackendPlatformUserData, :pointer,
     :BackendRendererUserData, :pointer,
     :BackendLanguageUserData, :pointer,
-    :GetClipboardTextFn, :pointer,
-    :SetClipboardTextFn, :pointer,
-    :ClipboardUserData, :pointer,
-    :PlatformOpenInShellFn, :pointer,
-    :PlatformOpenInShellUserData, :pointer,
-    :PlatformSetImeDataFn, :pointer,
-    :PlatformLocaleDecimalPoint, :ushort,
     :WantCaptureMouse, :bool,
     :WantCaptureKeyboard, :bool,
     :WantTextInput, :bool,
@@ -2300,7 +2297,7 @@ class ImGuiPayload < FFI::Struct
 
 end
 
-# (Optional) Support for IME (Input Method Editor) via the io.PlatformSetImeDataFn() function.
+# (Optional) Support for IME (Input Method Editor) via the platform_io.Platform_SetImeDataFn() function.
 class ImGuiPlatformImeData < FFI::Struct
   layout(
     :WantVisible, :bool,
@@ -2813,6 +2810,7 @@ module ImGui
       [:ImDrawList__PathArcToN, [:pointer, ImVec2.by_value, :float, :float, :float, :int], :void],
       [:ImDrawList__PopUnusedDrawCmd, [:pointer], :void],
       [:ImDrawList__ResetForNewFrame, [:pointer], :void],
+      [:ImDrawList__SetTextureID, [:pointer, :pointer], :void],
       [:ImDrawList__TryMergeDrawCmds, [:pointer], :void],
       [:ImDrawList_destroy, [:pointer], :void],
       [:ImFontAtlasCustomRect_ImFontAtlasCustomRect, [], :pointer],
@@ -2918,6 +2916,8 @@ module ImGui
       [:ImGuiPayload_IsDelivery, [:pointer], :bool],
       [:ImGuiPayload_IsPreview, [:pointer], :bool],
       [:ImGuiPayload_destroy, [:pointer], :void],
+      [:ImGuiPlatformIO_ImGuiPlatformIO, [], :pointer],
+      [:ImGuiPlatformIO_destroy, [:pointer], :void],
       [:ImGuiPlatformImeData_ImGuiPlatformImeData, [], :pointer],
       [:ImGuiPlatformImeData_destroy, [:pointer], :void],
       [:ImGuiSelectionBasicStorage_ApplyRequests, [:pointer, :pointer], :void],
@@ -3117,6 +3117,7 @@ module ImGui
       [:igGetMouseDragDelta, [:pointer, :int, :float], :void],
       [:igGetMousePos, [:pointer], :void],
       [:igGetMousePosOnOpeningCurrentPopup, [:pointer], :void],
+      [:igGetPlatformIO, [], :pointer],
       [:igGetScrollMaxX, [], :float],
       [:igGetScrollMaxY, [], :float],
       [:igGetScrollX, [], :float],
@@ -3232,6 +3233,8 @@ module ImGui
       [:igPushStyleColor_Vec4, [:int, ImVec4.by_value], :void],
       [:igPushStyleVar_Float, [:int, :float], :void],
       [:igPushStyleVar_Vec2, [:int, ImVec2.by_value], :void],
+      [:igPushStyleVarX, [:int, :float], :void],
+      [:igPushStyleVarY, [:int, :float], :void],
       [:igPushTextWrapPos, [:float], :void],
       [:igRadioButton_Bool, [:pointer, :bool], :bool],
       [:igRadioButton_IntPtr, [:pointer, :pointer, :int], :bool],
@@ -3761,13 +3764,13 @@ module ImGui
     igColorPicker4(label, col, flags, ref_col)
   end
 
-  # arg: count(int), id(const char*), border(bool)
+  # arg: count(int), id(const char*), borders(bool)
   # ret: void
   #
   # Legacy Columns API (prefer using Tables!)
   # - You can also use SameLine(pos_x) to mimic simplified columns.
-  def self.Columns(count = 1, id = nil, border = true)  # Implied count = 1, id = NULL, border = true
-    igColumns(count, id, border)
+  def self.Columns(count = 1, id = nil, borders = true)  # Implied count = 1, id = NULL, borders = true
+    igColumns(count, id, borders)
   end
 
   # arg: label(const char*), current_item(int*), items(const char* const[]), items_count(int), popup_max_height_in_items(int)
@@ -4027,7 +4030,7 @@ module ImGui
   # ret: pointer
   #
   # Background/Foreground Draw Lists
-  def self.GetBackgroundDrawList()  # this draw list will be the first rendered one. Useful to quickly draw shapes/text behind dear imgui contents.
+  def self.GetBackgroundDrawList()  # Implied viewport = NULL
     igGetBackgroundDrawList()
   end
 
@@ -4162,14 +4165,14 @@ module ImGui
   end
 
   # ret: void
-  def self.GetFontTexUvWhitePixel()  # get UV coordinate for a while pixel, useful to draw custom shapes via the ImDrawList API
+  def self.GetFontTexUvWhitePixel()  # get UV coordinate for a white pixel, useful to draw custom shapes via the ImDrawList API
     pOut = ImVec2.new
     igGetFontTexUvWhitePixel(pOut)
     return pOut
   end
 
   # ret: pointer
-  def self.GetForegroundDrawList()  # this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
+  def self.GetForegroundDrawList()  # Implied viewport = NULL
     igGetForegroundDrawList()
   end
 
@@ -4215,7 +4218,7 @@ module ImGui
   # ret: pointer
   #
   # Main
-  def self.GetIO()  # access the IO structure (mouse/keyboard/gamepad inputs, time, various configuration options/flags)
+  def self.GetIO()  # access the ImGuiIO structure (mouse/keyboard/gamepad inputs, time, various configuration options/flags)
     igGetIO()
   end
 
@@ -4298,6 +4301,11 @@ module ImGui
     pOut = ImVec2.new
     igGetMousePosOnOpeningCurrentPopup(pOut)
     return pOut
+  end
+
+  # ret: pointer
+  def self.GetPlatformIO()  # access the ImGuiPlatformIO structure (mostly hooks/functions to connect to platform/renderer and OS Clipboard, IME etc.)
+    igGetPlatformIO()
   end
 
   # ret: float
@@ -5001,6 +5009,18 @@ module ImGui
   # ret: void
   def self.PushStyleVar_Vec2(idx, val)
     igPushStyleVar_Vec2(idx, val)
+  end
+
+  # arg: idx(ImGuiStyleVar), val_x(float)
+  # ret: void
+  def self.PushStyleVarX(idx, val_x)  # modify X component of a style ImVec2 variable. "
+    igPushStyleVarX(idx, val_x)
+  end
+
+  # arg: idx(ImGuiStyleVar), val_y(float)
+  # ret: void
+  def self.PushStyleVarY(idx, val_y)  # modify Y component of a style ImVec2 variable. "
+    igPushStyleVarY(idx, val_y)
   end
 
   # arg: wrap_local_pos_x(float)
@@ -5839,10 +5859,10 @@ module ImGui
   # Child Windows
   # - Use child windows to begin into a self-contained independent scrolling/clipping regions within a host window. Child windows can embed their own child.
   # - Before 1.90 (November 2023), the "ImGuiChildFlags child_flags = 0" parameter was "bool border = false".
-  #   This API is backward compatible with old code, as we guarantee that ImGuiChildFlags_Border == true.
+  #   This API is backward compatible with old code, as we guarantee that ImGuiChildFlags_Borders == true.
   #   Consider updating your old code:
   #      BeginChild("Name", size, false)   -> Begin("Name", size, 0); or Begin("Name", size, ImGuiChildFlags_None);
-  #      BeginChild("Name", size, true)    -> Begin("Name", size, ImGuiChildFlags_Border);
+  #      BeginChild("Name", size, true)    -> Begin("Name", size, ImGuiChildFlags_Borders);
   # - Manual sizing (each axis can use a different setting e.g. ImVec2(0.0f, 400.0f)):
   #     == 0.0f: use remaining parent window size for this axis.
   #      > 0.0f: use specified size for this axis.
@@ -6036,7 +6056,7 @@ module ImGui
     $stderr.puts("[Warning] PushStyleColor : No matching functions found (#{arg})")
   end
 
-  def self.PushStyleVar(*arg)  # modify a style float variable. always use this if you modify the style after NewFrame().
+  def self.PushStyleVar(*arg)  # modify a style float variable. always use this if you modify the style after NewFrame()!
     # arg: 0:idx(ImGuiStyleVar), 1:val(float)
     # ret: void
     return igPushStyleVar_Float(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
