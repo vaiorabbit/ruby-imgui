@@ -1,6 +1,3 @@
-require_relative '../../lib/imgui_impl_sdl2'
-require_relative '../../lib/imgui_impl_sdlrenderer'
-
 def sdl2_bindings_gem_available?
   Gem::Specification.find_by_name('sdl2-bindings')
 rescue Gem::LoadError
@@ -12,9 +9,13 @@ end
 if sdl2_bindings_gem_available?
   # puts("Loading from Gem system path.")
   require 'sdl2'
+  require_relative 'imgui_impl_sdl2'
+  require_relative 'imgui_impl_sdlrenderer'
 else
   # puts("Loaging from local path.")
   require '../../lib/sdl2'
+  require_relative '../../lib/imgui_impl_sdl2'
+  require_relative '../../lib/imgui_impl_sdlrenderer'
 end
 
 case RUBY_PLATFORM

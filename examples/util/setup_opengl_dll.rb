@@ -1,10 +1,6 @@
 require 'opengl'
 require 'glfw'
 
-require_relative '../../lib/imgui_impl_opengl2'
-require_relative '../../lib/imgui_impl_opengl3'
-require_relative '../../lib/imgui_impl_glfw'
-
 module SampleUtil
 
   def self.gl_library_path()
