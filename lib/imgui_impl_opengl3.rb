@@ -173,7 +173,7 @@ module ImGui
             GL.Scissor(clip_rect[:x].to_i, (fb_height - clip_rect[:w]).to_i, (clip_rect[:z] - clip_rect[:x]).to_i, (clip_rect[:w] - clip_rect[:y]).to_i)
 
             #  Bind texture, Draw
-            GL.BindTexture(GL::TEXTURE_2D, pcmd[:TextureId].address)
+            GL.BindTexture(GL::TEXTURE_2D, pcmd.GetTexID())
 
             if @@g_GlVersion >= 3200
               # 2 == ImDrawIdx(:ushort).size

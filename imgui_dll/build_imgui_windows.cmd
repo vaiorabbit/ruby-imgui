@@ -10,7 +10,7 @@
 @echo off
 setlocal enabledelayedexpansion
 set CMAKE_EXE=%1
-if %CMAKE_EXE% == "" (
+if "%CMAKE_EXE%"=="" (
     set CMAKE_EXE="%PROGRAMFILES%\CMake\bin\cmake"
 )
 
@@ -20,7 +20,6 @@ if not exist build (
 )
 cd build
 %CMAKE_EXE% -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Release -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=gcc ../
-:: %CMAKE_EXE% -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Debug -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=gcc ../
-make
+%CMAKE_EXE% --build .
 copy imgui.dll ..\..\lib
 popd

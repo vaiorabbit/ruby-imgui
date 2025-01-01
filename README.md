@@ -3,18 +3,16 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2024-09-21
+*   Last modified : 2025-01-01
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
-
-[Notice] This project is experimental.
 
 ## Prerequisites ##
 
 *   Ruby interpreter
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
-            *   ruby 3.2.0 (2022-12-25 revision a528908271) [x64-mingw-ucrt]
+            *   ruby 3.4.1 (2024-12-25 revision 48d4efcb85) +PRISM [x64-mingw-ucrt]
         *   [macOS]
             *   ruby 3.3.3 (2024-06-12 revision f1c7b6f435) [arm64-darwin23]
         *   [Linux]
@@ -26,7 +24,7 @@
         *   gem install ffi
 *   Compiler
     *   Tested on:
-        *   [Windows] gcc (Rev7, Built by MSYS2 project) 12.2.0
+        *   [Windows] gcc (Rev2, Built by MSYS2 project) 14.2.0
         *   [macOS] Apple clang version 15.0.0 (clang-1500.3.9.4)
         *   [Linux] gcc (Debian 10.2.1-6) 10.2.1 20210110
 *   CMake https://cmake.org/download/
@@ -37,6 +35,7 @@
 *   Ruby interpreter
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
+            *   ruby 3.2.0 (2022-12-25 revision a528908271) [x64-mingw-ucrt]
             *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x64-mingw-ucrt]
             *   ruby 3.0.2p107 (2021-07-07 revision 0db68f0233) [x64-mingw32]
             *   ruby 3.0.0p0 (2020-12-25 revision 95aff21468) [x64-mingw32]
@@ -56,6 +55,7 @@
 
 *   Compiler
     *   Tested on:
+        *   [Windows] gcc (Rev7, Built by MSYS2 project) 12.2.0
         *   [Windows] gcc (Rev10, Built by MSYS2 project) 11.2.0
         *   [Windows] gcc (Rev1, Built by MSYS2 project) 8.2.1 20181214
         *   [macOS] Apple clang version 14.0.0 (clang-1400.0.29.202), Target: arm64-apple-darwin22.2.0
@@ -98,7 +98,7 @@ All ruby codes here are available under the terms of the zlib/libpng License ( h
 
 ```
 Ruby-Imgui : Yet another ImGui wrapper for Ruby
-Copyright (c) 2019-2024 vaiorabbit <http://twitter.com/vaiorabbit>
+Copyright (c) 2019-2025 vaiorabbit <http://twitter.com/vaiorabbit>
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

@@ -1,10 +1,10 @@
 #!/bin/sh
-export CMAKE_OSX_DEPLOYMENT_TARGET=14.0
+export CMAKE_OSX_DEPLOYMENT_TARGET=15.0
 
 mkdir -p build_x86_64
 cd build_x86_64
 cmake -D CMAKE_C_FLAGS="" -D CMAKE_BUILD_TYPE=Release -D CMAKE_OSX_ARCHITECTURES="x86_64" -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=clang ../
-make
+cmake --build .
 cp imgui.dylib ../../lib/imgui.x86_64.dylib
 
 cd ..
@@ -12,5 +12,5 @@ cd ..
 mkdir -p build_arm64
 cd build_arm64
 cmake -D CMAKE_C_FLAGS="" -D CMAKE_BUILD_TYPE=Release -D CMAKE_OSX_ARCHITECTURES="arm64" -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=clang ../
-make
+cmake --build .
 cp imgui.dylib ../../lib/imgui.arm64.dylib

@@ -705,7 +705,16 @@ require 'ffi'
     # Structs
     #
 
-    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas', 'ImGuiKeyData', 'ImGuiViewport', 'ImGuiStorage'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
+    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas', 'ImGuiKeyData', 'ImGuiStorage'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
+      methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
+      Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map, comments_map['structs'])
+      structs_map.delete_if {|struct| struct.name == name}
+    end
+
+    # Resolve cross referencing between ImGuiViewport and ImDrawData by writing empty definition of ImDrawData right before the definition of ImGuiViewport
+    out.write("class ImDrawData < FFI::Struct\n")
+    out.write("end\n")
+    ['ImGuiViewport'].each do |name|
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
       Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map, comments_map['structs'])
       structs_map.delete_if {|struct| struct.name == name}

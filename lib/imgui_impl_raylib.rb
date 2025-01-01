@@ -418,7 +418,8 @@ module ImGui
           0.step(pcmd[:ElemCount] - 3, 3) do |i|
             Raylib.rlPushMatrix()
               Raylib.rlBegin(Raylib::RL_TRIANGLES)
-                Raylib.rlSetTexture(pcmd[:TextureId].read_uint32)
+              # Raylib.rlSetTexture(pcmd[:TextureId].read_uint32)
+              Raylib.rlSetTexture(pcmd[:TextureId])
 
                 index = indices.get_array_of_uint16(i * FFI::type_size(:ImDrawIdx), 3)
 
