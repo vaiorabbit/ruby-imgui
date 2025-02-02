@@ -1,0 +1,86 @@
+name: Build (Linux ARM64)
+
+on:
+  workflow_call:
+    inputs:
+      imgui_commit:
+        description: 'SHA-1 hash to checkout'
+        default: ''
+        required: false
+        type: string
+      fetch_depth:
+        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+        default: '1'
+        required: false
+        type: string
+  workflow_dispatch:
+    inputs:
+      imgui_commit:
+        description: 'SHA-1 hash to checkout'
+        default: ''
+        required: false
+      fetch_depth:
+        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+        default: '1'
+        required: false
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-22.04-arm
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: ${{github.ref}}
+        fetch-depth: ${{ github.event.inputs.fetch_depth }}
+        submodules: recursive
+
+    # - name: Setup OpenGL
+    #   run: sudo apt -y install libopengl-dev libxrandr-dev mesa-common-dev libxinerama-dev libxcursor-dev libxi-dev
+
+    - name: Checkout specific ImGui commit
+      if: "${{ github.event.inputs.imgui_commit != ''}}"
+      run: |
+        cd imgui_dll/cimgui/imgui
+        git switch master
+        git checkout -f --detach ${{ github.event.inputs.imgui_commit }}
+        cd ../../..
+
+    - name: Install luajit
+      continue-on-error: true
+      run: |
+        sudo apt install luajit
+        luajit -v
+
+    - name: Generate cimgui code
+      run: |
+        cd imgui_dll/cimgui/generator
+        luajit generator.lua gcc ""
+        cd ../../..
+
+    - name: Build imgui so
+      run: |
+        cd imgui_dll
+        bash ./build_imgui_linux.sh
+        cd ..
+
+    - name: Build imnodes so
+      run: |
+        cd imnodes_dll
+        bash ./build_imnodes_linux.sh
+        cd ..
+
+    - name: Commit new libraries
+      continue-on-error: true
+      run: |
+        git config user.name "${GITHUB_ACTOR}"
+        git config user.email "${GITHUB_ACTOR}"
+        git add lib/*
+        git commit -a -m "commit by ${GITHUB_ACTOR} via GitHub Actions"
+        git push --force-with-lease -u origin ${{github.ref}}

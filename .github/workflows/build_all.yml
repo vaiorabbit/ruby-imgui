@@ -13,14 +13,14 @@ on:
         required: false
 
 jobs:
+  call-build-linux:
+    uses: ./.github/workflows/linux.yml
+  call-build-linux-arm64:
+    needs: call-build-linux
+    uses: ./.github/workflows/linux_arm64.yml
   call-build-macos:
-    needs: call-build-linux-cross
+    needs: call-build-linux-arm64
     uses: ./.github/workflows/macos.yml
   call-build-windows:
     needs: call-build-macos
     uses: ./.github/workflows/windows.yml
-  call-build-linux:
-    uses: ./.github/workflows/linux.yml
-  call-build-linux-cross:
-    needs: call-build-linux
-    uses: ./.github/workflows/linux_cross.yml
