@@ -257,9 +257,10 @@ ImGuiColorEditFlags_NoLabel = 128               # 1 << 7 #              // Color
 ImGuiColorEditFlags_NoSidePreview = 256         # 1 << 8 #              // ColorPicker: disable bigger color preview on right side of the picker, use small color square preview instead.
 ImGuiColorEditFlags_NoDragDrop = 512            # 1 << 9 #              // ColorEdit: disable drag and drop target. ColorButton: disable drag and drop source.
 ImGuiColorEditFlags_NoBorder = 1024             # 1 << 10 #              // ColorButton: disable border (which is enforced by default)
+ImGuiColorEditFlags_AlphaOpaque = 2048          # 1 << 11 #              // ColorEdit, ColorPicker, ColorButton: disable alpha in the preview,. Contrary to _NoAlpha it may still be edited when calling ColorEdit4()/ColorPicker4(). For ColorButton() this does the same as _NoAlpha.
+ImGuiColorEditFlags_AlphaNoBg = 4096            # 1 << 12 #              // ColorEdit, ColorPicker, ColorButton: disable rendering a checkerboard background behind transparent color.
+ImGuiColorEditFlags_AlphaPreviewHalf = 8192     # 1 << 13 #              // ColorEdit, ColorPicker, ColorButton: display half opaque / half transparent preview.
 ImGuiColorEditFlags_AlphaBar = 65536            # 1 << 16 #              // ColorEdit, ColorPicker: show vertical alpha bar/gradient in picker.
-ImGuiColorEditFlags_AlphaPreview = 131072       # 1 << 17 #              // ColorEdit, ColorPicker, ColorButton: display preview as a transparent color over a checkerboard, instead of opaque.
-ImGuiColorEditFlags_AlphaPreviewHalf = 262144   # 1 << 18 #              // ColorEdit, ColorPicker, ColorButton: display half opaque / half checkerboard, instead of opaque.
 ImGuiColorEditFlags_HDR = 524288                # 1 << 19 #              // (WIP) ColorEdit: Currently only disable 0.0f..1.0f limits in RGBA edition (note: you probably want to use ImGuiColorEditFlags_Float flag as well).
 ImGuiColorEditFlags_DisplayRGB = 1048576        # 1 << 20 # [Display]    // ColorEdit: override _display_ type among RGB/HSV/Hex. ColorPicker: select any combination using one or more of RGB/HSV/Hex.
 ImGuiColorEditFlags_DisplayHSV = 2097152        # 1 << 21 # [Display]    // "
@@ -271,6 +272,7 @@ ImGuiColorEditFlags_PickerHueWheel = 67108864   # 1 << 26 # [Picker]     // Colo
 ImGuiColorEditFlags_InputRGB = 134217728        # 1 << 27 # [Input]      // ColorEdit, ColorPicker: input and output data in RGB format.
 ImGuiColorEditFlags_InputHSV = 268435456        # 1 << 28 # [Input]      // ColorEdit, ColorPicker: input and output data in HSV format.
 ImGuiColorEditFlags_DefaultOptions_ = 177209344 # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_PickerHueBar
+ImGuiColorEditFlags_AlphaMask_ = 14338          # ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_AlphaOpaque | ImGuiColorEditFlags_AlphaNoBg | ImGuiColorEditFlags_AlphaPreviewHalf
 ImGuiColorEditFlags_DisplayMask_ = 7340032      # ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex
 ImGuiColorEditFlags_DataTypeMask_ = 25165824    # ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_Float
 ImGuiColorEditFlags_PickerMask_ = 100663296     # ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_PickerHueBar
@@ -316,18 +318,19 @@ ImGuiConfigFlags_IsTouchScreen = 2097152         # 1 << 21 # Application is usin
 
 # ImGuiDataType_
 # A primary data type
-ImGuiDataType_S8 = 0     # 0 # signed char / char (with sensible compilers)
-ImGuiDataType_U8 = 1     # 1 # unsigned char
-ImGuiDataType_S16 = 2    # 2 # short
-ImGuiDataType_U16 = 3    # 3 # unsigned short
-ImGuiDataType_S32 = 4    # 4 # int
-ImGuiDataType_U32 = 5    # 5 # unsigned int
-ImGuiDataType_S64 = 6    # 6 # long long / __int64
-ImGuiDataType_U64 = 7    # 7 # unsigned long long / unsigned __int64
-ImGuiDataType_Float = 8  # 8 # float
-ImGuiDataType_Double = 9 # 9 # double
-ImGuiDataType_Bool = 10  # 10 # bool (provided for user convenience, not supported by scalar widgets)
-ImGuiDataType_COUNT = 11 # 11
+ImGuiDataType_S8 = 0      # 0 # signed char / char (with sensible compilers)
+ImGuiDataType_U8 = 1      # 1 # unsigned char
+ImGuiDataType_S16 = 2     # 2 # short
+ImGuiDataType_U16 = 3     # 3 # unsigned short
+ImGuiDataType_S32 = 4     # 4 # int
+ImGuiDataType_U32 = 5     # 5 # unsigned int
+ImGuiDataType_S64 = 6     # 6 # long long / __int64
+ImGuiDataType_U64 = 7     # 7 # unsigned long long / unsigned __int64
+ImGuiDataType_Float = 8   # 8 # float
+ImGuiDataType_Double = 9  # 9 # double
+ImGuiDataType_Bool = 10   # 10 # bool (provided for user convenience, not supported by scalar widgets)
+ImGuiDataType_String = 11 # 11 # char* (provided for user convenience, not supported by scalar widgets)
+ImGuiDataType_COUNT = 12  # 12
 
 # ImGuiDir
 # A cardinal direction
@@ -458,7 +461,7 @@ ImGuiInputTextFlags_CallbackHistory = 524288     # 1 << 19 # Callback on pressin
 ImGuiInputTextFlags_CallbackAlways = 1048576     # 1 << 20 # Callback on each iteration. User code may query cursor position, modify text buffer.
 ImGuiInputTextFlags_CallbackCharFilter = 2097152 # 1 << 21 # Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
 ImGuiInputTextFlags_CallbackResize = 4194304     # 1 << 22 # Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow. Notify when the string wants to be resized (for string types which hold a cache of their Size). You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
-ImGuiInputTextFlags_CallbackEdit = 8388608       # 1 << 23 # Callback on any edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)
+ImGuiInputTextFlags_CallbackEdit = 8388608       # 1 << 23 # Callback on any edit. Note that InputText() already returns true on edit + you can always use IsItemEdited(). The callback is useful to manipulate the underlying buffer while focus is active.
 
 # ImGuiItemFlags_
 # Flags for ImGui::PushItemFlag()
@@ -942,24 +945,25 @@ ImGuiTableRowFlags_Headers = 1 # 1 << 0 # Identify header row (set default backg
 
 # ImGuiTreeNodeFlags_
 # Flags for ImGui::TreeNodeEx(), ImGui::CollapsingHeader*()
-ImGuiTreeNodeFlags_None = 0                     # 0
-ImGuiTreeNodeFlags_Selected = 1                 # 1 << 0 # Draw as selected
-ImGuiTreeNodeFlags_Framed = 2                   # 1 << 1 # Draw frame with background (e.g. for CollapsingHeader)
-ImGuiTreeNodeFlags_AllowOverlap = 4             # 1 << 2 # Hit testing to allow subsequent widgets to overlap this one
-ImGuiTreeNodeFlags_NoTreePushOnOpen = 8         # 1 << 3 # Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
-ImGuiTreeNodeFlags_NoAutoOpenOnLog = 16         # 1 << 4 # Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
-ImGuiTreeNodeFlags_DefaultOpen = 32             # 1 << 5 # Default node to be open
-ImGuiTreeNodeFlags_OpenOnDoubleClick = 64       # 1 << 6 # Open on double-click instead of simple click (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
-ImGuiTreeNodeFlags_OpenOnArrow = 128            # 1 << 7 # Open when clicking on the arrow part (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
-ImGuiTreeNodeFlags_Leaf = 256                   # 1 << 8 # No collapsing, no arrow (use as a convenience for leaf nodes).
-ImGuiTreeNodeFlags_Bullet = 512                 # 1 << 9 # Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
-ImGuiTreeNodeFlags_FramePadding = 1024          # 1 << 10 # Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding() before the node.
-ImGuiTreeNodeFlags_SpanAvailWidth = 2048        # 1 << 11 # Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line without using AllowOverlap mode.
-ImGuiTreeNodeFlags_SpanFullWidth = 4096         # 1 << 12 # Extend hit box to the left-most and right-most edges (cover the indent area).
-ImGuiTreeNodeFlags_SpanTextWidth = 8192         # 1 << 13 # Narrow hit box + narrow hovering highlight, will only cover the label text.
-ImGuiTreeNodeFlags_SpanAllColumns = 16384       # 1 << 14 # Frame will span all columns of its container table (text will still fit in current column)
-ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 32768 # 1 << 15 # (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
-ImGuiTreeNodeFlags_CollapsingHeader = 26        # ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_NoAutoOpenOnLog
+ImGuiTreeNodeFlags_None = 0                      # 0
+ImGuiTreeNodeFlags_Selected = 1                  # 1 << 0 # Draw as selected
+ImGuiTreeNodeFlags_Framed = 2                    # 1 << 1 # Draw frame with background (e.g. for CollapsingHeader)
+ImGuiTreeNodeFlags_AllowOverlap = 4              # 1 << 2 # Hit testing to allow subsequent widgets to overlap this one
+ImGuiTreeNodeFlags_NoTreePushOnOpen = 8          # 1 << 3 # Don't do a TreePush() when open (e.g. for CollapsingHeader) = no extra indent nor pushing on ID stack
+ImGuiTreeNodeFlags_NoAutoOpenOnLog = 16          # 1 << 4 # Don't automatically and temporarily open node when Logging is active (by default logging will automatically open tree nodes)
+ImGuiTreeNodeFlags_DefaultOpen = 32              # 1 << 5 # Default node to be open
+ImGuiTreeNodeFlags_OpenOnDoubleClick = 64        # 1 << 6 # Open on double-click instead of simple click (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
+ImGuiTreeNodeFlags_OpenOnArrow = 128             # 1 << 7 # Open when clicking on the arrow part (default for multi-select unless any _OpenOnXXX behavior is set explicitly). Both behaviors may be combined.
+ImGuiTreeNodeFlags_Leaf = 256                    # 1 << 8 # No collapsing, no arrow (use as a convenience for leaf nodes).
+ImGuiTreeNodeFlags_Bullet = 512                  # 1 << 9 # Display a bullet instead of arrow. IMPORTANT: node can still be marked open/close if you don't set the _Leaf flag!
+ImGuiTreeNodeFlags_FramePadding = 1024           # 1 << 10 # Use FramePadding (even for an unframed text node) to vertically align text baseline to regular widget height. Equivalent to calling AlignTextToFramePadding() before the node.
+ImGuiTreeNodeFlags_SpanAvailWidth = 2048         # 1 << 11 # Extend hit box to the right-most edge, even if not framed. This is not the default in order to allow adding other items on the same line without using AllowOverlap mode.
+ImGuiTreeNodeFlags_SpanFullWidth = 4096          # 1 << 12 # Extend hit box to the left-most and right-most edges (cover the indent area).
+ImGuiTreeNodeFlags_SpanLabelWidth = 8192         # 1 << 13 # Narrow hit box + narrow hovering highlight, will only cover the label text.
+ImGuiTreeNodeFlags_SpanAllColumns = 16384        # 1 << 14 # Frame will span all columns of its container table (label will still fit in current column)
+ImGuiTreeNodeFlags_LabelSpanAllColumns = 32768   # 1 << 15 # Label will span all columns of its container table
+ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 131072 # 1 << 17 # (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
+ImGuiTreeNodeFlags_CollapsingHeader = 26         # ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_NoAutoOpenOnLog
 
 # ImGuiViewportFlags_
 # Flags stored in ImGuiViewport::Flags, giving indications to the platform backends.
@@ -1006,12 +1010,12 @@ ImGuiWindowFlags_NoDocking = 524288                # 1 << 19 # Disable docking o
 ImGuiWindowFlags_NoNav = 196608                    # ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
 ImGuiWindowFlags_NoDecoration = 43                 # ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse
 ImGuiWindowFlags_NoInputs = 197120                 # ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoNavFocus
+ImGuiWindowFlags_DockNodeHost = 8388608            # 1 << 23 # Don't use! For internal use by Begin()/NewFrame()
 ImGuiWindowFlags_ChildWindow = 16777216            # 1 << 24 # Don't use! For internal use by BeginChild()
 ImGuiWindowFlags_Tooltip = 33554432                # 1 << 25 # Don't use! For internal use by BeginTooltip()
 ImGuiWindowFlags_Popup = 67108864                  # 1 << 26 # Don't use! For internal use by BeginPopup()
 ImGuiWindowFlags_Modal = 134217728                 # 1 << 27 # Don't use! For internal use by BeginPopupModal()
 ImGuiWindowFlags_ChildMenu = 268435456             # 1 << 28 # Don't use! For internal use by BeginMenu()
-ImGuiWindowFlags_DockNodeHost = 536870912          # 1 << 29 # Don't use! For internal use by Begin()/NewFrame()
 
 
 class ImVec2 < FFI::Struct
@@ -1465,8 +1469,8 @@ class ImFontAtlas < FFI::Struct
     :TexID, :uint64,
     :TexDesiredWidth, :int,
     :TexGlyphPadding, :int,
-    :Locked, :bool,
     :UserData, :pointer,
+    :Locked, :bool,
     :TexReady, :bool,
     :TexPixelsUseColors, :bool,
     :TexPixelsAlpha8, :pointer,
@@ -1478,7 +1482,7 @@ class ImFontAtlas < FFI::Struct
     :Fonts, ImVector.by_value,
     :CustomRects, ImVector.by_value,
     :ConfigData, ImVector.by_value,
-    :TexUvLines, [ImVec4.by_value, 64],
+    :TexUvLines, [ImVec4.by_value, 33],
     :FontBuilderIO, :pointer,
     :FontBuilderFlags, :uint,
     :PackIdMouseCursors, :int,
@@ -1819,12 +1823,12 @@ class ImFont < FFI::Struct
     :FallbackChar, :ushort,
     :EllipsisWidth, :float,
     :EllipsisCharStep, :float,
-    :DirtyLookupTables, :bool,
     :Scale, :float,
     :Ascent, :float,
     :Descent, :float,
     :MetricsTotalSurface, :int,
-    :Used4kPagesMap, [:uchar, 2]
+    :DirtyLookupTables, :bool,
+    :Used8kPagesMap, [:uchar, 1]
   )
 
   def AddGlyph(src_cfg, c, x0, y0, x1, y1, u0, v0, u1, v1, advance_x)
@@ -1931,22 +1935,23 @@ class ImFontAtlasCustomRect < FFI::Struct
 
 end
 
+# A font input/source (we may rename this to ImFontSource in the future)
 class ImFontConfig < FFI::Struct
   layout(
     :FontData, :pointer,
     :FontDataSize, :int,
     :FontDataOwnedByAtlas, :bool,
+    :MergeMode, :bool,
+    :PixelSnapH, :bool,
     :FontNo, :int,
-    :SizePixels, :float,
     :OversampleH, :int,
     :OversampleV, :int,
-    :PixelSnapH, :bool,
+    :SizePixels, :float,
     :GlyphExtraSpacing, ImVec2.by_value,
     :GlyphOffset, ImVec2.by_value,
     :GlyphRanges, :pointer,
     :GlyphMinAdvanceX, :float,
     :GlyphMaxAdvanceX, :float,
-    :MergeMode, :bool,
     :FontBuilderFlags, :uint,
     :RasterizerMultiply, :float,
     :RasterizerDensity, :float,
@@ -2125,6 +2130,7 @@ class ImGuiIO < FFI::Struct
     :MouseClickedCount, [:ushort, 5],
     :MouseClickedLastCount, [:ushort, 5],
     :MouseReleased, [:bool, 5],
+    :MouseReleasedTime, [:double, 5],
     :MouseDownOwned, [:bool, 5],
     :MouseDownOwnedUnlessPopupClose, [:bool, 5],
     :MouseWheelRequestAxisSwap, :bool,
@@ -2217,7 +2223,7 @@ end
 # Shared state of InputText(), passed as an argument to your callback when a ImGuiInputTextFlags_Callback* flag is used.
 # The callback function should return 0 by default.
 # Callbacks (follow a flag name and see comments in ImGuiInputTextFlags_ declarations for more details)
-# - ImGuiInputTextFlags_CallbackEdit:        Callback on buffer edit (note that InputText() already returns true on edit, the callback is useful mainly to manipulate the underlying buffer while focus is active)
+# - ImGuiInputTextFlags_CallbackEdit:        Callback on buffer edit. Note that InputText() already returns true on edit + you can always use IsItemEdited(). The callback is useful to manipulate the underlying buffer while focus is active.
 # - ImGuiInputTextFlags_CallbackAlways:      Callback on each iteration
 # - ImGuiInputTextFlags_CallbackCompletion:  Callback on pressing TAB
 # - ImGuiInputTextFlags_CallbackHistory:     Callback on pressing Up/Down arrows
@@ -2666,8 +2672,8 @@ class ImGuiTextBuffer < FFI::Struct
     ImGui::ImGuiTextBuffer_append(self, str, str_end)
   end
 
-  def appendf(buffer, fmt, *varargs)
-    ImGui::ImGuiTextBuffer_appendf(buffer, fmt, *varargs)
+  def appendf(fmt, *varargs)
+    ImGui::ImGuiTextBuffer_appendf(self, fmt, *varargs)
   end
 
   def begin()
@@ -3342,6 +3348,7 @@ module ImGui
       [:igIsMouseHoveringRect, [ImVec2.by_value, ImVec2.by_value, :bool], :bool],
       [:igIsMousePosValid, [:pointer], :bool],
       [:igIsMouseReleased, [:int], :bool],
+      [:igIsMouseReleasedWithDelay, [:int, :float], :bool],
       [:igIsPopupOpen, [:pointer, :int], :bool],
       [:igIsRectVisible_Nil, [ImVec2.by_value], :bool],
       [:igIsRectVisible_Vec2, [ImVec2.by_value, ImVec2.by_value], :bool],
@@ -4911,6 +4918,12 @@ module ImGui
   # ret: bool
   def self.IsMouseReleased(button)  # did mouse button released? (went from Down to !Down)
     igIsMouseReleased(button)
+  end
+
+  # arg: button(ImGuiMouseButton), delay(float)
+  # ret: bool
+  def self.IsMouseReleasedWithDelay(button, delay)  # delayed mouse release (use very sparingly!). Generally used with 'delay >= io.MouseDoubleClickTime' + combined with a 'io.MouseClickedLastCount==1' test. This is a very rarely used UI idiom, but some apps use this: e.g. MS Explorer single click on an icon to rename.
+    igIsMouseReleasedWithDelay(button, delay)
   end
 
   # arg: str_id(const char*), flags(ImGuiPopupFlags)

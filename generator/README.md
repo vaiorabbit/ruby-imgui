@@ -13,7 +13,11 @@
 
 Setup luajit first:
 
+    On macOS:
     $ brew install luajit
+
+    On Windows you can obtain LuaJIT via MSYS2 package manager:
+    > pacman -S mingw-w64-ucrt-x86_64-luajit
 
 Generate JSON (definitions.json, etc.) files that contain only public definitions:
 
