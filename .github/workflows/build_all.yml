@@ -8,7 +8,7 @@ on:
         default: ''
         required: false
       imgui_branch:
-        description: 'ImGui branch to checkout'
+        description: 'ImGui branch to checkout. If you change this value from default, please set `fetch_depth` to 0.'
         default: 'master'
         required: false
       fetch_depth:
