@@ -7,6 +7,10 @@ on:
         description: 'ImGui SHA-1 commit hash to checkout'
         default: ''
         required: false
+      imgui_branch:
+        description: 'ImGui branch to checkout'
+        default: 'master'
+        required: false
       fetch_depth:
         description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
         default: '1'
