@@ -1,4 +1,4 @@
-archive/*
+archives/*
 backup/*
 imgui_dll/build/*
 imgui_dll/build_x86_64/*
