@@ -56,23 +56,24 @@ jobs:
     - name: Checkout specific ImGui commit
       if: "${{ github.event.inputs.imgui_commit != ''}}"
       run: |
-        cd imgui_dll/cimgui/imgui
+        cd third_party/imgui
         git fetch --all
         git switch ${{ github.event.inputs.imgui_branch }}
         git checkout -f --detach ${{ github.event.inputs.imgui_commit }}
-        cd ../../..
+        cd ../..
 
-    - name: Install luajit
-      continue-on-error: true
-      run: |
-        sudo apt install luajit
-        luajit -v
+    - name: Install Python deps
+      run: pip3 install ply==3.11
 
-    - name: Generate cimgui code
+    - name: Generate dear_bindings C wrapper
       run: |
-        cd imgui_dll/cimgui/generator
-        luajit generator.lua gcc ""
-        cd ../../..
+        python3 third_party/dear_bindings/dear_bindings.py \
+          -o imgui_dll/dearbindings \
+          third_party/imgui/imgui.h
+        python3 third_party/dear_bindings/dear_bindings.py \
+          --include third_party/imgui/imgui.h \
+          -o imgui_dll/dearbindings_internal \
+          third_party/imgui/imgui_internal.h
 
     - name: Build imgui so
       run: |

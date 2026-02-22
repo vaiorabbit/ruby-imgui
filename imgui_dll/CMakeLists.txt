@@ -3,21 +3,22 @@ cmake_minimum_required(VERSION 3.0)
 
 set (CMAKE_CXX_STANDARD 11)
 
-include_directories( ${CMAKE_CURRENT_LIST_DIR}/cimgui )
-include_directories( ${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui )
-include_directories(.)
+set(IMGUI_ROOT ${CMAKE_CURRENT_LIST_DIR}/../third_party/imgui)
+
+include_directories( ${IMGUI_ROOT} )
+include_directories( ${CMAKE_CURRENT_LIST_DIR} )
 
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 
 set(IMGUI_SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/cimgui/cimgui.cpp
-	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui.cpp
-	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_draw.cpp
-	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_demo.cpp
-	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_tables.cpp
-	${CMAKE_CURRENT_LIST_DIR}/cimgui/imgui/imgui_widgets.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/cimgui_internal.cpp
-	)
+    ${CMAKE_CURRENT_LIST_DIR}/dearbindings.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/dearbindings_internal.cpp
+    ${IMGUI_ROOT}/imgui.cpp
+    ${IMGUI_ROOT}/imgui_draw.cpp
+    ${IMGUI_ROOT}/imgui_demo.cpp
+    ${IMGUI_ROOT}/imgui_tables.cpp
+    ${IMGUI_ROOT}/imgui_widgets.cpp
+    )
 
 set(IMGUI_LIBRARIES )
 
@@ -26,11 +27,6 @@ if (APPLE)
     set(CMAKE_MACOSX_RPATH ON)
 endif (APPLE)
 
-if (WIN32)
-    add_definitions("-DIMGUI_IMPL_API=extern \"C\" __declspec\(dllexport\)")
-else(WIN32)
-    add_definitions("-DIMGUI_IMPL_API=extern \"C\" ")
-endif(WIN32)
 
 set(IMGUI_STATIC "no" CACHE STRING "Build as a static library")
 

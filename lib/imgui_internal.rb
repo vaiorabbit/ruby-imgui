@@ -12,26 +12,16 @@ module ImGui
 
   def self.import_internal_symbols(output_error = false)
 
-    symbols = [
-      :igFocusWindow,
-      :igGetCurrentWindow,
+    entries = [
+      [:ImGui_FocusWindow,      [:pointer, :int], :void],
+      [:ImGui_GetCurrentWindow, [],               :pointer],
     ]
 
-    args = {
-      :igFocusWindow => [:pointer],
-      :igGetCurrentWindow => [],
-    }
-
-    retvals = {
-      :igFocusWindow => :void,
-      :igGetCurrentWindow => :pointer,
-    }
-
-    symbols.each do |sym|
+    entries.each do |entry|
       begin
-        attach_function sym, args[sym], retvals[sym]
-      rescue FFI::NotFoundError
-        $stderr.puts("[Warning] Failed to import #{sym}.\n") if output_error
+        attach_function entry[0], entry[1], entry[2]
+      rescue FFI::NotFoundError => e
+        warn "[Warning] Failed to import #{entry[0]} (#{e})." if output_error
       end
     end
 
@@ -39,11 +29,13 @@ module ImGui
   end # self.import_internal_symbols
 
   def self.GetCurrentWindow()
-    igGetCurrentWindow()
+    ImGui_GetCurrentWindow()
   end
 
-  def self.FocusWindow(window)
-    igFocusWindow(window)
+  # flags: ImGuiFocusRequestFlags (default 0)
+  def self.FocusWindow(window, flags = 0)
+    ImGui_FocusWindow(window, flags)
   end
 
 end # module ImGui
+

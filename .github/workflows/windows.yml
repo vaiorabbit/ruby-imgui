@@ -53,26 +53,19 @@ jobs:
     - name: Checkout specific ImGui commit
       if: "${{ github.event.inputs.imgui_commit != ''}}"
       run: |
-        cd imgui_dll/cimgui/imgui
+        cd third_party/imgui
         git fetch --all
         git switch ${{ github.event.inputs.imgui_branch }}
         git checkout -f --detach ${{ github.event.inputs.imgui_commit }}
-        cd ../../..
+        cd ../..
 
-    - name: Install MSYS2 luajit
-      continue-on-error: true
+    - name: Install Python deps
+      run: pip install ply==3.11
+
+    - name: Generate dear_bindings C wrapper
       shell: cmd
       run: |
-        C:\msys64\usr\bin\pacman -S --noconfirm mingw-w64-x86_64-luajit
-        C:\msys64\mingw64\bin\luajit.exe -v
-
-    - name: Generate cimgui code
-      shell: cmd
-      run: |
-        cd imgui_dll\cimgui\generator
-        C:\msys64\mingw64\bin\luajit.exe generator.lua gcc ""
-        git diff
-        cd ..\..\..
+        imgui_dll\generate_dearbindings.cmd
 
     - name: Build imgui dll
       shell: cmd
