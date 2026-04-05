@@ -95,6 +95,16 @@ module Generator
     out.newline
   end
 
+  def self.write_defines(out, defines)
+    return if defines.nil? || defines.empty?
+
+    out.write("# defines\n")
+    defines.each do |define|
+      out.write("#{define.name} = #{define.value} # #{define.content}\n")
+    end
+    out.newline
+  end
+
   def self.write_typedef(out, typedef)
     return if typedef[1].callback_signature != nil
     out.write("FFI.typedef :#{typedef[1].type}, :#{typedef[0]}\n") # typedef[1].class == ImGuiTypedefMapEntry
@@ -290,11 +300,11 @@ module Generator
     out.pop_indent
     out.write("end\n\n")
 
-    ## ImWchar special handling (Ref.: cimgui_template.cpp)
-    out.write("attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer\n")
-    out.write("attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void\n")
-    out.write("attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void\n")
-    out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    # ## ImWchar special handling (Ref.: cimgui_template.cpp)
+    # out.write("attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer\n")
+    # out.write("attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    # out.write("attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void\n")
+    # out.write("attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void\n")
   end
 
 
@@ -480,6 +490,7 @@ if __FILE__ == $PROGRAM_NAME
   #
 
   typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../third_party/dear_bindings/cimgui.json' )
+  defines_map = ImGuiBindings.build_define_map( '../third_party/dear_bindings/cimgui.json' )
   enums_map = ImGuiBindings.build_enum_map( '../third_party/dear_bindings/cimgui.json' )
   structs_map = structs = ImGuiBindings.build_struct_map( '../third_party/dear_bindings/cimgui.json' )
   funcs_base_map = ImGuiBindings.build_function_map( '../third_party/dear_bindings/cimgui.json' )
@@ -559,6 +570,11 @@ require 'ffi'
     out.newline
 
     #
+    # Defines
+    #
+    Generator.write_defines(out, defines_map)
+
+    #
     # Typedefs
     #
 
@@ -581,7 +597,7 @@ require 'ffi'
     # Structs
     #
 
-    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImTextureRef', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas', 'ImGuiKeyData'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
+    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImTextureRef', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlasRect', 'ImFontAtlas', 'ImGuiKeyData'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
       Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map)
       structs_map.delete_if {|struct| struct.name == name}

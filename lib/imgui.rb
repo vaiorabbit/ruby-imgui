@@ -6,6 +6,18 @@
 
 require 'ffi'
 
+# defines
+IMGUI_VERSION_NUM = 19250 # 19250
+IM_UNICODE_CODEPOINT_INVALID = 65533 # 0xFFFD
+IM_UNICODE_CODEPOINT_MAX = 65535 # 0xFFFF
+IM_COL32_R_SHIFT = 16 # 16
+IM_COL32_G_SHIFT = 8 # 8
+IM_COL32_B_SHIFT = 0 # 0
+IM_COL32_A_SHIFT = 24 # 24
+IM_COL32_A_MASK = 4278190080 # 0xFF000000
+IM_DRAWLIST_TEX_LINES_WIDTH_MAX = 32 # 32
+ImFontAtlasRectId_Invalid = -1 # -1
+
 FFI.typedef :ushort, :ImDrawIdx
 FFI.typedef :uint, :ImGuiID
 FFI.typedef :char, :ImS8
@@ -1355,6 +1367,17 @@ class ImDrawList < FFI::Struct
 
 end
 
+class ImFontAtlasRect < FFI::Struct
+  layout(
+    :x, :ushort,
+    :y, :ushort,
+    :w, :ushort,
+    :h, :ushort,
+    :uv0, ImVec2.by_value,
+    :uv1, ImVec2.by_value
+  )
+end
+
 class ImFontAtlas < FFI::Struct
   layout(
     :Flags, :int,
@@ -2616,17 +2639,6 @@ class ImFontGlyphRangesBuilder < FFI::Struct
 
 end
 
-class ImFontAtlasRect < FFI::Struct
-  layout(
-    :x, :ushort,
-    :y, :ushort,
-    :w, :ushort,
-    :h, :ushort,
-    :uv0, ImVec2.by_value,
-    :uv1, ImVec2.by_value
-  )
-end
-
 class ImFontBaked < FFI::Struct
   layout(
     :IndexAdvanceX, ImVector.by_value,
@@ -2888,11 +2900,11 @@ module ImGui
   end
 
   def self.import_symbols(output_error = false)
-    callback :ImGuiInputTextCallback, [pointer], :int
-    callback :ImGuiSizeCallback, [pointer], :void
-    callback :ImGuiMemAllocFunc, [size_t, pointer], :pointer
-    callback :ImGuiMemFreeFunc, [pointer, pointer], :void
-    callback :ImDrawCallback, [pointer, pointer], :void
+    callback :ImGuiInputTextCallback, [:pointer], :int
+    callback :ImGuiSizeCallback, [:pointer], :void
+    callback :ImGuiMemAllocFunc, [:size_t, :pointer], :pointer
+    callback :ImGuiMemFreeFunc, [:pointer, :pointer], :void
+    callback :ImDrawCallback, [:pointer, :pointer], :void
 
     symbols = [
       :ImTextureRef_GetTexID,
@@ -4843,10 +4855,6 @@ module ImGui
       end
     end
 
-    attach_function :ImVector_ImWchar_create, :ImVector_ImWchar_create, [], :pointer
-    attach_function :ImVector_ImWchar_destroy, :ImVector_ImWchar_destroy, [:pointer], :void
-    attach_function :ImVector_ImWchar_Init, :ImVector_ImWchar_destroy, [:pointer], :void
-    attach_function :ImVector_ImWchar_UnInit, :ImVector_ImWchar_destroy, [:pointer], :void
 
     @@imgui_import_done = true  end # self.import_symbols
 

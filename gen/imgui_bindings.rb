@@ -9,6 +9,8 @@ ImGuiStructMapEntry = Struct.new( :name, :members, keyword_init: true )
 ImGuiEnumValEntry = Struct.new( :name, :value, :original, keyword_init: true )
 ImGuiEnumMapEntry = Struct.new( :name, :members, keyword_init: true )
 
+ImGuiDefineMapEntry = Struct.new( :name, :content, :value, keyword_init: true )
+
 ImGuiFunctionArgEntry = Struct.new( :name, :type, :type_name, :default, :is_array, :size, keyword_init: true )
 ImGuiFunctionMapEntry = Struct.new( :name, :args, :retval, :replaced_name, :generate_module_method, :generate_overload_method, :method_of, :ctor, :dtor, :original_funcname, keyword_init: true )
 
@@ -74,7 +76,7 @@ module ImGuiBindings
 
             args = []
             typedef_type_details['arguments'].each do |argument|
-              args << get_ffi_type(argument['type']['declaration'])
+              args << ":#{get_ffi_type(argument['type']['declaration'])}"
             end
 
             # type_map[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: "#{type_name}", callback_signature: [ret, args])
@@ -222,6 +224,65 @@ module ImGuiBindings
       end
     end
     return enums
+  end
+
+  def self.parse_define_numeric_content(content)
+    return nil if content.nil?
+
+    expr = content.to_s.strip
+    return nil if expr.empty?
+
+    # Simple numeric literals (integer and float)
+    begin
+      return Integer(expr, 0)
+    rescue ArgumentError
+    end
+    begin
+      return Float(expr)
+    rescue ArgumentError
+    end
+
+    # Allow arithmetic/bitwise expressions composed of numeric literals only.
+    return nil unless expr.match?(/\A[0-9a-fA-FxXuUlLfF\+\-\*\/\%\(\)\<\>\|\&\^\~\.\s]+\z/)
+
+    normalized_expr = expr.gsub(/(?<=\h)[uUlLfF]+\b/, '')
+    begin
+      value = eval(normalized_expr)
+      value.is_a?(Numeric) ? value : nil
+    rescue StandardError
+      nil
+    end
+  end
+
+  def self.build_define_map(json_filename, conditions = [])
+    defines = []
+    File.open(json_filename) do |file|
+      json = JSON.load(file)
+      json_defines = json['defines']
+      json_defines.each do |json_define|
+        define_name = json_define['name']
+
+        if json_define.has_key? 'conditionals'
+          json_define_conditionals = json_define['conditionals']
+          unless json_define_conditionals.nil? || json_define_conditionals.empty?
+            condition = json_define_conditionals[0]['condition']
+            macro_value = json_define_conditionals[0]['expression']
+            should_macro_defined = (condition == 'ifdef' || condition == 'if')
+            macro_defined = conditions.include? macro_value
+            next if ((should_macro_defined && !macro_defined) || (!should_macro_defined && macro_defined))
+          end
+        end
+
+        next unless json_define.has_key?('content')
+
+        define_content = json_define['content']
+        define_value = parse_define_numeric_content(define_content)
+        next if define_value.nil?
+
+        defines << ImGuiDefineMapEntry.new(name: define_name, content: define_content, value: define_value)
+      end
+    end
+    return defines
   end
 
   def self.get_ffi_type(type_name)
@@ -403,6 +464,12 @@ if __FILE__ == $0 # test code snippets
   #     print "    #{m.name} = #{m.value} # #{m.original}\n"
   #   end
   # end
+  # exit()
+
+  defines = ImGuiBindings.build_define_map( '../third_party/dear_bindings/generated/dcimgui.json' )
+  defines_i = ImGuiBindings.build_define_map( '../third_party/dear_bindings/generated/dcimgui_internal.json' )
+  # pp defines
+  # pp defines_i
   # exit()
 
   funcs_base = ImGuiBindings.build_function_map( '../third_party/dear_bindings/generated/dcimgui.json' )
