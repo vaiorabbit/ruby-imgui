@@ -77,7 +77,7 @@ module ImGuiBindings
               args << get_ffi_type(argument['type']['declaration'])
             end
 
-            type_map[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: ":#{type_name}", callback_signature: [ret, args])
+            type_map[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: "#{type_name}", callback_signature: [ret, args])
             next
           end
         end
@@ -127,7 +127,6 @@ module ImGuiBindings
           # print "#{type_str} => "
           ffi_type = get_ffi_type(type_str)
           # puts "#{ffi_type}"
-          # json_name = json_field['name']
           begin
             member = ImGuiStructMemberEntry.new(name: json_field['name'], type_str: type_str, type: ffi_type, is_array: json_field['is_array'])
             if member.is_array
@@ -141,7 +140,7 @@ module ImGuiBindings
             struct.members << member
           end
         end
-        add_ffi_typedef_map(struct_name, ":#{struct_name}")
+        add_ffi_typedef_map(struct_name, "#{struct_name}")
         structs << struct
       end
     end

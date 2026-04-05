@@ -202,7 +202,8 @@ module Generator
                  #
                  if typedefs_map.has_key?(imgui_struct_or_typedef) && typedefs_map[imgui_struct_or_typedef].type.to_s == typedefs_map[imgui_struct_or_typedef].name
                    # FFI::Struct -> use .ptr
-                   "#{imgui_struct_or_typedef}.ptr"
+                   # "#{imgui_struct_or_typedef}.ptr"
+                   ":pointer"
                  else
                    # Not any of FFI::Struct instances -> use base type (:pointer, etc.)
                    ":#{m.type}"

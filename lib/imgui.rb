@@ -874,8 +874,8 @@ end
 
 class ImDrawVert < FFI::Struct
   layout(
-    :pos, ::ImVec2,
-    :uv, ::ImVec2,
+    :pos, ImVec2.by_value,
+    :uv, ImVec2.by_value,
     :col, :uint
   )
 end
@@ -923,12 +923,12 @@ end
 
 class ImDrawCmd < FFI::Struct
   layout(
-    :ClipRect, ::ImVec4,
-    :TexRef, ::ImTextureRef,
+    :ClipRect, ImVec4.by_value,
+    :TexRef, ImTextureRef.by_value,
     :VtxOffset, :uint,
     :IdxOffset, :uint,
     :ElemCount, :uint,
-    :UserCallback, ::ImDrawCallback,
+    :UserCallback, ImDrawCallback.by_value,
     :UserCallbackData, :pointer,
     :UserCallbackDataSize, :int,
     :UserCallbackDataOffset, :int
@@ -942,8 +942,8 @@ end
 
 class ImDrawCmdHeader < FFI::Struct
   layout(
-    :ClipRect, ::ImVec4,
-    :TexRef, ::ImTextureRef,
+    :ClipRect, ImVec4.by_value,
+    :TexRef, ImTextureRef.by_value,
     :VtxOffset, :uint
   )
 end
@@ -959,8 +959,8 @@ class ImDrawList < FFI::Struct
     :_VtxWritePtr, :pointer,
     :_IdxWritePtr, :pointer,
     :_Path, ImVector.by_value,
-    :_CmdHeader, ::ImDrawCmdHeader,
-    :_Splitter, ::ImDrawListSplitter,
+    :_CmdHeader, ImDrawCmdHeader.by_value,
+    :_Splitter, ImDrawListSplitter.by_value,
     :_ClipRectStack, ImVector.by_value,
     :_TextureStack, ImVector.by_value,
     :_CallbacksDataBuf, ImVector.by_value,
@@ -1264,15 +1264,15 @@ class ImFontAtlas < FFI::Struct
     :TexMaxWidth, :int,
     :TexMaxHeight, :int,
     :UserData, :pointer,
-    :TexRef, ::ImTextureRef,
+    :TexRef, ImTextureRef.by_value,
     :TexData, :pointer,
     :TexList, ImVector.by_value,
     :Locked, :bool,
     :RendererHasTextures, :bool,
     :TexIsBuilt, :bool,
     :TexPixelsUseColors, :bool,
-    :TexUvScale, ::ImVec2,
-    :TexUvWhitePixel, ::ImVec2,
+    :TexUvScale, ImVec2.by_value,
+    :TexUvWhitePixel, ImVec2.by_value,
     :Fonts, ImVector.by_value,
     :Sources, ImVector.by_value,
     :TexUvLines, [:pointer, IM_DRAWLIST_TEX_LINES_WIDTH_MAX+1],
@@ -1286,7 +1286,7 @@ class ImFontAtlas < FFI::Struct
     :FontLoaderFlags, :uint,
     :RefCount, :int,
     :OwnerContext, :pointer,
-    :TempRect, ::ImFontAtlasRect
+    :TempRect, ImFontAtlasRect.by_value
   )
 
   def AddFont(font_cfg)
@@ -1676,24 +1676,24 @@ class ImGuiStyle < FFI::Struct
     :FontScaleDpi, :float,
     :Alpha, :float,
     :DisabledAlpha, :float,
-    :WindowPadding, ::ImVec2,
+    :WindowPadding, ImVec2.by_value,
     :WindowRounding, :float,
     :WindowBorderSize, :float,
     :WindowBorderHoverPadding, :float,
-    :WindowMinSize, ::ImVec2,
-    :WindowTitleAlign, ::ImVec2,
+    :WindowMinSize, ImVec2.by_value,
+    :WindowTitleAlign, ImVec2.by_value,
     :WindowMenuButtonPosition, :int,
     :ChildRounding, :float,
     :ChildBorderSize, :float,
     :PopupRounding, :float,
     :PopupBorderSize, :float,
-    :FramePadding, ::ImVec2,
+    :FramePadding, ImVec2.by_value,
     :FrameRounding, :float,
     :FrameBorderSize, :float,
-    :ItemSpacing, ::ImVec2,
-    :ItemInnerSpacing, ::ImVec2,
-    :CellPadding, ::ImVec2,
-    :TouchExtraPadding, ::ImVec2,
+    :ItemSpacing, ImVec2.by_value,
+    :ItemInnerSpacing, ImVec2.by_value,
+    :CellPadding, ImVec2.by_value,
+    :TouchExtraPadding, ImVec2.by_value,
     :IndentSpacing, :float,
     :ColumnsMinSpacing, :float,
     :ScrollbarSize, :float,
@@ -1712,7 +1712,7 @@ class ImGuiStyle < FFI::Struct
     :TabBarBorderSize, :float,
     :TabBarOverlineSize, :float,
     :TableAngledHeadersAngle, :float,
-    :TableAngledHeadersTextAlign, ::ImVec2,
+    :TableAngledHeadersTextAlign, ImVec2.by_value,
     :TreeLinesFlags, :int,
     :TreeLinesSize, :float,
     :TreeLinesRounding, :float,
@@ -1720,13 +1720,13 @@ class ImGuiStyle < FFI::Struct
     :DragDropTargetBorderSize, :float,
     :DragDropTargetPadding, :float,
     :ColorButtonPosition, :int,
-    :ButtonTextAlign, ::ImVec2,
-    :SelectableTextAlign, ::ImVec2,
+    :ButtonTextAlign, ImVec2.by_value,
+    :SelectableTextAlign, ImVec2.by_value,
     :SeparatorTextBorderSize, :float,
-    :SeparatorTextAlign, ::ImVec2,
-    :SeparatorTextPadding, ::ImVec2,
-    :DisplayWindowPadding, ::ImVec2,
-    :DisplaySafeAreaPadding, ::ImVec2,
+    :SeparatorTextAlign, ImVec2.by_value,
+    :SeparatorTextPadding, ImVec2.by_value,
+    :DisplayWindowPadding, ImVec2.by_value,
+    :DisplaySafeAreaPadding, ImVec2.by_value,
     :DockingNodeHasCloseButton, :bool,
     :DockingSeparatorSize, :float,
     :MouseCursorScale, :float,
@@ -1755,8 +1755,8 @@ class ImGuiIO < FFI::Struct
   layout(
     :ConfigFlags, :int,
     :BackendFlags, :int,
-    :DisplaySize, ::ImVec2,
-    :DisplayFramebufferScale, ::ImVec2,
+    :DisplaySize, ImVec2.by_value,
+    :DisplayFramebufferScale, ImVec2.by_value,
     :DeltaTime, :float,
     :IniSavingRate, :float,
     :IniFilename, :pointer,
@@ -1828,9 +1828,9 @@ class ImGuiIO < FFI::Struct
     :MetricsRenderIndices, :int,
     :MetricsRenderWindows, :int,
     :MetricsActiveWindows, :int,
-    :MouseDelta, ::ImVec2,
+    :MouseDelta, ImVec2.by_value,
     :Ctx, :pointer,
-    :MousePos, ::ImVec2,
+    :MousePos, ImVec2.by_value,
     :MouseDown, [:pointer, 5],
     :MouseWheel, :float,
     :MouseWheelH, :float,
@@ -1843,7 +1843,7 @@ class ImGuiIO < FFI::Struct
     :KeyMods, :int,
     :KeysData, [:pointer, ImGuiKey_NamedKey_COUNT],
     :WantCaptureMouseUnlessPopupClose, :bool,
-    :MousePosPrev, ::ImVec2,
+    :MousePosPrev, ImVec2.by_value,
     :MouseClickedPos, [:pointer, 5],
     :MouseClickedTime, [:pointer, 5],
     :MouseClicked, [:pointer, 5],
@@ -1979,9 +1979,9 @@ end
 class ImGuiSizeCallbackData < FFI::Struct
   layout(
     :UserData, :pointer,
-    :Pos, ::ImVec2,
-    :CurrentSize, ::ImVec2,
-    :DesiredSize, ::ImVec2
+    :Pos, ImVec2.by_value,
+    :CurrentSize, ImVec2.by_value,
+    :DesiredSize, ImVec2.by_value
   )
 end
 
@@ -2235,7 +2235,7 @@ end
 
 class ImColor < FFI::Struct
   layout(
-    :Value, ::ImVec4
+    :Value, ImVec4.by_value
   )
 
   def SetHSV(h, s, v, a = 1.0)
@@ -2276,7 +2276,7 @@ class ImGuiSelectionBasicStorage < FFI::Struct
     :UserData, :pointer,
     :AdapterIndexToStorageId, :pointer,
     :_SelectionOrder, :int,
-    :_Storage, ::ImGuiStorage
+    :_Storage, ImGuiStorage.by_value
   )
 
   def ApplyRequests(ms_io)
@@ -2335,9 +2335,9 @@ class ImDrawData < FFI::Struct
     :TotalIdxCount, :int,
     :TotalVtxCount, :int,
     :CmdLists, ImVector.by_value,
-    :DisplayPos, ::ImVec2,
-    :DisplaySize, ::ImVec2,
-    :FramebufferScale, ::ImVec2,
+    :DisplayPos, ImVec2.by_value,
+    :DisplaySize, ImVec2.by_value,
+    :FramebufferScale, ImVec2.by_value,
     :OwnerViewport, :pointer,
     :Textures, :pointer
   )
@@ -2380,8 +2380,8 @@ class ImTextureData < FFI::Struct
     :Height, :int,
     :BytesPerPixel, :int,
     :Pixels, :pointer,
-    :UsedRect, ::ImTextureRect,
-    :UpdateRect, ::ImTextureRect,
+    :UsedRect, ImTextureRect.by_value,
+    :UpdateRect, ImTextureRect.by_value,
     :Updates, ImVector.by_value,
     :UnusedFrames, :int,
     :RefCount, :ushort,
@@ -2446,7 +2446,7 @@ class ImFontConfig < FFI::Struct
     :SizePixels, :float,
     :GlyphRanges, :pointer,
     :GlyphExcludeRanges, :pointer,
-    :GlyphOffset, ::ImVec2,
+    :GlyphOffset, ImVec2.by_value,
     :GlyphMinAdvanceX, :float,
     :GlyphMaxAdvanceX, :float,
     :GlyphExtraAdvanceX, :float,
@@ -2521,8 +2521,8 @@ class ImFontAtlasRect < FFI::Struct
     :y, :ushort,
     :w, :ushort,
     :h, :ushort,
-    :uv0, ::ImVec2,
-    :uv1, ::ImVec2
+    :uv0, ImVec2.by_value,
+    :uv1, ImVec2.by_value
   )
 end
 
@@ -2582,7 +2582,7 @@ class ImFont < FFI::Struct
     :FallbackChar, :ushort,
     :Used8kPagesMap, [:pointer, 1],
     :EllipsisAutoBake, :bool,
-    :RemapPairs, ::ImGuiStorage,
+    :RemapPairs, ImGuiStorage.by_value,
     :Scale, :float
   )
 
@@ -2640,11 +2640,11 @@ class ImGuiViewport < FFI::Struct
   layout(
     :ID, :uint,
     :Flags, :int,
-    :Pos, ::ImVec2,
-    :Size, ::ImVec2,
-    :FramebufferScale, ::ImVec2,
-    :WorkPos, ::ImVec2,
-    :WorkSize, ::ImVec2,
+    :Pos, ImVec2.by_value,
+    :Size, ImVec2.by_value,
+    :FramebufferScale, ImVec2.by_value,
+    :WorkPos, ImVec2.by_value,
+    :WorkSize, ImVec2.by_value,
     :DpiScale, :float,
     :ParentViewportId, :uint,
     :ParentViewport, :pointer,
@@ -2724,10 +2724,10 @@ end
 
 class ImGuiPlatformMonitor < FFI::Struct
   layout(
-    :MainPos, ::ImVec2,
-    :MainSize, ::ImVec2,
-    :WorkPos, ::ImVec2,
-    :WorkSize, ::ImVec2,
+    :MainPos, ImVec2.by_value,
+    :MainSize, ImVec2.by_value,
+    :WorkPos, ImVec2.by_value,
+    :WorkSize, ImVec2.by_value,
     :DpiScale, :float,
     :PlatformHandle, :pointer
   )
@@ -2737,7 +2737,7 @@ class ImGuiPlatformImeData < FFI::Struct
   layout(
     :WantVisible, :bool,
     :WantTextInput, :bool,
-    :InputPos, ::ImVec2,
+    :InputPos, ImVec2.by_value,
     :InputLineHeight, :float,
     :ViewportId, :uint
   )
@@ -4124,8 +4124,8 @@ module ImGui
       :ImGui_IsWindowHovered => :bool,
       :ImGui_GetWindowDrawList => :pointer,
       :ImGui_GetWindowDpiScale => :float,
-      :ImGui_GetWindowPos => ::ImVec2,
-      :ImGui_GetWindowSize => ::ImVec2,
+      :ImGui_GetWindowPos => ImVec2.by_value,
+      :ImGui_GetWindowSize => ImVec2.by_value,
       :ImGui_GetWindowWidth => :float,
       :ImGui_GetWindowHeight => :float,
       :ImGui_GetWindowViewport => :pointer,
@@ -4177,21 +4177,21 @@ module ImGui
       :ImGui_CalcItemWidth => :float,
       :ImGui_PushTextWrapPos => :void,
       :ImGui_PopTextWrapPos => :void,
-      :ImGui_GetFontTexUvWhitePixel => ::ImVec2,
+      :ImGui_GetFontTexUvWhitePixel => ImVec2.by_value,
       :ImGui_GetColorU32Ex => :uint,
       :ImGui_GetColorU32ImVec4 => :uint,
       :ImGui_GetColorU32ImU32Ex => :uint,
       :ImGui_GetStyleColorVec4 => :pointer,
-      :ImGui_GetCursorScreenPos => ::ImVec2,
+      :ImGui_GetCursorScreenPos => ImVec2.by_value,
       :ImGui_SetCursorScreenPos => :void,
-      :ImGui_GetContentRegionAvail => ::ImVec2,
-      :ImGui_GetCursorPos => ::ImVec2,
+      :ImGui_GetContentRegionAvail => ImVec2.by_value,
+      :ImGui_GetCursorPos => ImVec2.by_value,
       :ImGui_GetCursorPosX => :float,
       :ImGui_GetCursorPosY => :float,
       :ImGui_SetCursorPos => :void,
       :ImGui_SetCursorPosX => :void,
       :ImGui_SetCursorPosY => :void,
-      :ImGui_GetCursorStartPos => ::ImVec2,
+      :ImGui_GetCursorStartPos => ImVec2.by_value,
       :ImGui_Separator => :void,
       :ImGui_SameLineEx => :void,
       :ImGui_NewLine => :void,
@@ -4416,9 +4416,9 @@ module ImGui
       :ImGui_IsAnyItemActive => :bool,
       :ImGui_IsAnyItemFocused => :bool,
       :ImGui_GetItemID => :uint,
-      :ImGui_GetItemRectMin => ::ImVec2,
-      :ImGui_GetItemRectMax => ::ImVec2,
-      :ImGui_GetItemRectSize => ::ImVec2,
+      :ImGui_GetItemRectMin => ImVec2.by_value,
+      :ImGui_GetItemRectMax => ImVec2.by_value,
+      :ImGui_GetItemRectSize => ImVec2.by_value,
       :ImGui_GetMainViewport => :pointer,
       :ImGui_GetBackgroundDrawListEx => :pointer,
       :ImGui_GetForegroundDrawListEx => :pointer,
@@ -4430,8 +4430,8 @@ module ImGui
       :ImGui_GetStyleColorName => :pointer,
       :ImGui_SetStateStorage => :void,
       :ImGui_GetStateStorage => :pointer,
-      :ImGui_CalcTextSizeEx => ::ImVec2,
-      :ImGui_ColorConvertU32ToFloat4 => ::ImVec4,
+      :ImGui_CalcTextSizeEx => ImVec2.by_value,
+      :ImGui_ColorConvertU32ToFloat4 => ImVec4.by_value,
       :ImGui_ColorConvertFloat4ToU32 => :uint,
       :ImGui_ColorConvertRGBtoHSV => :void,
       :ImGui_ColorConvertHSVtoRGB => :void,
@@ -4454,10 +4454,10 @@ module ImGui
       :ImGui_IsMouseHoveringRectEx => :bool,
       :ImGui_IsMousePosValid => :bool,
       :ImGui_IsAnyMouseDown => :bool,
-      :ImGui_GetMousePos => ::ImVec2,
-      :ImGui_GetMousePosOnOpeningCurrentPopup => ::ImVec2,
+      :ImGui_GetMousePos => ImVec2.by_value,
+      :ImGui_GetMousePosOnOpeningCurrentPopup => ImVec2.by_value,
       :ImGui_IsMouseDragging => :bool,
-      :ImGui_GetMouseDragDelta => ::ImVec2,
+      :ImGui_GetMouseDragDelta => ImVec2.by_value,
       :ImGui_ResetMouseDragDeltaEx => :void,
       :ImGui_GetMouseCursor => :int,
       :ImGui_SetMouseCursor => :void,
@@ -4553,7 +4553,7 @@ module ImGui
       :ImGuiListClipper_IncludeItemsByIndex => :void,
       :ImGuiListClipper_SeekCursorForItem => :void,
       :ImColor_SetHSV => :void,
-      :ImColor_HSV => ::ImColor,
+      :ImColor_HSV => ImColor.by_value,
       :ImGuiSelectionBasicStorage_ApplyRequests => :void,
       :ImGuiSelectionBasicStorage_Contains => :bool,
       :ImGuiSelectionBasicStorage_Clear => :void,
@@ -4573,8 +4573,8 @@ module ImGui
       :ImDrawList_PopClipRect => :void,
       :ImDrawList_PushTexture => :void,
       :ImDrawList_PopTexture => :void,
-      :ImDrawList_GetClipRectMin => ::ImVec2,
-      :ImDrawList_GetClipRectMax => ::ImVec2,
+      :ImDrawList_GetClipRectMin => ImVec2.by_value,
+      :ImDrawList_GetClipRectMax => ImVec2.by_value,
       :ImDrawList_AddLineEx => :void,
       :ImDrawList_AddRectEx => :void,
       :ImDrawList_AddRectFilledEx => :void,
@@ -4649,7 +4649,7 @@ module ImGui
       :ImTextureData_GetPixelsAt => :pointer,
       :ImTextureData_GetSizeInBytes => :int,
       :ImTextureData_GetPitch => :int,
-      :ImTextureData_GetTexRef => ::ImTextureRef,
+      :ImTextureData_GetTexRef => ImTextureRef.by_value,
       :ImTextureData_GetTexID => :int,
       :ImTextureData_SetTexID => :void,
       :ImTextureData_SetStatus => :void,
@@ -4705,7 +4705,7 @@ module ImGui
       :ImFont_IsLoaded => :bool,
       :ImFont_GetDebugName => :pointer,
       :ImFont_GetFontBakedEx => :pointer,
-      :ImFont_CalcTextSizeAEx => ::ImVec2,
+      :ImFont_CalcTextSizeAEx => ImVec2.by_value,
       :ImFont_CalcWordWrapPosition => :pointer,
       :ImFont_RenderCharEx => :void,
       :ImFont_RenderText => :void,
@@ -4713,8 +4713,8 @@ module ImGui
       :ImFont_ClearOutputData => :void,
       :ImFont_AddRemapChar => :void,
       :ImFont_IsGlyphRangeUnused => :bool,
-      :ImGuiViewport_GetCenter => ::ImVec2,
-      :ImGuiViewport_GetWorkCenter => ::ImVec2,
+      :ImGuiViewport_GetCenter => ImVec2.by_value,
+      :ImGuiViewport_GetWorkCenter => ImVec2.by_value,
       :ImGuiPlatformIO_ClearPlatformHandlers => :void,
       :ImGuiPlatformIO_ClearRendererHandlers => :void,
       :ImGui_PushFont => :void,
@@ -4724,9 +4724,9 @@ module ImGui
       :ImGui_PopButtonRepeat => :void,
       :ImGui_PushTabStop => :void,
       :ImGui_PopTabStop => :void,
-      :ImGui_GetContentRegionMax => ::ImVec2,
-      :ImGui_GetWindowContentRegionMin => ::ImVec2,
-      :ImGui_GetWindowContentRegionMax => ::ImVec2,
+      :ImGui_GetContentRegionMax => ImVec2.by_value,
+      :ImGui_GetWindowContentRegionMin => ImVec2.by_value,
+      :ImGui_GetWindowContentRegionMax => ImVec2.by_value,
       :ImGui_BeginChildFrameEx => :bool,
       :ImGui_EndChildFrame => :void,
       :ImGui_ShowStackToolWindow => :void,
@@ -4943,12 +4943,12 @@ module ImGui
     ImGui_GetWindowDpiScale()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetWindowPos()
     ImGui_GetWindowPos()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetWindowSize()
     ImGui_GetWindowSize()
   end
@@ -5242,7 +5242,7 @@ module ImGui
     ImGui_PopTextWrapPos()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetFontTexUvWhitePixel()
     ImGui_GetFontTexUvWhitePixel()
   end
@@ -5271,7 +5271,7 @@ module ImGui
     ImGui_GetStyleColorVec4(idx)
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetCursorScreenPos()
     ImGui_GetCursorScreenPos()
   end
@@ -5282,12 +5282,12 @@ module ImGui
     ImGui_SetCursorScreenPos(pos)
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetContentRegionAvail()
     ImGui_GetContentRegionAvail()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetCursorPos()
     ImGui_GetCursorPos()
   end
@@ -5320,7 +5320,7 @@ module ImGui
     ImGui_SetCursorPosY(local_y)
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetCursorStartPos()
     ImGui_GetCursorStartPos()
   end
@@ -6603,17 +6603,17 @@ module ImGui
     ImGui_GetItemID()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetItemRectMin()
     ImGui_GetItemRectMin()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetItemRectMax()
     ImGui_GetItemRectMax()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetItemRectSize()
     ImGui_GetItemRectSize()
   end
@@ -6680,13 +6680,13 @@ module ImGui
   end
 
   # arg: text(const char*), text_end(const char*), hide_text_after_double_hash(bool), wrap_width(float)
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.CalcTextSizeEx(text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)
     ImGui_CalcTextSizeEx(text, text_end, hide_text_after_double_hash, wrap_width)
   end
 
   # arg: in(ImU32)
-  # ret: :ImVec4
+  # ret: ImVec4.by_value
   def self.ColorConvertU32ToFloat4(_in_)
     ImGui_ColorConvertU32ToFloat4(_in_)
   end
@@ -6822,12 +6822,12 @@ module ImGui
     ImGui_IsAnyMouseDown()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetMousePos()
     ImGui_GetMousePos()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetMousePosOnOpeningCurrentPopup()
     ImGui_GetMousePosOnOpeningCurrentPopup()
   end
@@ -6839,7 +6839,7 @@ module ImGui
   end
 
   # arg: button(ImGuiMouseButton), lock_threshold(float)
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)
     ImGui_GetMouseDragDelta(button, lock_threshold)
   end
@@ -7023,17 +7023,17 @@ module ImGui
     ImGui_PopTabStop()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetContentRegionMax()
     ImGui_GetContentRegionMax()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetWindowContentRegionMin()
     ImGui_GetWindowContentRegionMin()
   end
 
-  # ret: :ImVec2
+  # ret: ImVec2.by_value
   def self.GetWindowContentRegionMax()
     ImGui_GetWindowContentRegionMax()
   end
