@@ -6,13 +6,17 @@ if __FILE__ == $PROGRAM_NAME
   ImGui.load_lib(Dir.pwd + '/../lib/' + 'imgui.dll', true)
 
   ImGui::CreateContext()
+  ImGui::StyleColorsDark()
 
   io = ImGuiIO.new(ImGui::GetIO())
+  # ImFontAtlas.new(io[:Fonts]).AddFontDefault()
 
-  # ImGui::ShowDemoWindow()
+  # ImGui::NewFrame()
+  # ImGui::ShowDemoWindow(nil)
 
-  # ImGui::Begin("Ruby-ImGui : はじめてのウィンドウ＆日本語") #, p_open, window_flags)
-  # ImGui::End()
+  ImGui::Begin("", nil, 0)
+  ImGui::End()
+  ImGui::Render()
 
   ImGui::DestroyContext(nil)
 end

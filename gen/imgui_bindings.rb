@@ -254,8 +254,40 @@ module ImGuiBindings
     end
   end
 
+  def self.evaluate_if_expression(expression, conditions = [])
+    expr = expression.to_s.strip
+    return false if expr.empty?
+
+    expr.gsub!(/defined\s*\(\s*([A-Za-z_]\w*)\s*\)/) { conditions.include?($1).to_s }
+    expr.gsub!(/defined\s+([A-Za-z_]\w*)/) { conditions.include?($1).to_s }
+
+    # Keep this conservative: only boolean operators and literals are allowed after replacement.
+    return false unless expr.match?(/\A[\s\(\)!&|a-zA-Z]+\z/)
+
+    begin
+      !!eval(expr)
+    rescue StandardError
+      false
+    end
+  end
+
+  def self.condition_satisfied?(condition, expression, conditions = [])
+    case condition
+    when 'ifdef'
+      conditions.include?(expression)
+    when 'ifndef'
+      !conditions.include?(expression)
+    when 'if'
+      evaluate_if_expression(expression, conditions)
+    when 'ifnot'
+      !evaluate_if_expression(expression, conditions)
+    else
+      true
+    end
+  end
+
   def self.build_define_map(json_filename, conditions = [])
-    defines = []
+    defines_by_name = {}
     File.open(json_filename) do |file|
       json = JSON.load(file)
       json_defines = json['defines']
@@ -265,11 +297,10 @@ module ImGuiBindings
         if json_define.has_key? 'conditionals'
           json_define_conditionals = json_define['conditionals']
           unless json_define_conditionals.nil? || json_define_conditionals.empty?
-            condition = json_define_conditionals[0]['condition']
-            macro_value = json_define_conditionals[0]['expression']
-            should_macro_defined = (condition == 'ifdef' || condition == 'if')
-            macro_defined = conditions.include? macro_value
-            next if ((should_macro_defined && !macro_defined) || (!should_macro_defined && macro_defined))
+            should_emit = json_define_conditionals.all? do |cond|
+              condition_satisfied?(cond['condition'], cond['expression'], conditions)
+            end
+            next unless should_emit
           end
         end
 
@@ -279,10 +310,10 @@ module ImGuiBindings
         define_value = parse_define_numeric_content(define_content)
         next if define_value.nil?
 
-        defines << ImGuiDefineMapEntry.new(name: define_name, content: define_content, value: define_value)
+        defines_by_name[define_name] = ImGuiDefineMapEntry.new(name: define_name, content: define_content, value: define_value)
       end
     end
-    return defines
+    return defines_by_name.values
   end
 
   def self.get_ffi_type(type_name)
