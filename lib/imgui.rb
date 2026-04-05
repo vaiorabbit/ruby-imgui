@@ -1477,6 +1477,14 @@ class ImVector_char < FFI::Struct
   )
 end
 
+class ImVector_ImGuiStoragePair < FFI::Struct
+  layout(
+    :Size, :int,
+    :Capacity, :int,
+    :Data, :pointer
+  )
+end
+
 class ImVector_ImGuiSelectionRequest < FFI::Struct
   layout(
     :Size, :int,
@@ -2113,6 +2121,12 @@ class ImGuiTextBuffer < FFI::Struct
 
 end
 
+class ImGuiStoragePair < FFI::Struct
+  layout(
+    :key, :uint
+  )
+end
+
 class ImGuiStorage < FFI::Struct
   layout(
     :Data, ImVector.by_value
@@ -2729,13 +2743,6 @@ class ImGuiPlatformImeData < FFI::Struct
   )
 end
 
-class ImGuiStoragePair < FFI::Struct
-  layout(
-    :key, :uint,
-    :val_p, :pointer
-  )
-end
-
 # shorthand initializer
 def ImVec2.create(x = 0, y = 0)
   instance = ImVec2.new
@@ -3181,6 +3188,8 @@ module ImGui
       :ImGui_DestroyPlatformWindows,
       :ImGui_FindViewportByID,
       :ImGui_FindViewportByPlatformHandle,
+      :ImVector_Construct,
+      :ImVector_Destruct,
       :ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets,
       :ImGuiPlatformIO_SetPlatform_GetWindowFramebufferScale,
       :ImGuiPlatformIO_SetPlatform_GetWindowPos,
@@ -3826,6 +3835,8 @@ module ImGui
       :ImGui_DestroyPlatformWindows => [],
       :ImGui_FindViewportByID => [:uint],
       :ImGui_FindViewportByPlatformHandle => [:pointer],
+      :ImVector_Construct => [:pointer],
+      :ImVector_Destruct => [:pointer],
       :ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets => [:pointer],
       :ImGuiPlatformIO_SetPlatform_GetWindowFramebufferScale => [:pointer],
       :ImGuiPlatformIO_SetPlatform_GetWindowPos => [:pointer],
@@ -4471,6 +4482,8 @@ module ImGui
       :ImGui_DestroyPlatformWindows => :void,
       :ImGui_FindViewportByID => :pointer,
       :ImGui_FindViewportByPlatformHandle => :pointer,
+      :ImVector_Construct => :void,
+      :ImVector_Destruct => :void,
       :ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets => :void,
       :ImGuiPlatformIO_SetPlatform_GetWindowFramebufferScale => :void,
       :ImGuiPlatformIO_SetPlatform_GetWindowPos => :void,

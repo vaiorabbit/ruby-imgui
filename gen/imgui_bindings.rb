@@ -117,7 +117,7 @@ module ImGuiBindings
         next if json_struct['forward_declaration'] == true
 
         struct_name = json_struct['name']
-        next if json_struct['name'].include? 'ImGuiStoragePair' # Use stub instead
+        # next if json_struct['name'].include? 'ImGuiStoragePair' # Use stub instead
 
         struct = ImGuiStructMapEntry.new(name: struct_name, members: [])
         json_fields = json_struct['fields']
@@ -168,14 +168,14 @@ module ImGuiBindings
     #     "type": "union { int val_i; float val_f; void* val_p;}"
     #   }
     # ],
-    structs.delete_if {|struct| struct.name == "ImGuiStoragePair"}
-    struct_pair_stub = ImGuiStructMapEntry.new
-    struct_pair_stub.name = 'ImGuiStoragePair'
-    struct_pair_stub.members = [
-      ImGuiStructMemberEntry.new(name: 'key', type_str: 'unsinged int', type: :uint, is_array: false, size: 0),
-      ImGuiStructMemberEntry.new(name: 'val_p', type_str: '', type: :pointer, is_array: false, size: 0),
-    ]
-    structs << struct_pair_stub
+    # structs.delete_if {|struct| struct.name == "ImGuiStoragePair"}
+    # struct_pair_stub = ImGuiStructMapEntry.new
+    # struct_pair_stub.name = 'ImGuiStoragePair'
+    # struct_pair_stub.members = [
+    #   ImGuiStructMemberEntry.new(name: 'key', type_str: 'unsinged int', type: :uint, is_array: false, size: 0),
+    #   ImGuiStructMemberEntry.new(name: 'val_p', type_str: '', type: :pointer, is_array: false, size: 0),
+    # ]
+    # structs << struct_pair_stub
 
     return structs
   end
@@ -236,9 +236,9 @@ module ImGuiBindings
     if type_name.include?('ImVector')
       return :ImVector # stub
     end
-    if type_name.include?('Pair')
-      return :Pair # stub
-    end
+    # if type_name.include?('Pair')
+    #   return :Pair # stub
+    # end
 
     if @@imGuiToCTypeMap != nil && @@imGuiToCTypeMap.has_key?(type_name)
       return @@imGuiToCTypeMap[type_name].type
@@ -350,7 +350,7 @@ module ImGuiBindings
       json_functions.each do |json_function|
 
         # Ignore ImVector methods.
-        next if json_function['name'].start_with?('ImVector_')
+        # next if json_function['name'].start_with?('ImVector_')
         next if json_function['is_default_argument_helper'] == true
 
         # Ignore functions with 'va_list' arguments.  Use ':varargs (...)' versions instead.
