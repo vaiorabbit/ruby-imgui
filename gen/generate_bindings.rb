@@ -144,13 +144,14 @@ module Generator
     if func.ctor
       out.write("def self.create(#{arg_names_with_defaults.join(', ')})\n")
       out.push_indent
-      out.write("return #{func.method_of}.new(ImGui::#{func.name}(#{arg_names.join(', ')}))\n")
+      out.write("return #{func.method_of}.new(#{func.name}(#{arg_names.join(', ')}))\n")
       out.pop_indent
       out.write("end\n\n")
     else
       out.write("def #{func_name_ruby}(#{arg_names_with_defaults.join(', ')})\n")
       out.push_indent
       out.write("ImGui::#{func.name}(#{arg_names.join(', ')})\n")
+      # out.write("#{func.name}(#{arg_names.join(', ')})\n")
       out.pop_indent
       out.write("end\n\n")
     end
@@ -247,6 +248,8 @@ module Generator
       func_args = func.args.map do |arg|
         if arg.type_name.to_s.end_with?('Callback')
           ':' + arg.type_name.to_s
+        elsif arg.type.to_s.start_with?(':Im')
+          arg.type.to_s.gsub(/^:/, '') + '.by_value'
         elsif arg.type.to_s.start_with?('Im')
           arg.type.to_s + '.by_value'
         else
@@ -301,6 +304,7 @@ module Generator
 
   def self.write_module_method(out, func)
     return unless func.name.start_with?('ImGui_')
+    # return unless func.name.start_with?('Im')
     return unless func.generate_module_method
 
     arg_names = sanitize_arg_names(func.args)
@@ -314,8 +318,8 @@ module Generator
     # Fix raw names into public API names by omitting some prefixes
     func_name_ruby = func.replaced_name ? func.replaced_name : func.name
     func_name_c = func.name
-    if func.name.start_with?('ImGui_')
-      func_name_ruby = func_name_c.gsub(/^ImGui_/, '')
+    if func.name.start_with?('Im')
+      func_name_ruby = func_name_c.gsub(/^Im.+_/, '')
     end
 
     # Make list of argument with default value
@@ -368,6 +372,11 @@ module Generator
     # extract function names that require overload definition
     original_funcnames = funcs_map.collect {|func| func.original_funcname}.filter {|original_funcname| !original_funcname.empty?}
     overload_funcnames = original_funcnames.find_all {|ofn| original_funcnames.count(ofn) > 1}.uniq!
+
+    # remove candidates that aren't the ImGui module methods (e.g. ImGuiTextRange_ImGuiTextRange_Nil)
+    overload_funcnames.delete_if do |ofn|
+      !ofn.start_with? "ImGui::"
+    end
 =begin
     # remove candidates that aren't the ImGui module methods (e.g. ImGuiTextRange_ImGuiTextRange_Nil)
     overload_funcnames.delete_if do |ofn|
@@ -377,7 +386,11 @@ module Generator
 =end
     out.write("# Overload functions\n\n")
     overload_funcnames.each do |ofn|
-      method_name = ofn[7..] # [7..] to remove preceding string "ImGui::"
+      if ofn[0..6] == "ImGui::"
+        method_name = ofn[7..] # [7..] to remove preceding string "ImGui::"
+      else
+        method_name = ofn
+      end
       next if method_name.nil? or method_name.empty?
       ovl_funcs = funcs_map.filter {|func| func.original_funcname == ofn}
 
