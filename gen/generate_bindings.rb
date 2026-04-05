@@ -561,14 +561,13 @@ require 'ffi'
     #
     # Typedefs
     #
-=begin
+
     typedefs_map.each do |typedef|
       if typedef[0] != typedef[1].type.to_s
         Generator.write_typedef(out, typedef)
       end
     end
     out.newline
-=end
 
     #
     # Enums

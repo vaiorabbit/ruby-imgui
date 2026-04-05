@@ -77,7 +77,8 @@ module ImGuiBindings
               args << get_ffi_type(argument['type']['declaration'])
             end
 
-            type_map[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: "#{type_name}", callback_signature: [ret, args])
+            # type_map[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: "#{type_name}", callback_signature: [ret, args])
+            type_map[type_name] = ImGuiTypedefMapEntry.new(name: type_name, type: :pointer, callback_signature: [ret, args])
             next
           end
         end

@@ -6,6 +6,107 @@
 
 require 'ffi'
 
+FFI.typedef :ushort, :ImDrawIdx
+FFI.typedef :uint, :ImGuiID
+FFI.typedef :char, :ImS8
+FFI.typedef :uchar, :ImU8
+FFI.typedef :short, :ImS16
+FFI.typedef :ushort, :ImU16
+FFI.typedef :int, :ImS32
+FFI.typedef :uint, :ImU32
+FFI.typedef :int64, :ImS64
+FFI.typedef :uint64, :ImU64
+FFI.typedef :int, :ImGuiDir
+FFI.typedef :int, :ImGuiKey
+FFI.typedef :int, :ImGuiMouseSource
+FFI.typedef :int, :ImGuiSortDirection
+FFI.typedef :int, :ImGuiCol
+FFI.typedef :int, :ImGuiCond
+FFI.typedef :int, :ImGuiDataType
+FFI.typedef :int, :ImGuiMouseButton
+FFI.typedef :int, :ImGuiMouseCursor
+FFI.typedef :int, :ImGuiStyleVar
+FFI.typedef :int, :ImGuiTableBgTarget
+FFI.typedef :int, :ImDrawFlags
+FFI.typedef :int, :ImDrawListFlags
+FFI.typedef :int, :ImDrawTextFlags
+FFI.typedef :int, :ImFontFlags
+FFI.typedef :int, :ImFontAtlasFlags
+FFI.typedef :int, :ImGuiBackendFlags
+FFI.typedef :int, :ImGuiButtonFlags
+FFI.typedef :int, :ImGuiChildFlags
+FFI.typedef :int, :ImGuiColorEditFlags
+FFI.typedef :int, :ImGuiConfigFlags
+FFI.typedef :int, :ImGuiComboFlags
+FFI.typedef :int, :ImGuiDockNodeFlags
+FFI.typedef :int, :ImGuiDragDropFlags
+FFI.typedef :int, :ImGuiFocusedFlags
+FFI.typedef :int, :ImGuiHoveredFlags
+FFI.typedef :int, :ImGuiInputFlags
+FFI.typedef :int, :ImGuiInputTextFlags
+FFI.typedef :int, :ImGuiItemFlags
+FFI.typedef :int, :ImGuiKeyChord
+FFI.typedef :int, :ImGuiListClipperFlags
+FFI.typedef :int, :ImGuiPopupFlags
+FFI.typedef :int, :ImGuiMultiSelectFlags
+FFI.typedef :int, :ImGuiSelectableFlags
+FFI.typedef :int, :ImGuiSliderFlags
+FFI.typedef :int, :ImGuiTabBarFlags
+FFI.typedef :int, :ImGuiTabItemFlags
+FFI.typedef :int, :ImGuiTableFlags
+FFI.typedef :int, :ImGuiTableColumnFlags
+FFI.typedef :int, :ImGuiTableRowFlags
+FFI.typedef :int, :ImGuiTreeNodeFlags
+FFI.typedef :int, :ImGuiViewportFlags
+FFI.typedef :int, :ImGuiWindowFlags
+FFI.typedef :uint, :ImWchar32
+FFI.typedef :ushort, :ImWchar16
+FFI.typedef :ushort, :ImWchar
+FFI.typedef :int, :ImGuiSelectionUserData
+FFI.typedef :int, :ImTextureID
+FFI.typedef :int, :ImFontAtlasRectId
+FFI.typedef :int, :ImFontAtlasCustomRect
+FFI.typedef :int, :ImGuiWindowFlags_
+FFI.typedef :int, :ImGuiChildFlags_
+FFI.typedef :int, :ImGuiItemFlags_
+FFI.typedef :int, :ImGuiInputTextFlags_
+FFI.typedef :int, :ImGuiTreeNodeFlags_
+FFI.typedef :int, :ImGuiPopupFlags_
+FFI.typedef :int, :ImGuiSelectableFlags_
+FFI.typedef :int, :ImGuiComboFlags_
+FFI.typedef :int, :ImGuiTabBarFlags_
+FFI.typedef :int, :ImGuiTabItemFlags_
+FFI.typedef :int, :ImGuiFocusedFlags_
+FFI.typedef :int, :ImGuiHoveredFlags_
+FFI.typedef :int, :ImGuiDockNodeFlags_
+FFI.typedef :int, :ImGuiDragDropFlags_
+FFI.typedef :int, :ImGuiDataType_
+FFI.typedef :int, :ImGuiInputFlags_
+FFI.typedef :int, :ImGuiConfigFlags_
+FFI.typedef :int, :ImGuiBackendFlags_
+FFI.typedef :int, :ImGuiCol_
+FFI.typedef :int, :ImGuiStyleVar_
+FFI.typedef :int, :ImGuiButtonFlags_
+FFI.typedef :int, :ImGuiColorEditFlags_
+FFI.typedef :int, :ImGuiSliderFlags_
+FFI.typedef :int, :ImGuiMouseButton_
+FFI.typedef :int, :ImGuiMouseCursor_
+FFI.typedef :int, :ImGuiCond_
+FFI.typedef :int, :ImGuiTableFlags_
+FFI.typedef :int, :ImGuiTableColumnFlags_
+FFI.typedef :int, :ImGuiTableRowFlags_
+FFI.typedef :int, :ImGuiTableBgTarget_
+FFI.typedef :int, :ImGuiListClipperFlags_
+FFI.typedef :int, :ImGuiMultiSelectFlags_
+FFI.typedef :int, :ImGuiSelectionRequestType
+FFI.typedef :int, :ImDrawFlags_
+FFI.typedef :int, :ImDrawListFlags_
+FFI.typedef :int, :ImTextureFormat
+FFI.typedef :int, :ImTextureStatus
+FFI.typedef :int, :ImFontAtlasFlags_
+FFI.typedef :int, :ImFontFlags_
+FFI.typedef :int, :ImGuiViewportFlags_
+
 # ImGuiWindowFlags_
 ImGuiWindowFlags_None = 0 # 0
 ImGuiWindowFlags_NoTitleBar = 1 # 1
@@ -928,7 +1029,7 @@ class ImDrawCmd < FFI::Struct
     :VtxOffset, :uint,
     :IdxOffset, :uint,
     :ElemCount, :uint,
-    :UserCallback, ImDrawCallback.by_value,
+    :UserCallback, :pointer,
     :UserCallbackData, :pointer,
     :UserCallbackDataSize, :int,
     :UserCallbackDataOffset, :int
@@ -3826,7 +3927,7 @@ module ImGui
       :ImGui_DebugStartItemPicker => [],
       :ImGui_DebugCheckVersionAndDataLayout => [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t],
       :ImGui_DebugLogV => [:pointer, :varargs],
-      :ImGui_SetAllocatorFunctions => [ImGuiMemAllocFunc.by_value, ImGuiMemFreeFunc.by_value, :pointer],
+      :ImGui_SetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :ImGui_GetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :ImGui_MemAlloc => [:size_t],
       :ImGui_MemFree => [:pointer],
