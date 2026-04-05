@@ -386,11 +386,11 @@ module Generator
 =end
     out.write("# Overload functions\n\n")
     overload_funcnames.each do |ofn|
-      if ofn[0..6] == "ImGui::"
-        method_name = ofn[7..] # [7..] to remove preceding string "ImGui::"
-      else
-        method_name = ofn
-      end
+      method_name = if ofn[0..6] == "ImGui::"
+                      ofn[7..] # [7..] to remove preceding string "ImGui::"
+                    else
+                      ofn
+                    end
       next if method_name.nil? or method_name.empty?
       ovl_funcs = funcs_map.filter {|func| func.original_funcname == ofn}
 
@@ -581,7 +581,7 @@ require 'ffi'
     # Structs
     #
 
-    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas', 'ImGuiKeyData'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
+    ['ImVec2', 'ImVec4', 'ImVector', 'ImDrawVert', 'ImDrawListSplitter', 'ImTextureRef', 'ImDrawCmd', 'ImDrawCmdHeader', 'ImDrawList', 'ImFontAtlas', 'ImGuiKeyData'].each do |name| # for forward declaration [TODO] resolve definition order with topological sort or something
       methods = funcs_map.find_all { |func| func.method_of != nil && func.method_of == name }
       Generator.write_struct(out, structs_map.find{|struct| struct.name == name}, methods, typedefs_map)
       structs_map.delete_if {|struct| struct.name == name}
@@ -641,7 +641,7 @@ end
     out.write(<<-EOS)
   @@imgui_import_done = false
 
-  def self.load_lib(libpath = './imgui.dylib', output_error = false)
+  def self.load_lib(libpath, output_error = false)
     ffi_lib_flags :now, :global
     ffi_lib libpath
     import_symbols(output_error) unless @@imgui_import_done

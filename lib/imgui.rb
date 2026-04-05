@@ -909,6 +909,18 @@ class ImDrawListSplitter < FFI::Struct
 
 end
 
+class ImTextureRef < FFI::Struct
+  layout(
+    :_TexData, :pointer,
+    :_TexID, :int
+  )
+
+  def GetTexID()
+    ImGui::ImTextureRef_GetTexID(self)
+  end
+
+end
+
 class ImDrawCmd < FFI::Struct
   layout(
     :ClipRect, ::ImVec4,
@@ -1192,6 +1204,54 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PopTextureID(self)
   end
 
+  def _SetDrawListSharedData(data)
+    ImGui::ImDrawList__SetDrawListSharedData(self, data)
+  end
+
+  def _ResetForNewFrame()
+    ImGui::ImDrawList__ResetForNewFrame(self)
+  end
+
+  def _ClearFreeMemory()
+    ImGui::ImDrawList__ClearFreeMemory(self)
+  end
+
+  def _PopUnusedDrawCmd()
+    ImGui::ImDrawList__PopUnusedDrawCmd(self)
+  end
+
+  def _TryMergeDrawCmds()
+    ImGui::ImDrawList__TryMergeDrawCmds(self)
+  end
+
+  def _OnChangedClipRect()
+    ImGui::ImDrawList__OnChangedClipRect(self)
+  end
+
+  def _OnChangedTexture()
+    ImGui::ImDrawList__OnChangedTexture(self)
+  end
+
+  def _OnChangedVtxOffset()
+    ImGui::ImDrawList__OnChangedVtxOffset(self)
+  end
+
+  def _SetTexture(tex_ref)
+    ImGui::ImDrawList__SetTexture(self, tex_ref)
+  end
+
+  def _CalcCircleAutoSegmentCount(radius)
+    ImGui::ImDrawList__CalcCircleAutoSegmentCount(self, radius)
+  end
+
+  def _PathArcToFastEx(center, radius, a_min_sample, a_max_sample, a_step)
+    ImGui::ImDrawList__PathArcToFastEx(self, center, radius, a_min_sample, a_max_sample, a_step)
+  end
+
+  def _PathArcToN(center, radius, a_min, a_max, num_segments)
+    ImGui::ImDrawList__PathArcToN(self, center, radius, a_min, a_max, num_segments)
+  end
+
 end
 
 class ImFontAtlas < FFI::Struct
@@ -1382,18 +1442,6 @@ class ImGuiKeyData < FFI::Struct
     :DownDurationPrev, :float,
     :AnalogValue, :float
   )
-end
-
-class ImTextureRef < FFI::Struct
-  layout(
-    :_TexData, :pointer,
-    :_TexID, :int
-  )
-
-  def GetTexID()
-    ImGui::ImTextureRef_GetTexID(self)
-  end
-
 end
 
 class ImGuiTableSortSpecs < FFI::Struct
@@ -2049,6 +2097,10 @@ class ImGuiTextBuffer < FFI::Struct
 
   def reserve(capacity)
     ImGui::ImGuiTextBuffer_reserve(self, capacity)
+  end
+
+  def c_str()
+    ImGui::ImGuiTextBuffer_c_str(self)
   end
 
   def append(str, str_end = nil)
@@ -2721,7 +2773,7 @@ module ImGui
 
   @@imgui_import_done = false
 
-  def self.load_lib(libpath = './imgui.dylib', output_error = false)
+  def self.load_lib(libpath, output_error = false)
     ffi_lib_flags :now, :global
     ffi_lib libpath
     import_symbols(output_error) unless @@imgui_import_done
@@ -3407,8 +3459,8 @@ module ImGui
       :ImGui_StyleColorsClassic => [:pointer],
       :ImGui_Begin => [:pointer, :pointer, :int],
       :ImGui_End => [],
-      :ImGui_BeginChild => [:pointer, ::ImVec2, :int, :int],
-      :ImGui_BeginChildID => [:uint, ::ImVec2, :int, :int],
+      :ImGui_BeginChild => [:pointer, ImVec2.by_value, :int, :int],
+      :ImGui_BeginChildID => [:uint, ImVec2.by_value, :int, :int],
       :ImGui_EndChild => [],
       :ImGui_IsWindowAppearing => [],
       :ImGui_IsWindowCollapsed => [],
@@ -3421,21 +3473,21 @@ module ImGui
       :ImGui_GetWindowWidth => [],
       :ImGui_GetWindowHeight => [],
       :ImGui_GetWindowViewport => [],
-      :ImGui_SetNextWindowPosEx => [::ImVec2, :int, ::ImVec2],
-      :ImGui_SetNextWindowSize => [::ImVec2, :int],
-      :ImGui_SetNextWindowSizeConstraints => [::ImVec2, ::ImVec2, :ImGuiSizeCallback, :pointer],
-      :ImGui_SetNextWindowContentSize => [::ImVec2],
+      :ImGui_SetNextWindowPosEx => [ImVec2.by_value, :int, ImVec2.by_value],
+      :ImGui_SetNextWindowSize => [ImVec2.by_value, :int],
+      :ImGui_SetNextWindowSizeConstraints => [ImVec2.by_value, ImVec2.by_value, :ImGuiSizeCallback, :pointer],
+      :ImGui_SetNextWindowContentSize => [ImVec2.by_value],
       :ImGui_SetNextWindowCollapsed => [:bool, :int],
       :ImGui_SetNextWindowFocus => [],
-      :ImGui_SetNextWindowScroll => [::ImVec2],
+      :ImGui_SetNextWindowScroll => [ImVec2.by_value],
       :ImGui_SetNextWindowBgAlpha => [:float],
       :ImGui_SetNextWindowViewport => [:uint],
-      :ImGui_SetWindowPos => [::ImVec2, :int],
-      :ImGui_SetWindowSize => [::ImVec2, :int],
+      :ImGui_SetWindowPos => [ImVec2.by_value, :int],
+      :ImGui_SetWindowSize => [ImVec2.by_value, :int],
       :ImGui_SetWindowCollapsed => [:bool, :int],
       :ImGui_SetWindowFocus => [],
-      :ImGui_SetWindowPosStr => [:pointer, ::ImVec2, :int],
-      :ImGui_SetWindowSizeStr => [:pointer, ::ImVec2, :int],
+      :ImGui_SetWindowPosStr => [:pointer, ImVec2.by_value, :int],
+      :ImGui_SetWindowSizeStr => [:pointer, ImVec2.by_value, :int],
       :ImGui_SetWindowCollapsedStr => [:pointer, :bool, :int],
       :ImGui_SetWindowFocusStr => [:pointer],
       :ImGui_GetScrollX => [],
@@ -3454,10 +3506,10 @@ module ImGui
       :ImGui_GetFontSize => [],
       :ImGui_GetFontBaked => [],
       :ImGui_PushStyleColor => [:int, :uint],
-      :ImGui_PushStyleColorImVec4 => [:int, ::ImVec4],
+      :ImGui_PushStyleColorImVec4 => [:int, ImVec4.by_value],
       :ImGui_PopStyleColorEx => [:int],
       :ImGui_PushStyleVar => [:int, :float],
-      :ImGui_PushStyleVarImVec2 => [:int, ::ImVec2],
+      :ImGui_PushStyleVarImVec2 => [:int, ImVec2.by_value],
       :ImGui_PushStyleVarX => [:int, :float],
       :ImGui_PushStyleVarY => [:int, :float],
       :ImGui_PopStyleVarEx => [:int],
@@ -3471,16 +3523,16 @@ module ImGui
       :ImGui_PopTextWrapPos => [],
       :ImGui_GetFontTexUvWhitePixel => [],
       :ImGui_GetColorU32Ex => [:int, :float],
-      :ImGui_GetColorU32ImVec4 => [::ImVec4],
+      :ImGui_GetColorU32ImVec4 => [ImVec4.by_value],
       :ImGui_GetColorU32ImU32Ex => [:uint, :float],
       :ImGui_GetStyleColorVec4 => [:int],
       :ImGui_GetCursorScreenPos => [],
-      :ImGui_SetCursorScreenPos => [::ImVec2],
+      :ImGui_SetCursorScreenPos => [ImVec2.by_value],
       :ImGui_GetContentRegionAvail => [],
       :ImGui_GetCursorPos => [],
       :ImGui_GetCursorPosX => [],
       :ImGui_GetCursorPosY => [],
-      :ImGui_SetCursorPos => [::ImVec2],
+      :ImGui_SetCursorPos => [ImVec2.by_value],
       :ImGui_SetCursorPosX => [:float],
       :ImGui_SetCursorPosY => [:float],
       :ImGui_GetCursorStartPos => [],
@@ -3488,7 +3540,7 @@ module ImGui
       :ImGui_SameLineEx => [:float, :float],
       :ImGui_NewLine => [],
       :ImGui_Spacing => [],
-      :ImGui_Dummy => [::ImVec2],
+      :ImGui_Dummy => [ImVec2.by_value],
       :ImGui_IndentEx => [:float],
       :ImGui_UnindentEx => [:float],
       :ImGui_BeginGroup => [],
@@ -3509,28 +3561,28 @@ module ImGui
       :ImGui_GetIDInt => [:int],
       :ImGui_TextUnformattedEx => [:pointer, :pointer],
       :ImGui_TextV => [:pointer, :varargs],
-      :ImGui_TextColoredV => [::ImVec4, :pointer, :varargs],
+      :ImGui_TextColoredV => [ImVec4.by_value, :pointer, :varargs],
       :ImGui_TextDisabledV => [:pointer, :varargs],
       :ImGui_TextWrappedV => [:pointer, :varargs],
       :ImGui_LabelTextV => [:pointer, :pointer, :varargs],
       :ImGui_BulletTextV => [:pointer, :varargs],
       :ImGui_SeparatorText => [:pointer],
-      :ImGui_ButtonEx => [:pointer, ::ImVec2],
+      :ImGui_ButtonEx => [:pointer, ImVec2.by_value],
       :ImGui_SmallButton => [:pointer],
-      :ImGui_InvisibleButton => [:pointer, ::ImVec2, :int],
+      :ImGui_InvisibleButton => [:pointer, ImVec2.by_value, :int],
       :ImGui_ArrowButton => [:pointer, :int],
       :ImGui_Checkbox => [:pointer, :pointer],
       :ImGui_CheckboxFlagsIntPtr => [:pointer, :pointer, :int],
       :ImGui_CheckboxFlagsUintPtr => [:pointer, :pointer, :uint],
       :ImGui_RadioButton => [:pointer, :bool],
       :ImGui_RadioButtonIntPtr => [:pointer, :pointer, :int],
-      :ImGui_ProgressBar => [:float, ::ImVec2, :pointer],
+      :ImGui_ProgressBar => [:float, ImVec2.by_value, :pointer],
       :ImGui_Bullet => [],
       :ImGui_TextLink => [:pointer],
       :ImGui_TextLinkOpenURLEx => [:pointer, :pointer],
-      :ImGui_ImageEx => [::ImTextureRef, ::ImVec2, ::ImVec2, ::ImVec2],
-      :ImGui_ImageWithBgEx => [::ImTextureRef, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec4, ::ImVec4],
-      :ImGui_ImageButtonEx => [:pointer, ::ImTextureRef, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec4, ::ImVec4],
+      :ImGui_ImageEx => [ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value],
+      :ImGui_ImageWithBgEx => [ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value],
+      :ImGui_ImageButtonEx => [:pointer, ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value],
       :ImGui_BeginCombo => [:pointer, :pointer, :int],
       :ImGui_EndCombo => [],
       :ImGui_ComboCharEx => [:pointer, :pointer, :pointer, :int, :int],
@@ -3559,11 +3611,11 @@ module ImGui
       :ImGui_SliderInt4Ex => [:pointer, :pointer, :int, :int, :pointer, :int],
       :ImGui_SliderScalarEx => [:pointer, :int, :pointer, :pointer, :pointer, :pointer, :int],
       :ImGui_SliderScalarNEx => [:pointer, :int, :pointer, :int, :pointer, :pointer, :pointer, :int],
-      :ImGui_VSliderFloatEx => [:pointer, ::ImVec2, :pointer, :float, :float, :pointer, :int],
-      :ImGui_VSliderIntEx => [:pointer, ::ImVec2, :pointer, :int, :int, :pointer, :int],
-      :ImGui_VSliderScalarEx => [:pointer, ::ImVec2, :int, :pointer, :pointer, :pointer, :pointer, :int],
+      :ImGui_VSliderFloatEx => [:pointer, ImVec2.by_value, :pointer, :float, :float, :pointer, :int],
+      :ImGui_VSliderIntEx => [:pointer, ImVec2.by_value, :pointer, :int, :int, :pointer, :int],
+      :ImGui_VSliderScalarEx => [:pointer, ImVec2.by_value, :int, :pointer, :pointer, :pointer, :pointer, :int],
       :ImGui_InputTextEx => [:pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer],
-      :ImGui_InputTextMultilineEx => [:pointer, :pointer, :size_t, ::ImVec2, :int, :ImGuiInputTextCallback, :pointer],
+      :ImGui_InputTextMultilineEx => [:pointer, :pointer, :size_t, ImVec2.by_value, :int, :ImGuiInputTextCallback, :pointer],
       :ImGui_InputTextWithHintEx => [:pointer, :pointer, :pointer, :size_t, :int, :ImGuiInputTextCallback, :pointer],
       :ImGui_InputFloatEx => [:pointer, :pointer, :float, :float, :pointer, :int],
       :ImGui_InputFloat2Ex => [:pointer, :pointer, :pointer, :int],
@@ -3580,7 +3632,7 @@ module ImGui
       :ImGui_ColorEdit4 => [:pointer, :pointer, :int],
       :ImGui_ColorPicker3 => [:pointer, :pointer, :int],
       :ImGui_ColorPicker4 => [:pointer, :pointer, :int, :pointer],
-      :ImGui_ColorButtonEx => [:pointer, ::ImVec4, :int, ::ImVec2],
+      :ImGui_ColorButtonEx => [:pointer, ImVec4.by_value, :int, ImVec2.by_value],
       :ImGui_SetColorEditOptions => [:int],
       :ImGui_TreeNode => [:pointer],
       :ImGui_TreeNodeV => [:pointer, :pointer, :varargs],
@@ -3596,20 +3648,20 @@ module ImGui
       :ImGui_CollapsingHeaderBoolPtr => [:pointer, :pointer, :int],
       :ImGui_SetNextItemOpen => [:bool, :int],
       :ImGui_SetNextItemStorageID => [:uint],
-      :ImGui_SelectableEx => [:pointer, :bool, :int, ::ImVec2],
-      :ImGui_SelectableBoolPtrEx => [:pointer, :pointer, :int, ::ImVec2],
+      :ImGui_SelectableEx => [:pointer, :bool, :int, ImVec2.by_value],
+      :ImGui_SelectableBoolPtrEx => [:pointer, :pointer, :int, ImVec2.by_value],
       :ImGui_BeginMultiSelectEx => [:int, :int, :int],
       :ImGui_EndMultiSelect => [],
       :ImGui_SetNextItemSelectionUserData => [:int],
       :ImGui_IsItemToggledSelection => [],
-      :ImGui_BeginListBox => [:pointer, ::ImVec2],
+      :ImGui_BeginListBox => [:pointer, ImVec2.by_value],
       :ImGui_EndListBox => [],
       :ImGui_ListBox => [:pointer, :pointer, :pointer, :int, :int],
       :ImGui_ListBoxCallbackEx => [:pointer, :pointer, :pointer, :pointer, :int, :int],
-      :ImGui_PlotLinesEx => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ::ImVec2, :int],
-      :ImGui_PlotLinesCallbackEx => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ::ImVec2],
-      :ImGui_PlotHistogramEx => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ::ImVec2, :int],
-      :ImGui_PlotHistogramCallbackEx => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ::ImVec2],
+      :ImGui_PlotLinesEx => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
+      :ImGui_PlotLinesCallbackEx => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
+      :ImGui_PlotHistogramEx => [:pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value, :int],
+      :ImGui_PlotHistogramCallbackEx => [:pointer, :pointer, :pointer, :int, :int, :pointer, :float, :float, ImVec2.by_value],
       :ImGui_BeginMenuBar => [],
       :ImGui_EndMenuBar => [],
       :ImGui_BeginMainMenuBar => [],
@@ -3634,7 +3686,7 @@ module ImGui
       :ImGui_BeginPopupContextWindowEx => [:pointer, :int],
       :ImGui_BeginPopupContextVoidEx => [:pointer, :int],
       :ImGui_IsPopupOpen => [:pointer, :int],
-      :ImGui_BeginTableEx => [:pointer, :int, :int, ::ImVec2, :float],
+      :ImGui_BeginTableEx => [:pointer, :int, :int, ImVec2.by_value, :float],
       :ImGui_EndTable => [],
       :ImGui_TableNextRowEx => [:int, :float],
       :ImGui_TableNextColumn => [],
@@ -3667,7 +3719,7 @@ module ImGui
       :ImGui_EndTabItem => [],
       :ImGui_TabItemButton => [:pointer, :int],
       :ImGui_SetTabItemClosed => [:pointer],
-      :ImGui_DockSpaceEx => [:uint, ::ImVec2, :int, :pointer],
+      :ImGui_DockSpaceEx => [:uint, ImVec2.by_value, :int, :pointer],
       :ImGui_DockSpaceOverViewportEx => [:uint, :pointer, :int, :pointer],
       :ImGui_SetNextWindowDockID => [:uint, :int],
       :ImGui_SetNextWindowClass => [:pointer],
@@ -3688,7 +3740,7 @@ module ImGui
       :ImGui_GetDragDropPayload => [],
       :ImGui_BeginDisabled => [:bool],
       :ImGui_EndDisabled => [],
-      :ImGui_PushClipRect => [::ImVec2, ::ImVec2, :bool],
+      :ImGui_PushClipRect => [ImVec2.by_value, ImVec2.by_value, :bool],
       :ImGui_PopClipRect => [],
       :ImGui_SetItemDefaultFocus => [],
       :ImGui_SetKeyboardFocusHereEx => [:int],
@@ -3714,8 +3766,8 @@ module ImGui
       :ImGui_GetMainViewport => [],
       :ImGui_GetBackgroundDrawListEx => [:pointer],
       :ImGui_GetForegroundDrawListEx => [:pointer],
-      :ImGui_IsRectVisibleBySize => [::ImVec2],
-      :ImGui_IsRectVisible => [::ImVec2, ::ImVec2],
+      :ImGui_IsRectVisibleBySize => [ImVec2.by_value],
+      :ImGui_IsRectVisible => [ImVec2.by_value, ImVec2.by_value],
       :ImGui_GetTime => [],
       :ImGui_GetFrameCount => [],
       :ImGui_GetDrawListSharedData => [],
@@ -3724,7 +3776,7 @@ module ImGui
       :ImGui_GetStateStorage => [],
       :ImGui_CalcTextSizeEx => [:pointer, :pointer, :bool, :float],
       :ImGui_ColorConvertU32ToFloat4 => [:uint],
-      :ImGui_ColorConvertFloat4ToU32 => [::ImVec4],
+      :ImGui_ColorConvertFloat4ToU32 => [ImVec4.by_value],
       :ImGui_ColorConvertRGBtoHSV => [:float, :float, :float, :pointer, :pointer, :pointer],
       :ImGui_ColorConvertHSVtoRGB => [:float, :float, :float, :pointer, :pointer, :pointer],
       :ImGui_IsKeyDown => [:int],
@@ -3743,7 +3795,7 @@ module ImGui
       :ImGui_IsMouseDoubleClicked => [:int],
       :ImGui_IsMouseReleasedWithDelay => [:int, :float],
       :ImGui_GetMouseClickedCount => [:int],
-      :ImGui_IsMouseHoveringRectEx => [::ImVec2, ::ImVec2, :bool],
+      :ImGui_IsMouseHoveringRectEx => [ImVec2.by_value, ImVec2.by_value, :bool],
       :ImGui_IsMousePosValid => [:pointer],
       :ImGui_IsAnyMouseDown => [],
       :ImGui_GetMousePos => [],
@@ -3765,7 +3817,7 @@ module ImGui
       :ImGui_DebugStartItemPicker => [],
       :ImGui_DebugCheckVersionAndDataLayout => [:pointer, :size_t, :size_t, :size_t, :size_t, :size_t, :size_t],
       :ImGui_DebugLogV => [:pointer, :varargs],
-      :ImGui_SetAllocatorFunctions => [::ImGuiMemAllocFunc, ::ImGuiMemFreeFunc, :pointer],
+      :ImGui_SetAllocatorFunctions => [ImGuiMemAllocFunc.by_value, ImGuiMemFreeFunc.by_value, :pointer],
       :ImGui_GetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :ImGui_MemAlloc => [:size_t],
       :ImGui_MemFree => [:pointer],
@@ -3858,49 +3910,49 @@ module ImGui
       :ImDrawListSplitter_Split => [:pointer, :pointer, :int],
       :ImDrawListSplitter_Merge => [:pointer, :pointer],
       :ImDrawListSplitter_SetCurrentChannel => [:pointer, :pointer, :int],
-      :ImDrawList_PushClipRect => [:pointer, ::ImVec2, ::ImVec2, :bool],
+      :ImDrawList_PushClipRect => [:pointer, ImVec2.by_value, ImVec2.by_value, :bool],
       :ImDrawList_PushClipRectFullScreen => [:pointer],
       :ImDrawList_PopClipRect => [:pointer],
-      :ImDrawList_PushTexture => [:pointer, ::ImTextureRef],
+      :ImDrawList_PushTexture => [:pointer, ImTextureRef.by_value],
       :ImDrawList_PopTexture => [:pointer],
       :ImDrawList_GetClipRectMin => [:pointer],
       :ImDrawList_GetClipRectMax => [:pointer],
-      :ImDrawList_AddLineEx => [:pointer, ::ImVec2, ::ImVec2, :uint, :float],
-      :ImDrawList_AddRectEx => [:pointer, ::ImVec2, ::ImVec2, :uint, :float, :int, :float],
-      :ImDrawList_AddRectFilledEx => [:pointer, ::ImVec2, ::ImVec2, :uint, :float, :int],
-      :ImDrawList_AddRectFilledMultiColor => [:pointer, ::ImVec2, ::ImVec2, :uint, :uint, :uint, :uint],
-      :ImDrawList_AddQuadEx => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint, :float],
-      :ImDrawList_AddQuadFilled => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_AddTriangleEx => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, :uint, :float],
-      :ImDrawList_AddTriangleFilled => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_AddCircleEx => [:pointer, ::ImVec2, :float, :uint, :int, :float],
-      :ImDrawList_AddCircleFilled => [:pointer, ::ImVec2, :float, :uint, :int],
-      :ImDrawList_AddNgonEx => [:pointer, ::ImVec2, :float, :uint, :int, :float],
-      :ImDrawList_AddNgonFilled => [:pointer, ::ImVec2, :float, :uint, :int],
-      :ImDrawList_AddEllipseEx => [:pointer, ::ImVec2, ::ImVec2, :uint, :float, :int, :float],
-      :ImDrawList_AddEllipseFilledEx => [:pointer, ::ImVec2, ::ImVec2, :uint, :float, :int],
-      :ImDrawList_AddTextEx => [:pointer, ::ImVec2, :uint, :pointer, :pointer],
-      :ImDrawList_AddTextImFontPtrEx => [:pointer, :pointer, :float, ::ImVec2, :uint, :pointer, :pointer, :float, :pointer],
-      :ImDrawList_AddBezierCubic => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint, :float, :int],
-      :ImDrawList_AddBezierQuadratic => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, :uint, :float, :int],
+      :ImDrawList_AddLineEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float],
+      :ImDrawList_AddRectEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float],
+      :ImDrawList_AddRectFilledEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int],
+      :ImDrawList_AddRectFilledMultiColor => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :uint, :uint, :uint],
+      :ImDrawList_AddQuadEx => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float],
+      :ImDrawList_AddQuadFilled => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_AddTriangleEx => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float],
+      :ImDrawList_AddTriangleFilled => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_AddCircleEx => [:pointer, ImVec2.by_value, :float, :uint, :int, :float],
+      :ImDrawList_AddCircleFilled => [:pointer, ImVec2.by_value, :float, :uint, :int],
+      :ImDrawList_AddNgonEx => [:pointer, ImVec2.by_value, :float, :uint, :int, :float],
+      :ImDrawList_AddNgonFilled => [:pointer, ImVec2.by_value, :float, :uint, :int],
+      :ImDrawList_AddEllipseEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float],
+      :ImDrawList_AddEllipseFilledEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int],
+      :ImDrawList_AddTextEx => [:pointer, ImVec2.by_value, :uint, :pointer, :pointer],
+      :ImDrawList_AddTextImFontPtrEx => [:pointer, :pointer, :float, ImVec2.by_value, :uint, :pointer, :pointer, :float, :pointer],
+      :ImDrawList_AddBezierCubic => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int],
+      :ImDrawList_AddBezierQuadratic => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int],
       :ImDrawList_AddPolyline => [:pointer, :pointer, :int, :uint, :int, :float],
       :ImDrawList_AddConvexPolyFilled => [:pointer, :pointer, :int, :uint],
       :ImDrawList_AddConcavePolyFilled => [:pointer, :pointer, :int, :uint],
-      :ImDrawList_AddImageEx => [:pointer, ::ImTextureRef, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_AddImageQuadEx => [:pointer, ::ImTextureRef, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_AddImageRounded => [:pointer, ::ImTextureRef, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint, :float, :int],
+      :ImDrawList_AddImageEx => [:pointer, ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_AddImageQuadEx => [:pointer, ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_AddImageRounded => [:pointer, ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int],
       :ImDrawList_PathClear => [:pointer],
-      :ImDrawList_PathLineTo => [:pointer, ::ImVec2],
-      :ImDrawList_PathLineToMergeDuplicate => [:pointer, ::ImVec2],
+      :ImDrawList_PathLineTo => [:pointer, ImVec2.by_value],
+      :ImDrawList_PathLineToMergeDuplicate => [:pointer, ImVec2.by_value],
       :ImDrawList_PathFillConvex => [:pointer, :uint],
       :ImDrawList_PathFillConcave => [:pointer, :uint],
       :ImDrawList_PathStroke => [:pointer, :uint, :int, :float],
-      :ImDrawList_PathArcTo => [:pointer, ::ImVec2, :float, :float, :float, :int],
-      :ImDrawList_PathArcToFast => [:pointer, ::ImVec2, :float, :int, :int],
-      :ImDrawList_PathEllipticalArcToEx => [:pointer, ::ImVec2, ::ImVec2, :float, :float, :float, :int],
-      :ImDrawList_PathBezierCubicCurveTo => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, :int],
-      :ImDrawList_PathBezierQuadraticCurveTo => [:pointer, ::ImVec2, ::ImVec2, :int],
-      :ImDrawList_PathRect => [:pointer, ::ImVec2, ::ImVec2, :float, :int],
+      :ImDrawList_PathArcTo => [:pointer, ImVec2.by_value, :float, :float, :float, :int],
+      :ImDrawList_PathArcToFast => [:pointer, ImVec2.by_value, :float, :int, :int],
+      :ImDrawList_PathEllipticalArcToEx => [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :float, :float, :int],
+      :ImDrawList_PathBezierCubicCurveTo => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int],
+      :ImDrawList_PathBezierQuadraticCurveTo => [:pointer, ImVec2.by_value, ImVec2.by_value, :int],
+      :ImDrawList_PathRect => [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :int],
       :ImDrawList_AddCallbackEx => [:pointer, :ImDrawCallback, :pointer, :size_t],
       :ImDrawList_AddDrawCmd => [:pointer],
       :ImDrawList_CloneOutput => [:pointer],
@@ -3909,13 +3961,13 @@ module ImGui
       :ImDrawList_ChannelsSetCurrent => [:pointer, :int],
       :ImDrawList_PrimReserve => [:pointer, :int, :int],
       :ImDrawList_PrimUnreserve => [:pointer, :int, :int],
-      :ImDrawList_PrimRect => [:pointer, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_PrimRectUV => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_PrimQuadUV => [:pointer, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_PrimWriteVtx => [:pointer, ::ImVec2, ::ImVec2, :uint],
+      :ImDrawList_PrimRect => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_PrimRectUV => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_PrimQuadUV => [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_PrimWriteVtx => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint],
       :ImDrawList_PrimWriteIdx => [:pointer, :ushort],
-      :ImDrawList_PrimVtx => [:pointer, ::ImVec2, ::ImVec2, :uint],
-      :ImDrawList_PushTextureID => [:pointer, ::ImTextureRef],
+      :ImDrawList_PrimVtx => [:pointer, ImVec2.by_value, ImVec2.by_value, :uint],
+      :ImDrawList_PushTextureID => [:pointer, ImTextureRef.by_value],
       :ImDrawList_PopTextureID => [:pointer],
       :ImDrawList__SetDrawListSharedData => [:pointer, :pointer],
       :ImDrawList__ResetForNewFrame => [:pointer],
@@ -3925,14 +3977,14 @@ module ImGui
       :ImDrawList__OnChangedClipRect => [:pointer],
       :ImDrawList__OnChangedTexture => [:pointer],
       :ImDrawList__OnChangedVtxOffset => [:pointer],
-      :ImDrawList__SetTexture => [:pointer, ::ImTextureRef],
+      :ImDrawList__SetTexture => [:pointer, ImTextureRef.by_value],
       :ImDrawList__CalcCircleAutoSegmentCount => [:pointer, :float],
-      :ImDrawList__PathArcToFastEx => [:pointer, ::ImVec2, :float, :int, :int, :int],
-      :ImDrawList__PathArcToN => [:pointer, ::ImVec2, :float, :float, :float, :int],
+      :ImDrawList__PathArcToFastEx => [:pointer, ImVec2.by_value, :float, :int, :int, :int],
+      :ImDrawList__PathArcToN => [:pointer, ImVec2.by_value, :float, :float, :float, :int],
       :ImDrawData_Clear => [:pointer],
       :ImDrawData_AddDrawList => [:pointer, :pointer],
       :ImDrawData_DeIndexAllBuffers => [:pointer],
-      :ImDrawData_ScaleClipRects => [:pointer, ::ImVec2],
+      :ImDrawData_ScaleClipRects => [:pointer, ImVec2.by_value],
       :ImTextureData_Create => [:pointer, :int, :int, :int],
       :ImTextureData_DestroyPixels => [:pointer],
       :ImTextureData_GetPixels => [:pointer],
@@ -3967,7 +4019,7 @@ module ImGui
       :ImFontAtlas_GetTexDataAsAlpha8 => [:pointer, :pointer, :pointer, :pointer, :pointer],
       :ImFontAtlas_GetTexDataAsRGBA32 => [:pointer, :pointer, :pointer, :pointer, :pointer],
       :ImFontAtlas_SetTexID => [:pointer, :int],
-      :ImFontAtlas_SetTexIDImTextureRef => [:pointer, ::ImTextureRef],
+      :ImFontAtlas_SetTexIDImTextureRef => [:pointer, ImTextureRef.by_value],
       :ImFontAtlas_IsBuilt => [:pointer],
       :ImFontAtlas_GetGlyphRangesDefault => [:pointer],
       :ImFontAtlas_GetGlyphRangesGreek => [:pointer],
@@ -3984,8 +4036,8 @@ module ImGui
       :ImFontAtlas_AddCustomRectRegular => [:pointer, :int, :int],
       :ImFontAtlas_GetCustomRectByIndex => [:pointer, :int],
       :ImFontAtlas_CalcCustomRectUV => [:pointer, :pointer, :pointer, :pointer],
-      :ImFontAtlas_AddCustomRectFontGlyph => [:pointer, :pointer, :ushort, :int, :int, :float, ::ImVec2],
-      :ImFontAtlas_AddCustomRectFontGlyphForSize => [:pointer, :pointer, :float, :ushort, :int, :int, :float, ::ImVec2],
+      :ImFontAtlas_AddCustomRectFontGlyph => [:pointer, :pointer, :ushort, :int, :int, :float, ImVec2.by_value],
+      :ImFontAtlas_AddCustomRectFontGlyphForSize => [:pointer, :pointer, :float, :ushort, :int, :int, :float, ImVec2.by_value],
       :ImFontBaked_ClearOutputData => [:pointer],
       :ImFontBaked_FindGlyph => [:pointer, :ushort],
       :ImFontBaked_FindGlyphNoFallback => [:pointer, :ushort],
@@ -3997,8 +4049,8 @@ module ImGui
       :ImFont_GetFontBakedEx => [:pointer, :float, :float],
       :ImFont_CalcTextSizeAEx => [:pointer, :float, :float, :float, :pointer, :pointer, :pointer],
       :ImFont_CalcWordWrapPosition => [:pointer, :float, :pointer, :pointer, :float],
-      :ImFont_RenderCharEx => [:pointer, :pointer, :float, ::ImVec2, :uint, :ushort, :pointer],
-      :ImFont_RenderText => [:pointer, :pointer, :float, ::ImVec2, :uint, ::ImVec4, :pointer, :pointer, :float, :int],
+      :ImFont_RenderCharEx => [:pointer, :pointer, :float, ImVec2.by_value, :uint, :ushort, :pointer],
+      :ImFont_RenderText => [:pointer, :pointer, :float, ImVec2.by_value, :uint, ImVec4.by_value, :pointer, :pointer, :float, :int],
       :ImFont_CalcWordWrapPositionA => [:pointer, :float, :pointer, :pointer, :float],
       :ImFont_ClearOutputData => [:pointer],
       :ImFont_AddRemapChar => [:pointer, :ushort, :ushort],
@@ -4009,7 +4061,7 @@ module ImGui
       :ImGuiPlatformIO_ClearRendererHandlers => [:pointer],
       :ImGui_PushFont => [:pointer],
       :ImGui_SetWindowFontScale => [:float],
-      :ImGui_ImageImVec4 => [::ImTextureRef, ::ImVec2, ::ImVec2, ::ImVec2, ::ImVec4, ::ImVec4],
+      :ImGui_ImageImVec4 => [ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value],
       :ImGui_PushButtonRepeat => [:bool],
       :ImGui_PopButtonRepeat => [],
       :ImGui_PushTabStop => [:bool],
@@ -4017,7 +4069,7 @@ module ImGui
       :ImGui_GetContentRegionMax => [],
       :ImGui_GetWindowContentRegionMin => [],
       :ImGui_GetWindowContentRegionMax => [],
-      :ImGui_BeginChildFrameEx => [:uint, ::ImVec2, :int],
+      :ImGui_BeginChildFrameEx => [:uint, ImVec2.by_value, :int],
       :ImGui_EndChildFrame => [],
       :ImGui_ShowStackToolWindow => [:pointer],
       :ImGui_ComboObsoleteEx => [:pointer, :pointer, :pointer, :pointer, :int, :int],
@@ -7004,19 +7056,6 @@ module ImGui
 
   # Overload functions
 
-  def self.D(*arg)
-    # arg: 0:self(const ImTextureRef*)
-    # ret: int
-    return ImTextureRef_GetTexID(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    # arg: 0:self(const ImDrawCmd*)
-    # ret: int
-    return ImDrawCmd_GetTexID(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    # arg: 0:self(const ImTextureData*)
-    # ret: int
-    return ImTextureData_GetTexID(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] GetTexID : No matching functions found (#{arg})")
-  end
-
   def self.BeginChild(*arg)
     # arg: 0:str_id(const char*), 1:size(ImVec2), 2:child_flags(ImGuiChildFlags), 3:window_flags(ImGuiWindowFlags)
     # ret: bool
@@ -7299,39 +7338,6 @@ module ImGui
     # ret: bool
     return ImGui_IsRectVisible(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2))
     $stderr.puts("[Warning] ImGui::IsRectVisible : No matching functions found (#{arg})")
-  end
-
-  def self.quests(*arg)
-    # arg: 0:self(ImGuiSelectionBasicStorage*), 1:ms_io(ImGuiMultiSelectIO*)
-    # ret: void
-    return ImGuiSelectionBasicStorage_ApplyRequests(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(FFI::Pointer))
-    # arg: 0:self(ImGuiSelectionExternalStorage*), 1:ms_io(ImGuiMultiSelectIO*)
-    # ret: void
-    return ImGuiSelectionExternalStorage_ApplyRequests(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ApplyRequests : No matching functions found (#{arg})")
-  end
-
-  def self.D(*arg)
-    # arg: 0:self(ImTextureData*), 1:tex_id(ImTextureID)
-    # ret: void
-    return ImTextureData_SetTexID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
-    # arg: 0:self(ImFontAtlas*), 1:id(ImTextureID)
-    # ret: void
-    return ImFontAtlas_SetTexID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
-    # arg: 0:self(ImFontAtlas*), 1:id(ImTextureRef)
-    # ret: void
-    return ImFontAtlas_SetTexIDImTextureRef(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImTextureRef))
-    $stderr.puts("[Warning] SetTexID : No matching functions found (#{arg})")
-  end
-
-  def self.tputData(*arg)
-    # arg: 0:self(ImFontBaked*)
-    # ret: void
-    return ImFontBaked_ClearOutputData(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    # arg: 0:self(ImFont*)
-    # ret: void
-    return ImFont_ClearOutputData(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ClearOutputData : No matching functions found (#{arg})")
   end
 
 end # module ImGui

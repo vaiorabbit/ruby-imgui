@@ -124,7 +124,9 @@ module ImGuiBindings
         json_fields.each do |json_field|
           next if json_field['name'].to_s.start_with?('__anonymous') # skip anonymous union stubs
           type_str = json_field['type']['declaration']
+          # print "#{type_str} => "
           ffi_type = get_ffi_type(type_str)
+          # puts "#{ffi_type}"
           # json_name = json_field['name']
           begin
             member = ImGuiStructMemberEntry.new(name: json_field['name'], type_str: type_str, type: ffi_type, is_array: json_field['is_array'])
