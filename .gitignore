@@ -1,5 +1,6 @@
 archives/*
 backup/*
+dll/build/*
 imgui_dll/build/*
 imgui_dll/build_x86_64/*
 imgui_dll/build_arm64/*
