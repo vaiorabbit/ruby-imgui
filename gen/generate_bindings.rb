@@ -264,6 +264,45 @@ module Generator
   end
 
   def self.write_attach_functions(out, funcs_map)
+    out.write("entries = [")
+    out.newline
+    out.push_indent
+    funcs_map.each do |func|
+      func_args = func.args.map do |arg|
+        if arg.type_name.to_s.end_with?('Callback')
+          ':' + arg.type_name.to_s
+        elsif arg.type.to_s.start_with?(':Im')
+          arg.type.to_s.gsub(/^:/, '') + '.by_value'
+        elsif arg.type.to_s.start_with?('Im')
+          arg.type.to_s + '.by_value'
+        else
+          ':' + arg.type.to_s
+        end
+      end
+      func.retval = if func.retval.to_s.start_with?('Im')
+                      func.retval.to_s + '.by_value'
+                    else
+                      ':' + func.retval.to_s
+                    end
+      out.write("[:#{func.name}, :#{func.name}, [#{func_args.join(', ')}], #{func.retval}],")
+      out.newline
+    end
+    out.pop_indent
+    out.write("]")
+    
+    out.newline
+    out.write("entries.each do |entry|\n")
+    out.push_indent
+    out.write("attach_function entry[0], entry[1], entry[2], entry[3]\n")
+    out.pop_indent
+    out.write("rescue FFI::NotFoundError => e\n")
+    out.push_indent
+    out.write("warn \"[Warning] Failed to import \#{entry[0]}.\"\n")
+    out.pop_indent
+    out.write("end\n")
+  end
+
+  def self.write_attach_functions0(out, funcs_map)
     # symbols array
     out.write("symbols = [\n")
     out.push_indent
