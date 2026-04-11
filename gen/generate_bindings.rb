@@ -92,7 +92,7 @@ module Generator
     out.write("# " + enum.name)
     out.newline
     enum.members.each do |m|
-      out.write("#{m.name} = #{m.value} # #{m.original}\n")
+      out.write("#{m.name} = #{m.value} # #{format_numeric_comment(m.value, m.original)}\n")
     end
     out.newline
   end
@@ -102,9 +102,28 @@ module Generator
 
     out.write("# defines\n")
     defines.each do |define|
-      out.write("#{define.name} = #{define.value} # #{define.content}\n")
+      out.write("#{define.name} = #{define.value} # #{format_numeric_comment(define.value, define.content)}\n")
     end
     out.newline
+  end
+
+  def self.format_numeric_comment(value, raw)
+    raw_text = raw.nil? ? value.to_s : raw.to_s
+
+    begin
+      parsed = Integer(raw_text, 0)
+      return raw_text unless parsed == value
+    rescue ArgumentError
+      return raw_text
+    end
+
+    return raw_text if value.is_a?(Float)
+
+    if value.is_a?(Integer) && value < 0
+      "-0x#{(-value).to_s(16).upcase}"
+    else
+      "0x#{value.to_i.to_s(16).upcase}"
+    end
   end
 
   def self.write_typedef(out, typedef)
