@@ -38,6 +38,8 @@ module Generator
       # va_arg -> keyword argument
       when "..."
         "*varargs"
+      when /^__unnamed_arg\d+__$/
+        arg.type_name == '...' ? "*varargs" : arg.name
       # avoid conflict with ruby keywords by adding '_'s
       when "in" #, "self"
         "_#{arg.name}_"
@@ -427,7 +429,7 @@ module Generator
                         Float
                       elsif type_name.include?('bool')
                         has_bool = true
-                      elsif type_name.include?('va_list')
+                      elsif type_name.include?('va_list') || type_name == '...'
                         has_vararg = true
                       elsif typedefs_map.has_key?(type_name) # { |typedef| typedef[0] == type_name}
                         case typedefs_map[type_name][1]
@@ -455,7 +457,7 @@ module Generator
           args << "arg[#{i}]"
         end
         if has_vararg
-          args[-1] = "arg[#{args.length-1}..]"
+          args[-1] = "*arg[#{args.length-1}..]"
         end
 
         args_comment = []
@@ -687,10 +689,11 @@ end
     # end
     Generator.write_attach_functions(out, funcs_map)
 
-    out.newline
     out.write("@@imgui_import_done = true")
     out.pop_indent
 
+    out.newline
+    out.newline
     out.write("end # self.import_symbols\n")
     out.newline
 

@@ -398,7 +398,11 @@ module ImGuiBindings
     func.args = []
     json_function['arguments'].each do |json_argument|
       # basic info
-      type_name = json_argument['type']['declaration']
+      type_name = if json_argument['is_varargs']
+                    '...'
+                  else
+                    json_argument['type']['declaration']
+                  end
       type = get_ffi_type(type_name)
       size = 0
       is_array = json_argument['is_array']
@@ -462,18 +466,19 @@ module ImGuiBindings
 
         # Ignore ImVector methods.
         # next if json_function['name'].start_with?('ImVector_')
-        next if json_function['is_default_argument_helper'] == true
 
-        # Ignore functions with 'va_list' arguments.  Use ':varargs (...)' versions instead.
-        has_va_list = false
+        # Ignore functions with explicit 'va_list' arguments.
+        # Keep C variadic (...) APIs such as ImGui_Text(fmt, ...) so they can be bound as :varargs.
+        has_explicit_va_list = false
         json_arguments = json_function['arguments']
         json_arguments.each do |json_argument|
-          if json_argument['is_varargs']
-            has_va_list = true
+          arg_type_decl = json_argument.dig('type', 'declaration')
+          if arg_type_decl == 'va_list'
+            has_explicit_va_list = true
             break
           end
         end
-        next if has_va_list
+        next if has_explicit_va_list
 
         func = create_new_function_map(json_function, json, conditions)
         functions << func unless func.nil?
