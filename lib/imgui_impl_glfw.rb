@@ -608,9 +608,9 @@ module ImGui
     io[:DeltaTime] = bd.time > 0.0 ? (current_time - bd.time).to_f : (1.0 / 60.0)
     bd.time = current_time
 
-    ImplGlfw_UpdateMouseData
-    ImplGlfw_UpdateMouseCursor
-    ImplGlfw_UpdateGamepads
+    ImplGlfw_UpdateMouseData()
+    ImplGlfw_UpdateMouseCursor()
+    ImplGlfw_UpdateGamepads()
   end
 
   def self.ImplGlfw_Sleep(milliseconds)

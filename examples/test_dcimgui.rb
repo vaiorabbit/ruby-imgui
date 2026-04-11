@@ -1,6 +1,7 @@
 # coding: utf-8
 require_relative '../lib/imgui'
 require_relative '../lib/imgui_impl_glfw'
+require_relative '../lib/imgui_impl_opengl3'
 require_relative 'util/setup_opengl_dll.rb'
 
 def check_error( desc )
@@ -37,7 +38,7 @@ if __FILE__ == $PROGRAM_NAME
   h = 720
 
   window = 0
-  versions = [[4, 5], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0],
+  versions = [#[4, 5], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0],
               [3, 3], [3, 2], [3, 1], [3, 0],
               [2, 1], [2, 0],
               [1, 5], [1, 4], [1, 3], [1, 2], [1, 1], [1, 0]]
@@ -56,6 +57,7 @@ if __FILE__ == $PROGRAM_NAME
     GLFW.WindowHint(GLFW::CONTEXT_VERSION_MAJOR, ver_major)
     GLFW.WindowHint(GLFW::CONTEXT_VERSION_MINOR, ver_minor)
     window = GLFW.CreateWindow(w, h, "Ruby-ImGui (GLFW+OpenGL3)", nil, nil)
+    pp [ver_major, ver_minor]
     break unless window.null?
   end
 
@@ -81,24 +83,51 @@ if __FILE__ == $PROGRAM_NAME
   ImGui::CreateContext()
   ImGui::StyleColorsDark()
 
-  glsl_version = "#version 410";
+  glsl_version = "#version 410"
 
   ImGui::ImplGlfw_InitForOpenGL(window, true)
+  ImGui::ImplOpenGL3_Init(glsl_version)
 
   io = ImGuiIO.new(ImGui::GetIO())
-  io[:DisplaySize] = ImVec2.create(1280, 720)
-  io[:BackendFlags] |= ImGuiBackendFlags_RendererHasTextures
+#  io[:DisplaySize] = ImVec2.create(1280, 720)
+#  io[:BackendFlags] |= ImGuiBackendFlags_RendererHasTextures
 
   # ImFontAtlas.new(io[:Fonts]).AddFontDefault()
 
-  ImGui::NewFrame()
-  ImGui::ShowDemoWindow(nil)
+  mx_buf = ' ' * 8
+  my_buf = ' ' * 8
+  winWidth_buf  = ' ' * 8
+  winHeight_buf = ' ' * 8
+  fbWidth_buf  = ' ' * 8
+  fbHeight_buf = ' ' * 8
+  while GLFW.WindowShouldClose( window ) == 0
+    GLFW.PollEvents()
 
-  ImGui::Begin("test")
-  ImGui::End()
-  ImGui::Render()
+    ImGui::ImplOpenGL3_NewFrame()
+    ImGui::ImplGlfw_NewFrame()
+    ImGui::NewFrame()
+    ImGui::ShowDemoWindow(nil)
 
-  # ImGui::ImplOpenGL3_Shutdown()
+    # ImGui::Begin("test")
+    # ImGui::End()
+
+    ImGui::Render()
+
+    GLFW.GetCursorPos(window, mx_buf, my_buf)
+    GLFW.GetWindowSize(window, winWidth_buf, winHeight_buf)
+    GLFW.GetFramebufferSize(window, fbWidth_buf, fbHeight_buf)
+    fbWidth = fbWidth_buf.unpack('L')[0]
+    fbHeight = fbHeight_buf.unpack('L')[0]
+    GL.Viewport(0, 0, fbWidth, fbHeight)
+    GL.ClearColor(0.45, 0.55, 0.60, 1.00)
+    GL.Clear(GL::COLOR_BUFFER_BIT)
+
+    ImGui::ImplOpenGL3_RenderDrawData(ImGui::GetDrawData())
+
+    GLFW.SwapBuffers( window )
+  end
+
+  ImGui::ImplOpenGL3_Shutdown()
   ImGui::ImplGlfw_Shutdown()
   ImGui::DestroyContext(nil)
 
