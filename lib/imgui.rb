@@ -7757,7 +7757,7 @@ module ImGui
   def self.ShowIDStackToolWindow(*arg)
     # arg: 
     # ret: void
-    return ImGui_ShowIDStackToolWindow() if arg.length == 0 && ()
+    return ImGui_ShowIDStackToolWindow() if arg.empty?
     # arg: 0:p_open(bool*)
     # ret: void
     return ImGui_ShowIDStackToolWindowEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
@@ -7817,7 +7817,7 @@ module ImGui
   def self.SetWindowFocus(*arg)
     # arg: 
     # ret: void
-    return ImGui_SetWindowFocus() if arg.length == 0 && ()
+    return ImGui_SetWindowFocus() if arg.empty?
     # arg: 0:name(const char*)
     # ret: void
     return ImGui_SetWindowFocusStr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
@@ -7847,7 +7847,7 @@ module ImGui
   def self.PopStyleColor(*arg)
     # arg: 
     # ret: void
-    return ImGui_PopStyleColor() if arg.length == 0 && ()
+    return ImGui_PopStyleColor() if arg.empty?
     # arg: 0:count(int)
     # ret: void
     return ImGui_PopStyleColorEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
@@ -7867,7 +7867,7 @@ module ImGui
   def self.PopStyleVar(*arg)
     # arg: 
     # ret: void
-    return ImGui_PopStyleVar() if arg.length == 0 && ()
+    return ImGui_PopStyleVar() if arg.empty?
     # arg: 0:count(int)
     # ret: void
     return ImGui_PopStyleVarEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
@@ -7896,7 +7896,7 @@ module ImGui
   def self.SameLine(*arg)
     # arg: 
     # ret: void
-    return ImGui_SameLine() if arg.length == 0 && ()
+    return ImGui_SameLine() if arg.empty?
     # arg: 0:offset_from_start_x(float), 1:spacing(float)
     # ret: void
     return ImGui_SameLineEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Float) && arg[1].kind_of?(Float))
@@ -7906,7 +7906,7 @@ module ImGui
   def self.Indent(*arg)
     # arg: 
     # ret: void
-    return ImGui_Indent() if arg.length == 0 && ()
+    return ImGui_Indent() if arg.empty?
     # arg: 0:indent_w(float)
     # ret: void
     return ImGui_IndentEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
@@ -7916,7 +7916,7 @@ module ImGui
   def self.Unindent(*arg)
     # arg: 
     # ret: void
-    return ImGui_Unindent() if arg.length == 0 && ()
+    return ImGui_Unindent() if arg.empty?
     # arg: 0:indent_w(float)
     # ret: void
     return ImGui_UnindentEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
@@ -8593,7 +8593,7 @@ module ImGui
   def self.BeginPopupContextItem(*arg)
     # arg: 
     # ret: bool
-    return ImGui_BeginPopupContextItem() if arg.length == 0 && ()
+    return ImGui_BeginPopupContextItem() if arg.empty?
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: bool
     return ImGui_BeginPopupContextItemEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
@@ -8603,7 +8603,7 @@ module ImGui
   def self.BeginPopupContextWindow(*arg)
     # arg: 
     # ret: bool
-    return ImGui_BeginPopupContextWindow() if arg.length == 0 && ()
+    return ImGui_BeginPopupContextWindow() if arg.empty?
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: bool
     return ImGui_BeginPopupContextWindowEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
@@ -8613,7 +8613,7 @@ module ImGui
   def self.BeginPopupContextVoid(*arg)
     # arg: 
     # ret: bool
-    return ImGui_BeginPopupContextVoid() if arg.length == 0 && ()
+    return ImGui_BeginPopupContextVoid() if arg.empty?
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: bool
     return ImGui_BeginPopupContextVoidEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
@@ -8633,7 +8633,7 @@ module ImGui
   def self.TableNextRow(*arg)
     # arg: 
     # ret: void
-    return ImGui_TableNextRow() if arg.length == 0 && ()
+    return ImGui_TableNextRow() if arg.empty?
     # arg: 0:row_flags(ImGuiTableRowFlags), 1:min_row_height(float)
     # ret: void
     return ImGui_TableNextRowEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
@@ -8653,7 +8653,7 @@ module ImGui
   def self.Columns(*arg)
     # arg: 
     # ret: void
-    return ImGui_Columns() if arg.length == 0 && ()
+    return ImGui_Columns() if arg.empty?
     # arg: 0:count(int), 1:id(const char*), 2:borders(bool)
     # ret: void
     return ImGui_ColumnsEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)))
@@ -8663,7 +8663,7 @@ module ImGui
   def self.SetKeyboardFocusHere(*arg)
     # arg: 
     # ret: void
-    return ImGui_SetKeyboardFocusHere() if arg.length == 0 && ()
+    return ImGui_SetKeyboardFocusHere() if arg.empty?
     # arg: 0:offset(int)
     # ret: void
     return ImGui_SetKeyboardFocusHereEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
@@ -8673,7 +8673,7 @@ module ImGui
   def self.IsItemClicked(*arg)
     # arg: 
     # ret: bool
-    return ImGui_IsItemClicked() if arg.length == 0 && ()
+    return ImGui_IsItemClicked() if arg.empty?
     # arg: 0:mouse_button(ImGuiMouseButton)
     # ret: bool
     return ImGui_IsItemClickedEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
@@ -8733,7 +8733,7 @@ module ImGui
   def self.ResetMouseDragDelta(*arg)
     # arg: 
     # ret: void
-    return ImGui_ResetMouseDragDelta() if arg.length == 0 && ()
+    return ImGui_ResetMouseDragDelta() if arg.empty?
     # arg: 0:button(ImGuiMouseButton)
     # ret: void
     return ImGui_ResetMouseDragDeltaEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))

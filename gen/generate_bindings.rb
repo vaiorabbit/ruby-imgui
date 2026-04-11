@@ -491,7 +491,11 @@ module Generator
         if has_vararg
           out.write("return #{ovl_func.name}(#{args.join(', ')}) if arg.length >= #{ovl_func.args.length - 1} && (#{type_check.join(' && ')})\n")
         else
-          out.write("return #{ovl_func.name}(#{args.join(', ')}) if arg.length == #{ovl_func.args.length} && (#{type_check.join(' && ')})\n")
+          if ovl_func.args.length > 0
+            out.write("return #{ovl_func.name}(#{args.join(', ')}) if arg.length == #{ovl_func.args.length} && (#{type_check.join(' && ')})\n")
+          else
+            out.write("return #{ovl_func.name}() if arg.empty?\n")
+          end            
         end
       end
       out.write('$stderr.puts("[Warning] ' + "#{ofn}" + ' : No matching functions found (#{arg})")' + "\n")
