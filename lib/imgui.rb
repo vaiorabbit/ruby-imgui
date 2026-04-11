@@ -7,7 +7,7 @@
 require 'ffi'
 
 # defines
-IMGUI_VERSION_NUM = 19250 # 19250
+IMGUI_VERSION_NUM = 19271 # 19271
 IM_UNICODE_CODEPOINT_INVALID = 65533 # 0xFFFD
 IM_UNICODE_CODEPOINT_MAX = 65535 # 0xFFFF
 IM_COL32_R_SHIFT = 0 # 0
@@ -50,7 +50,6 @@ FFI.typedef :int, :ImGuiChildFlags
 FFI.typedef :int, :ImGuiColorEditFlags
 FFI.typedef :int, :ImGuiConfigFlags
 FFI.typedef :int, :ImGuiComboFlags
-FFI.typedef :int, :ImGuiDockNodeFlags
 FFI.typedef :int, :ImGuiDragDropFlags
 FFI.typedef :int, :ImGuiFocusedFlags
 FFI.typedef :int, :ImGuiHoveredFlags
@@ -90,7 +89,6 @@ FFI.typedef :int, :ImGuiTabBarFlags_
 FFI.typedef :int, :ImGuiTabItemFlags_
 FFI.typedef :int, :ImGuiFocusedFlags_
 FFI.typedef :int, :ImGuiHoveredFlags_
-FFI.typedef :int, :ImGuiDockNodeFlags_
 FFI.typedef :int, :ImGuiDragDropFlags_
 FFI.typedef :int, :ImGuiDataType_
 FFI.typedef :int, :ImGuiInputFlags_
@@ -140,11 +138,9 @@ ImGuiWindowFlags_AlwaysHorizontalScrollbar = 32768 # 32768
 ImGuiWindowFlags_NoNavInputs = 65536 # 65536
 ImGuiWindowFlags_NoNavFocus = 131072 # 131072
 ImGuiWindowFlags_UnsavedDocument = 262144 # 262144
-ImGuiWindowFlags_NoDocking = 524288 # 524288
 ImGuiWindowFlags_NoNav = 196608 # 196608
 ImGuiWindowFlags_NoDecoration = 43 # 43
 ImGuiWindowFlags_NoInputs = 197120 # 197120
-ImGuiWindowFlags_DockNodeHost = 8388608 # 8388608
 ImGuiWindowFlags_ChildWindow = 16777216 # 16777216
 ImGuiWindowFlags_Tooltip = 33554432 # 33554432
 ImGuiWindowFlags_Popup = 67108864 # 67108864
@@ -171,6 +167,7 @@ ImGuiItemFlags_NoNavDefaultFocus = 4 # 4
 ImGuiItemFlags_ButtonRepeat = 8 # 8
 ImGuiItemFlags_AutoClosePopups = 16 # 16
 ImGuiItemFlags_AllowDuplicateId = 32 # 32
+ImGuiItemFlags_Disabled = 64 # 64
 
 # ImGuiInputTextFlags_
 ImGuiInputTextFlags_None = 0 # 0
@@ -228,17 +225,18 @@ ImGuiTreeNodeFlags_SpanTextWidth = 8192 # 8192
 
 # ImGuiPopupFlags_
 ImGuiPopupFlags_None = 0 # 0
-ImGuiPopupFlags_MouseButtonLeft = 0 # 0
-ImGuiPopupFlags_MouseButtonRight = 1 # 1
-ImGuiPopupFlags_MouseButtonMiddle = 2 # 2
-ImGuiPopupFlags_MouseButtonMask_ = 31 # 31
-ImGuiPopupFlags_MouseButtonDefault_ = 1 # 1
+ImGuiPopupFlags_MouseButtonLeft = 4 # 4
+ImGuiPopupFlags_MouseButtonRight = 8 # 8
+ImGuiPopupFlags_MouseButtonMiddle = 12 # 12
 ImGuiPopupFlags_NoReopen = 32 # 32
 ImGuiPopupFlags_NoOpenOverExistingPopup = 128 # 128
 ImGuiPopupFlags_NoOpenOverItems = 256 # 256
 ImGuiPopupFlags_AnyPopupId = 1024 # 1024
 ImGuiPopupFlags_AnyPopupLevel = 2048 # 2048
 ImGuiPopupFlags_AnyPopup = 3072 # 3072
+ImGuiPopupFlags_MouseButtonShift_ = 2 # 2
+ImGuiPopupFlags_MouseButtonMask_ = 12 # 12
+ImGuiPopupFlags_InvalidMask_ = 3 # 3
 
 # ImGuiSelectableFlags_
 ImGuiSelectableFlags_None = 0 # 0
@@ -297,7 +295,6 @@ ImGuiFocusedFlags_ChildWindows = 1 # 1
 ImGuiFocusedFlags_RootWindow = 2 # 2
 ImGuiFocusedFlags_AnyWindow = 4 # 4
 ImGuiFocusedFlags_NoPopupHierarchy = 8 # 8
-ImGuiFocusedFlags_DockHierarchy = 16 # 16
 ImGuiFocusedFlags_RootAndChildWindows = 3 # 3
 
 # ImGuiHoveredFlags_
@@ -306,7 +303,6 @@ ImGuiHoveredFlags_ChildWindows = 1 # 1
 ImGuiHoveredFlags_RootWindow = 2 # 2
 ImGuiHoveredFlags_AnyWindow = 4 # 4
 ImGuiHoveredFlags_NoPopupHierarchy = 8 # 8
-ImGuiHoveredFlags_DockHierarchy = 16 # 16
 ImGuiHoveredFlags_AllowWhenBlockedByPopup = 32 # 32
 ImGuiHoveredFlags_AllowWhenBlockedByActiveItem = 128 # 128
 ImGuiHoveredFlags_AllowWhenOverlappedByItem = 256 # 256
@@ -322,18 +318,6 @@ ImGuiHoveredFlags_DelayNone = 16384 # 16384
 ImGuiHoveredFlags_DelayShort = 32768 # 32768
 ImGuiHoveredFlags_DelayNormal = 65536 # 65536
 ImGuiHoveredFlags_NoSharedDelay = 131072 # 131072
-
-# ImGuiDockNodeFlags_
-ImGuiDockNodeFlags_None = 0 # 0
-ImGuiDockNodeFlags_KeepAliveOnly = 1 # 1
-ImGuiDockNodeFlags_NoDockingOverCentralNode = 4 # 4
-ImGuiDockNodeFlags_PassthruCentralNode = 8 # 8
-ImGuiDockNodeFlags_NoDockingSplit = 16 # 16
-ImGuiDockNodeFlags_NoResize = 32 # 32
-ImGuiDockNodeFlags_AutoHideTabBar = 64 # 64
-ImGuiDockNodeFlags_NoUndocking = 128 # 128
-ImGuiDockNodeFlags_NoSplit = 16 # 16
-ImGuiDockNodeFlags_NoDockingInCentralNode = 4 # 4
 
 # ImGuiDragDropFlags_
 ImGuiDragDropFlags_None = 0 # 0
@@ -568,14 +552,10 @@ ImGuiConfigFlags_NavEnableGamepad = 2 # 2
 ImGuiConfigFlags_NoMouse = 16 # 16
 ImGuiConfigFlags_NoMouseCursorChange = 32 # 32
 ImGuiConfigFlags_NoKeyboard = 64 # 64
-ImGuiConfigFlags_DockingEnable = 128 # 128
-ImGuiConfigFlags_ViewportsEnable = 1024 # 1024
 ImGuiConfigFlags_IsSRGB = 1048576 # 1048576
 ImGuiConfigFlags_IsTouchScreen = 2097152 # 2097152
 ImGuiConfigFlags_NavEnableSetMousePos = 4 # 4
 ImGuiConfigFlags_NavNoCaptureKeyboard = 8 # 8
-ImGuiConfigFlags_DpiEnableScaleFonts = 16384 # 16384
-ImGuiConfigFlags_DpiEnableScaleViewports = 32768 # 32768
 
 # ImGuiBackendFlags_
 ImGuiBackendFlags_None = 0 # 0
@@ -584,10 +564,6 @@ ImGuiBackendFlags_HasMouseCursors = 2 # 2
 ImGuiBackendFlags_HasSetMousePos = 4 # 4
 ImGuiBackendFlags_RendererHasVtxOffset = 8 # 8
 ImGuiBackendFlags_RendererHasTextures = 16 # 16
-ImGuiBackendFlags_RendererHasViewports = 1024 # 1024
-ImGuiBackendFlags_PlatformHasViewports = 2048 # 2048
-ImGuiBackendFlags_HasMouseHoveredViewport = 4096 # 4096
-ImGuiBackendFlags_HasParentViewport = 8192 # 8192
 
 # ImGuiCol_
 ImGuiCol_Text = 0 # 0
@@ -631,32 +607,30 @@ ImGuiCol_TabSelectedOverline = 37 # 37
 ImGuiCol_TabDimmed = 38 # 38
 ImGuiCol_TabDimmedSelected = 39 # 39
 ImGuiCol_TabDimmedSelectedOverline = 40 # 40
-ImGuiCol_DockingPreview = 41 # 41
-ImGuiCol_DockingEmptyBg = 42 # 42
-ImGuiCol_PlotLines = 43 # 43
-ImGuiCol_PlotLinesHovered = 44 # 44
-ImGuiCol_PlotHistogram = 45 # 45
-ImGuiCol_PlotHistogramHovered = 46 # 46
-ImGuiCol_TableHeaderBg = 47 # 47
-ImGuiCol_TableBorderStrong = 48 # 48
-ImGuiCol_TableBorderLight = 49 # 49
-ImGuiCol_TableRowBg = 50 # 50
-ImGuiCol_TableRowBgAlt = 51 # 51
-ImGuiCol_TextLink = 52 # 52
-ImGuiCol_TextSelectedBg = 53 # 53
-ImGuiCol_TreeLines = 54 # 54
-ImGuiCol_DragDropTarget = 55 # 55
-ImGuiCol_DragDropTargetBg = 56 # 56
-ImGuiCol_UnsavedMarker = 57 # 57
-ImGuiCol_NavCursor = 58 # 58
-ImGuiCol_NavWindowingHighlight = 59 # 59
-ImGuiCol_NavWindowingDimBg = 60 # 60
-ImGuiCol_ModalWindowDimBg = 61 # 61
-ImGuiCol_COUNT = 62 # 62
+ImGuiCol_PlotLines = 41 # 41
+ImGuiCol_PlotLinesHovered = 42 # 42
+ImGuiCol_PlotHistogram = 43 # 43
+ImGuiCol_PlotHistogramHovered = 44 # 44
+ImGuiCol_TableHeaderBg = 45 # 45
+ImGuiCol_TableBorderStrong = 46 # 46
+ImGuiCol_TableBorderLight = 47 # 47
+ImGuiCol_TableRowBg = 48 # 48
+ImGuiCol_TableRowBgAlt = 49 # 49
+ImGuiCol_TextLink = 50 # 50
+ImGuiCol_TextSelectedBg = 51 # 51
+ImGuiCol_TreeLines = 52 # 52
+ImGuiCol_DragDropTarget = 53 # 53
+ImGuiCol_DragDropTargetBg = 54 # 54
+ImGuiCol_UnsavedMarker = 55 # 55
+ImGuiCol_NavCursor = 56 # 56
+ImGuiCol_NavWindowingHighlight = 57 # 57
+ImGuiCol_NavWindowingDimBg = 58 # 58
+ImGuiCol_ModalWindowDimBg = 59 # 59
+ImGuiCol_COUNT = 60 # 60
 ImGuiCol_TabActive = 36 # 36
 ImGuiCol_TabUnfocused = 38 # 38
 ImGuiCol_TabUnfocusedActive = 39 # 39
-ImGuiCol_NavHighlight = 58 # 58
+ImGuiCol_NavHighlight = 56 # 56
 
 # ImGuiStyleVar_
 ImGuiStyleVar_Alpha = 0 # 0
@@ -682,24 +656,25 @@ ImGuiStyleVar_ScrollbarRounding = 19 # 19
 ImGuiStyleVar_ScrollbarPadding = 20 # 20
 ImGuiStyleVar_GrabMinSize = 21 # 21
 ImGuiStyleVar_GrabRounding = 22 # 22
-ImGuiStyleVar_ImageBorderSize = 23 # 23
-ImGuiStyleVar_TabRounding = 24 # 24
-ImGuiStyleVar_TabBorderSize = 25 # 25
-ImGuiStyleVar_TabMinWidthBase = 26 # 26
-ImGuiStyleVar_TabMinWidthShrink = 27 # 27
-ImGuiStyleVar_TabBarBorderSize = 28 # 28
-ImGuiStyleVar_TabBarOverlineSize = 29 # 29
-ImGuiStyleVar_TableAngledHeadersAngle = 30 # 30
-ImGuiStyleVar_TableAngledHeadersTextAlign = 31 # 31
-ImGuiStyleVar_TreeLinesSize = 32 # 32
-ImGuiStyleVar_TreeLinesRounding = 33 # 33
-ImGuiStyleVar_ButtonTextAlign = 34 # 34
-ImGuiStyleVar_SelectableTextAlign = 35 # 35
-ImGuiStyleVar_SeparatorTextBorderSize = 36 # 36
-ImGuiStyleVar_SeparatorTextAlign = 37 # 37
-ImGuiStyleVar_SeparatorTextPadding = 38 # 38
-ImGuiStyleVar_DockingSeparatorSize = 39 # 39
-ImGuiStyleVar_COUNT = 40 # 40
+ImGuiStyleVar_ImageRounding = 23 # 23
+ImGuiStyleVar_ImageBorderSize = 24 # 24
+ImGuiStyleVar_TabRounding = 25 # 25
+ImGuiStyleVar_TabBorderSize = 26 # 26
+ImGuiStyleVar_TabMinWidthBase = 27 # 27
+ImGuiStyleVar_TabMinWidthShrink = 28 # 28
+ImGuiStyleVar_TabBarBorderSize = 29 # 29
+ImGuiStyleVar_TabBarOverlineSize = 30 # 30
+ImGuiStyleVar_TableAngledHeadersAngle = 31 # 31
+ImGuiStyleVar_TableAngledHeadersTextAlign = 32 # 32
+ImGuiStyleVar_TreeLinesSize = 33 # 33
+ImGuiStyleVar_TreeLinesRounding = 34 # 34
+ImGuiStyleVar_ButtonTextAlign = 35 # 35
+ImGuiStyleVar_SelectableTextAlign = 36 # 36
+ImGuiStyleVar_SeparatorSize = 37 # 37
+ImGuiStyleVar_SeparatorTextBorderSize = 38 # 38
+ImGuiStyleVar_SeparatorTextAlign = 39 # 39
+ImGuiStyleVar_SeparatorTextPadding = 40 # 40
+ImGuiStyleVar_COUNT = 41 # 41
 
 # ImGuiButtonFlags_
 ImGuiButtonFlags_None = 0 # 0
@@ -708,6 +683,7 @@ ImGuiButtonFlags_MouseButtonRight = 2 # 2
 ImGuiButtonFlags_MouseButtonMiddle = 4 # 4
 ImGuiButtonFlags_MouseButtonMask_ = 7 # 7
 ImGuiButtonFlags_EnableNav = 8 # 8
+ImGuiButtonFlags_AllowOverlap = 4096 # 4096
 
 # ImGuiColorEditFlags_
 ImGuiColorEditFlags_None = 0 # 0
@@ -721,10 +697,11 @@ ImGuiColorEditFlags_NoLabel = 128 # 128
 ImGuiColorEditFlags_NoSidePreview = 256 # 256
 ImGuiColorEditFlags_NoDragDrop = 512 # 512
 ImGuiColorEditFlags_NoBorder = 1024 # 1024
-ImGuiColorEditFlags_AlphaOpaque = 2048 # 2048
-ImGuiColorEditFlags_AlphaNoBg = 4096 # 4096
-ImGuiColorEditFlags_AlphaPreviewHalf = 8192 # 8192
-ImGuiColorEditFlags_AlphaBar = 65536 # 65536
+ImGuiColorEditFlags_NoColorMarkers = 2048 # 2048
+ImGuiColorEditFlags_AlphaOpaque = 4096 # 4096
+ImGuiColorEditFlags_AlphaNoBg = 8192 # 8192
+ImGuiColorEditFlags_AlphaPreviewHalf = 16384 # 16384
+ImGuiColorEditFlags_AlphaBar = 262144 # 262144
 ImGuiColorEditFlags_HDR = 524288 # 524288
 ImGuiColorEditFlags_DisplayRGB = 1048576 # 1048576
 ImGuiColorEditFlags_DisplayHSV = 2097152 # 2097152
@@ -736,7 +713,7 @@ ImGuiColorEditFlags_PickerHueWheel = 67108864 # 67108864
 ImGuiColorEditFlags_InputRGB = 134217728 # 134217728
 ImGuiColorEditFlags_InputHSV = 268435456 # 268435456
 ImGuiColorEditFlags_DefaultOptions_ = 177209344 # 177209344
-ImGuiColorEditFlags_AlphaMask_ = 14338 # 14338
+ImGuiColorEditFlags_AlphaMask_ = 28674 # 28674
 ImGuiColorEditFlags_DisplayMask_ = 7340032 # 7340032
 ImGuiColorEditFlags_DataTypeMask_ = 25165824 # 25165824
 ImGuiColorEditFlags_PickerMask_ = 100663296 # 100663296
@@ -752,6 +729,7 @@ ImGuiSliderFlags_WrapAround = 256 # 256
 ImGuiSliderFlags_ClampOnInput = 512 # 512
 ImGuiSliderFlags_ClampZeroRange = 1024 # 1024
 ImGuiSliderFlags_NoSpeedTweaks = 2048 # 2048
+ImGuiSliderFlags_ColorMarkers = 4096 # 4096
 ImGuiSliderFlags_AlwaysClamp = 1536 # 1536
 ImGuiSliderFlags_InvalidMask_ = 1879048207 # 1879048207
 
@@ -887,10 +865,13 @@ ImGuiMultiSelectFlags_ClearOnEscape = 512 # 512
 ImGuiMultiSelectFlags_ClearOnClickVoid = 1024 # 1024
 ImGuiMultiSelectFlags_ScopeWindow = 2048 # 2048
 ImGuiMultiSelectFlags_ScopeRect = 4096 # 4096
-ImGuiMultiSelectFlags_SelectOnClick = 8192 # 8192
-ImGuiMultiSelectFlags_SelectOnClickRelease = 16384 # 16384
+ImGuiMultiSelectFlags_SelectOnAuto = 8192 # 8192
+ImGuiMultiSelectFlags_SelectOnClickAlways = 16384 # 16384
+ImGuiMultiSelectFlags_SelectOnClickRelease = 32768 # 32768
 ImGuiMultiSelectFlags_NavWrapX = 65536 # 65536
 ImGuiMultiSelectFlags_NoSelectOnRightClick = 131072 # 131072
+ImGuiMultiSelectFlags_SelectOnMask_ = 57344 # 57344
+ImGuiMultiSelectFlags_SelectOnClick = 8192 # 8192
 
 # ImGuiSelectionRequestType
 ImGuiSelectionRequestType_None = 0 # 0
@@ -948,17 +929,6 @@ ImGuiViewportFlags_None = 0 # 0
 ImGuiViewportFlags_IsPlatformWindow = 1 # 1
 ImGuiViewportFlags_IsPlatformMonitor = 2 # 2
 ImGuiViewportFlags_OwnedByApp = 4 # 4
-ImGuiViewportFlags_NoDecoration = 8 # 8
-ImGuiViewportFlags_NoTaskBarIcon = 16 # 16
-ImGuiViewportFlags_NoFocusOnAppearing = 32 # 32
-ImGuiViewportFlags_NoFocusOnClick = 64 # 64
-ImGuiViewportFlags_NoInputs = 128 # 128
-ImGuiViewportFlags_NoRendererClear = 256 # 256
-ImGuiViewportFlags_NoAutoMerge = 512 # 512
-ImGuiViewportFlags_TopMost = 1024 # 1024
-ImGuiViewportFlags_CanHostOtherWindows = 2048 # 2048
-ImGuiViewportFlags_IsMinimized = 4096 # 4096
-ImGuiViewportFlags_IsFocused = 8192 # 8192
 
 
 class ImVec2 < FFI::Struct
@@ -1481,6 +1451,14 @@ class ImFontAtlas < FFI::Struct
     ImGui::ImFontAtlas_AddFontDefault(self, font_cfg)
   end
 
+  def AddFontDefaultVector(font_cfg = nil)
+    ImGui::ImFontAtlas_AddFontDefaultVector(self, font_cfg)
+  end
+
+  def AddFontDefaultBitmap(font_cfg = nil)
+    ImGui::ImFontAtlas_AddFontDefaultBitmap(self, font_cfg)
+  end
+
   def AddFontFromFileTTF(filename, size_pixels = 0.0, font_cfg = nil, glyph_ranges = nil)
     ImGui::ImFontAtlas_AddFontFromFileTTF(self, filename, size_pixels, font_cfg, glyph_ranges)
   end
@@ -1829,23 +1807,7 @@ class ImVector_ImFontConfigPtr < FFI::Struct
   )
 end
 
-class ImVector_ImGuiPlatformMonitor < FFI::Struct
-  layout(
-    :Size, :int,
-    :Capacity, :int,
-    :Data, :pointer
-  )
-end
-
 class ImVector_ImTextureDataPtr < FFI::Struct
-  layout(
-    :Size, :int,
-    :Capacity, :int,
-    :Data, :pointer
-  )
-end
-
-class ImVector_ImGuiViewportPtr < FFI::Struct
   layout(
     :Size, :int,
     :Capacity, :int,
@@ -1886,6 +1848,7 @@ class ImGuiStyle < FFI::Struct
     :GrabMinSize, :float,
     :GrabRounding, :float,
     :LogSliderDeadzone, :float,
+    :ImageRounding, :float,
     :ImageBorderSize, :float,
     :TabRounding, :float,
     :TabBorderSize, :float,
@@ -1903,16 +1866,16 @@ class ImGuiStyle < FFI::Struct
     :DragDropTargetRounding, :float,
     :DragDropTargetBorderSize, :float,
     :DragDropTargetPadding, :float,
+    :ColorMarkerSize, :float,
     :ColorButtonPosition, :int,
     :ButtonTextAlign, ImVec2.by_value,
     :SelectableTextAlign, ImVec2.by_value,
+    :SeparatorSize, :float,
     :SeparatorTextBorderSize, :float,
     :SeparatorTextAlign, ImVec2.by_value,
     :SeparatorTextPadding, ImVec2.by_value,
     :DisplayWindowPadding, ImVec2.by_value,
     :DisplaySafeAreaPadding, ImVec2.by_value,
-    :DockingNodeHasCloseButton, :bool,
-    :DockingSeparatorSize, :float,
     :MouseCursorScale, :float,
     :AntiAliasedLines, :bool,
     :AntiAliasedLinesUseTex, :bool,
@@ -1956,18 +1919,6 @@ class ImGuiIO < FFI::Struct
     :ConfigNavEscapeClearFocusWindow, :bool,
     :ConfigNavCursorVisibleAuto, :bool,
     :ConfigNavCursorVisibleAlways, :bool,
-    :ConfigDockingNoSplit, :bool,
-    :ConfigDockingNoDockingOver, :bool,
-    :ConfigDockingWithShift, :bool,
-    :ConfigDockingAlwaysTabBar, :bool,
-    :ConfigDockingTransparentPayload, :bool,
-    :ConfigViewportsNoAutoMerge, :bool,
-    :ConfigViewportsNoTaskBarIcon, :bool,
-    :ConfigViewportsNoDecoration, :bool,
-    :ConfigViewportsNoDefaultParent, :bool,
-    :ConfigViewportsPlatformFocusSetsImGuiFocus, :bool,
-    :ConfigDpiScaleFonts, :bool,
-    :ConfigDpiScaleViewports, :bool,
     :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
     :ConfigInputTrickleEventQueue, :bool,
@@ -2019,7 +1970,6 @@ class ImGuiIO < FFI::Struct
     :MouseWheel, :float,
     :MouseWheelH, :float,
     :MouseSource, :int,
-    :MouseHoveredViewport, :uint,
     :KeyCtrl, :bool,
     :KeyShift, :bool,
     :KeyAlt, :bool,
@@ -2042,7 +1992,6 @@ class ImGuiIO < FFI::Struct
     :MouseCtrlLeftAsRightClick, :bool,
     :MouseDownDuration, [:pointer, 5],
     :MouseDownDurationPrev, [:pointer, 5],
-    :MouseDragMaxDistanceAbs, [:pointer, 5],
     :MouseDragMaxDistanceSqr, [:pointer, 5],
     :PenPressure, :float,
     :AppFocusLost, :bool,
@@ -2077,10 +2026,6 @@ class ImGuiIO < FFI::Struct
 
   def AddMouseSourceEvent(source)
     ImGui::ImGuiIO_AddMouseSourceEvent(self, source)
-  end
-
-  def AddMouseViewportEvent(id)
-    ImGui::ImGuiIO_AddMouseViewportEvent(self, id)
   end
 
   def AddFocusEvent(focused)
@@ -2131,12 +2076,14 @@ class ImGuiInputTextCallbackData < FFI::Struct
     :EventFlag, :int,
     :Flags, :int,
     :UserData, :pointer,
-    :EventChar, :ushort,
+    :ID, :uint,
     :EventKey, :int,
+    :EventChar, :ushort,
+    :EventActivated, :bool,
+    :BufDirty, :bool,
     :Buf, :pointer,
     :BufTextLen, :int,
     :BufSize, :int,
-    :BufDirty, :bool,
     :CursorPos, :int,
     :SelectionStart, :int,
     :SelectionEnd, :int
@@ -2152,6 +2099,10 @@ class ImGuiInputTextCallbackData < FFI::Struct
 
   def SelectAll()
     ImGui::ImGuiInputTextCallbackData_SelectAll(self)
+  end
+
+  def SetSelection(s, e)
+    ImGui::ImGuiInputTextCallbackData_SetSelection(self, s, e)
   end
 
   def ClearSelection()
@@ -2170,20 +2121,6 @@ class ImGuiSizeCallbackData < FFI::Struct
     :Pos, ImVec2.by_value,
     :CurrentSize, ImVec2.by_value,
     :DesiredSize, ImVec2.by_value
-  )
-end
-
-class ImGuiWindowClass < FFI::Struct
-  layout(
-    :ClassId, :uint,
-    :ParentViewportId, :uint,
-    :FocusRouteParentWindowId, :uint,
-    :ViewportFlagsOverrideSet, :int,
-    :ViewportFlagsOverrideClear, :int,
-    :TabItemFlagsOverrideSet, :int,
-    :DockNodeFlagsOverrideSet, :int,
-    :DockingAlwaysTabBar, :bool,
-    :DockingAllowUnclassed, :bool
   )
 end
 
@@ -2384,15 +2321,16 @@ end
 
 class ImGuiListClipper < FFI::Struct
   layout(
-    :Ctx, :pointer,
     :DisplayStart, :int,
     :DisplayEnd, :int,
+    :UserIndex, :int,
     :ItemsCount, :int,
     :ItemsHeight, :float,
+    :Flags, :int,
     :StartPosY, :double,
     :StartSeekOffsetY, :double,
-    :TempData, :pointer,
-    :Flags, :int
+    :Ctx, :pointer,
+    :TempData, :pointer
   )
 
   def Begin(items_count, items_height = -1.0)
@@ -2627,7 +2565,6 @@ class ImFontConfig < FFI::Struct
     :FontDataOwnedByAtlas, :bool,
     :MergeMode, :bool,
     :PixelSnapH, :bool,
-    :PixelSnapV, :bool,
     :OversampleH, :char,
     :OversampleV, :char,
     :EllipsisChar, :ushort,
@@ -2642,10 +2579,12 @@ class ImFontConfig < FFI::Struct
     :FontLoaderFlags, :uint,
     :RasterizerMultiply, :float,
     :RasterizerDensity, :float,
+    :ExtraSizeScale, :float,
     :Flags, :int,
     :DstFont, :pointer,
     :FontLoader, :pointer,
-    :FontLoaderData, :pointer
+    :FontLoaderData, :pointer,
+    :PixelSnapV, :bool
   )
 end
 
@@ -2834,18 +2773,8 @@ class ImGuiViewport < FFI::Struct
     :FramebufferScale, ImVec2.by_value,
     :WorkPos, ImVec2.by_value,
     :WorkSize, ImVec2.by_value,
-    :DpiScale, :float,
-    :ParentViewportId, :uint,
-    :ParentViewport, :pointer,
-    :DrawData, :pointer,
-    :RendererUserData, :pointer,
-    :PlatformUserData, :pointer,
     :PlatformHandle, :pointer,
-    :PlatformHandleRaw, :pointer,
-    :PlatformWindowCreated, :bool,
-    :PlatformRequestMove, :bool,
-    :PlatformRequestResize, :bool,
-    :PlatformRequestClose, :bool
+    :PlatformHandleRaw, :pointer
   )
 
   def GetCenter()
@@ -2871,34 +2800,7 @@ class ImGuiPlatformIO < FFI::Struct
     :Renderer_TextureMaxWidth, :int,
     :Renderer_TextureMaxHeight, :int,
     :Renderer_RenderState, :pointer,
-    :Platform_CreateWindow, :pointer,
-    :Platform_DestroyWindow, :pointer,
-    :Platform_ShowWindow, :pointer,
-    :Platform_SetWindowPos, :pointer,
-    :Platform_GetWindowPos, :pointer,
-    :Platform_SetWindowSize, :pointer,
-    :Platform_GetWindowSize, :pointer,
-    :Platform_GetWindowFramebufferScale, :pointer,
-    :Platform_SetWindowFocus, :pointer,
-    :Platform_GetWindowFocus, :pointer,
-    :Platform_GetWindowMinimized, :pointer,
-    :Platform_SetWindowTitle, :pointer,
-    :Platform_SetWindowAlpha, :pointer,
-    :Platform_UpdateWindow, :pointer,
-    :Platform_RenderWindow, :pointer,
-    :Platform_SwapBuffers, :pointer,
-    :Platform_GetWindowDpiScale, :pointer,
-    :Platform_OnChangedViewport, :pointer,
-    :Platform_GetWindowWorkAreaInsets, :pointer,
-    :Platform_CreateVkSurface, :pointer,
-    :Renderer_CreateWindow, :pointer,
-    :Renderer_DestroyWindow, :pointer,
-    :Renderer_SetWindowSize, :pointer,
-    :Renderer_RenderWindow, :pointer,
-    :Renderer_SwapBuffers, :pointer,
-    :Monitors, ImVector.by_value,
-    :Textures, ImVector.by_value,
-    :Viewports, ImVector.by_value
+    :Textures, ImVector.by_value
   )
 
   def ClearPlatformHandlers()
@@ -2909,17 +2811,6 @@ class ImGuiPlatformIO < FFI::Struct
     ImGui::ImGuiPlatformIO_ClearRendererHandlers(self)
   end
 
-end
-
-class ImGuiPlatformMonitor < FFI::Struct
-  layout(
-    :MainPos, ImVec2.by_value,
-    :MainSize, ImVec2.by_value,
-    :WorkPos, ImVec2.by_value,
-    :WorkSize, ImVec2.by_value,
-    :DpiScale, :float,
-    :PlatformHandle, :pointer
-  )
 end
 
 class ImGuiPlatformImeData < FFI::Struct
@@ -3019,12 +2910,10 @@ module ImGui
       :ImGui_IsWindowFocused,
       :ImGui_IsWindowHovered,
       :ImGui_GetWindowDrawList,
-      :ImGui_GetWindowDpiScale,
       :ImGui_GetWindowPos,
       :ImGui_GetWindowSize,
       :ImGui_GetWindowWidth,
       :ImGui_GetWindowHeight,
-      :ImGui_GetWindowViewport,
       :ImGui_SetNextWindowPos,
       :ImGui_SetNextWindowPosEx,
       :ImGui_SetNextWindowSize,
@@ -3034,7 +2923,6 @@ module ImGui
       :ImGui_SetNextWindowFocus,
       :ImGui_SetNextWindowScroll,
       :ImGui_SetNextWindowBgAlpha,
-      :ImGui_SetNextWindowViewport,
       :ImGui_SetWindowPos,
       :ImGui_SetWindowSize,
       :ImGui_SetWindowCollapsed,
@@ -3255,6 +3143,7 @@ module ImGui
       :ImGui_CollapsingHeaderBoolPtr,
       :ImGui_SetNextItemOpen,
       :ImGui_SetNextItemStorageID,
+      :ImGui_TreeNodeGetOpen,
       :ImGui_Selectable,
       :ImGui_SelectableEx,
       :ImGui_SelectableBoolPtr,
@@ -3343,14 +3232,6 @@ module ImGui
       :ImGui_EndTabItem,
       :ImGui_TabItemButton,
       :ImGui_SetTabItemClosed,
-      :ImGui_DockSpace,
-      :ImGui_DockSpaceEx,
-      :ImGui_DockSpaceOverViewport,
-      :ImGui_DockSpaceOverViewportEx,
-      :ImGui_SetNextWindowDockID,
-      :ImGui_SetNextWindowClass,
-      :ImGui_GetWindowDockID,
-      :ImGui_IsWindowDocked,
       :ImGui_LogToTTY,
       :ImGui_LogToFile,
       :ImGui_LogToClipboard,
@@ -3391,11 +3272,10 @@ module ImGui
       :ImGui_GetItemRectMin,
       :ImGui_GetItemRectMax,
       :ImGui_GetItemRectSize,
+      :ImGui_GetItemFlags,
       :ImGui_GetMainViewport,
       :ImGui_GetBackgroundDrawList,
-      :ImGui_GetBackgroundDrawListEx,
       :ImGui_GetForegroundDrawList,
-      :ImGui_GetForegroundDrawListEx,
       :ImGui_IsRectVisibleBySize,
       :ImGui_IsRectVisible,
       :ImGui_GetTime,
@@ -3456,18 +3336,8 @@ module ImGui
       :ImGui_GetAllocatorFunctions,
       :ImGui_MemAlloc,
       :ImGui_MemFree,
-      :ImGui_UpdatePlatformWindows,
-      :ImGui_RenderPlatformWindowsDefault,
-      :ImGui_RenderPlatformWindowsDefaultEx,
-      :ImGui_DestroyPlatformWindows,
-      :ImGui_FindViewportByID,
-      :ImGui_FindViewportByPlatformHandle,
       :ImVector_Construct,
       :ImVector_Destruct,
-      :ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets,
-      :ImGuiPlatformIO_SetPlatform_GetWindowFramebufferScale,
-      :ImGuiPlatformIO_SetPlatform_GetWindowPos,
-      :ImGuiPlatformIO_SetPlatform_GetWindowSize,
       :ImGuiStyle_ScaleAllSizes,
       :ImGuiIO_AddKeyEvent,
       :ImGuiIO_AddKeyAnalogEvent,
@@ -3475,7 +3345,6 @@ module ImGui
       :ImGuiIO_AddMouseButtonEvent,
       :ImGuiIO_AddMouseWheelEvent,
       :ImGuiIO_AddMouseSourceEvent,
-      :ImGuiIO_AddMouseViewportEvent,
       :ImGuiIO_AddFocusEvent,
       :ImGuiIO_AddInputCharacter,
       :ImGuiIO_AddInputCharacterUTF16,
@@ -3489,6 +3358,7 @@ module ImGui
       :ImGuiInputTextCallbackData_DeleteChars,
       :ImGuiInputTextCallbackData_InsertChars,
       :ImGuiInputTextCallbackData_SelectAll,
+      :ImGuiInputTextCallbackData_SetSelection,
       :ImGuiInputTextCallbackData_ClearSelection,
       :ImGuiInputTextCallbackData_HasSelection,
       :ImGuiPayload_Clear,
@@ -3658,6 +3528,8 @@ module ImGui
       :ImFontGlyphRangesBuilder_BuildRanges,
       :ImFontAtlas_AddFont,
       :ImFontAtlas_AddFontDefault,
+      :ImFontAtlas_AddFontDefaultVector,
+      :ImFontAtlas_AddFontDefaultBitmap,
       :ImFontAtlas_AddFontFromFileTTF,
       :ImFontAtlas_AddFontFromMemoryTTF,
       :ImFontAtlas_AddFontFromMemoryCompressedTTF,
@@ -3726,14 +3598,6 @@ module ImGui
       :ImGui_GetContentRegionMax,
       :ImGui_GetWindowContentRegionMin,
       :ImGui_GetWindowContentRegionMax,
-      :ImGui_BeginChildFrame,
-      :ImGui_BeginChildFrameEx,
-      :ImGui_EndChildFrame,
-      :ImGui_ShowStackToolWindow,
-      :ImGui_ComboObsolete,
-      :ImGui_ComboObsoleteEx,
-      :ImGui_ListBoxObsolete,
-      :ImGui_ListBoxObsoleteEx,
     ]
 
     args = {
@@ -3773,12 +3637,10 @@ module ImGui
       :ImGui_IsWindowFocused => [:int],
       :ImGui_IsWindowHovered => [:int],
       :ImGui_GetWindowDrawList => [],
-      :ImGui_GetWindowDpiScale => [],
       :ImGui_GetWindowPos => [],
       :ImGui_GetWindowSize => [],
       :ImGui_GetWindowWidth => [],
       :ImGui_GetWindowHeight => [],
-      :ImGui_GetWindowViewport => [],
       :ImGui_SetNextWindowPos => [ImVec2.by_value, :int],
       :ImGui_SetNextWindowPosEx => [ImVec2.by_value, :int, ImVec2.by_value],
       :ImGui_SetNextWindowSize => [ImVec2.by_value, :int],
@@ -3788,7 +3650,6 @@ module ImGui
       :ImGui_SetNextWindowFocus => [],
       :ImGui_SetNextWindowScroll => [ImVec2.by_value],
       :ImGui_SetNextWindowBgAlpha => [:float],
-      :ImGui_SetNextWindowViewport => [:uint],
       :ImGui_SetWindowPos => [ImVec2.by_value, :int],
       :ImGui_SetWindowSize => [ImVec2.by_value, :int],
       :ImGui_SetWindowCollapsed => [:bool, :int],
@@ -4009,6 +3870,7 @@ module ImGui
       :ImGui_CollapsingHeaderBoolPtr => [:pointer, :pointer, :int],
       :ImGui_SetNextItemOpen => [:bool, :int],
       :ImGui_SetNextItemStorageID => [:uint],
+      :ImGui_TreeNodeGetOpen => [:uint],
       :ImGui_Selectable => [:pointer],
       :ImGui_SelectableEx => [:pointer, :bool, :int, ImVec2.by_value],
       :ImGui_SelectableBoolPtr => [:pointer, :pointer, :int],
@@ -4097,14 +3959,6 @@ module ImGui
       :ImGui_EndTabItem => [],
       :ImGui_TabItemButton => [:pointer, :int],
       :ImGui_SetTabItemClosed => [:pointer],
-      :ImGui_DockSpace => [:uint],
-      :ImGui_DockSpaceEx => [:uint, ImVec2.by_value, :int, :pointer],
-      :ImGui_DockSpaceOverViewport => [],
-      :ImGui_DockSpaceOverViewportEx => [:uint, :pointer, :int, :pointer],
-      :ImGui_SetNextWindowDockID => [:uint, :int],
-      :ImGui_SetNextWindowClass => [:pointer],
-      :ImGui_GetWindowDockID => [],
-      :ImGui_IsWindowDocked => [],
       :ImGui_LogToTTY => [:int],
       :ImGui_LogToFile => [:int, :pointer],
       :ImGui_LogToClipboard => [:int],
@@ -4145,11 +3999,10 @@ module ImGui
       :ImGui_GetItemRectMin => [],
       :ImGui_GetItemRectMax => [],
       :ImGui_GetItemRectSize => [],
+      :ImGui_GetItemFlags => [],
       :ImGui_GetMainViewport => [],
       :ImGui_GetBackgroundDrawList => [],
-      :ImGui_GetBackgroundDrawListEx => [:pointer],
       :ImGui_GetForegroundDrawList => [],
-      :ImGui_GetForegroundDrawListEx => [:pointer],
       :ImGui_IsRectVisibleBySize => [ImVec2.by_value],
       :ImGui_IsRectVisible => [ImVec2.by_value, ImVec2.by_value],
       :ImGui_GetTime => [],
@@ -4210,18 +4063,8 @@ module ImGui
       :ImGui_GetAllocatorFunctions => [:pointer, :pointer, :pointer],
       :ImGui_MemAlloc => [:size_t],
       :ImGui_MemFree => [:pointer],
-      :ImGui_UpdatePlatformWindows => [],
-      :ImGui_RenderPlatformWindowsDefault => [],
-      :ImGui_RenderPlatformWindowsDefaultEx => [:pointer, :pointer],
-      :ImGui_DestroyPlatformWindows => [],
-      :ImGui_FindViewportByID => [:uint],
-      :ImGui_FindViewportByPlatformHandle => [:pointer],
       :ImVector_Construct => [:pointer],
       :ImVector_Destruct => [:pointer],
-      :ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets => [:pointer],
-      :ImGuiPlatformIO_SetPlatform_GetWindowFramebufferScale => [:pointer],
-      :ImGuiPlatformIO_SetPlatform_GetWindowPos => [:pointer],
-      :ImGuiPlatformIO_SetPlatform_GetWindowSize => [:pointer],
       :ImGuiStyle_ScaleAllSizes => [:pointer, :float],
       :ImGuiIO_AddKeyEvent => [:pointer, :int, :bool],
       :ImGuiIO_AddKeyAnalogEvent => [:pointer, :int, :bool, :float],
@@ -4229,7 +4072,6 @@ module ImGui
       :ImGuiIO_AddMouseButtonEvent => [:pointer, :int, :bool],
       :ImGuiIO_AddMouseWheelEvent => [:pointer, :float, :float],
       :ImGuiIO_AddMouseSourceEvent => [:pointer, :int],
-      :ImGuiIO_AddMouseViewportEvent => [:pointer, :uint],
       :ImGuiIO_AddFocusEvent => [:pointer, :bool],
       :ImGuiIO_AddInputCharacter => [:pointer, :uint],
       :ImGuiIO_AddInputCharacterUTF16 => [:pointer, :ushort],
@@ -4243,6 +4085,7 @@ module ImGui
       :ImGuiInputTextCallbackData_DeleteChars => [:pointer, :int, :int],
       :ImGuiInputTextCallbackData_InsertChars => [:pointer, :int, :pointer, :pointer],
       :ImGuiInputTextCallbackData_SelectAll => [:pointer],
+      :ImGuiInputTextCallbackData_SetSelection => [:pointer, :int, :int],
       :ImGuiInputTextCallbackData_ClearSelection => [:pointer],
       :ImGuiInputTextCallbackData_HasSelection => [:pointer],
       :ImGuiPayload_Clear => [:pointer],
@@ -4412,6 +4255,8 @@ module ImGui
       :ImFontGlyphRangesBuilder_BuildRanges => [:pointer, :pointer],
       :ImFontAtlas_AddFont => [:pointer, :pointer],
       :ImFontAtlas_AddFontDefault => [:pointer, :pointer],
+      :ImFontAtlas_AddFontDefaultVector => [:pointer, :pointer],
+      :ImFontAtlas_AddFontDefaultBitmap => [:pointer, :pointer],
       :ImFontAtlas_AddFontFromFileTTF => [:pointer, :pointer, :float, :pointer, :pointer],
       :ImFontAtlas_AddFontFromMemoryTTF => [:pointer, :pointer, :int, :float, :pointer, :pointer],
       :ImFontAtlas_AddFontFromMemoryCompressedTTF => [:pointer, :pointer, :int, :float, :pointer, :pointer],
@@ -4480,14 +4325,6 @@ module ImGui
       :ImGui_GetContentRegionMax => [],
       :ImGui_GetWindowContentRegionMin => [],
       :ImGui_GetWindowContentRegionMax => [],
-      :ImGui_BeginChildFrame => [:uint, ImVec2.by_value],
-      :ImGui_BeginChildFrameEx => [:uint, ImVec2.by_value, :int],
-      :ImGui_EndChildFrame => [],
-      :ImGui_ShowStackToolWindow => [:pointer],
-      :ImGui_ComboObsolete => [:pointer, :pointer, :pointer, :pointer, :int],
-      :ImGui_ComboObsoleteEx => [:pointer, :pointer, :pointer, :pointer, :int, :int],
-      :ImGui_ListBoxObsolete => [:pointer, :pointer, :pointer, :pointer, :int],
-      :ImGui_ListBoxObsoleteEx => [:pointer, :pointer, :pointer, :pointer, :int, :int],
     }
 
     retvals = {
@@ -4527,12 +4364,10 @@ module ImGui
       :ImGui_IsWindowFocused => :bool,
       :ImGui_IsWindowHovered => :bool,
       :ImGui_GetWindowDrawList => :pointer,
-      :ImGui_GetWindowDpiScale => :float,
       :ImGui_GetWindowPos => ImVec2.by_value,
       :ImGui_GetWindowSize => ImVec2.by_value,
       :ImGui_GetWindowWidth => :float,
       :ImGui_GetWindowHeight => :float,
-      :ImGui_GetWindowViewport => :pointer,
       :ImGui_SetNextWindowPos => :void,
       :ImGui_SetNextWindowPosEx => :void,
       :ImGui_SetNextWindowSize => :void,
@@ -4542,7 +4377,6 @@ module ImGui
       :ImGui_SetNextWindowFocus => :void,
       :ImGui_SetNextWindowScroll => :void,
       :ImGui_SetNextWindowBgAlpha => :void,
-      :ImGui_SetNextWindowViewport => :void,
       :ImGui_SetWindowPos => :void,
       :ImGui_SetWindowSize => :void,
       :ImGui_SetWindowCollapsed => :void,
@@ -4763,6 +4597,7 @@ module ImGui
       :ImGui_CollapsingHeaderBoolPtr => :bool,
       :ImGui_SetNextItemOpen => :void,
       :ImGui_SetNextItemStorageID => :void,
+      :ImGui_TreeNodeGetOpen => :bool,
       :ImGui_Selectable => :bool,
       :ImGui_SelectableEx => :bool,
       :ImGui_SelectableBoolPtr => :bool,
@@ -4851,14 +4686,6 @@ module ImGui
       :ImGui_EndTabItem => :void,
       :ImGui_TabItemButton => :bool,
       :ImGui_SetTabItemClosed => :void,
-      :ImGui_DockSpace => :uint,
-      :ImGui_DockSpaceEx => :uint,
-      :ImGui_DockSpaceOverViewport => :uint,
-      :ImGui_DockSpaceOverViewportEx => :uint,
-      :ImGui_SetNextWindowDockID => :void,
-      :ImGui_SetNextWindowClass => :void,
-      :ImGui_GetWindowDockID => :uint,
-      :ImGui_IsWindowDocked => :bool,
       :ImGui_LogToTTY => :void,
       :ImGui_LogToFile => :void,
       :ImGui_LogToClipboard => :void,
@@ -4899,11 +4726,10 @@ module ImGui
       :ImGui_GetItemRectMin => ImVec2.by_value,
       :ImGui_GetItemRectMax => ImVec2.by_value,
       :ImGui_GetItemRectSize => ImVec2.by_value,
+      :ImGui_GetItemFlags => :int,
       :ImGui_GetMainViewport => :pointer,
       :ImGui_GetBackgroundDrawList => :pointer,
-      :ImGui_GetBackgroundDrawListEx => :pointer,
       :ImGui_GetForegroundDrawList => :pointer,
-      :ImGui_GetForegroundDrawListEx => :pointer,
       :ImGui_IsRectVisibleBySize => :bool,
       :ImGui_IsRectVisible => :bool,
       :ImGui_GetTime => :double,
@@ -4964,18 +4790,8 @@ module ImGui
       :ImGui_GetAllocatorFunctions => :void,
       :ImGui_MemAlloc => :pointer,
       :ImGui_MemFree => :void,
-      :ImGui_UpdatePlatformWindows => :void,
-      :ImGui_RenderPlatformWindowsDefault => :void,
-      :ImGui_RenderPlatformWindowsDefaultEx => :void,
-      :ImGui_DestroyPlatformWindows => :void,
-      :ImGui_FindViewportByID => :pointer,
-      :ImGui_FindViewportByPlatformHandle => :pointer,
       :ImVector_Construct => :void,
       :ImVector_Destruct => :void,
-      :ImGuiPlatformIO_SetPlatform_GetWindowWorkAreaInsets => :void,
-      :ImGuiPlatformIO_SetPlatform_GetWindowFramebufferScale => :void,
-      :ImGuiPlatformIO_SetPlatform_GetWindowPos => :void,
-      :ImGuiPlatformIO_SetPlatform_GetWindowSize => :void,
       :ImGuiStyle_ScaleAllSizes => :void,
       :ImGuiIO_AddKeyEvent => :void,
       :ImGuiIO_AddKeyAnalogEvent => :void,
@@ -4983,7 +4799,6 @@ module ImGui
       :ImGuiIO_AddMouseButtonEvent => :void,
       :ImGuiIO_AddMouseWheelEvent => :void,
       :ImGuiIO_AddMouseSourceEvent => :void,
-      :ImGuiIO_AddMouseViewportEvent => :void,
       :ImGuiIO_AddFocusEvent => :void,
       :ImGuiIO_AddInputCharacter => :void,
       :ImGuiIO_AddInputCharacterUTF16 => :void,
@@ -4997,6 +4812,7 @@ module ImGui
       :ImGuiInputTextCallbackData_DeleteChars => :void,
       :ImGuiInputTextCallbackData_InsertChars => :void,
       :ImGuiInputTextCallbackData_SelectAll => :void,
+      :ImGuiInputTextCallbackData_SetSelection => :void,
       :ImGuiInputTextCallbackData_ClearSelection => :void,
       :ImGuiInputTextCallbackData_HasSelection => :bool,
       :ImGuiPayload_Clear => :void,
@@ -5166,6 +4982,8 @@ module ImGui
       :ImFontGlyphRangesBuilder_BuildRanges => :void,
       :ImFontAtlas_AddFont => :pointer,
       :ImFontAtlas_AddFontDefault => :pointer,
+      :ImFontAtlas_AddFontDefaultVector => :pointer,
+      :ImFontAtlas_AddFontDefaultBitmap => :pointer,
       :ImFontAtlas_AddFontFromFileTTF => :pointer,
       :ImFontAtlas_AddFontFromMemoryTTF => :pointer,
       :ImFontAtlas_AddFontFromMemoryCompressedTTF => :pointer,
@@ -5234,14 +5052,6 @@ module ImGui
       :ImGui_GetContentRegionMax => ImVec2.by_value,
       :ImGui_GetWindowContentRegionMin => ImVec2.by_value,
       :ImGui_GetWindowContentRegionMax => ImVec2.by_value,
-      :ImGui_BeginChildFrame => :bool,
-      :ImGui_BeginChildFrameEx => :bool,
-      :ImGui_EndChildFrame => :void,
-      :ImGui_ShowStackToolWindow => :void,
-      :ImGui_ComboObsolete => :bool,
-      :ImGui_ComboObsoleteEx => :bool,
-      :ImGui_ListBoxObsolete => :bool,
-      :ImGui_ListBoxObsoleteEx => :bool,
     }
 
     symbols.each do |sym|
@@ -5450,11 +5260,6 @@ module ImGui
     ImGui_GetWindowDrawList()
   end
 
-  # ret: float
-  def self.GetWindowDpiScale()
-    ImGui_GetWindowDpiScale()
-  end
-
   # ret: ImVec2.by_value
   def self.GetWindowPos()
     ImGui_GetWindowPos()
@@ -5473,11 +5278,6 @@ module ImGui
   # ret: float
   def self.GetWindowHeight()
     ImGui_GetWindowHeight()
-  end
-
-  # ret: pointer
-  def self.GetWindowViewport()
-    ImGui_GetWindowViewport()
   end
 
   # arg: pos(ImVec2), cond(ImGuiCond)
@@ -5531,12 +5331,6 @@ module ImGui
   # ret: void
   def self.SetNextWindowBgAlpha(alpha)
     ImGui_SetNextWindowBgAlpha(alpha)
-  end
-
-  # arg: viewport_id(ImGuiID)
-  # ret: void
-  def self.SetNextWindowViewport(viewport_id)
-    ImGui_SetNextWindowViewport(viewport_id)
   end
 
   # arg: pos(ImVec2), cond(ImGuiCond)
@@ -6819,6 +6613,12 @@ module ImGui
     ImGui_SetNextItemStorageID(storage_id)
   end
 
+  # arg: storage_id(ImGuiID)
+  # ret: bool
+  def self.TreeNodeGetOpen(storage_id)
+    ImGui_TreeNodeGetOpen(storage_id)
+  end
+
   # arg: label(const char*)
   # ret: bool
   def self.Selectable(label)
@@ -7061,7 +6861,7 @@ module ImGui
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: void
-  def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 1)
+  def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 0)
     ImGui_OpenPopupOnItemClick(str_id, popup_flags)
   end
 
@@ -7077,7 +6877,7 @@ module ImGui
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: bool
-  def self.BeginPopupContextItemEx(str_id = nil, popup_flags = 1)
+  def self.BeginPopupContextItemEx(str_id = nil, popup_flags = 0)
     ImGui_BeginPopupContextItemEx(str_id, popup_flags)
   end
 
@@ -7088,7 +6888,7 @@ module ImGui
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: bool
-  def self.BeginPopupContextWindowEx(str_id = nil, popup_flags = 1)
+  def self.BeginPopupContextWindowEx(str_id = nil, popup_flags = 0)
     ImGui_BeginPopupContextWindowEx(str_id, popup_flags)
   end
 
@@ -7099,7 +6899,7 @@ module ImGui
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: bool
-  def self.BeginPopupContextVoidEx(str_id = nil, popup_flags = 1)
+  def self.BeginPopupContextVoidEx(str_id = nil, popup_flags = 0)
     ImGui_BeginPopupContextVoidEx(str_id, popup_flags)
   end
 
@@ -7315,51 +7115,6 @@ module ImGui
     ImGui_SetTabItemClosed(tab_or_docked_window_label)
   end
 
-  # arg: dockspace_id(ImGuiID)
-  # ret: uint
-  def self.DockSpace(dockspace_id)
-    ImGui_DockSpace(dockspace_id)
-  end
-
-  # arg: dockspace_id(ImGuiID), size(ImVec2), flags(ImGuiDockNodeFlags), window_class(const ImGuiWindowClass*)
-  # ret: uint
-  def self.DockSpaceEx(dockspace_id, size = ImVec2.create(0,0), flags = 0, window_class = nil)
-    ImGui_DockSpaceEx(dockspace_id, size, flags, window_class)
-  end
-
-  # ret: uint
-  def self.DockSpaceOverViewport()
-    ImGui_DockSpaceOverViewport()
-  end
-
-  # arg: dockspace_id(ImGuiID), viewport(const ImGuiViewport*), flags(ImGuiDockNodeFlags), window_class(const ImGuiWindowClass*)
-  # ret: uint
-  def self.DockSpaceOverViewportEx(dockspace_id = 0, viewport = nil, flags = 0, window_class = nil)
-    ImGui_DockSpaceOverViewportEx(dockspace_id, viewport, flags, window_class)
-  end
-
-  # arg: dock_id(ImGuiID), cond(ImGuiCond)
-  # ret: void
-  def self.SetNextWindowDockID(dock_id, cond = 0)
-    ImGui_SetNextWindowDockID(dock_id, cond)
-  end
-
-  # arg: window_class(const ImGuiWindowClass*)
-  # ret: void
-  def self.SetNextWindowClass(window_class)
-    ImGui_SetNextWindowClass(window_class)
-  end
-
-  # ret: uint
-  def self.GetWindowDockID()
-    ImGui_GetWindowDockID()
-  end
-
-  # ret: bool
-  def self.IsWindowDocked()
-    ImGui_IsWindowDocked()
-  end
-
   # arg: auto_open_depth(int)
   # ret: void
   def self.LogToTTY(auto_open_depth = -1)
@@ -7573,6 +7328,11 @@ module ImGui
     ImGui_GetItemRectSize()
   end
 
+  # ret: int
+  def self.GetItemFlags()
+    ImGui_GetItemFlags()
+  end
+
   # ret: pointer
   def self.GetMainViewport()
     ImGui_GetMainViewport()
@@ -7583,21 +7343,9 @@ module ImGui
     ImGui_GetBackgroundDrawList()
   end
 
-  # arg: viewport(ImGuiViewport*)
-  # ret: pointer
-  def self.GetBackgroundDrawListEx(viewport = nil)
-    ImGui_GetBackgroundDrawListEx(viewport)
-  end
-
   # ret: pointer
   def self.GetForegroundDrawList()
     ImGui_GetForegroundDrawList()
-  end
-
-  # arg: viewport(ImGuiViewport*)
-  # ret: pointer
-  def self.GetForegroundDrawListEx(viewport = nil)
-    ImGui_GetForegroundDrawListEx(viewport)
   end
 
   # arg: size(ImVec2)
@@ -7949,39 +7697,6 @@ module ImGui
     ImGui_MemFree(ptr)
   end
 
-  # ret: void
-  def self.UpdatePlatformWindows()
-    ImGui_UpdatePlatformWindows()
-  end
-
-  # ret: void
-  def self.RenderPlatformWindowsDefault()
-    ImGui_RenderPlatformWindowsDefault()
-  end
-
-  # arg: platform_render_arg(void*), renderer_render_arg(void*)
-  # ret: void
-  def self.RenderPlatformWindowsDefaultEx(platform_render_arg = nil, renderer_render_arg = nil)
-    ImGui_RenderPlatformWindowsDefaultEx(platform_render_arg, renderer_render_arg)
-  end
-
-  # ret: void
-  def self.DestroyPlatformWindows()
-    ImGui_DestroyPlatformWindows()
-  end
-
-  # arg: viewport_id(ImGuiID)
-  # ret: pointer
-  def self.FindViewportByID(viewport_id)
-    ImGui_FindViewportByID(viewport_id)
-  end
-
-  # arg: platform_handle(void*)
-  # ret: pointer
-  def self.FindViewportByPlatformHandle(platform_handle)
-    ImGui_FindViewportByPlatformHandle(platform_handle)
-  end
-
   # arg: font(ImFont*)
   # ret: void
   def self.PushFont(font)
@@ -8035,53 +7750,6 @@ module ImGui
   # ret: ImVec2.by_value
   def self.GetWindowContentRegionMax()
     ImGui_GetWindowContentRegionMax()
-  end
-
-  # arg: id(ImGuiID), size(ImVec2)
-  # ret: bool
-  def self.BeginChildFrame(id, size)
-    ImGui_BeginChildFrame(id, size)
-  end
-
-  # arg: id(ImGuiID), size(ImVec2), window_flags(ImGuiWindowFlags)
-  # ret: bool
-  def self.BeginChildFrameEx(id, size, window_flags = 0)
-    ImGui_BeginChildFrameEx(id, size, window_flags)
-  end
-
-  # ret: void
-  def self.EndChildFrame()
-    ImGui_EndChildFrame()
-  end
-
-  # arg: p_open(bool*)
-  # ret: void
-  def self.ShowStackToolWindow(p_open = nil)
-    ImGui_ShowStackToolWindow(p_open)
-  end
-
-  # arg: label(const char*), current_item(int*), old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), user_data(void*), items_count(int)
-  # ret: bool
-  def self.ComboObsolete(label, current_item, old_callback, user_data, items_count)
-    ImGui_ComboObsolete(label, current_item, old_callback, user_data, items_count)
-  end
-
-  # arg: label(const char*), current_item(int*), old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), user_data(void*), items_count(int), popup_max_height_in_items(int)
-  # ret: bool
-  def self.ComboObsoleteEx(label, current_item, old_callback, user_data, items_count, popup_max_height_in_items = -1)
-    ImGui_ComboObsoleteEx(label, current_item, old_callback, user_data, items_count, popup_max_height_in_items)
-  end
-
-  # arg: label(const char*), current_item(int*), old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), user_data(void*), items_count(int)
-  # ret: bool
-  def self.ListBoxObsolete(label, current_item, old_callback, user_data, items_count)
-    ImGui_ListBoxObsolete(label, current_item, old_callback, user_data, items_count)
-  end
-
-  # arg: label(const char*), current_item(int*), old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), user_data(void*), items_count(int), height_in_items(int)
-  # ret: bool
-  def self.ListBoxObsoleteEx(label, current_item, old_callback, user_data, items_count, height_in_items = -1)
-    ImGui_ListBoxObsoleteEx(label, current_item, old_callback, user_data, items_count, height_in_items)
   end
 
   # Overload functions
@@ -8389,12 +8057,6 @@ module ImGui
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int), 5:popup_max_height_in_items(int)
     # ret: bool
     return ImGui_ComboCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
-    # arg: 0:label(const char*), 1:current_item(int*), 2:old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), 3:user_data(void*), 4:items_count(int)
-    # ret: bool
-    return ImGui_ComboObsolete(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
-    # arg: 0:label(const char*), 1:current_item(int*), 2:old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), 3:user_data(void*), 4:items_count(int), 5:popup_max_height_in_items(int)
-    # ret: bool
-    return ImGui_ComboObsoleteEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::Combo : No matching functions found (#{arg})")
   end
 
@@ -8860,12 +8522,6 @@ module ImGui
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int), 5:height_in_items(int)
     # ret: bool
     return ImGui_ListBoxCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
-    # arg: 0:label(const char*), 1:current_item(int*), 2:old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), 3:user_data(void*), 4:items_count(int)
-    # ret: bool
-    return ImGui_ListBoxObsolete(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
-    # arg: 0:label(const char*), 1:current_item(int*), 2:old_callback(bool (*old_callback)(void* user_data, int idx, const char** out_text)), 3:user_data(void*), 4:items_count(int), 5:height_in_items(int)
-    # ret: bool
-    return ImGui_ListBoxObsoleteEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ListBox : No matching functions found (#{arg})")
   end
 
@@ -9004,26 +8660,6 @@ module ImGui
     $stderr.puts("[Warning] ImGui::Columns : No matching functions found (#{arg})")
   end
 
-  def self.DockSpace(*arg)
-    # arg: 0:dockspace_id(ImGuiID)
-    # ret: uint
-    return ImGui_DockSpace(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
-    # arg: 0:dockspace_id(ImGuiID), 1:size(ImVec2), 2:flags(ImGuiDockNodeFlags), 3:window_class(const ImGuiWindowClass*)
-    # ret: uint
-    return ImGui_DockSpaceEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ImGui::DockSpace : No matching functions found (#{arg})")
-  end
-
-  def self.DockSpaceOverViewport(*arg)
-    # arg: 
-    # ret: uint
-    return ImGui_DockSpaceOverViewport() if arg.length == 0 && ()
-    # arg: 0:dockspace_id(ImGuiID), 1:viewport(const ImGuiViewport*), 2:flags(ImGuiDockNodeFlags), 3:window_class(const ImGuiWindowClass*)
-    # ret: uint
-    return ImGui_DockSpaceOverViewportEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ImGui::DockSpaceOverViewport : No matching functions found (#{arg})")
-  end
-
   def self.SetKeyboardFocusHere(*arg)
     # arg: 
     # ret: void
@@ -9042,26 +8678,6 @@ module ImGui
     # ret: bool
     return ImGui_IsItemClickedEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::IsItemClicked : No matching functions found (#{arg})")
-  end
-
-  def self.GetBackgroundDrawList(*arg)
-    # arg: 
-    # ret: pointer
-    return ImGui_GetBackgroundDrawList() if arg.length == 0 && ()
-    # arg: 0:viewport(ImGuiViewport*)
-    # ret: pointer
-    return ImGui_GetBackgroundDrawListEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ImGui::GetBackgroundDrawList : No matching functions found (#{arg})")
-  end
-
-  def self.GetForegroundDrawList(*arg)
-    # arg: 
-    # ret: pointer
-    return ImGui_GetForegroundDrawList() if arg.length == 0 && ()
-    # arg: 0:viewport(ImGuiViewport*)
-    # ret: pointer
-    return ImGui_GetForegroundDrawListEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ImGui::GetForegroundDrawList : No matching functions found (#{arg})")
   end
 
   def self.IsRectVisible(*arg)
@@ -9122,26 +8738,6 @@ module ImGui
     # ret: void
     return ImGui_ResetMouseDragDeltaEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ResetMouseDragDelta : No matching functions found (#{arg})")
-  end
-
-  def self.RenderPlatformWindowsDefault(*arg)
-    # arg: 
-    # ret: void
-    return ImGui_RenderPlatformWindowsDefault() if arg.length == 0 && ()
-    # arg: 0:platform_render_arg(void*), 1:renderer_render_arg(void*)
-    # ret: void
-    return ImGui_RenderPlatformWindowsDefaultEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ImGui::RenderPlatformWindowsDefault : No matching functions found (#{arg})")
-  end
-
-  def self.BeginChildFrame(*arg)
-    # arg: 0:id(ImGuiID), 1:size(ImVec2)
-    # ret: bool
-    return ImGui_BeginChildFrame(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2))
-    # arg: 0:id(ImGuiID), 1:size(ImVec2), 2:window_flags(ImGuiWindowFlags)
-    # ret: bool
-    return ImGui_BeginChildFrameEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
-    $stderr.puts("[Warning] ImGui::BeginChildFrame : No matching functions found (#{arg})")
   end
 
 end # module ImGui

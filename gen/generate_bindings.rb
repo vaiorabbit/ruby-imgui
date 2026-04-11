@@ -491,15 +491,17 @@ if __FILE__ == $PROGRAM_NAME
   # Setup
   #
 
+  metadata_json = '../third_party/dear_bindings/generated/dcimgui.json'
+
   conditions = [
     
   ]
 
-  defines_map = ImGuiBindings.build_define_map( '../third_party/dear_bindings/cimgui.json' )
-  typedefs_map = ImGuiBindings.build_ffi_typedef_map( '../third_party/dear_bindings/cimgui.json' )
-  enums_map = ImGuiBindings.build_enum_map( '../third_party/dear_bindings/cimgui.json' )
-  structs_map = structs = ImGuiBindings.build_struct_map( '../third_party/dear_bindings/cimgui.json' )
-  funcs_base_map = ImGuiBindings.build_function_map( '../third_party/dear_bindings/cimgui.json' )
+  defines_map = ImGuiBindings.build_define_map(metadata_json)
+  typedefs_map = ImGuiBindings.build_ffi_typedef_map(metadata_json)
+  enums_map = ImGuiBindings.build_enum_map(metadata_json)
+  structs_map = structs = ImGuiBindings.build_struct_map(metadata_json)
+  funcs_base_map = ImGuiBindings.build_function_map(metadata_json)
   # funcs_impl_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/impl_definitions.json' )
   funcs_impl_map = []
 
