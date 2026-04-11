@@ -160,23 +160,23 @@ if __FILE__ == $PROGRAM_NAME
     ImGui::ShowDemoWindow(show_demo_window) if show_demo_window.read(:bool)
 
     ImGui::Begin('Hello, world!')
-    ImGui::TextUnformattedEx('This is some useful text.') # ImGui::Text('This is some useful text.')
+    ImGui::Text('This is some useful text.')
     ImGui::Checkbox('Demo Window', show_demo_window)
     ImGui::Checkbox('Another Window', show_another_window)
-    ImGui::SliderFloatEx('float', f_value, 0.0, 1.0) # ImGui::SliderFloat('float', f_value, 0.0, 1.0)
+    ImGui::SliderFloat('float', f_value, 0.0, 1.0)
     ImGui::ColorEdit3('clear color', clear_color.to_ptr)
 
-    if ImGui::ButtonEx('Button') # ImGui::Button('Button')
+    if ImGui::Button('Button')
       counter.write(:int, counter.read(:int) + 1)
     end
-    ImGui::SameLineEx() # ImGui::SameLine()
-    # ImGui::Text('counter = %d', :int, counter.read(:int))
-    # ImGui::Text('Application average %.3f ms/frame (%.1f FPS)', :float, 1000.0 / io[:Framerate], :float, io[:Framerate])
+    ImGui::SameLine()
+    ImGui::Text('counter = %d', :int, counter.read(:int))
+    ImGui::Text('Application average %.3f ms/frame (%.1f FPS)', :float, 1000.0 / io[:Framerate], :float, io[:Framerate])
     ImGui::End()
 
     if show_another_window.read(:bool)
       ImGui::Begin('Another Window', show_another_window)
-      ImGui::TextUnformattedEx('Hello from another window!') # ImGui::Text('Hello from another window!')
+      ImGui::Text('Hello from another window!')
       show_another_window.write(:bool, false) if ImGui::Button('Close Me')
       ImGui::End()
     end

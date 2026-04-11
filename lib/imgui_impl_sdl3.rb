@@ -245,7 +245,7 @@ module ImGui
       ImGui_ImplSDL3_UpdateKeyModifiers(event[:key][:mod])
       key = ImGui_ImplSDL3_KeyEventToImGuiKey(event[:key][:key], event[:key][:scancode])
       io.AddKeyEvent(key, event_type == SDL::EVENT_KEY_DOWN)
-      io.SetKeyEventNativeData(key, event[:key][:key], event[:key][:scancode], event[:key][:scancode])
+      io.SetKeyEventNativeDataEx(key, event[:key][:key], event[:key][:scancode], event[:key][:scancode])
       true
 
     when SDL::EVENT_WINDOW_MOUSE_ENTER
