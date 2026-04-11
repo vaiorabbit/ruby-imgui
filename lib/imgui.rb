@@ -31,7 +31,7 @@ FFI.typedef :uint64, :ImU64
 FFI.typedef :int, :ImGuiDir
 FFI.typedef :int, :ImGuiKey
 FFI.typedef :int, :ImGuiMouseSource
-FFI.typedef :int, :ImGuiSortDirection
+FFI.typedef :uchar, :ImGuiSortDirection
 FFI.typedef :int, :ImGuiCol
 FFI.typedef :int, :ImGuiCond
 FFI.typedef :int, :ImGuiDataType
@@ -74,8 +74,8 @@ FFI.typedef :int, :ImGuiWindowFlags
 FFI.typedef :uint, :ImWchar32
 FFI.typedef :ushort, :ImWchar16
 FFI.typedef :ushort, :ImWchar
-FFI.typedef :int, :ImGuiSelectionUserData
-FFI.typedef :int, :ImTextureID
+FFI.typedef :int64, :ImGuiSelectionUserData
+FFI.typedef :uint64, :ImTextureID
 FFI.typedef :int, :ImFontAtlasRectId
 FFI.typedef :int, :ImFontAtlasCustomRect
 FFI.typedef :int, :ImGuiWindowFlags_
@@ -1025,7 +1025,7 @@ end
 class ImTextureRef < FFI::Struct
   layout(
     :_TexData, :pointer,
-    :_TexID, :int
+    :_TexID, :uint64
   )
 
   def GetTexID()
@@ -1581,7 +1581,7 @@ class ImGuiTableColumnSortSpecs < FFI::Struct
     :ColumnUserID, :uint,
     :ColumnIndex, :short,
     :SortOrder, :short,
-    :SortDirection, :int
+    :SortDirection, :uchar
   )
 end
 
@@ -2375,8 +2375,8 @@ end
 class ImGuiMultiSelectIO < FFI::Struct
   layout(
     :Requests, ImVector.by_value,
-    :RangeSrcItem, :int,
-    :NavIdItem, :int,
+    :RangeSrcItem, :int64,
+    :NavIdItem, :int64,
     :NavIdSelected, :bool,
     :RangeSrcReset, :bool,
     :ItemsCount, :int
@@ -2388,8 +2388,8 @@ class ImGuiSelectionRequest < FFI::Struct
     :Type, :int,
     :Selected, :bool,
     :RangeDirection, :char,
-    :RangeFirstItem, :int,
-    :RangeLastItem, :int
+    :RangeFirstItem, :int64,
+    :RangeLastItem, :int64
   )
 end
 
@@ -2498,7 +2498,7 @@ class ImTextureData < FFI::Struct
     :UniqueID, :int,
     :Status, :int,
     :BackendUserData, :pointer,
-    :TexID, :int,
+    :TexID, :uint64,
     :Format, :int,
     :Width, :int,
     :Height, :int,
@@ -3774,7 +3774,7 @@ module ImGui
       :ImGui_SelectableBoolPtrEx => [:pointer, :pointer, :int, ImVec2.by_value],
       :ImGui_BeginMultiSelectEx => [:int, :int, :int],
       :ImGui_EndMultiSelect => [],
-      :ImGui_SetNextItemSelectionUserData => [:int],
+      :ImGui_SetNextItemSelectionUserData => [:int64],
       :ImGui_IsItemToggledSelection => [],
       :ImGui_BeginListBox => [:pointer, ImVec2.by_value],
       :ImGui_EndListBox => [],
@@ -4117,7 +4117,7 @@ module ImGui
       :ImTextureData_GetPitch => [:pointer],
       :ImTextureData_GetTexRef => [:pointer],
       :ImTextureData_GetTexID => [:pointer],
-      :ImTextureData_SetTexID => [:pointer, :int],
+      :ImTextureData_SetTexID => [:pointer, :uint64],
       :ImTextureData_SetStatus => [:pointer, :int],
       :ImFontGlyphRangesBuilder_Clear => [:pointer],
       :ImFontGlyphRangesBuilder_GetBit => [:pointer, :size_t],
@@ -4142,7 +4142,7 @@ module ImGui
       :ImFontAtlas_Build => [:pointer],
       :ImFontAtlas_GetTexDataAsAlpha8 => [:pointer, :pointer, :pointer, :pointer, :pointer],
       :ImFontAtlas_GetTexDataAsRGBA32 => [:pointer, :pointer, :pointer, :pointer, :pointer],
-      :ImFontAtlas_SetTexID => [:pointer, :int],
+      :ImFontAtlas_SetTexID => [:pointer, :uint64],
       :ImFontAtlas_SetTexIDImTextureRef => [:pointer, ImTextureRef.by_value],
       :ImFontAtlas_IsBuilt => [:pointer],
       :ImFontAtlas_GetGlyphRangesDefault => [:pointer],
@@ -4201,7 +4201,7 @@ module ImGui
     }
 
     retvals = {
-      :ImTextureRef_GetTexID => :int,
+      :ImTextureRef_GetTexID => :uint64,
       :ImGui_CreateContext => :pointer,
       :ImGui_DestroyContext => :void,
       :ImGui_GetCurrentContext => :pointer,
@@ -4675,7 +4675,7 @@ module ImGui
       :ImGuiSelectionBasicStorage_GetNextSelectedItem => :bool,
       :ImGuiSelectionBasicStorage_GetStorageIdFromIndex => :uint,
       :ImGuiSelectionExternalStorage_ApplyRequests => :void,
-      :ImDrawCmd_GetTexID => :int,
+      :ImDrawCmd_GetTexID => :uint64,
       :ImDrawListSplitter_Clear => :void,
       :ImDrawListSplitter_ClearFreeMemory => :void,
       :ImDrawListSplitter_Split => :void,
@@ -4763,7 +4763,7 @@ module ImGui
       :ImTextureData_GetSizeInBytes => :int,
       :ImTextureData_GetPitch => :int,
       :ImTextureData_GetTexRef => ImTextureRef.by_value,
-      :ImTextureData_GetTexID => :int,
+      :ImTextureData_GetTexID => :uint64,
       :ImTextureData_SetTexID => :void,
       :ImTextureData_SetStatus => :void,
       :ImFontGlyphRangesBuilder_Clear => :void,

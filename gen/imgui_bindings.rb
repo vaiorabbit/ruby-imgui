@@ -336,6 +336,25 @@ module ImGuiBindings
       return @@imGuiToCTypeMap[type_name].type
     end
     result = CToFFITypeMap[type_name]
+    
+    # If not found but is an Im* type, try to resolve through built-in Im* typedefs
+    if result.nil? && type_name.start_with?('Im')
+      # Built-in Im* type mappings for common integer types
+      case type_name
+      when 'ImS8'   then result = :char
+      when 'ImU8'   then result = :uchar
+      when 'ImS16'  then result = :short
+      when 'ImU16'  then result = :ushort
+      when 'ImS32'  then result = :int32
+      when 'ImU32'  then result = :uint32
+      when 'ImS64'  then result = :int64
+      when 'ImU64'  then result = :uint64
+      when 'ImDrawIdx' then result = :ushort
+      when 'ImGuiID'   then result = :uint
+      when 'ImTextureID' then result = :uint64  # ImTextureID is defined as ImU64
+      end
+    end
+    
     # Unknown Im* types are ImGui enums not yet in the typedef map; treat as int
     return result || (type_name.start_with?('Im') ? :int : nil)
   end
