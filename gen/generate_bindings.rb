@@ -32,22 +32,37 @@ end
 
 module Generator
 
+  RUBY_KEYWORDS = %w[
+    BEGIN END alias and begin break case class def defined? do else elsif end ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield
+  ].freeze
+
   def self.sanitize_arg_names(func_args)
     arg_names = func_args.map do |arg|
       case arg.name
       # va_arg -> keyword argument
       when "..."
         "*varargs"
+      # Keep receiver argument as-is for generated instance methods.
+      when "self"
+        "self"
       when /^__unnamed_arg\d+__$/
         arg.type_name == '...' ? "*varargs" : arg.name
-      # avoid conflict with ruby keywords by adding '_'s
-      when "in" #, "self"
-        "_#{arg.name}_"
       else
-        arg.name
+        # Avoid conflicts with Ruby reserved words.
+        RUBY_KEYWORDS.include?(arg.name) ? "_#{arg.name}_" : arg.name
       end
     end
     return arg_names
+  end
+
+  def self.ruby_class_name(type_name)
+    name = type_name.to_s
+    return name if name.empty?
+    return name if name[0] =~ /[A-Z]/
+
+    # C metadata may include lowercase struct names (e.g. stbrp_context_opaque).
+    # Ruby class/module constants must start with an uppercase character.
+    name.sub(/\A([a-z])/) { Regexp.last_match(1).upcase }
   end
 
   def self.floating_num(flt)
@@ -189,9 +204,10 @@ module Generator
   end
 
   def self.write_struct(out, struct, methods, typedefs_map)
-    return unless struct.name.start_with?('Im')
+    return unless struct.name.start_with?('Im') || struct.name.start_with?('stbrp_')
 
-    out.write("class #{struct.name} < FFI::Struct\n")
+    struct_name_ruby = ruby_class_name(struct.name)
+    out.write("class #{struct_name_ruby} < FFI::Struct\n")
     out.push_indent
     # write member layout
     out.write("layout(\n")
@@ -205,14 +221,14 @@ module Generator
              end
       args = ""
       if m.is_array
-        args = if m.type.to_s.start_with?('Im') # e.g.) :MouseClickedPos, [ImVec2.by_value, 5],
-                 "[#{m.type}.by_value, #{m.size}]"
+        args = if m.type.to_s.start_with?('Im') || m.type.to_s.start_with?('stbrp_') # e.g.) :MouseClickedPos, [ImVec2.by_value, 5],
+                 "[#{ruby_class_name(m.type.to_s)}.by_value, #{m.size}]"
                else # e.g.) :MouseClickedTime, [:double, 5],
                  "[:#{m.type}, #{m.size}]"
                end
       else
-        args = if m.type.to_s.start_with?('Im') # e.g.) :MouseDelta, ImVec2.by_value,
-                 "#{m.type}.by_value"
+        args = if m.type.to_s.start_with?('Im') || m.type.to_s.start_with?('stbrp_') # e.g.) :MouseDelta, ImVec2.by_value,
+                 "#{ruby_class_name(m.type.to_s)}.by_value"
                elsif m.type_str.start_with?('Im') && (m.type_str.include?('*') || m.type_str.include?('&')) # e.g.) :Fonts, ImFontAtlas.ptr,
                  imgui_struct_or_typedef = m.type_str.gsub(/[*&]+/, '') # omit asterisk, etc. e.g.) ImDrawList** -> ImDrawList
                  # e.g.) ImDrawIdx (Starts with "Im" but just a typedef of unsinged int): then the ImGuiTypedefMapEntry looks like:
@@ -554,16 +570,55 @@ if __FILE__ == $PROGRAM_NAME
   #
 
   metadata_json = '../third_party/dear_bindings/generated/dcimgui.json'
+  metadata_internal_json = '../third_party/dear_bindings/generated/dcimgui_internal.json'
+
+  merge_hash_preserve_order = lambda do |base_map, extra_map|
+    merged = base_map.dup
+    extra_map.each do |k, v|
+      merged[k] = v unless merged.has_key?(k)
+    end
+    merged
+  end
+
+  merge_array_by_name = lambda do |base_list, extra_list|
+    seen = {}
+    base_list.each do |entry|
+      seen[entry.name] = true if entry.respond_to?(:name)
+    end
+    merged = base_list.dup
+    extra_list.each do |entry|
+      next if entry.respond_to?(:name) && seen[entry.name]
+
+      merged << entry
+      seen[entry.name] = true if entry.respond_to?(:name)
+    end
+    merged
+  end
 
   conditions = [
     
   ]
 
-  defines_map = ImGuiBindings.build_define_map(metadata_json)
-  typedefs_map = ImGuiBindings.build_ffi_typedef_map(metadata_json)
-  enums_map = ImGuiBindings.build_enum_map(metadata_json)
-  structs_map = structs = ImGuiBindings.build_struct_map(metadata_json)
-  funcs_base_map = ImGuiBindings.build_function_map(metadata_json)
+  defines_map = merge_array_by_name.call(
+    ImGuiBindings.build_define_map(metadata_json),
+    ImGuiBindings.build_define_map(metadata_internal_json)
+  )
+  typedefs_map = merge_hash_preserve_order.call(
+    ImGuiBindings.build_ffi_typedef_map(metadata_json),
+    ImGuiBindings.build_ffi_typedef_map(metadata_internal_json)
+  )
+  enums_map = merge_array_by_name.call(
+    ImGuiBindings.build_enum_map(metadata_json),
+    ImGuiBindings.build_enum_map(metadata_internal_json)
+  )
+  structs_map = structs = merge_array_by_name.call(
+    ImGuiBindings.build_struct_map(metadata_json),
+    ImGuiBindings.build_struct_map(metadata_internal_json)
+  )
+  funcs_base_map = merge_array_by_name.call(
+    ImGuiBindings.build_function_map(metadata_json),
+    ImGuiBindings.build_function_map(metadata_internal_json)
+  )
   # funcs_impl_map = ImGuiBindings.build_function_map( '../imgui_dll/cimgui/generator/output/impl_definitions.json' )
   funcs_impl_map = []
 

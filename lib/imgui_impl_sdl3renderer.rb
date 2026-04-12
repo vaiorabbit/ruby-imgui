@@ -97,7 +97,6 @@ module ImGui
       return if tex[:Format] != ImTextureFormat_RGBA32
 
       sdl_texture = SDL.CreateTexture(backend_data[:bd][:Renderer], SDL::PIXELFORMAT_RGBA32, SDL::TEXTUREACCESS_STATIC, tex[:Width], tex[:Height])
-      pp [sdl_texture, tex[:Width], tex[:Height]]
       if sdl_texture == nil
           error = SDL.GetError()
           puts "SDL_CreateTexture failed: #{error.read_string}"

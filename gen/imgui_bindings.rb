@@ -52,7 +52,6 @@ module ImGuiBindings
     'const_iterator'
   ]
   def self.build_ffi_typedef_map(json_filename)
-    return if @@imGuiToCTypeMap != nil
     type_map = Hash.new
     File.open(json_filename) do |file|
       json = JSON.load(file)
@@ -94,13 +93,18 @@ module ImGuiBindings
         actual_type_name = json_typedefs.find { |t| t['name'] == type_entry.name }['type']['declaration']
         resolved_type = type_map.values.find { |v| v.name == actual_type_name }
         type_entry.type = resolved_type['type'] unless resolved_type == nil
+        # Opaque/internal helper aliases may remain unresolved in metadata.
+        type_entry.type = :pointer if type_entry.type.nil?
         # if resolved_type == nil
         #   pp "couldn't resolve: #{actual_type_name}"
         # end
       end
     end
 
-    @@imGuiToCTypeMap = type_map
+    @@imGuiToCTypeMap ||= {}
+    type_map.each do |name, entry|
+      @@imGuiToCTypeMap[name] = entry
+    end
 
     return type_map
   end
@@ -127,8 +131,13 @@ module ImGuiBindings
         json_fields.each do |json_field|
           next if json_field['name'].to_s.start_with?('__anonymous') # skip anonymous union stubs
           type_str = json_field['type']['declaration']
-          # print "#{type_str} => "
-          ffi_type = get_ffi_type(type_str)
+          # Arrays in metadata are encoded as declarations like "char[80]".
+          # For struct layout we need the element type (e.g. :char), not :pointer.
+          ffi_type = if json_field['is_array'] && /\A(.+)\[[^\]]+\]\z/ =~ type_str
+                       get_ffi_type($1.strip)
+                     else
+                       get_ffi_type(type_str)
+                     end
           # puts "#{ffi_type}"
           begin
             member = ImGuiStructMemberEntry.new(name: json_field['name'], type_str: type_str, type: ffi_type, is_array: json_field['is_array'])
