@@ -324,6 +324,12 @@ module ImGui
     tex.SetStatus(ImTextureStatus_Destroyed)
   end
 
+  def self.ImplOpenGL3_AsGLPointer(pointer)
+    return nil if pointer.nil? || pointer.null?
+
+    Fiddle::Pointer.new(pointer.to_i)
+  end
+
   def self.ImplOpenGL3_UpdateTexture(tex)
     status = tex[:Status]
 
@@ -348,7 +354,7 @@ module ImGui
       GL.TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_WRAP_S, GL::CLAMP_TO_EDGE)
       GL.TexParameteri(GL::TEXTURE_2D, GL::TEXTURE_WRAP_T, GL::CLAMP_TO_EDGE)
 
-      pixels_ptr = Fiddle::Pointer.new(tex[:Pixels])
+      pixels_ptr = ImplOpenGL3_AsGLPointer(tex[:Pixels])
       GL.TexImage2D(GL::TEXTURE_2D, 0, GL::RGBA, tex[:Width], tex[:Height], 0, GL::RGBA, GL::UNSIGNED_BYTE, pixels_ptr)
 
       tex.SetTexID(gl_texture_id)
@@ -373,7 +379,7 @@ module ImGui
 
           updates[:Size].times do |i|
             rect = ImTextureRect.new(updates_ptr + i * ImTextureRect.size)
-            pixels_ptr = tex.GetPixelsAt(rect[:x], rect[:y])
+            pixels_ptr = ImplOpenGL3_AsGLPointer(tex.GetPixelsAt(rect[:x], rect[:y]))
             GL.TexSubImage2D(GL::TEXTURE_2D, 0, rect[:x], rect[:y], rect[:w], rect[:h], GL::RGBA, GL::UNSIGNED_BYTE, pixels_ptr)
           end
 
@@ -382,7 +388,7 @@ module ImGui
           updates[:Size].times do |i|
             rect = ImTextureRect.new(updates_ptr + i * ImTextureRect.size)
             rect[:h].times do |line|
-              pixels_ptr = tex.GetPixelsAt(rect[:x], rect[:y] + line)
+              pixels_ptr = ImplOpenGL3_AsGLPointer(tex.GetPixelsAt(rect[:x], rect[:y] + line))
               GL.TexSubImage2D(GL::TEXTURE_2D, 0, rect[:x], rect[:y] + line, rect[:w], 1, GL::RGBA, GL::UNSIGNED_BYTE, pixels_ptr)
             end
           end
