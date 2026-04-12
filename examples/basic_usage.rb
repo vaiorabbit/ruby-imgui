@@ -4,6 +4,7 @@
 
 ####################################################################################################
 
+require_relative '../lib/imgui'
 require 'stringio'
 
 module ImGuiDemo
@@ -220,8 +221,8 @@ module ImGuiDemo::SlidersWindow1
   def self.Show(is_open = nil)
     ImGui::PushFont(ImGuiDemo::GetFont())
     ImGui::Begin("スライダー(1)")
-    ImGui::DragInt("ドラッグして整数変更", @@i1, 1)
-    ImGui::DragInt("％表示", @@i2, 1, 0, 100, "%d%%") # 最後の引数で値の表示の仕方を指定できます。
+    ImGui::DragInt("ドラッグして整数変更", @@i1, 1.0, 0, 0, "%d", 0)
+    ImGui::DragInt("％表示", @@i2, 1.0, 0, 100, "%d%%", 0) # 最後の引数で値の表示の仕方を指定できます。
 
     ImGui::SetNextItemWidth(100) # 次のUIパーツの幅を100にします。
 
@@ -237,12 +238,10 @@ module ImGuiDemo::SlidersWindow1
     ImGui::SetNextItemWidth(-100)
 
     # 0から1まで変化します。"ratio = %.3f"の部分で値の表示の仕方を指定できます。
-    ImGui::SliderFloat("スライダーで小数変更##1", @@f2, 0.0, 1.0, "ratio = %.3f")
+    ImGui::SliderFloat("スライダーで小数変更##1", @@f2, 0.0, 1.0, "ratio = %.3f", 0)
 
-    # 最後の引数を5.0fとしていることでスライダーを左右の端に近づくほど値が大きく増減するようになります。
-    # 逆にスライダーが中央付近にある場合は小さな値でしか増減しないようになります。
     # -10 から 10 までドラッグして変化させることができます。
-    ImGui::SliderFloat("スライダーで小数変更##2", @@f3, -10.0, 10.0, "%.4f", 5.0)
+    ImGui::SliderFloat("スライダーで小数変更##2", @@f3, -10.0, 10.0, "%.4f", 0)
     ImGui::End()
     ImGui::PopFont()
   end
@@ -283,7 +282,7 @@ module ImGuiDemo::SlidersWindow2
     # ImGui::Combo_Str_arr("##XYZ", @@item, @@items, @@items_string.length)
     ImGui::Combo("##XYZ", @@item, @@items, @@items_string.length, -1)
 
-    ImGui::SameLine(0, 10) # 次のUIパーツを同じ行に配置し、その際、右に10だけスペースを空けます。
+    ImGui::SameLine(0.0, 10.0) # 次のUIパーツを同じ行に配置し、その際、右に10だけスペースを空けます。
 
     ImGui::SliderFloat("X", @@x, 0.0, 5.0); ImGui::SameLine()
     ImGui::SliderFloat("Y", @@y, 0.0, 5.0); ImGui::SameLine()
@@ -304,10 +303,10 @@ module ImGuiDemo::SlidersWindow3
     ImGui::Begin("スライダー(3)")
     7.times do |i|
       ImGui::SameLine() if i > 0
-      ImGui::PushID_Int(i)
+      ImGui::PushID(i)
 
       # 垂直スライダーを幅18,高さ160,最小値0,最大値1で作成します。
-      ImGui::VSliderFloat("##v", ImVec2.create(18,160), @@values[i], 0.0, 1.0, "")
+      ImGui::VSliderFloat("##v", ImVec2.create(18,160), @@values[i], 0.0, 1.0, "", 0)
 
       # スライダー上をマウスオーバーした時に現在の値がポップアップで表示されます。
       ImGui::SetTooltip("%.3f", :float, @@values[i].get_float32(0)) if ImGui::IsItemActive() || ImGui::IsItemHovered()
@@ -553,7 +552,7 @@ module ImGuiDemo::TooltipAndPopupWindow
     if (ImGui::Button("選択.."))
       # "選択.."ボタンがクリックされた場合にここにきます。
       # 引数の"popupID"と同じID名のBeginPopupをポップアップとして表示します。
-      ImGui::OpenPopup("popupID")
+      ImGui::OpenPopup("popupID", 0)
     end
     ImGui::SameLine()
     ImGui::TextUnformatted(@@selected.read_int == -1 ? "<None>" : @@names[@@selected.read_int].read_string)
@@ -563,7 +562,7 @@ module ImGuiDemo::TooltipAndPopupWindow
       ImGui::Separator()
       @@names.length.times do |i|
         # if ImGui::Selectable_Bool(@@names[i].read_string)
-        if ImGui::Selectable(@@names[i].read_string, 0, ImVec2.create())
+        if ImGui::Selectable(@@names[i].read_string, false, 0, ImVec2.create())
           @@selected.put_int32(0, i)
         end
       end
@@ -748,20 +747,20 @@ module ImGuiDemo::MainMenuBarWindow
         # "File"をクリックしてFileメニューを開いた時の処理をここに書きます。
         # bool MenuItem(const char* label, const char* shortcut = NULL,
         #               bool selected = false, bool enabled = true);
-        ImGui::MenuItem_Bool("(dummy menu)", nil, false, false) # enabledをfalseにすることでグレー表示できます。 
-        if (ImGui::MenuItem_Bool("New"))
+        ImGui::MenuItem("(dummy menu)", "", false, false) # enabledをfalseにすることでグレー表示できます。
+        if (ImGui::MenuItem("New"))
           # "New"がクリックされた時の処理をここに書きます。
         end
         # ショートカットキー表示は第2引数に書きます。
-        if (ImGui::MenuItem_Bool("Open", "Ctrl+O"))
+        if (ImGui::MenuItem("Open", "Ctrl+O", false, true))
         end
         if (ImGui::BeginMenu("Open Recent"))
-          ImGui::MenuItem_Bool("fish_hat.c")
-          ImGui::MenuItem_Bool("fish_hat.inl")
-          ImGui::MenuItem_Bool("fish_hat.h")
+          ImGui::MenuItem("fish_hat.c")
+          ImGui::MenuItem("fish_hat.inl")
+          ImGui::MenuItem("fish_hat.h")
           if (ImGui::BeginMenu("More.."))
-            ImGui::MenuItem_Bool("Hello")
-            ImGui::MenuItem_Bool("Sailor")
+            ImGui::MenuItem("Hello")
+            ImGui::MenuItem("Sailor")
             if (ImGui::BeginMenu("Recurse.."))
               # ...
               ImGui::EndMenu()
@@ -770,9 +769,9 @@ module ImGuiDemo::MainMenuBarWindow
           end
           ImGui::EndMenu()
         end
-        if (ImGui::MenuItem_Bool("Save", "Ctrl+S"))
+        if (ImGui::MenuItem("Save", "Ctrl+S", false, true))
         end
-        if (ImGui::MenuItem_Bool("Save As.."))
+        if (ImGui::MenuItem("Save As.."))
         end
         ImGui::Separator()
         if (ImGui::BeginMenu("Options"))
@@ -784,9 +783,9 @@ module ImGuiDemo::MainMenuBarWindow
         if (ImGui::BeginMenu("Disabled", false))
           ImGui::EndMenu()
         end
-        if (ImGui::MenuItem_Bool("Checked", nil, true)) # selectedをtrueにすることでチェックマークをつけることができます
+        if (ImGui::MenuItem("Checked", "", true, true)) # selectedをtrueにすることでチェックマークをつけることができます
         end
-        if (ImGui::MenuItem_Bool("Quit", "Alt+F4"))
+        if (ImGui::MenuItem("Quit", "Alt+F4", false, true))
         end
         ImGui::EndMenu()
       end
@@ -831,9 +830,9 @@ module ImGuiDemo::ClippingAndDummyWindow
       ImColor.col32(90, 90, 120, 255)
     )
     # 文字を作成します(指定したエリアでしか見えないようになります。クリッピングされます)
-    draw_list.AddText_FontPtr(ImGui::GetFont(), ImGui::GetFontSize() * 2.0, 
-                             ImVec2.create(pos[:x] + @@offset[:x], pos[:y] + @@offset[:y]),
-                             ImColor.col32(255, 255, 255, 255), "Click and drag", nil, 0.0, clip_rect)
+    draw_list.AddTextImFontPtrEx(ImGui::GetFont(), ImGui::GetFontSize() * 2.0,
+                   ImVec2.create(pos[:x] + @@offset[:x], pos[:y] + @@offset[:y]),
+                   ImColor.col32(255, 255, 255, 255), "Click and drag", nil, 0.0, clip_rect)
 
     ################################################################################
     ImGui::NewLine()
