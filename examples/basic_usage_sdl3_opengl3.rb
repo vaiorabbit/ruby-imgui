@@ -5,8 +5,8 @@ require 'opengl'
 
 require_relative './basic_usage'
 
-WINDOW_W = 1920
-WINDOW_H = 1080
+WINDOW_W = 1280
+WINDOW_H = 720
 
 
 def imgui_bindings_gem_available?
@@ -89,23 +89,23 @@ def render_basic_usage_demo
   ImGuiDemo::RadioButtonWindow::Show()
   ImGuiDemo::ArrowButtonWindow::Show()
   ImGuiDemo::DropdownListAndInputWindow::Show()
-  ImGuiDemo::SlidersWindow1::Show()
-  ImGuiDemo::SlidersWindow2::Show()
-  ImGuiDemo::SlidersWindow3::Show()
-  ImGuiDemo::EnumAndColorSelectionWindow::Show()
-  ImGuiDemo::ListBoxWindow::Show()
-  ImGuiDemo::InputTextWindow::Show()
-  ImGuiDemo::TreeNodeWindow::Show()
-  ImGuiDemo::TooltipAndPopupWindow::Show()
-  ImGuiDemo::PlotAndProgressWindow::Show()
-  ImGuiDemo::ChildWindow::Show()
-  ImGuiDemo::TabWindow::Show()
-  # ImGuiDemo::SearchWindow::Show()
-  ImGuiDemo::MainMenuBarWindow::Show()
-  # ImGuiDemo::ClippingAndDummyWindow::Show()
-  ImGuiDemo::StackToolWindow::Show()
-  ImGuiDemo::SeparatorTextWindow::Show()
-  ImGuiDemo::PopupWindow::Show()
+  # ImGuiDemo::SlidersWindow1::Show()
+  # ImGuiDemo::SlidersWindow2::Show()
+  # ImGuiDemo::SlidersWindow3::Show()
+  # ImGuiDemo::EnumAndColorSelectionWindow::Show()
+  # ImGuiDemo::ListBoxWindow::Show()
+  # ImGuiDemo::InputTextWindow::Show()
+  # ImGuiDemo::TreeNodeWindow::Show()
+  # ImGuiDemo::TooltipAndPopupWindow::Show()
+  # ImGuiDemo::PlotAndProgressWindow::Show()
+  # ImGuiDemo::ChildWindow::Show()
+  # ImGuiDemo::TabWindow::Show()
+  # # ImGuiDemo::SearchWindow::Show()
+  # ImGuiDemo::MainMenuBarWindow::Show()
+  # # ImGuiDemo::ClippingAndDummyWindow::Show()
+  # ImGuiDemo::StackToolWindow::Show()
+  # ImGuiDemo::SeparatorTextWindow::Show()
+  # ImGuiDemo::PopupWindow::Show()
 end
 
 
@@ -189,7 +189,6 @@ if __FILE__ == $PROGRAM_NAME
   ImGui::ImplOpenGL3_Init(glsl_version)
 
   ImGuiDemo::AddFont(File.join(__dir__, 'jpfont', 'GenShinGothic-Normal.ttf'), File.join(__dir__, 'iconfont', 'fontawesome-webfont.ttf'))
-  ImGuiDemo::SetGlobalScale(0.8)
 
   event = SDL::Event.new
   done = false
