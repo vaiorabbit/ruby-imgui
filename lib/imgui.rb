@@ -13028,30 +13028,30 @@ module ImGui
   def self.InputText(*arg)
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_InputText(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(size_t) && arg[3].kind_of?(Integer))
+    return ImGui_InputText(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:flags(ImGuiInputTextFlags), 4:callback(ImGuiInputTextCallback), 5:user_data(void*)
     # ret: bool
-    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(size_t) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(FFI::Pointer))
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputText : No matching functions found (#{arg})")
   end
 
   def self.InputTextMultiline(*arg)
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t)
     # ret: bool
-    return ImGui_InputTextMultiline(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(size_t))
+    return ImGui_InputTextMultiline(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:size(ImVec2), 4:flags(ImGuiInputTextFlags), 5:callback(ImGuiInputTextCallback), 6:user_data(void*)
     # ret: bool
-    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(size_t) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextMultiline : No matching functions found (#{arg})")
   end
 
   def self.InputTextWithHint(*arg)
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(size_t), 4:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(size_t) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(size_t), 4:flags(ImGuiInputTextFlags), 5:callback(ImGuiInputTextCallback), 6:user_data(void*)
     # ret: bool
-    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(size_t) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextWithHint : No matching functions found (#{arg})")
   end
 
@@ -13111,7 +13111,7 @@ module ImGui
     return ImGui_InputDouble(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(double*), 2:step(double), 3:step_fast(double), 4:format(const char*), 5:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_InputDoubleEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(double) && arg[3].kind_of?(double) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
+    return ImGui_InputDoubleEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputDouble : No matching functions found (#{arg})")
   end
 
@@ -13912,20 +13912,20 @@ module ImGui
   def self.ScrollbarEx(*arg)
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:axis(ImGuiAxis), 3:p_scroll_v(ImS64*), 4:avail_v(ImS64), 5:contents_v(ImS64)
     # ret: bool
-    return ImGui_ScrollbarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(ImGuiAxis) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_ScrollbarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:axis(ImGuiAxis), 3:p_scroll_v(ImS64*), 4:avail_v(ImS64), 5:contents_v(ImS64), 6:draw_rounding_flags(ImDrawFlags)
     # ret: bool
-    return ImGui_ScrollbarExEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(ImGuiAxis) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
+    return ImGui_ScrollbarExEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ScrollbarEx : No matching functions found (#{arg})")
   end
 
   def self.SplitterBehavior(*arg)
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:axis(ImGuiAxis), 3:size1(float*), 4:size2(float*), 5:min_size1(float), 6:min_size2(float)
     # ret: bool
-    return ImGui_SplitterBehavior(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(ImGuiAxis) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float))
+    return ImGui_SplitterBehavior(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:axis(ImGuiAxis), 3:size1(float*), 4:size2(float*), 5:min_size1(float), 6:min_size2(float), 7:hover_extend(float), 8:hover_visibility_delay(float), 9:bg_col(ImU32)
     # ret: bool
-    return ImGui_SplitterBehaviorEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], arg[9]) if arg.length == 10 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(ImGuiAxis) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(Float) && arg[9].kind_of?(Integer))
+    return ImGui_SplitterBehaviorEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], arg[9]) if arg.length == 10 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(Float) && arg[9].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SplitterBehavior : No matching functions found (#{arg})")
   end
 
@@ -13962,10 +13962,10 @@ module ImGui
   def self.TempInputText(*arg)
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:label(const char*), 3:buf(char*), 4:buf_size(size_t), 5:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(size_t) && arg[5].kind_of?(Integer))
+    return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:label(const char*), 3:buf(char*), 4:buf_size(size_t), 5:flags(ImGuiInputTextFlags), 6:callback(ImGuiInputTextCallback), 7:user_data(void*)
     # ret: bool
-    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(size_t) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::TempInputText : No matching functions found (#{arg})")
   end
 

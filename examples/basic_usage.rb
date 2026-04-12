@@ -211,9 +211,9 @@ module ImGuiDemo::DropdownListAndInputWindow
     ImGui::InputTextWithHint("文章入力欄##2", "空欄時に表示される文章を指定できます", @@str1, @@str1.size, 0)
 
     ImGui::InputInt("整数入力欄", @@i0)
-    ImGui::InputFloat("小数入力欄", @@f0, 0.01, 1.0, "%.3f")
+    ImGui::InputFloat("小数入力欄", @@f0, 0.01, 1.0, "%.3f", 0)
 
-    ImGui::InputFloat3("３つの値", @@vec3, "%.2f")
+    ImGui::InputFloat3("３つの値", @@vec3, "%.2f", 0)
     ImGui::End()
     ImGui::PopFont()
   end

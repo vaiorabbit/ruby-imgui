@@ -490,6 +490,7 @@ module Generator
         type_check = []
         ovl_func.args.length.times do |i|
           type_name = ovl_func.args[i].type_name
+          ffi_type = ovl_func.args[i].type
           has_bool = false
           ruby_type = if type_name.include?(']')
                         FFI::Pointer
@@ -497,6 +498,10 @@ module Generator
                         String
                       elsif type_name.include?('*')
                         FFI::Pointer
+                      elsif [:size_t, :int, :uint, :short, :ushort, :long, :ulong, :int32, :uint32, :int64, :uint64].include?(ffi_type)
+                        Integer
+                      elsif [:float, :double].include?(ffi_type)
+                        Float
                       elsif type_name.include?('int')
                         Integer
                       elsif type_name.include?('float')
