@@ -181,7 +181,6 @@ if __FILE__ == $PROGRAM_NAME
   io[:IniFilename] = nil
   io[:WantSaveIniSettings] = false
 
-  ImGui::StyleColorsDark()
   style = ImGuiDemo::GetStyle()
   style.ScaleAllSizes(main_scale)
   style[:FontScaleDpi] = main_scale
