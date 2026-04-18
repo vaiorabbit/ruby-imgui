@@ -505,6 +505,7 @@ module Generator
           type_name = ovl_func.args[i].type_name
           ffi_type = ovl_func.args[i].type
           has_bool = false
+          custom_type_check = nil
           ruby_type = if type_name.include?(']')
                         FFI::Pointer
                       elsif const_char_pointer?(type_name)
@@ -513,6 +514,26 @@ module Generator
                         FFI::Pointer
                       elsif type_name.include?('*')
                         FFI::Pointer
+                      elsif typedefs_map.has_key?(type_name) # typedefs should be resolved before fuzzy name checks (e.g. "ImGuiInputTextCallback" contains "int")
+                        typedef = typedefs_map[type_name]
+                        if !typedef.callback_signature.nil?
+                          custom_type_check = "(arg[#{i}].respond_to?(:call) || arg[#{i}].kind_of?(FFI::Pointer))"
+                          nil
+                        else
+                          typedef_ffi_type = typedef.type.to_s
+                          if %w[size_t int uint short ushort long ulong int32 uint32 int64 uint64].include?(typedef_ffi_type)
+                            Integer
+                          elsif %w[float double].include?(typedef_ffi_type)
+                            Float
+                          elsif typedef_ffi_type == 'bool'
+                            has_bool = true
+                            nil
+                          elsif typedef_ffi_type.include?('pointer')
+                            FFI::Pointer
+                          else
+                            typedef.name # e.g.) ImVec2, ImVec4
+                          end
+                        end
                       elsif [:size_t, :int, :uint, :short, :ushort, :long, :ulong, :int32, :uint32, :int64, :uint64].include?(ffi_type)
                         Integer
                       elsif [:float, :double].include?(ffi_type)
@@ -525,15 +546,6 @@ module Generator
                         has_bool = true
                       elsif type_name.include?('va_list') || type_name == '...'
                         has_vararg = true
-                      elsif typedefs_map.has_key?(type_name) # { |typedef| typedef[0] == type_name}
-                        case typedefs_map[type_name][1]
-                        when /int/
-                          Integer
-                        when /pointer/
-                          FFI::Pointer
-                        else
-                          typedefs_map[type_name][0] # e.g.) ImVec2, ImVec4
-                        end
                       else
                         type_name # bool
                       end
@@ -541,6 +553,8 @@ module Generator
             type_check << "(arg[#{i}].is_a?(TrueClass) || arg[#{i}].is_a?(FalseClass))"
           elsif has_vararg
             # skip type check and pass directly to method
+          elsif custom_type_check
+            type_check << custom_type_check
           else
             type_check << "arg[#{i}].kind_of?(#{ruby_type})"
           end
