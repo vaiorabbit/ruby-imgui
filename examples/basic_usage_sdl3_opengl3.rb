@@ -99,13 +99,13 @@ def render_basic_usage_demo
   ImGuiDemo::TooltipAndPopupWindow::Show()
   ImGuiDemo::PlotAndProgressWindow::Show()
   ImGuiDemo::ChildWindow::Show()
-  # ImGuiDemo::TabWindow::Show()
-  # # ImGuiDemo::SearchWindow::Show()
-  # ImGuiDemo::MainMenuBarWindow::Show()
-  # # ImGuiDemo::ClippingAndDummyWindow::Show()
-  # ImGuiDemo::StackToolWindow::Show()
-  # ImGuiDemo::SeparatorTextWindow::Show()
-  # ImGuiDemo::PopupWindow::Show()
+  ImGuiDemo::TabWindow::Show()
+  ImGuiDemo::SearchWindow::Show()
+  ImGuiDemo::MainMenuBarWindow::Show()
+  ImGuiDemo::ClippingAndDummyWindow::Show()
+  ImGuiDemo::StackToolWindow::Show()
+  ImGuiDemo::SeparatorTextWindow::Show()
+  ImGuiDemo::PopupWindow::Show()
 end
 
 

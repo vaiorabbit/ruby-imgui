@@ -714,7 +714,8 @@ end
 
 module ImGuiDemo::SearchWindow
 
-  @@lines = ["橋本環奈", "橋下徹", "橋本奈々未", "橋本真也", "あいうえお", "abc", "かんな橋本"].map! {|s| FFI::MemoryPointer.from_string(s)} # const char* lines[] = { ... };
+  @@candidates = ["橋本環奈", "橋下徹", "橋本奈々未", "橋本真也", "あいうえお", "abc", "かんな橋本"]
+  @@lines = @@candidates.map! {|s| FFI::MemoryPointer.from_string(s)} # const char* lines[] = { ... };
 
   @@filter = ImGuiTextFilter.new # static ImGuiTextFilter filter;
 
@@ -722,6 +723,7 @@ module ImGuiDemo::SearchWindow
     ImGui::PushFont(ImGuiDemo::GetFont(), 12.0)
     ImGui::Begin("文字検索機能・フィルタリング")
 
+    ImGui::Text("%s among %d items", :string, (0xf002).chr(Encoding::UTF_8), :int, @@candidates.length) # 0xf002 == fa-search (Ref.: https://fontawesome.com/v4.7.0/cheatsheet/ )
     ImGuiTextFilter.new(@@filter.pointer).Draw(FFI::MemoryPointer.from_string("フィルターラベル"))
 
     @@lines.length.times do |i|
@@ -730,13 +732,13 @@ module ImGuiDemo::SearchWindow
       end
     end
 
-    ImGui::Text("%s among %d items", :string, (0xf002).chr(Encoding::UTF_8), :int, 10) # 0xf002 == fa-search (Ref.: https://fontawesome.com/v4.7.0/cheatsheet/ )
-    ImGui::Text("%s Search", :string, (0xf002).chr(Encoding::UTF_8))
-    icons_str = StringIO.new
-    (0xf000...0xf0ff).each do |code|
-      icons_str << code.chr(Encoding::UTF_8)
-    end
-    ImGui::TextWrapped("%s Search", :string, icons_str.string)
+    # アイコン表示のデモ
+    # ImGui::Text("%s Search", :string, (0xf002).chr(Encoding::UTF_8))
+    # icons_str = StringIO.new
+    # (0xf000...0xf0ff).each do |code|
+    #   icons_str << code.chr(Encoding::UTF_8)
+    # end
+    # ImGui::TextWrapped("%s Search", :string, icons_str.string)
 
     ImGui::End()
     ImGui::PopFont()
@@ -895,7 +897,6 @@ end
 module ImGuiDemo::PopupWindow
 
   def self.Show(is_open = nil)
-
     ok_clicked = false
 
     ImGui::PushFont(ImGuiDemo::GetFont(), 12.0)
@@ -915,12 +916,12 @@ module ImGuiDemo::PopupWindow
         ImGui::CloseCurrentPopup()
       end
       ImGui::EndPopup();
-
-      return ok_clicked
     end
 
     ImGui::End()
     ImGui::PopFont()
+
+    return ok_clicked
   end
 end
 
