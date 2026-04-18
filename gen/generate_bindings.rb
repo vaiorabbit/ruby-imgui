@@ -452,18 +452,19 @@ module Generator
     end
   end
 
+  def self.collect_overload_funcnames(funcs_map)
+    original_funcnames = funcs_map.collect { |func| func.original_funcname }.filter { |name| !name.empty? }
+    overload_funcnames = original_funcnames.find_all { |ofn| original_funcnames.count(ofn) > 1 }.uniq
+    overload_funcnames.delete_if { |ofn| !ofn.start_with?('ImGui::') }
+    overload_funcnames
+  end
+
   def self.write_overload_module_methods(out, funcs_map, typedefs_map)
 
     # funcs_map = funcs_map_original.filter {|func| func.generate_overload_method}
 
     # extract function names that require overload definition
-    original_funcnames = funcs_map.collect {|func| func.original_funcname}.filter {|original_funcname| !original_funcname.empty?}
-    overload_funcnames = original_funcnames.find_all {|ofn| original_funcnames.count(ofn) > 1}.uniq!
-
-    # remove candidates that aren't the ImGui module methods (e.g. ImGuiTextRange_ImGuiTextRange_Nil)
-    overload_funcnames.delete_if do |ofn|
-      !ofn.start_with? "ImGui::"
-    end
+    overload_funcnames = collect_overload_funcnames(funcs_map)
 =begin
     # remove candidates that aren't the ImGui module methods (e.g. ImGuiTextRange_ImGuiTextRange_Nil)
     overload_funcnames.delete_if do |ofn|
@@ -531,6 +532,16 @@ module Generator
           end
         end
 
+        default_values = ovl_func.args.map { |arg_info| arg_info.default }
+        sanitize_default_value(default_values)
+
+        trailing_default_count = 0
+        default_values.reverse_each do |default_value|
+          break if default_value.nil?
+
+          trailing_default_count += 1
+        end
+
         args = []
         ovl_func.args.length.times do |i|
           args << "arg[#{i}]"
@@ -551,11 +562,26 @@ module Generator
         if has_vararg
           out.write("return #{ovl_func.name}(#{args.join(', ')}) if arg.length >= #{ovl_func.args.length - 1} && (#{type_check.join(' && ')})\n")
         else
+          if trailing_default_count > 0
+            trailing_default_count.times do |omit_count|
+              omitted = omit_count + 1
+              provided_count = ovl_func.args.length - omitted
+              call_args = args[0...provided_count] + default_values[provided_count...ovl_func.args.length]
+              check = type_check[0...provided_count]
+              cond = if check.empty?
+                       "true"
+                     else
+                       check.join(' && ')
+                     end
+              out.write("return #{ovl_func.name}(#{call_args.join(', ')}) if arg.length == #{provided_count} && (#{cond})\n")
+            end
+          end
+
           if ovl_func.args.length > 0
             out.write("return #{ovl_func.name}(#{args.join(', ')}) if arg.length == #{ovl_func.args.length} && (#{type_check.join(' && ')})\n")
           else
             out.write("return #{ovl_func.name}() if arg.empty?\n")
-          end            
+          end
         end
       end
       out.write('$stderr.puts("[Warning] ' + "#{ofn}" + ' : No matching functions found (#{arg})")' + "\n")
@@ -824,7 +850,10 @@ end
     #
     # ImGui module methods
     #
+    overload_funcnames = Generator.collect_overload_funcnames(funcs_map)
     funcs_map.each do |func|
+      next if overload_funcnames.include?(func.original_funcname)
+
       Generator.write_module_method(out, func)
     end
 

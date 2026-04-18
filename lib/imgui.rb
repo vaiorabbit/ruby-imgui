@@ -6980,16 +6980,6 @@ module ImGui
   end
 
   # ret: pointer
-  def self.GetIO()
-    ImGui_GetIO()
-  end
-
-  # ret: pointer
-  def self.GetPlatformIO()
-    ImGui_GetPlatformIO()
-  end
-
-  # ret: pointer
   def self.GetStyle()
     ImGui_GetStyle()
   end
@@ -7030,17 +7020,6 @@ module ImGui
   # ret: void
   def self.ShowDebugLogWindow(p_open = nil)
     ImGui_ShowDebugLogWindow(p_open)
-  end
-
-  # ret: void
-  def self.ShowIDStackToolWindow()
-    ImGui_ShowIDStackToolWindow()
-  end
-
-  # arg: p_open(bool*)
-  # ret: void
-  def self.ShowIDStackToolWindowEx(p_open = nil)
-    ImGui_ShowIDStackToolWindowEx(p_open)
   end
 
   # arg: p_open(bool*)
@@ -7106,18 +7085,6 @@ module ImGui
     ImGui_End()
   end
 
-  # arg: str_id(const char*), size(ImVec2), child_flags(ImGuiChildFlags), window_flags(ImGuiWindowFlags)
-  # ret: bool
-  def self.BeginChild(str_id, size = ImVec2.create(0,0), child_flags = 0, window_flags = 0)
-    ImGui_BeginChild(str_id, size, child_flags, window_flags)
-  end
-
-  # arg: id(ImGuiID), size(ImVec2), child_flags(ImGuiChildFlags), window_flags(ImGuiWindowFlags)
-  # ret: bool
-  def self.BeginChildID(id, size = ImVec2.create(0,0), child_flags = 0, window_flags = 0)
-    ImGui_BeginChildID(id, size, child_flags, window_flags)
-  end
-
   # ret: void
   def self.EndChild()
     ImGui_EndChild()
@@ -7170,18 +7137,6 @@ module ImGui
     ImGui_GetWindowHeight()
   end
 
-  # arg: pos(ImVec2), cond(ImGuiCond)
-  # ret: void
-  def self.SetNextWindowPos(pos, cond = 0)
-    ImGui_SetNextWindowPos(pos, cond)
-  end
-
-  # arg: pos(ImVec2), cond(ImGuiCond), pivot(ImVec2)
-  # ret: void
-  def self.SetNextWindowPosEx(pos, cond = 0, pivot = ImVec2.create(0,0))
-    ImGui_SetNextWindowPosEx(pos, cond, pivot)
-  end
-
   # arg: size(ImVec2), cond(ImGuiCond)
   # ret: void
   def self.SetNextWindowSize(size, cond = 0)
@@ -7223,53 +7178,6 @@ module ImGui
     ImGui_SetNextWindowBgAlpha(alpha)
   end
 
-  # arg: pos(ImVec2), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowPos(pos, cond = 0)
-    ImGui_SetWindowPos(pos, cond)
-  end
-
-  # arg: size(ImVec2), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowSize(size, cond = 0)
-    ImGui_SetWindowSize(size, cond)
-  end
-
-  # arg: collapsed(bool), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowCollapsed(collapsed, cond = 0)
-    ImGui_SetWindowCollapsed(collapsed, cond)
-  end
-
-  # ret: void
-  def self.SetWindowFocus()
-    ImGui_SetWindowFocus()
-  end
-
-  # arg: name(const char*), pos(ImVec2), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowPosStr(name, pos, cond = 0)
-    ImGui_SetWindowPosStr(name, pos, cond)
-  end
-
-  # arg: name(const char*), size(ImVec2), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowSizeStr(name, size, cond = 0)
-    ImGui_SetWindowSizeStr(name, size, cond)
-  end
-
-  # arg: name(const char*), collapsed(bool), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowCollapsedStr(name, collapsed, cond = 0)
-    ImGui_SetWindowCollapsedStr(name, collapsed, cond)
-  end
-
-  # arg: name(const char*)
-  # ret: void
-  def self.SetWindowFocusStr(name)
-    ImGui_SetWindowFocusStr(name)
-  end
-
   # ret: float
   def self.GetScrollX()
     ImGui_GetScrollX()
@@ -7278,18 +7186,6 @@ module ImGui
   # ret: float
   def self.GetScrollY()
     ImGui_GetScrollY()
-  end
-
-  # arg: scroll_x(float)
-  # ret: void
-  def self.SetScrollX(scroll_x)
-    ImGui_SetScrollX(scroll_x)
-  end
-
-  # arg: scroll_y(float)
-  # ret: void
-  def self.SetScrollY(scroll_y)
-    ImGui_SetScrollY(scroll_y)
   end
 
   # ret: float
@@ -7314,24 +7210,6 @@ module ImGui
     ImGui_SetScrollHereY(center_y_ratio)
   end
 
-  # arg: local_x(float), center_x_ratio(float)
-  # ret: void
-  def self.SetScrollFromPosX(local_x, center_x_ratio = 0.5)
-    ImGui_SetScrollFromPosX(local_x, center_x_ratio)
-  end
-
-  # arg: local_y(float), center_y_ratio(float)
-  # ret: void
-  def self.SetScrollFromPosY(local_y, center_y_ratio = 0.5)
-    ImGui_SetScrollFromPosY(local_y, center_y_ratio)
-  end
-
-  # arg: font(ImFont*), font_size_base_unscaled(float)
-  # ret: void
-  def self.PushFontFloat(font, font_size_base_unscaled)
-    ImGui_PushFontFloat(font, font_size_base_unscaled)
-  end
-
   # ret: void
   def self.PopFont()
     ImGui_PopFont()
@@ -7352,41 +7230,6 @@ module ImGui
     ImGui_GetFontBaked()
   end
 
-  # arg: idx(ImGuiCol), col(ImU32)
-  # ret: void
-  def self.PushStyleColor(idx, col)
-    ImGui_PushStyleColor(idx, col)
-  end
-
-  # arg: idx(ImGuiCol), col(ImVec4)
-  # ret: void
-  def self.PushStyleColorImVec4(idx, col)
-    ImGui_PushStyleColorImVec4(idx, col)
-  end
-
-  # ret: void
-  def self.PopStyleColor()
-    ImGui_PopStyleColor()
-  end
-
-  # arg: count(int)
-  # ret: void
-  def self.PopStyleColorEx(count = 1)
-    ImGui_PopStyleColorEx(count)
-  end
-
-  # arg: idx(ImGuiStyleVar), val(float)
-  # ret: void
-  def self.PushStyleVar(idx, val)
-    ImGui_PushStyleVar(idx, val)
-  end
-
-  # arg: idx(ImGuiStyleVar), val(ImVec2)
-  # ret: void
-  def self.PushStyleVarImVec2(idx, val)
-    ImGui_PushStyleVarImVec2(idx, val)
-  end
-
   # arg: idx(ImGuiStyleVar), val_x(float)
   # ret: void
   def self.PushStyleVarX(idx, val_x)
@@ -7397,17 +7240,6 @@ module ImGui
   # ret: void
   def self.PushStyleVarY(idx, val_y)
     ImGui_PushStyleVarY(idx, val_y)
-  end
-
-  # ret: void
-  def self.PopStyleVar()
-    ImGui_PopStyleVar()
-  end
-
-  # arg: count(int)
-  # ret: void
-  def self.PopStyleVarEx(count = 1)
-    ImGui_PopStyleVarEx(count)
   end
 
   # arg: option(ImGuiItemFlags), enabled(bool)
@@ -7457,36 +7289,6 @@ module ImGui
   # ret: ImVec2.by_value
   def self.GetFontTexUvWhitePixel()
     ImGui_GetFontTexUvWhitePixel()
-  end
-
-  # arg: idx(ImGuiCol)
-  # ret: uint
-  def self.GetColorU32(idx)
-    ImGui_GetColorU32(idx)
-  end
-
-  # arg: idx(ImGuiCol), alpha_mul(float)
-  # ret: uint
-  def self.GetColorU32Ex(idx, alpha_mul = 1.0)
-    ImGui_GetColorU32Ex(idx, alpha_mul)
-  end
-
-  # arg: col(ImVec4)
-  # ret: uint
-  def self.GetColorU32ImVec4(col)
-    ImGui_GetColorU32ImVec4(col)
-  end
-
-  # arg: col(ImU32)
-  # ret: uint
-  def self.GetColorU32ImU32(col)
-    ImGui_GetColorU32ImU32(col)
-  end
-
-  # arg: col(ImU32), alpha_mul(float)
-  # ret: uint
-  def self.GetColorU32ImU32Ex(col, alpha_mul = 1.0)
-    ImGui_GetColorU32ImU32Ex(col, alpha_mul)
   end
 
   # arg: idx(ImGuiCol)
@@ -7555,17 +7357,6 @@ module ImGui
   end
 
   # ret: void
-  def self.SameLine()
-    ImGui_SameLine()
-  end
-
-  # arg: offset_from_start_x(float), spacing(float)
-  # ret: void
-  def self.SameLineEx(offset_from_start_x = 0.0, spacing = -1.0)
-    ImGui_SameLineEx(offset_from_start_x, spacing)
-  end
-
-  # ret: void
   def self.NewLine()
     ImGui_NewLine()
   end
@@ -7579,28 +7370,6 @@ module ImGui
   # ret: void
   def self.Dummy(size)
     ImGui_Dummy(size)
-  end
-
-  # ret: void
-  def self.Indent()
-    ImGui_Indent()
-  end
-
-  # arg: indent_w(float)
-  # ret: void
-  def self.IndentEx(indent_w = 0.0)
-    ImGui_IndentEx(indent_w)
-  end
-
-  # ret: void
-  def self.Unindent()
-    ImGui_Unindent()
-  end
-
-  # arg: indent_w(float)
-  # ret: void
-  def self.UnindentEx(indent_w = 0.0)
-    ImGui_UnindentEx(indent_w)
   end
 
   # ret: void
@@ -7638,69 +7407,9 @@ module ImGui
     ImGui_GetFrameHeightWithSpacing()
   end
 
-  # arg: str_id(const char*)
-  # ret: void
-  def self.PushID(str_id)
-    ImGui_PushID(str_id)
-  end
-
-  # arg: str_id_begin(const char*), str_id_end(const char*)
-  # ret: void
-  def self.PushIDStr(str_id_begin, str_id_end)
-    ImGui_PushIDStr(str_id_begin, str_id_end)
-  end
-
-  # arg: ptr_id(const void*)
-  # ret: void
-  def self.PushIDPtr(ptr_id)
-    ImGui_PushIDPtr(ptr_id)
-  end
-
-  # arg: int_id(int)
-  # ret: void
-  def self.PushIDInt(int_id)
-    ImGui_PushIDInt(int_id)
-  end
-
   # ret: void
   def self.PopID()
     ImGui_PopID()
-  end
-
-  # arg: str_id(const char*)
-  # ret: uint
-  def self.GetID(str_id)
-    ImGui_GetID(str_id)
-  end
-
-  # arg: str_id_begin(const char*), str_id_end(const char*)
-  # ret: uint
-  def self.GetIDStr(str_id_begin, str_id_end)
-    ImGui_GetIDStr(str_id_begin, str_id_end)
-  end
-
-  # arg: ptr_id(const void*)
-  # ret: uint
-  def self.GetIDPtr(ptr_id)
-    ImGui_GetIDPtr(ptr_id)
-  end
-
-  # arg: int_id(int)
-  # ret: uint
-  def self.GetIDInt(int_id)
-    ImGui_GetIDInt(int_id)
-  end
-
-  # arg: text(const char*)
-  # ret: void
-  def self.TextUnformatted(text)
-    ImGui_TextUnformatted(text)
-  end
-
-  # arg: text(const char*), text_end(const char*)
-  # ret: void
-  def self.TextUnformattedEx(text, text_end = nil)
-    ImGui_TextUnformattedEx(text, text_end)
   end
 
   # arg: fmt(const char*), __unnamed_arg1__(...)
@@ -7747,18 +7456,6 @@ module ImGui
 
   # arg: label(const char*)
   # ret: bool
-  def self.Button(label)
-    ImGui_Button(label)
-  end
-
-  # arg: label(const char*), size(ImVec2)
-  # ret: bool
-  def self.ButtonEx(label, size = ImVec2.create(0,0))
-    ImGui_ButtonEx(label, size)
-  end
-
-  # arg: label(const char*)
-  # ret: bool
   def self.SmallButton(label)
     ImGui_SmallButton(label)
   end
@@ -7781,30 +7478,6 @@ module ImGui
     ImGui_Checkbox(label, v)
   end
 
-  # arg: label(const char*), flags(int*), flags_value(int)
-  # ret: bool
-  def self.CheckboxFlagsIntPtr(label, flags, flags_value)
-    ImGui_CheckboxFlagsIntPtr(label, flags, flags_value)
-  end
-
-  # arg: label(const char*), flags(unsigned int*), flags_value(unsigned int)
-  # ret: bool
-  def self.CheckboxFlagsUintPtr(label, flags, flags_value)
-    ImGui_CheckboxFlagsUintPtr(label, flags, flags_value)
-  end
-
-  # arg: label(const char*), active(bool)
-  # ret: bool
-  def self.RadioButton(label, active)
-    ImGui_RadioButton(label, active)
-  end
-
-  # arg: label(const char*), v(int*), v_button(int)
-  # ret: bool
-  def self.RadioButtonIntPtr(label, v, v_button)
-    ImGui_RadioButtonIntPtr(label, v, v_button)
-  end
-
   # arg: fraction(float), size_arg(ImVec2), overlay(const char*)
   # ret: void
   def self.ProgressBar(fraction, size_arg = ImVec2.create(-FLT_MIN,0), overlay = nil)
@@ -7822,54 +7495,6 @@ module ImGui
     ImGui_TextLink(label)
   end
 
-  # arg: label(const char*)
-  # ret: bool
-  def self.TextLinkOpenURL(label)
-    ImGui_TextLinkOpenURL(label)
-  end
-
-  # arg: label(const char*), url(const char*)
-  # ret: bool
-  def self.TextLinkOpenURLEx(label, url = nil)
-    ImGui_TextLinkOpenURLEx(label, url)
-  end
-
-  # arg: tex_ref(ImTextureRef), image_size(ImVec2)
-  # ret: void
-  def self.Image(tex_ref, image_size)
-    ImGui_Image(tex_ref, image_size)
-  end
-
-  # arg: tex_ref(ImTextureRef), image_size(ImVec2), uv0(ImVec2), uv1(ImVec2)
-  # ret: void
-  def self.ImageEx(tex_ref, image_size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1))
-    ImGui_ImageEx(tex_ref, image_size, uv0, uv1)
-  end
-
-  # arg: tex_ref(ImTextureRef), image_size(ImVec2)
-  # ret: void
-  def self.ImageWithBg(tex_ref, image_size)
-    ImGui_ImageWithBg(tex_ref, image_size)
-  end
-
-  # arg: tex_ref(ImTextureRef), image_size(ImVec2), uv0(ImVec2), uv1(ImVec2), bg_col(ImVec4), tint_col(ImVec4)
-  # ret: void
-  def self.ImageWithBgEx(tex_ref, image_size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))
-    ImGui_ImageWithBgEx(tex_ref, image_size, uv0, uv1, bg_col, tint_col)
-  end
-
-  # arg: str_id(const char*), tex_ref(ImTextureRef), image_size(ImVec2)
-  # ret: bool
-  def self.ImageButton(str_id, tex_ref, image_size)
-    ImGui_ImageButton(str_id, tex_ref, image_size)
-  end
-
-  # arg: str_id(const char*), tex_ref(ImTextureRef), image_size(ImVec2), uv0(ImVec2), uv1(ImVec2), bg_col(ImVec4), tint_col(ImVec4)
-  # ret: bool
-  def self.ImageButtonEx(str_id, tex_ref, image_size, uv0 = ImVec2.create(0,0), uv1 = ImVec2.create(1,1), bg_col = ImVec4.create(0,0,0,0), tint_col = ImVec4.create(1,1,1,1))
-    ImGui_ImageButtonEx(str_id, tex_ref, image_size, uv0, uv1, bg_col, tint_col)
-  end
-
   # arg: label(const char*), preview_value(const char*), flags(ImGuiComboFlags)
   # ret: bool
   def self.BeginCombo(label, preview_value, flags = 0)
@@ -7879,450 +7504,6 @@ module ImGui
   # ret: void
   def self.EndCombo()
     ImGui_EndCombo()
-  end
-
-  # arg: label(const char*), current_item(int*), items(const char*const[]), items_count(int)
-  # ret: bool
-  def self.ComboChar(label, current_item, items, items_count)
-    ImGui_ComboChar(label, current_item, items, items_count)
-  end
-
-  # arg: label(const char*), current_item(int*), items(const char*const[]), items_count(int), popup_max_height_in_items(int)
-  # ret: bool
-  def self.ComboCharEx(label, current_item, items, items_count, popup_max_height_in_items = -1)
-    ImGui_ComboCharEx(label, current_item, items, items_count, popup_max_height_in_items)
-  end
-
-  # arg: label(const char*), current_item(int*), items_separated_by_zeros(const char*)
-  # ret: bool
-  def self.Combo(label, current_item, items_separated_by_zeros)
-    ImGui_Combo(label, current_item, items_separated_by_zeros)
-  end
-
-  # arg: label(const char*), current_item(int*), items_separated_by_zeros(const char*), popup_max_height_in_items(int)
-  # ret: bool
-  def self.ComboEx(label, current_item, items_separated_by_zeros, popup_max_height_in_items = -1)
-    ImGui_ComboEx(label, current_item, items_separated_by_zeros, popup_max_height_in_items)
-  end
-
-  # arg: label(const char*), current_item(int*), getter(const char* (*getter)(void* user_data, int idx)), user_data(void*), items_count(int)
-  # ret: bool
-  def self.ComboCallback(label, current_item, getter, user_data, items_count)
-    ImGui_ComboCallback(label, current_item, getter, user_data, items_count)
-  end
-
-  # arg: label(const char*), current_item(int*), getter(const char* (*getter)(void* user_data, int idx)), user_data(void*), items_count(int), popup_max_height_in_items(int)
-  # ret: bool
-  def self.ComboCallbackEx(label, current_item, getter, user_data, items_count, popup_max_height_in_items = -1)
-    ImGui_ComboCallbackEx(label, current_item, getter, user_data, items_count, popup_max_height_in_items)
-  end
-
-  # arg: label(const char*), v(float*)
-  # ret: bool
-  def self.DragFloat(label, v)
-    ImGui_DragFloat(label, v)
-  end
-
-  # arg: label(const char*), v(float*), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragFloatEx(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
-    ImGui_DragFloatEx(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(float[2])
-  # ret: bool
-  def self.DragFloat2(label, v)
-    ImGui_DragFloat2(label, v)
-  end
-
-  # arg: label(const char*), v(float[2]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragFloat2Ex(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
-    ImGui_DragFloat2Ex(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(float[3])
-  # ret: bool
-  def self.DragFloat3(label, v)
-    ImGui_DragFloat3(label, v)
-  end
-
-  # arg: label(const char*), v(float[3]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragFloat3Ex(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
-    ImGui_DragFloat3Ex(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(float[4])
-  # ret: bool
-  def self.DragFloat4(label, v)
-    ImGui_DragFloat4(label, v)
-  end
-
-  # arg: label(const char*), v(float[4]), v_speed(float), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragFloat4Ex(label, v, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", flags = 0)
-    ImGui_DragFloat4Ex(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v_current_min(float*), v_current_max(float*)
-  # ret: bool
-  def self.DragFloatRange2(label, v_current_min, v_current_max)
-    ImGui_DragFloatRange2(label, v_current_min, v_current_max)
-  end
-
-  # arg: label(const char*), v_current_min(float*), v_current_max(float*), v_speed(float), v_min(float), v_max(float), format(const char*), format_max(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragFloatRange2Ex(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0.0, v_max = 0.0, format = "%.3f", format_max = nil, flags = 0)
-    ImGui_DragFloatRange2Ex(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
-  end
-
-  # arg: label(const char*), v(int*)
-  # ret: bool
-  def self.DragInt(label, v)
-    ImGui_DragInt(label, v)
-  end
-
-  # arg: label(const char*), v(int*), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragIntEx(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
-    ImGui_DragIntEx(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(int[2])
-  # ret: bool
-  def self.DragInt2(label, v)
-    ImGui_DragInt2(label, v)
-  end
-
-  # arg: label(const char*), v(int[2]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragInt2Ex(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
-    ImGui_DragInt2Ex(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(int[3])
-  # ret: bool
-  def self.DragInt3(label, v)
-    ImGui_DragInt3(label, v)
-  end
-
-  # arg: label(const char*), v(int[3]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragInt3Ex(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
-    ImGui_DragInt3Ex(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(int[4])
-  # ret: bool
-  def self.DragInt4(label, v)
-    ImGui_DragInt4(label, v)
-  end
-
-  # arg: label(const char*), v(int[4]), v_speed(float), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragInt4Ex(label, v, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", flags = 0)
-    ImGui_DragInt4Ex(label, v, v_speed, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v_current_min(int*), v_current_max(int*)
-  # ret: bool
-  def self.DragIntRange2(label, v_current_min, v_current_max)
-    ImGui_DragIntRange2(label, v_current_min, v_current_max)
-  end
-
-  # arg: label(const char*), v_current_min(int*), v_current_max(int*), v_speed(float), v_min(int), v_max(int), format(const char*), format_max(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragIntRange2Ex(label, v_current_min, v_current_max, v_speed = 1.0, v_min = 0, v_max = 0, format = "%d", format_max = nil, flags = 0)
-    ImGui_DragIntRange2Ex(label, v_current_min, v_current_max, v_speed, v_min, v_max, format, format_max, flags)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*)
-  # ret: bool
-  def self.DragScalar(label, data_type, p_data)
-    ImGui_DragScalar(label, data_type, p_data)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), v_speed(float), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragScalarEx(label, data_type, p_data, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)
-    ImGui_DragScalarEx(label, data_type, p_data, v_speed, p_min, p_max, format, flags)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int)
-  # ret: bool
-  def self.DragScalarN(label, data_type, p_data, components)
-    ImGui_DragScalarN(label, data_type, p_data, components)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), v_speed(float), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.DragScalarNEx(label, data_type, p_data, components, v_speed = 1.0, p_min = nil, p_max = nil, format = nil, flags = 0)
-    ImGui_DragScalarNEx(label, data_type, p_data, components, v_speed, p_min, p_max, format, flags)
-  end
-
-  # arg: label(const char*), v(float*), v_min(float), v_max(float)
-  # ret: bool
-  def self.SliderFloat(label, v, v_min, v_max)
-    ImGui_SliderFloat(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderFloatEx(label, v, v_min, v_max, format = "%.3f", flags = 0)
-    ImGui_SliderFloatEx(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(float[2]), v_min(float), v_max(float)
-  # ret: bool
-  def self.SliderFloat2(label, v, v_min, v_max)
-    ImGui_SliderFloat2(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(float[2]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderFloat2Ex(label, v, v_min, v_max, format = "%.3f", flags = 0)
-    ImGui_SliderFloat2Ex(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(float[3]), v_min(float), v_max(float)
-  # ret: bool
-  def self.SliderFloat3(label, v, v_min, v_max)
-    ImGui_SliderFloat3(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(float[3]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderFloat3Ex(label, v, v_min, v_max, format = "%.3f", flags = 0)
-    ImGui_SliderFloat3Ex(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(float[4]), v_min(float), v_max(float)
-  # ret: bool
-  def self.SliderFloat4(label, v, v_min, v_max)
-    ImGui_SliderFloat4(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(float[4]), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderFloat4Ex(label, v, v_min, v_max, format = "%.3f", flags = 0)
-    ImGui_SliderFloat4Ex(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v_rad(float*)
-  # ret: bool
-  def self.SliderAngle(label, v_rad)
-    ImGui_SliderAngle(label, v_rad)
-  end
-
-  # arg: label(const char*), v_rad(float*), v_degrees_min(float), v_degrees_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderAngleEx(label, v_rad, v_degrees_min = -360.0, v_degrees_max = +360.0, format = "%.0f deg", flags = 0)
-    ImGui_SliderAngleEx(label, v_rad, v_degrees_min, v_degrees_max, format, flags)
-  end
-
-  # arg: label(const char*), v(int*), v_min(int), v_max(int)
-  # ret: bool
-  def self.SliderInt(label, v, v_min, v_max)
-    ImGui_SliderInt(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(int*), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderIntEx(label, v, v_min, v_max, format = "%d", flags = 0)
-    ImGui_SliderIntEx(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(int[2]), v_min(int), v_max(int)
-  # ret: bool
-  def self.SliderInt2(label, v, v_min, v_max)
-    ImGui_SliderInt2(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(int[2]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderInt2Ex(label, v, v_min, v_max, format = "%d", flags = 0)
-    ImGui_SliderInt2Ex(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(int[3]), v_min(int), v_max(int)
-  # ret: bool
-  def self.SliderInt3(label, v, v_min, v_max)
-    ImGui_SliderInt3(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(int[3]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderInt3Ex(label, v, v_min, v_max, format = "%d", flags = 0)
-    ImGui_SliderInt3Ex(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), v(int[4]), v_min(int), v_max(int)
-  # ret: bool
-  def self.SliderInt4(label, v, v_min, v_max)
-    ImGui_SliderInt4(label, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), v(int[4]), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderInt4Ex(label, v, v_min, v_max, format = "%d", flags = 0)
-    ImGui_SliderInt4Ex(label, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*)
-  # ret: bool
-  def self.SliderScalar(label, data_type, p_data, p_min, p_max)
-    ImGui_SliderScalar(label, data_type, p_data, p_min, p_max)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderScalarEx(label, data_type, p_data, p_min, p_max, format = nil, flags = 0)
-    ImGui_SliderScalarEx(label, data_type, p_data, p_min, p_max, format, flags)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), p_min(const void*), p_max(const void*)
-  # ret: bool
-  def self.SliderScalarN(label, data_type, p_data, components, p_min, p_max)
-    ImGui_SliderScalarN(label, data_type, p_data, components, p_min, p_max)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.SliderScalarNEx(label, data_type, p_data, components, p_min, p_max, format = nil, flags = 0)
-    ImGui_SliderScalarNEx(label, data_type, p_data, components, p_min, p_max, format, flags)
-  end
-
-  # arg: label(const char*), size(ImVec2), v(float*), v_min(float), v_max(float)
-  # ret: bool
-  def self.VSliderFloat(label, size, v, v_min, v_max)
-    ImGui_VSliderFloat(label, size, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), size(ImVec2), v(float*), v_min(float), v_max(float), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.VSliderFloatEx(label, size, v, v_min, v_max, format = "%.3f", flags = 0)
-    ImGui_VSliderFloatEx(label, size, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), size(ImVec2), v(int*), v_min(int), v_max(int)
-  # ret: bool
-  def self.VSliderInt(label, size, v, v_min, v_max)
-    ImGui_VSliderInt(label, size, v, v_min, v_max)
-  end
-
-  # arg: label(const char*), size(ImVec2), v(int*), v_min(int), v_max(int), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.VSliderIntEx(label, size, v, v_min, v_max, format = "%d", flags = 0)
-    ImGui_VSliderIntEx(label, size, v, v_min, v_max, format, flags)
-  end
-
-  # arg: label(const char*), size(ImVec2), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*)
-  # ret: bool
-  def self.VSliderScalar(label, size, data_type, p_data, p_min, p_max)
-    ImGui_VSliderScalar(label, size, data_type, p_data, p_min, p_max)
-  end
-
-  # arg: label(const char*), size(ImVec2), data_type(ImGuiDataType), p_data(void*), p_min(const void*), p_max(const void*), format(const char*), flags(ImGuiSliderFlags)
-  # ret: bool
-  def self.VSliderScalarEx(label, size, data_type, p_data, p_min, p_max, format = nil, flags = 0)
-    ImGui_VSliderScalarEx(label, size, data_type, p_data, p_min, p_max, format, flags)
-  end
-
-  # arg: label(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputText(label, buf, buf_size, flags = 0)
-    ImGui_InputText(label, buf, buf_size, flags)
-  end
-
-  # arg: label(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
-  # ret: bool
-  def self.InputTextEx(label, buf, buf_size, flags = 0, callback = nil, user_data = nil)
-    ImGui_InputTextEx(label, buf, buf_size, flags, callback, user_data)
-  end
-
-  # arg: label(const char*), buf(char*), buf_size(size_t)
-  # ret: bool
-  def self.InputTextMultiline(label, buf, buf_size)
-    ImGui_InputTextMultiline(label, buf, buf_size)
-  end
-
-  # arg: label(const char*), buf(char*), buf_size(size_t), size(ImVec2), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
-  # ret: bool
-  def self.InputTextMultilineEx(label, buf, buf_size, size = ImVec2.create(0,0), flags = 0, callback = nil, user_data = nil)
-    ImGui_InputTextMultilineEx(label, buf, buf_size, size, flags, callback, user_data)
-  end
-
-  # arg: label(const char*), hint(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputTextWithHint(label, hint, buf, buf_size, flags = 0)
-    ImGui_InputTextWithHint(label, hint, buf, buf_size, flags)
-  end
-
-  # arg: label(const char*), hint(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
-  # ret: bool
-  def self.InputTextWithHintEx(label, hint, buf, buf_size, flags = 0, callback = nil, user_data = nil)
-    ImGui_InputTextWithHintEx(label, hint, buf, buf_size, flags, callback, user_data)
-  end
-
-  # arg: label(const char*), v(float*)
-  # ret: bool
-  def self.InputFloat(label, v)
-    ImGui_InputFloat(label, v)
-  end
-
-  # arg: label(const char*), v(float*), step(float), step_fast(float), format(const char*), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputFloatEx(label, v, step = 0.0, step_fast = 0.0, format = "%.3f", flags = 0)
-    ImGui_InputFloatEx(label, v, step, step_fast, format, flags)
-  end
-
-  # arg: label(const char*), v(float[2])
-  # ret: bool
-  def self.InputFloat2(label, v)
-    ImGui_InputFloat2(label, v)
-  end
-
-  # arg: label(const char*), v(float[2]), format(const char*), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputFloat2Ex(label, v, format = "%.3f", flags = 0)
-    ImGui_InputFloat2Ex(label, v, format, flags)
-  end
-
-  # arg: label(const char*), v(float[3])
-  # ret: bool
-  def self.InputFloat3(label, v)
-    ImGui_InputFloat3(label, v)
-  end
-
-  # arg: label(const char*), v(float[3]), format(const char*), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputFloat3Ex(label, v, format = "%.3f", flags = 0)
-    ImGui_InputFloat3Ex(label, v, format, flags)
-  end
-
-  # arg: label(const char*), v(float[4])
-  # ret: bool
-  def self.InputFloat4(label, v)
-    ImGui_InputFloat4(label, v)
-  end
-
-  # arg: label(const char*), v(float[4]), format(const char*), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputFloat4Ex(label, v, format = "%.3f", flags = 0)
-    ImGui_InputFloat4Ex(label, v, format, flags)
-  end
-
-  # arg: label(const char*), v(int*)
-  # ret: bool
-  def self.InputInt(label, v)
-    ImGui_InputInt(label, v)
-  end
-
-  # arg: label(const char*), v(int*), step(int), step_fast(int), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputIntEx(label, v, step = 1, step_fast = 100, flags = 0)
-    ImGui_InputIntEx(label, v, step, step_fast, flags)
   end
 
   # arg: label(const char*), v(int[2]), flags(ImGuiInputTextFlags)
@@ -8341,42 +7522,6 @@ module ImGui
   # ret: bool
   def self.InputInt4(label, v, flags = 0)
     ImGui_InputInt4(label, v, flags)
-  end
-
-  # arg: label(const char*), v(double*)
-  # ret: bool
-  def self.InputDouble(label, v)
-    ImGui_InputDouble(label, v)
-  end
-
-  # arg: label(const char*), v(double*), step(double), step_fast(double), format(const char*), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputDoubleEx(label, v, step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0)
-    ImGui_InputDoubleEx(label, v, step, step_fast, format, flags)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*)
-  # ret: bool
-  def self.InputScalar(label, data_type, p_data)
-    ImGui_InputScalar(label, data_type, p_data)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), p_step(const void*), p_step_fast(const void*), format(const char*), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputScalarEx(label, data_type, p_data, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
-    ImGui_InputScalarEx(label, data_type, p_data, p_step, p_step_fast, format, flags)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int)
-  # ret: bool
-  def self.InputScalarN(label, data_type, p_data, components)
-    ImGui_InputScalarN(label, data_type, p_data, components)
-  end
-
-  # arg: label(const char*), data_type(ImGuiDataType), p_data(void*), components(int), p_step(const void*), p_step_fast(const void*), format(const char*), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputScalarNEx(label, data_type, p_data, components, p_step = nil, p_step_fast = nil, format = nil, flags = 0)
-    ImGui_InputScalarNEx(label, data_type, p_data, components, p_step, p_step_fast, format, flags)
   end
 
   # arg: label(const char*), col(float[3]), flags(ImGuiColorEditFlags)
@@ -8403,70 +7548,10 @@ module ImGui
     ImGui_ColorPicker4(label, col, flags, ref_col)
   end
 
-  # arg: desc_id(const char*), col(ImVec4), flags(ImGuiColorEditFlags)
-  # ret: bool
-  def self.ColorButton(desc_id, col, flags = 0)
-    ImGui_ColorButton(desc_id, col, flags)
-  end
-
-  # arg: desc_id(const char*), col(ImVec4), flags(ImGuiColorEditFlags), size(ImVec2)
-  # ret: bool
-  def self.ColorButtonEx(desc_id, col, flags = 0, size = ImVec2.create(0,0))
-    ImGui_ColorButtonEx(desc_id, col, flags, size)
-  end
-
   # arg: flags(ImGuiColorEditFlags)
   # ret: void
   def self.SetColorEditOptions(flags)
     ImGui_SetColorEditOptions(flags)
-  end
-
-  # arg: label(const char*)
-  # ret: bool
-  def self.TreeNode(label)
-    ImGui_TreeNode(label)
-  end
-
-  # arg: str_id(const char*), fmt(const char*), __unnamed_arg2__(...)
-  # ret: bool
-  def self.TreeNodeStr(str_id, fmt, *varargs)
-    ImGui_TreeNodeStr(str_id, fmt, *varargs)
-  end
-
-  # arg: ptr_id(const void*), fmt(const char*), __unnamed_arg2__(...)
-  # ret: bool
-  def self.TreeNodePtr(ptr_id, fmt, *varargs)
-    ImGui_TreeNodePtr(ptr_id, fmt, *varargs)
-  end
-
-  # arg: label(const char*), flags(ImGuiTreeNodeFlags)
-  # ret: bool
-  def self.TreeNodeEx(label, flags = 0)
-    ImGui_TreeNodeEx(label, flags)
-  end
-
-  # arg: str_id(const char*), flags(ImGuiTreeNodeFlags), fmt(const char*), __unnamed_arg3__(...)
-  # ret: bool
-  def self.TreeNodeExStr(str_id, flags, fmt, *varargs)
-    ImGui_TreeNodeExStr(str_id, flags, fmt, *varargs)
-  end
-
-  # arg: ptr_id(const void*), flags(ImGuiTreeNodeFlags), fmt(const char*), __unnamed_arg3__(...)
-  # ret: bool
-  def self.TreeNodeExPtr(ptr_id, flags, fmt, *varargs)
-    ImGui_TreeNodeExPtr(ptr_id, flags, fmt, *varargs)
-  end
-
-  # arg: str_id(const char*)
-  # ret: void
-  def self.TreePush(str_id)
-    ImGui_TreePush(str_id)
-  end
-
-  # arg: ptr_id(const void*)
-  # ret: void
-  def self.TreePushPtr(ptr_id)
-    ImGui_TreePushPtr(ptr_id)
   end
 
   # ret: void
@@ -8477,18 +7562,6 @@ module ImGui
   # ret: float
   def self.GetTreeNodeToLabelSpacing()
     ImGui_GetTreeNodeToLabelSpacing()
-  end
-
-  # arg: label(const char*), flags(ImGuiTreeNodeFlags)
-  # ret: bool
-  def self.CollapsingHeader(label, flags = 0)
-    ImGui_CollapsingHeader(label, flags)
-  end
-
-  # arg: label(const char*), p_visible(bool*), flags(ImGuiTreeNodeFlags)
-  # ret: bool
-  def self.CollapsingHeaderBoolPtr(label, p_visible, flags = 0)
-    ImGui_CollapsingHeaderBoolPtr(label, p_visible, flags)
   end
 
   # arg: is_open(bool), cond(ImGuiCond)
@@ -8507,42 +7580,6 @@ module ImGui
   # ret: bool
   def self.TreeNodeGetOpen(storage_id)
     ImGui_TreeNodeGetOpen(storage_id)
-  end
-
-  # arg: label(const char*)
-  # ret: bool
-  def self.Selectable(label)
-    ImGui_Selectable(label)
-  end
-
-  # arg: label(const char*), selected(bool), flags(ImGuiSelectableFlags), size(ImVec2)
-  # ret: bool
-  def self.SelectableEx(label, selected = false, flags = 0, size = ImVec2.create(0,0))
-    ImGui_SelectableEx(label, selected, flags, size)
-  end
-
-  # arg: label(const char*), p_selected(bool*), flags(ImGuiSelectableFlags)
-  # ret: bool
-  def self.SelectableBoolPtr(label, p_selected, flags = 0)
-    ImGui_SelectableBoolPtr(label, p_selected, flags)
-  end
-
-  # arg: label(const char*), p_selected(bool*), flags(ImGuiSelectableFlags), size(ImVec2)
-  # ret: bool
-  def self.SelectableBoolPtrEx(label, p_selected, flags = 0, size = ImVec2.create(0,0))
-    ImGui_SelectableBoolPtrEx(label, p_selected, flags, size)
-  end
-
-  # arg: flags(ImGuiMultiSelectFlags)
-  # ret: pointer
-  def self.BeginMultiSelect(flags)
-    ImGui_BeginMultiSelect(flags)
-  end
-
-  # arg: flags(ImGuiMultiSelectFlags), selection_size(int), items_count(int)
-  # ret: pointer
-  def self.BeginMultiSelectEx(flags, selection_size = -1, items_count = -1)
-    ImGui_BeginMultiSelectEx(flags, selection_size, items_count)
   end
 
   # ret: pointer
@@ -8572,72 +7609,6 @@ module ImGui
     ImGui_EndListBox()
   end
 
-  # arg: label(const char*), current_item(int*), items(const char*const[]), items_count(int), height_in_items(int)
-  # ret: bool
-  def self.ListBox(label, current_item, items, items_count, height_in_items = -1)
-    ImGui_ListBox(label, current_item, items, items_count, height_in_items)
-  end
-
-  # arg: label(const char*), current_item(int*), getter(const char* (*getter)(void* user_data, int idx)), user_data(void*), items_count(int)
-  # ret: bool
-  def self.ListBoxCallback(label, current_item, getter, user_data, items_count)
-    ImGui_ListBoxCallback(label, current_item, getter, user_data, items_count)
-  end
-
-  # arg: label(const char*), current_item(int*), getter(const char* (*getter)(void* user_data, int idx)), user_data(void*), items_count(int), height_in_items(int)
-  # ret: bool
-  def self.ListBoxCallbackEx(label, current_item, getter, user_data, items_count, height_in_items = -1)
-    ImGui_ListBoxCallbackEx(label, current_item, getter, user_data, items_count, height_in_items)
-  end
-
-  # arg: label(const char*), values(const float*), values_count(int)
-  # ret: void
-  def self.PlotLines(label, values, values_count)
-    ImGui_PlotLines(label, values, values_count)
-  end
-
-  # arg: label(const char*), values(const float*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2), stride(int)
-  # ret: void
-  def self.PlotLinesEx(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
-    ImGui_PlotLinesEx(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
-  end
-
-  # arg: label(const char*), values_getter(float (*values_getter)(void* data, int idx)), data(void*), values_count(int)
-  # ret: void
-  def self.PlotLinesCallback(label, values_getter, data, values_count)
-    ImGui_PlotLinesCallback(label, values_getter, data, values_count)
-  end
-
-  # arg: label(const char*), values_getter(float (*values_getter)(void* data, int idx)), data(void*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2)
-  # ret: void
-  def self.PlotLinesCallbackEx(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
-    ImGui_PlotLinesCallbackEx(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
-  end
-
-  # arg: label(const char*), values(const float*), values_count(int)
-  # ret: void
-  def self.PlotHistogram(label, values, values_count)
-    ImGui_PlotHistogram(label, values, values_count)
-  end
-
-  # arg: label(const char*), values(const float*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2), stride(int)
-  # ret: void
-  def self.PlotHistogramEx(label, values, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0), stride = FFI::TYPE_FLOAT32.size)
-    ImGui_PlotHistogramEx(label, values, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size, stride)
-  end
-
-  # arg: label(const char*), values_getter(float (*values_getter)(void* data, int idx)), data(void*), values_count(int)
-  # ret: void
-  def self.PlotHistogramCallback(label, values_getter, data, values_count)
-    ImGui_PlotHistogramCallback(label, values_getter, data, values_count)
-  end
-
-  # arg: label(const char*), values_getter(float (*values_getter)(void* data, int idx)), data(void*), values_count(int), values_offset(int), overlay_text(const char*), scale_min(float), scale_max(float), graph_size(ImVec2)
-  # ret: void
-  def self.PlotHistogramCallbackEx(label, values_getter, data, values_count, values_offset = 0, overlay_text = nil, scale_min = Float::MAX, scale_max = Float::MAX, graph_size = ImVec2.create(0,0))
-    ImGui_PlotHistogramCallbackEx(label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size)
-  end
-
   # ret: bool
   def self.BeginMenuBar()
     ImGui_BeginMenuBar()
@@ -8658,39 +7629,9 @@ module ImGui
     ImGui_EndMainMenuBar()
   end
 
-  # arg: label(const char*)
-  # ret: bool
-  def self.BeginMenu(label)
-    ImGui_BeginMenu(label)
-  end
-
-  # arg: label(const char*), enabled(bool)
-  # ret: bool
-  def self.BeginMenuEx(label, enabled = true)
-    ImGui_BeginMenuEx(label, enabled)
-  end
-
   # ret: void
   def self.EndMenu()
     ImGui_EndMenu()
-  end
-
-  # arg: label(const char*)
-  # ret: bool
-  def self.MenuItem(label)
-    ImGui_MenuItem(label)
-  end
-
-  # arg: label(const char*), shortcut(const char*), selected(bool), enabled(bool)
-  # ret: bool
-  def self.MenuItemEx(label, shortcut = nil, selected = false, enabled = true)
-    ImGui_MenuItemEx(label, shortcut, selected, enabled)
-  end
-
-  # arg: label(const char*), shortcut(const char*), p_selected(bool*), enabled(bool)
-  # ret: bool
-  def self.MenuItemBoolPtr(label, shortcut, p_selected, enabled = true)
-    ImGui_MenuItemBoolPtr(label, shortcut, p_selected, enabled)
   end
 
   # ret: bool
@@ -8739,18 +7680,6 @@ module ImGui
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
   # ret: void
-  def self.OpenPopup(str_id, popup_flags = 0)
-    ImGui_OpenPopup(str_id, popup_flags)
-  end
-
-  # arg: id(ImGuiID), popup_flags(ImGuiPopupFlags)
-  # ret: void
-  def self.OpenPopupID(id, popup_flags = 0)
-    ImGui_OpenPopupID(id, popup_flags)
-  end
-
-  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
-  # ret: void
   def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 0)
     ImGui_OpenPopupOnItemClick(str_id, popup_flags)
   end
@@ -8760,71 +7689,9 @@ module ImGui
     ImGui_CloseCurrentPopup()
   end
 
-  # ret: bool
-  def self.BeginPopupContextItem()
-    ImGui_BeginPopupContextItem()
-  end
-
-  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
-  # ret: bool
-  def self.BeginPopupContextItemEx(str_id = nil, popup_flags = 0)
-    ImGui_BeginPopupContextItemEx(str_id, popup_flags)
-  end
-
-  # ret: bool
-  def self.BeginPopupContextWindow()
-    ImGui_BeginPopupContextWindow()
-  end
-
-  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
-  # ret: bool
-  def self.BeginPopupContextWindowEx(str_id = nil, popup_flags = 0)
-    ImGui_BeginPopupContextWindowEx(str_id, popup_flags)
-  end
-
-  # ret: bool
-  def self.BeginPopupContextVoid()
-    ImGui_BeginPopupContextVoid()
-  end
-
-  # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
-  # ret: bool
-  def self.BeginPopupContextVoidEx(str_id = nil, popup_flags = 0)
-    ImGui_BeginPopupContextVoidEx(str_id, popup_flags)
-  end
-
-  # arg: str_id(const char*), flags(ImGuiPopupFlags)
-  # ret: bool
-  def self.IsPopupOpen(str_id, flags = 0)
-    ImGui_IsPopupOpen(str_id, flags)
-  end
-
-  # arg: str_id(const char*), columns(int), flags(ImGuiTableFlags)
-  # ret: bool
-  def self.BeginTable(str_id, columns, flags = 0)
-    ImGui_BeginTable(str_id, columns, flags)
-  end
-
-  # arg: str_id(const char*), columns(int), flags(ImGuiTableFlags), outer_size(ImVec2), inner_width(float)
-  # ret: bool
-  def self.BeginTableEx(str_id, columns, flags = 0, outer_size = ImVec2.create(0.0,0.0), inner_width = 0.0)
-    ImGui_BeginTableEx(str_id, columns, flags, outer_size, inner_width)
-  end
-
   # ret: void
   def self.EndTable()
     ImGui_EndTable()
-  end
-
-  # ret: void
-  def self.TableNextRow()
-    ImGui_TableNextRow()
-  end
-
-  # arg: row_flags(ImGuiTableRowFlags), min_row_height(float)
-  # ret: void
-  def self.TableNextRowEx(row_flags = 0, min_row_height = 0.0)
-    ImGui_TableNextRowEx(row_flags, min_row_height)
   end
 
   # ret: bool
@@ -8836,18 +7703,6 @@ module ImGui
   # ret: bool
   def self.TableSetColumnIndex(column_n)
     ImGui_TableSetColumnIndex(column_n)
-  end
-
-  # arg: label(const char*), flags(ImGuiTableColumnFlags)
-  # ret: void
-  def self.TableSetupColumn(label, flags = 0)
-    ImGui_TableSetupColumn(label, flags)
-  end
-
-  # arg: label(const char*), flags(ImGuiTableColumnFlags), init_width_or_weight(float), user_id(ImGuiID)
-  # ret: void
-  def self.TableSetupColumnEx(label, flags = 0, init_width_or_weight = 0.0, user_id = 0)
-    ImGui_TableSetupColumnEx(label, flags, init_width_or_weight, user_id)
   end
 
   # arg: cols(int), rows(int)
@@ -8893,12 +7748,6 @@ module ImGui
   end
 
   # arg: column_n(int)
-  # ret: pointer
-  def self.TableGetColumnName(column_n = -1)
-    ImGui_TableGetColumnName(column_n)
-  end
-
-  # arg: column_n(int)
   # ret: int
   def self.TableGetColumnFlags(column_n = -1)
     ImGui_TableGetColumnFlags(column_n)
@@ -8919,17 +7768,6 @@ module ImGui
   # ret: void
   def self.TableSetBgColor(target, color, column_n = -1)
     ImGui_TableSetBgColor(target, color, column_n)
-  end
-
-  # ret: void
-  def self.Columns()
-    ImGui_Columns()
-  end
-
-  # arg: count(int), id(const char*), borders(bool)
-  # ret: void
-  def self.ColumnsEx(count = 1, id = nil, borders = true)
-    ImGui_ColumnsEx(count, id, borders)
   end
 
   # ret: void
@@ -9104,17 +7942,6 @@ module ImGui
     ImGui_SetItemDefaultFocus()
   end
 
-  # ret: void
-  def self.SetKeyboardFocusHere()
-    ImGui_SetKeyboardFocusHere()
-  end
-
-  # arg: offset(int)
-  # ret: void
-  def self.SetKeyboardFocusHereEx(offset = 0)
-    ImGui_SetKeyboardFocusHereEx(offset)
-  end
-
   # arg: visible(bool)
   # ret: void
   def self.SetNavCursorVisible(visible)
@@ -9140,17 +7967,6 @@ module ImGui
   # ret: bool
   def self.IsItemFocused()
     ImGui_IsItemFocused()
-  end
-
-  # ret: bool
-  def self.IsItemClicked()
-    ImGui_IsItemClicked()
-  end
-
-  # arg: mouse_button(ImGuiMouseButton)
-  # ret: bool
-  def self.IsItemClickedEx(mouse_button = 0)
-    ImGui_IsItemClickedEx(mouse_button)
   end
 
   # ret: bool
@@ -9228,28 +8044,6 @@ module ImGui
     ImGui_GetMainViewport()
   end
 
-  # ret: pointer
-  def self.GetBackgroundDrawList()
-    ImGui_GetBackgroundDrawList()
-  end
-
-  # ret: pointer
-  def self.GetForegroundDrawList()
-    ImGui_GetForegroundDrawList()
-  end
-
-  # arg: size(ImVec2)
-  # ret: bool
-  def self.IsRectVisibleBySize(size)
-    ImGui_IsRectVisibleBySize(size)
-  end
-
-  # arg: rect_min(ImVec2), rect_max(ImVec2)
-  # ret: bool
-  def self.IsRectVisible(rect_min, rect_max)
-    ImGui_IsRectVisible(rect_min, rect_max)
-  end
-
   # ret: double
   def self.GetTime()
     ImGui_GetTime()
@@ -9282,18 +8076,6 @@ module ImGui
     ImGui_GetStateStorage()
   end
 
-  # arg: text(const char*)
-  # ret: ImVec2.by_value
-  def self.CalcTextSize(text)
-    ImGui_CalcTextSize(text)
-  end
-
-  # arg: text(const char*), text_end(const char*), hide_text_after_double_hash(bool), wrap_width(float)
-  # ret: ImVec2.by_value
-  def self.CalcTextSizeEx(text, text_end = nil, hide_text_after_double_hash = false, wrap_width = -1.0)
-    ImGui_CalcTextSizeEx(text, text_end, hide_text_after_double_hash, wrap_width)
-  end
-
   # arg: in(ImU32)
   # ret: ImVec4.by_value
   def self.ColorConvertU32ToFloat4(_in_)
@@ -9318,36 +8100,6 @@ module ImGui
     ImGui_ColorConvertHSVtoRGB(h, s, v, out_r, out_g, out_b)
   end
 
-  # arg: key(ImGuiKey)
-  # ret: bool
-  def self.IsKeyDown(key)
-    ImGui_IsKeyDown(key)
-  end
-
-  # arg: key(ImGuiKey)
-  # ret: bool
-  def self.IsKeyPressed(key)
-    ImGui_IsKeyPressed(key)
-  end
-
-  # arg: key(ImGuiKey), repeat(bool)
-  # ret: bool
-  def self.IsKeyPressedEx(key, repeat = true)
-    ImGui_IsKeyPressedEx(key, repeat)
-  end
-
-  # arg: key(ImGuiKey)
-  # ret: bool
-  def self.IsKeyReleased(key)
-    ImGui_IsKeyReleased(key)
-  end
-
-  # arg: key_chord(ImGuiKeyChord)
-  # ret: bool
-  def self.IsKeyChordPressed(key_chord)
-    ImGui_IsKeyChordPressed(key_chord)
-  end
-
   # arg: key(ImGuiKey), repeat_delay(float), rate(float)
   # ret: int
   def self.GetKeyPressedAmount(key, repeat_delay, rate)
@@ -9367,51 +8119,9 @@ module ImGui
   end
 
   # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags)
-  # ret: bool
-  def self.Shortcut(key_chord, flags = 0)
-    ImGui_Shortcut(key_chord, flags)
-  end
-
-  # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags)
   # ret: void
   def self.SetNextItemShortcut(key_chord, flags = 0)
     ImGui_SetNextItemShortcut(key_chord, flags)
-  end
-
-  # arg: key(ImGuiKey)
-  # ret: void
-  def self.SetItemKeyOwner(key)
-    ImGui_SetItemKeyOwner(key)
-  end
-
-  # arg: button(ImGuiMouseButton)
-  # ret: bool
-  def self.IsMouseDown(button)
-    ImGui_IsMouseDown(button)
-  end
-
-  # arg: button(ImGuiMouseButton)
-  # ret: bool
-  def self.IsMouseClicked(button)
-    ImGui_IsMouseClicked(button)
-  end
-
-  # arg: button(ImGuiMouseButton), repeat(bool)
-  # ret: bool
-  def self.IsMouseClickedEx(button, repeat = false)
-    ImGui_IsMouseClickedEx(button, repeat)
-  end
-
-  # arg: button(ImGuiMouseButton)
-  # ret: bool
-  def self.IsMouseReleased(button)
-    ImGui_IsMouseReleased(button)
-  end
-
-  # arg: button(ImGuiMouseButton)
-  # ret: bool
-  def self.IsMouseDoubleClicked(button)
-    ImGui_IsMouseDoubleClicked(button)
   end
 
   # arg: button(ImGuiMouseButton), delay(float)
@@ -9424,18 +8134,6 @@ module ImGui
   # ret: int
   def self.GetMouseClickedCount(button)
     ImGui_GetMouseClickedCount(button)
-  end
-
-  # arg: r_min(ImVec2), r_max(ImVec2)
-  # ret: bool
-  def self.IsMouseHoveringRect(r_min, r_max)
-    ImGui_IsMouseHoveringRect(r_min, r_max)
-  end
-
-  # arg: r_min(ImVec2), r_max(ImVec2), clip(bool)
-  # ret: bool
-  def self.IsMouseHoveringRectEx(r_min, r_max, clip = true)
-    ImGui_IsMouseHoveringRectEx(r_min, r_max, clip)
   end
 
   # arg: mouse_pos(const ImVec2*)
@@ -9469,17 +8167,6 @@ module ImGui
   # ret: ImVec2.by_value
   def self.GetMouseDragDelta(button = 0, lock_threshold = -1.0)
     ImGui_GetMouseDragDelta(button, lock_threshold)
-  end
-
-  # ret: void
-  def self.ResetMouseDragDelta()
-    ImGui_ResetMouseDragDelta()
-  end
-
-  # arg: button(ImGuiMouseButton)
-  # ret: void
-  def self.ResetMouseDragDeltaEx(button = 0)
-    ImGui_ResetMouseDragDeltaEx(button)
   end
 
   # ret: int
@@ -9587,22 +8274,10 @@ module ImGui
     ImGui_MemFree(ptr)
   end
 
-  # arg: font(ImFont*)
-  # ret: void
-  def self.PushFont(font)
-    ImGui_PushFont(font)
-  end
-
   # arg: scale(float)
   # ret: void
   def self.SetWindowFontScale(scale)
     ImGui_SetWindowFontScale(scale)
-  end
-
-  # arg: tex_ref(ImTextureRef), image_size(ImVec2), uv0(ImVec2), uv1(ImVec2), tint_col(ImVec4), border_col(ImVec4)
-  # ret: void
-  def self.ImageImVec4(tex_ref, image_size, uv0, uv1, tint_col, border_col)
-    ImGui_ImageImVec4(tex_ref, image_size, uv0, uv1, tint_col, border_col)
   end
 
   # arg: repeat(bool)
@@ -9640,18 +8315,6 @@ module ImGui
   # ret: ImVec2.by_value
   def self.GetWindowContentRegionMax()
     ImGui_GetWindowContentRegionMax()
-  end
-
-  # arg: ctx(ImGuiContext*)
-  # ret: pointer
-  def self.GetIOImGuiContextPtr(ctx)
-    ImGui_GetIOImGuiContextPtr(ctx)
-  end
-
-  # arg: ctx(ImGuiContext*)
-  # ret: pointer
-  def self.GetPlatformIOImGuiContextPtr(ctx)
-    ImGui_GetPlatformIOImGuiContextPtr(ctx)
   end
 
   # ret: float
@@ -9727,24 +8390,6 @@ module ImGui
   # ret: bool
   def self.IsWindowNavFocusable(window)
     ImGui_IsWindowNavFocusable(window)
-  end
-
-  # arg: window(ImGuiWindow*), pos(ImVec2), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowPosImGuiWindowPtr(window, pos, cond = 0)
-    ImGui_SetWindowPosImGuiWindowPtr(window, pos, cond)
-  end
-
-  # arg: window(ImGuiWindow*), size(ImVec2), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowSizeImGuiWindowPtr(window, size, cond = 0)
-    ImGui_SetWindowSizeImGuiWindowPtr(window, size, cond)
-  end
-
-  # arg: window(ImGuiWindow*), collapsed(bool), cond(ImGuiCond)
-  # ret: void
-  def self.SetWindowCollapsedImGuiWindowPtr(window, collapsed, cond = 0)
-    ImGui_SetWindowCollapsedImGuiWindowPtr(window, collapsed, cond)
   end
 
   # arg: window(ImGuiWindow*), pos(ImVec2), size(ImVec2)
@@ -9911,24 +8556,6 @@ module ImGui
     ImGui_PopPasswordFont()
   end
 
-  # arg: window(ImGuiWindow*)
-  # ret: pointer
-  def self.GetForegroundDrawListImGuiWindowPtr(window)
-    ImGui_GetForegroundDrawListImGuiWindowPtr(window)
-  end
-
-  # arg: viewport(ImGuiViewport*)
-  # ret: pointer
-  def self.GetBackgroundDrawListImGuiViewportPtr(viewport)
-    ImGui_GetBackgroundDrawListImGuiViewportPtr(viewport)
-  end
-
-  # arg: viewport(ImGuiViewport*)
-  # ret: pointer
-  def self.GetForegroundDrawListImGuiViewportPtr(viewport)
-    ImGui_GetForegroundDrawListImGuiViewportPtr(viewport)
-  end
-
   # arg: draw_data(ImDrawData*), out_list(ImVector_ImDrawListPtr*), draw_list(ImDrawList*)
   # ret: void
   def self.AddDrawListToDrawDataEx(draw_data, out_list, draw_list)
@@ -10026,17 +8653,6 @@ module ImGui
   end
 
   # ret: void
-  def self.MarkIniSettingsDirty()
-    ImGui_MarkIniSettingsDirty()
-  end
-
-  # arg: window(ImGuiWindow*)
-  # ret: void
-  def self.MarkIniSettingsDirtyImGuiWindowPtr(window)
-    ImGui_MarkIniSettingsDirtyImGuiWindowPtr(window)
-  end
-
-  # ret: void
   def self.ClearIniSettings()
     ImGui_ClearIniSettings()
   end
@@ -10093,30 +8709,6 @@ module ImGui
   # ret: pointer
   def self.LocalizeGetMsg(key)
     ImGui_LocalizeGetMsg(key)
-  end
-
-  # arg: window(ImGuiWindow*), scroll_x(float)
-  # ret: void
-  def self.SetScrollXImGuiWindowPtr(window, scroll_x)
-    ImGui_SetScrollXImGuiWindowPtr(window, scroll_x)
-  end
-
-  # arg: window(ImGuiWindow*), scroll_y(float)
-  # ret: void
-  def self.SetScrollYImGuiWindowPtr(window, scroll_y)
-    ImGui_SetScrollYImGuiWindowPtr(window, scroll_y)
-  end
-
-  # arg: window(ImGuiWindow*), local_x(float), center_x_ratio(float)
-  # ret: void
-  def self.SetScrollFromPosXImGuiWindowPtr(window, local_x, center_x_ratio)
-    ImGui_SetScrollFromPosXImGuiWindowPtr(window, local_x, center_x_ratio)
-  end
-
-  # arg: window(ImGuiWindow*), local_y(float), center_y_ratio(float)
-  # ret: void
-  def self.SetScrollFromPosYImGuiWindowPtr(window, local_y, center_y_ratio)
-    ImGui_SetScrollFromPosYImGuiWindowPtr(window, local_y, center_y_ratio)
   end
 
   # arg: flags(ImGuiScrollFlags)
@@ -10204,54 +8796,6 @@ module ImGui
     ImGui_PushOverrideID(id)
   end
 
-  # arg: str_id_begin(const char*), str_id_end(const char*), seed(ImGuiID)
-  # ret: uint
-  def self.GetIDWithSeedStr(str_id_begin, str_id_end, seed)
-    ImGui_GetIDWithSeedStr(str_id_begin, str_id_end, seed)
-  end
-
-  # arg: n(int), seed(ImGuiID)
-  # ret: uint
-  def self.GetIDWithSeed(n, seed)
-    ImGui_GetIDWithSeed(n, seed)
-  end
-
-  # arg: size(ImVec2)
-  # ret: void
-  def self.ItemSize(size)
-    ImGui_ItemSize(size)
-  end
-
-  # arg: size(ImVec2), text_baseline_y(float)
-  # ret: void
-  def self.ItemSizeEx(size, text_baseline_y = -1.0)
-    ImGui_ItemSizeEx(size, text_baseline_y)
-  end
-
-  # arg: bb(ImRect)
-  # ret: void
-  def self.ItemSizeImRect(bb)
-    ImGui_ItemSizeImRect(bb)
-  end
-
-  # arg: bb(ImRect), text_baseline_y(float)
-  # ret: void
-  def self.ItemSizeImRectEx(bb, text_baseline_y = -1.0)
-    ImGui_ItemSizeImRectEx(bb, text_baseline_y)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID)
-  # ret: bool
-  def self.ItemAdd(bb, id)
-    ImGui_ItemAdd(bb, id)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), nav_bb(const ImRect*), extra_flags(ImGuiItemFlags)
-  # ret: bool
-  def self.ItemAddEx(bb, id, nav_bb = nil, extra_flags = 0)
-    ImGui_ItemAddEx(bb, id, nav_bb, extra_flags)
-  end
-
   # arg: bb(ImRect), id(ImGuiID), item_flags(ImGuiItemFlags)
   # ret: bool
   def self.ItemHoverable(bb, id, item_flags)
@@ -10328,29 +8872,6 @@ module ImGui
     ImGui_LogBegin(flags, auto_open_depth)
   end
 
-  # ret: void
-  def self.LogToBuffer()
-    ImGui_LogToBuffer()
-  end
-
-  # arg: auto_open_depth(int)
-  # ret: void
-  def self.LogToBufferEx(auto_open_depth = -1)
-    ImGui_LogToBufferEx(auto_open_depth)
-  end
-
-  # arg: ref_pos(const ImVec2*), text(const char*)
-  # ret: void
-  def self.LogRenderedText(ref_pos, text)
-    ImGui_LogRenderedText(ref_pos, text)
-  end
-
-  # arg: ref_pos(const ImVec2*), text(const char*), text_end(const char*)
-  # ret: void
-  def self.LogRenderedTextEx(ref_pos, text, text_end = nil)
-    ImGui_LogRenderedTextEx(ref_pos, text, text_end)
-  end
-
   # arg: prefix(const char*), suffix(const char*)
   # ret: void
   def self.LogSetNextTextDecoration(prefix, suffix)
@@ -10375,18 +8896,6 @@ module ImGui
     ImGui_BeginPopupMenuEx(id, label, extra_window_flags)
   end
 
-  # arg: id(ImGuiID)
-  # ret: void
-  def self.OpenPopupEx(id)
-    ImGui_OpenPopupEx(id)
-  end
-
-  # arg: id(ImGuiID), popup_flags(ImGuiPopupFlags)
-  # ret: void
-  def self.OpenPopupExEx(id, popup_flags = ImGuiPopupFlags_None)
-    ImGui_OpenPopupExEx(id, popup_flags)
-  end
-
   # arg: remaining(int), restore_focus_to_window_under_popup(bool)
   # ret: void
   def self.ClosePopupToLevel(remaining, restore_focus_to_window_under_popup)
@@ -10402,12 +8911,6 @@ module ImGui
   # ret: void
   def self.ClosePopupsExceptModals()
     ImGui_ClosePopupsExceptModals()
-  end
-
-  # arg: id(ImGuiID), popup_flags(ImGuiPopupFlags)
-  # ret: bool
-  def self.IsPopupOpenID(id, popup_flags)
-    ImGui_IsPopupOpenID(id, popup_flags)
   end
 
   # arg: window(ImGuiWindow*)
@@ -10477,30 +8980,6 @@ module ImGui
   # ret: bool
   def self.BeginViewportSideBar(name, viewport, dir, size, window_flags)
     ImGui_BeginViewportSideBar(name, viewport, dir, size, window_flags)
-  end
-
-  # arg: label(const char*), icon(const char*)
-  # ret: bool
-  def self.BeginMenuWithIcon(label, icon)
-    ImGui_BeginMenuWithIcon(label, icon)
-  end
-
-  # arg: label(const char*), icon(const char*), enabled(bool)
-  # ret: bool
-  def self.BeginMenuWithIconEx(label, icon, enabled = true)
-    ImGui_BeginMenuWithIconEx(label, icon, enabled)
-  end
-
-  # arg: label(const char*), icon(const char*)
-  # ret: bool
-  def self.MenuItemWithIcon(label, icon)
-    ImGui_MenuItemWithIcon(label, icon)
-  end
-
-  # arg: label(const char*), icon(const char*), shortcut(const char*), selected(bool), enabled(bool)
-  # ret: bool
-  def self.MenuItemWithIconEx(label, icon, shortcut = nil, selected = false, enabled = true)
-    ImGui_MenuItemWithIconEx(label, icon, shortcut, selected, enabled)
   end
 
   # arg: popup_id(ImGuiID), bb(ImRect), flags(ImGuiComboFlags)
@@ -10686,18 +9165,6 @@ module ImGui
     ImGui_ConvertSingleModFlagToKey(key)
   end
 
-  # arg: ctx(ImGuiContext*), key(ImGuiKey)
-  # ret: pointer
-  def self.GetKeyDataImGuiContextPtr(ctx, key)
-    ImGui_GetKeyDataImGuiContextPtr(ctx, key)
-  end
-
-  # arg: key(ImGuiKey)
-  # ret: pointer
-  def self.GetKeyData(key)
-    ImGui_GetKeyData(key)
-  end
-
   # arg: key_chord(ImGuiKeyChord)
   # ret: pointer
   def self.GetKeyChordName(key_chord)
@@ -10708,18 +9175,6 @@ module ImGui
   # ret: int
   def self.MouseButtonToKey(button)
     ImGui_MouseButtonToKey(button)
-  end
-
-  # arg: button(ImGuiMouseButton)
-  # ret: bool
-  def self.IsMouseDragPastThreshold(button)
-    ImGui_IsMouseDragPastThreshold(button)
-  end
-
-  # arg: button(ImGuiMouseButton), lock_threshold(float)
-  # ret: bool
-  def self.IsMouseDragPastThresholdEx(button, lock_threshold = -1.0)
-    ImGui_IsMouseDragPastThresholdEx(button, lock_threshold)
   end
 
   # arg: key_left(ImGuiKey), key_right(ImGuiKey), key_up(ImGuiKey), key_down(ImGuiKey)
@@ -10781,12 +9236,6 @@ module ImGui
     ImGui_SetKeyOwnersForKeyChord(key, owner_id, flags)
   end
 
-  # arg: key(ImGuiKey), flags(ImGuiInputFlags)
-  # ret: void
-  def self.SetItemKeyOwnerImGuiInputFlags(key, flags)
-    ImGui_SetItemKeyOwnerImGuiInputFlags(key, flags)
-  end
-
   # arg: key(ImGuiKey), owner_id(ImGuiID)
   # ret: bool
   def self.TestKeyOwner(key, owner_id)
@@ -10797,78 +9246,6 @@ module ImGui
   # ret: pointer
   def self.GetKeyOwnerData(ctx, key)
     ImGui_GetKeyOwnerData(ctx, key)
-  end
-
-  # arg: key(ImGuiKey), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsKeyDownID(key, owner_id)
-    ImGui_IsKeyDownID(key, owner_id)
-  end
-
-  # arg: key(ImGuiKey), flags(ImGuiInputFlags)
-  # ret: bool
-  def self.IsKeyPressedImGuiInputFlags(key, flags)
-    ImGui_IsKeyPressedImGuiInputFlags(key, flags)
-  end
-
-  # arg: key(ImGuiKey), flags(ImGuiInputFlags), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsKeyPressedImGuiInputFlagsEx(key, flags, owner_id = 0)
-    ImGui_IsKeyPressedImGuiInputFlagsEx(key, flags, owner_id)
-  end
-
-  # arg: key(ImGuiKey), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsKeyReleasedID(key, owner_id)
-    ImGui_IsKeyReleasedID(key, owner_id)
-  end
-
-  # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags)
-  # ret: bool
-  def self.IsKeyChordPressedImGuiInputFlags(key_chord, flags)
-    ImGui_IsKeyChordPressedImGuiInputFlags(key_chord, flags)
-  end
-
-  # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsKeyChordPressedImGuiInputFlagsEx(key_chord, flags, owner_id = 0)
-    ImGui_IsKeyChordPressedImGuiInputFlagsEx(key_chord, flags, owner_id)
-  end
-
-  # arg: button(ImGuiMouseButton), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsMouseDownID(button, owner_id)
-    ImGui_IsMouseDownID(button, owner_id)
-  end
-
-  # arg: button(ImGuiMouseButton), flags(ImGuiInputFlags)
-  # ret: bool
-  def self.IsMouseClickedImGuiInputFlags(button, flags)
-    ImGui_IsMouseClickedImGuiInputFlags(button, flags)
-  end
-
-  # arg: button(ImGuiMouseButton), flags(ImGuiInputFlags), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsMouseClickedImGuiInputFlagsEx(button, flags, owner_id = 0)
-    ImGui_IsMouseClickedImGuiInputFlagsEx(button, flags, owner_id)
-  end
-
-  # arg: button(ImGuiMouseButton), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsMouseReleasedID(button, owner_id)
-    ImGui_IsMouseReleasedID(button, owner_id)
-  end
-
-  # arg: button(ImGuiMouseButton), owner_id(ImGuiID)
-  # ret: bool
-  def self.IsMouseDoubleClickedID(button, owner_id)
-    ImGui_IsMouseDoubleClickedID(button, owner_id)
-  end
-
-  # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags), owner_id(ImGuiID)
-  # ret: bool
-  def self.ShortcutID(key_chord, flags, owner_id)
-    ImGui_ShortcutID(key_chord, flags, owner_id)
   end
 
   # arg: key_chord(ImGuiKeyChord), flags(ImGuiInputFlags), owner_id(ImGuiID)
@@ -10916,18 +9293,6 @@ module ImGui
     ImGui_BeginDragDropTargetCustom(bb, id)
   end
 
-  # arg: viewport(ImGuiViewport*)
-  # ret: bool
-  def self.BeginDragDropTargetViewport(viewport)
-    ImGui_BeginDragDropTargetViewport(viewport)
-  end
-
-  # arg: viewport(ImGuiViewport*), p_bb(const ImRect*)
-  # ret: bool
-  def self.BeginDragDropTargetViewportEx(viewport, p_bb = nil)
-    ImGui_BeginDragDropTargetViewportEx(viewport, p_bb)
-  end
-
   # ret: void
   def self.ClearDragDrop()
     ImGui_ClearDragDrop()
@@ -10948,17 +9313,6 @@ module ImGui
   # ret: void
   def self.RenderDragDropTargetRectEx(draw_list, bb)
     ImGui_RenderDragDropTargetRectEx(draw_list, bb)
-  end
-
-  # ret: pointer
-  def self.GetTypingSelectRequest()
-    ImGui_GetTypingSelectRequest()
-  end
-
-  # arg: flags(ImGuiTypingSelectFlags)
-  # ret: pointer
-  def self.GetTypingSelectRequestEx(flags = ImGuiTypingSelectFlags_None)
-    ImGui_GetTypingSelectRequestEx(flags)
   end
 
   # arg: req(ImGuiTypingSelectRequest*), items_count(int), get_item_name_func(const char* (*get_item_name_func)(void*, int)), user_data(void*), nav_item_idx(int)
@@ -11084,17 +9438,6 @@ module ImGui
     ImGui_GetColumnNormFromOffset(columns, offset)
   end
 
-  # ret: void
-  def self.TableOpenContextMenu()
-    ImGui_TableOpenContextMenu()
-  end
-
-  # arg: column_n(int)
-  # ret: void
-  def self.TableOpenContextMenuEx(column_n = -1)
-    ImGui_TableOpenContextMenuEx(column_n)
-  end
-
   # arg: column_n(int), width(float)
   # ret: void
   def self.TableSetColumnWidth(column_n, width)
@@ -11158,18 +9501,6 @@ module ImGui
   # ret: pointer
   def self.TableFindByID(id)
     ImGui_TableFindByID(id)
-  end
-
-  # arg: name(const char*), id(ImGuiID), columns_count(int), flags(ImGuiTableFlags)
-  # ret: bool
-  def self.BeginTableWithID(name, id, columns_count, flags = 0)
-    ImGui_BeginTableWithID(name, id, columns_count, flags)
-  end
-
-  # arg: name(const char*), id(ImGuiID), columns_count(int), flags(ImGuiTableFlags), outer_size(ImVec2), inner_width(float)
-  # ret: bool
-  def self.BeginTableWithIDEx(name, id, columns_count, flags = 0, outer_size = ImVec2.create(0,0), inner_width = 0.0)
-    ImGui_BeginTableWithIDEx(name, id, columns_count, flags, outer_size, inner_width)
   end
 
   # arg: table(ImGuiTable*), columns_count(int)
@@ -11311,24 +9642,6 @@ module ImGui
   end
 
   # arg: table(const ImGuiTable*), column_n(int)
-  # ret: pointer
-  def self.TableGetColumnNameImGuiTablePtr(table, column_n)
-    ImGui_TableGetColumnNameImGuiTablePtr(table, column_n)
-  end
-
-  # arg: table(ImGuiTable*), column_n(int)
-  # ret: uint
-  def self.TableGetColumnResizeID(table, column_n)
-    ImGui_TableGetColumnResizeID(table, column_n)
-  end
-
-  # arg: table(ImGuiTable*), column_n(int), instance_no(int)
-  # ret: uint
-  def self.TableGetColumnResizeIDEx(table, column_n, instance_no = 0)
-    ImGui_TableGetColumnResizeIDEx(table, column_n, instance_no)
-  end
-
-  # arg: table(const ImGuiTable*), column_n(int)
   # ret: float
   def self.TableCalcMaxColumnWidth(table, column_n)
     ImGui_TableCalcMaxColumnWidth(table, column_n)
@@ -11362,18 +9675,6 @@ module ImGui
   # ret: void
   def self.TableRemove(table)
     ImGui_TableRemove(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableGcCompactTransientBuffers(table)
-    ImGui_TableGcCompactTransientBuffers(table)
-  end
-
-  # arg: table(ImGuiTableTempData*)
-  # ret: void
-  def self.TableGcCompactTransientBuffersImGuiTableTempDataPtr(table)
-    ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr(table)
   end
 
   # ret: void
@@ -11487,18 +9788,6 @@ module ImGui
     ImGui_TabBarCloseTab(tab_bar, tab)
   end
 
-  # arg: tab_bar(ImGuiTabBar*), tab(ImGuiTabItem*)
-  # ret: void
-  def self.TabBarQueueFocus(tab_bar, tab)
-    ImGui_TabBarQueueFocus(tab_bar, tab)
-  end
-
-  # arg: tab_bar(ImGuiTabBar*), tab_name(const char*)
-  # ret: void
-  def self.TabBarQueueFocusStr(tab_bar, tab_name)
-    ImGui_TabBarQueueFocusStr(tab_bar, tab_name)
-  end
-
   # arg: tab_bar(ImGuiTabBar*), tab(ImGuiTabItem*), offset(int)
   # ret: void
   def self.TabBarQueueReorder(tab_bar, tab, offset)
@@ -11529,18 +9818,6 @@ module ImGui
     ImGui_TabItemSpacing(str_id, flags, width)
   end
 
-  # arg: label(const char*), has_close_button_or_unsaved_marker(bool)
-  # ret: ImVec2.by_value
-  def self.TabItemCalcSizeStr(label, has_close_button_or_unsaved_marker)
-    ImGui_TabItemCalcSizeStr(label, has_close_button_or_unsaved_marker)
-  end
-
-  # arg: window(ImGuiWindow*)
-  # ret: ImVec2.by_value
-  def self.TabItemCalcSize(window)
-    ImGui_TabItemCalcSize(window)
-  end
-
   # arg: draw_list(ImDrawList*), bb(ImRect), flags(ImGuiTabItemFlags), col(ImU32)
   # ret: void
   def self.TabItemBackground(draw_list, bb, flags, col)
@@ -11553,46 +9830,10 @@ module ImGui
     ImGui_TabItemLabelAndCloseButton(draw_list, bb, flags, frame_padding, label, tab_id, close_button_id, is_contents_visible, out_just_closed, out_text_clipped)
   end
 
-  # arg: pos(ImVec2), text(const char*)
-  # ret: void
-  def self.RenderText(pos, text)
-    ImGui_RenderText(pos, text)
-  end
-
-  # arg: pos(ImVec2), text(const char*), text_end(const char*), hide_text_after_hash(bool)
-  # ret: void
-  def self.RenderTextEx(pos, text, text_end = nil, hide_text_after_hash = true)
-    ImGui_RenderTextEx(pos, text, text_end, hide_text_after_hash)
-  end
-
   # arg: pos(ImVec2), text(const char*), text_end(const char*), wrap_width(float)
   # ret: void
   def self.RenderTextWrapped(pos, text, text_end, wrap_width)
     ImGui_RenderTextWrapped(pos, text, text_end, wrap_width)
-  end
-
-  # arg: pos_min(ImVec2), pos_max(ImVec2), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*)
-  # ret: void
-  def self.RenderTextClipped(pos_min, pos_max, text, text_end, text_size_if_known)
-    ImGui_RenderTextClipped(pos_min, pos_max, text, text_end, text_size_if_known)
-  end
-
-  # arg: pos_min(ImVec2), pos_max(ImVec2), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*), align(ImVec2), clip_rect(const ImRect*)
-  # ret: void
-  def self.RenderTextClippedEx(pos_min, pos_max, text, text_end, text_size_if_known, align = ImVec2.create(0,0), clip_rect = nil)
-    ImGui_RenderTextClippedEx(pos_min, pos_max, text, text_end, text_size_if_known, align, clip_rect)
-  end
-
-  # arg: draw_list(ImDrawList*), pos_min(ImVec2), pos_max(ImVec2), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*)
-  # ret: void
-  def self.RenderTextClippedWithDrawList(draw_list, pos_min, pos_max, text, text_end, text_size_if_known)
-    ImGui_RenderTextClippedWithDrawList(draw_list, pos_min, pos_max, text, text_end, text_size_if_known)
-  end
-
-  # arg: draw_list(ImDrawList*), pos_min(ImVec2), pos_max(ImVec2), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*), align(ImVec2), clip_rect(const ImRect*)
-  # ret: void
-  def self.RenderTextClippedWithDrawListEx(draw_list, pos_min, pos_max, text, text_end, text_size_if_known, align = ImVec2.create(0,0), clip_rect = nil)
-    ImGui_RenderTextClippedWithDrawListEx(draw_list, pos_min, pos_max, text, text_end, text_size_if_known, align, clip_rect)
   end
 
   # arg: draw_list(ImDrawList*), pos_min(ImVec2), pos_max(ImVec2), ellipsis_max_x(float), text(const char*), text_end(const char*), text_size_if_known(const ImVec2*)
@@ -11601,100 +9842,16 @@ module ImGui
     ImGui_RenderTextEllipsis(draw_list, pos_min, pos_max, ellipsis_max_x, text, text_end, text_size_if_known)
   end
 
-  # arg: p_min(ImVec2), p_max(ImVec2), fill_col(ImU32)
-  # ret: void
-  def self.RenderFrame(p_min, p_max, fill_col)
-    ImGui_RenderFrame(p_min, p_max, fill_col)
-  end
-
-  # arg: p_min(ImVec2), p_max(ImVec2), fill_col(ImU32), borders(bool), rounding(float)
-  # ret: void
-  def self.RenderFrameEx(p_min, p_max, fill_col, borders = true, rounding = 0.0)
-    ImGui_RenderFrameEx(p_min, p_max, fill_col, borders, rounding)
-  end
-
-  # arg: p_min(ImVec2), p_max(ImVec2)
-  # ret: void
-  def self.RenderFrameBorder(p_min, p_max)
-    ImGui_RenderFrameBorder(p_min, p_max)
-  end
-
-  # arg: p_min(ImVec2), p_max(ImVec2), rounding(float)
-  # ret: void
-  def self.RenderFrameBorderEx(p_min, p_max, rounding = 0.0)
-    ImGui_RenderFrameBorderEx(p_min, p_max, rounding)
-  end
-
   # arg: bb(ImRect), col(ImU32), rounding(float)
   # ret: void
   def self.RenderColorComponentMarker(bb, col, rounding)
     ImGui_RenderColorComponentMarker(bb, col, rounding)
   end
 
-  # arg: draw_list(ImDrawList*), p_min(ImVec2), p_max(ImVec2), fill_col(ImU32), grid_step(float), grid_off(ImVec2)
-  # ret: void
-  def self.RenderColorRectWithAlphaCheckerboard(draw_list, p_min, p_max, fill_col, grid_step, grid_off)
-    ImGui_RenderColorRectWithAlphaCheckerboard(draw_list, p_min, p_max, fill_col, grid_step, grid_off)
-  end
-
-  # arg: draw_list(ImDrawList*), p_min(ImVec2), p_max(ImVec2), fill_col(ImU32), grid_step(float), grid_off(ImVec2), rounding(float), flags(ImDrawFlags)
-  # ret: void
-  def self.RenderColorRectWithAlphaCheckerboardEx(draw_list, p_min, p_max, fill_col, grid_step, grid_off, rounding = 0.0, flags = 0)
-    ImGui_RenderColorRectWithAlphaCheckerboardEx(draw_list, p_min, p_max, fill_col, grid_step, grid_off, rounding, flags)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID)
-  # ret: void
-  def self.RenderNavCursor(bb, id)
-    ImGui_RenderNavCursor(bb, id)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), flags(ImGuiNavRenderCursorFlags)
-  # ret: void
-  def self.RenderNavCursorEx(bb, id, flags = ImGuiNavRenderCursorFlags_None)
-    ImGui_RenderNavCursorEx(bb, id, flags)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID)
-  # ret: void
-  def self.RenderNavHighlight(bb, id)
-    ImGui_RenderNavHighlight(bb, id)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), flags(ImGuiNavRenderCursorFlags)
-  # ret: void
-  def self.RenderNavHighlightEx(bb, id, flags = ImGuiNavRenderCursorFlags_None)
-    ImGui_RenderNavHighlightEx(bb, id, flags)
-  end
-
-  # arg: text(const char*)
-  # ret: pointer
-  def self.FindRenderedTextEnd(text)
-    ImGui_FindRenderedTextEnd(text)
-  end
-
-  # arg: text(const char*), text_end(const char*)
-  # ret: pointer
-  def self.FindRenderedTextEndEx(text, text_end = nil)
-    ImGui_FindRenderedTextEndEx(text, text_end)
-  end
-
   # arg: pos(ImVec2), scale(float), mouse_cursor(ImGuiMouseCursor), col_fill(ImU32), col_border(ImU32), col_shadow(ImU32)
   # ret: void
   def self.RenderMouseCursor(pos, scale, mouse_cursor, col_fill, col_border, col_shadow)
     ImGui_RenderMouseCursor(pos, scale, mouse_cursor, col_fill, col_border, col_shadow)
-  end
-
-  # arg: draw_list(ImDrawList*), pos(ImVec2), col(ImU32), dir(ImGuiDir)
-  # ret: void
-  def self.RenderArrow(draw_list, pos, col, dir)
-    ImGui_RenderArrow(draw_list, pos, col, dir)
-  end
-
-  # arg: draw_list(ImDrawList*), pos(ImVec2), col(ImU32), dir(ImGuiDir), scale(float)
-  # ret: void
-  def self.RenderArrowEx(draw_list, pos, col, dir, scale = 1.0)
-    ImGui_RenderArrowEx(draw_list, pos, col, dir, scale)
   end
 
   # arg: draw_list(ImDrawList*), pos(ImVec2), col(ImU32)
@@ -11733,34 +9890,10 @@ module ImGui
     ImGui_CalcRoundingFlagsForRectInRect(r_in, r_outer, threshold)
   end
 
-  # arg: text(const char*)
-  # ret: void
-  def self.TextEx(text)
-    ImGui_TextEx(text)
-  end
-
-  # arg: text(const char*), text_end(const char*), flags(ImGuiTextFlags)
-  # ret: void
-  def self.TextExEx(text, text_end = nil, flags = 0)
-    ImGui_TextExEx(text, text_end, flags)
-  end
-
   # arg: align_x(float), size_x(float), fmt(const char*), __unnamed_arg3__(...)
   # ret: void
   def self.TextAligned(align_x, size_x, fmt, *varargs)
     ImGui_TextAligned(align_x, size_x, fmt, *varargs)
-  end
-
-  # arg: label(const char*)
-  # ret: bool
-  def self.ButtonWithFlags(label)
-    ImGui_ButtonWithFlags(label)
-  end
-
-  # arg: label(const char*), size_arg(ImVec2), flags(ImGuiButtonFlags)
-  # ret: bool
-  def self.ButtonWithFlagsEx(label, size_arg = ImVec2.create(0,0), flags = 0)
-    ImGui_ButtonWithFlagsEx(label, size_arg, flags)
   end
 
   # arg: str_id(const char*), dir(ImGuiDir), size_arg(ImVec2), flags(ImGuiButtonFlags)
@@ -11775,34 +9908,10 @@ module ImGui
     ImGui_ImageButtonWithFlags(id, tex_ref, image_size, uv0, uv1, bg_col, tint_col, flags)
   end
 
-  # arg: flags(ImGuiSeparatorFlags)
-  # ret: void
-  def self.SeparatorEx(flags)
-    ImGui_SeparatorEx(flags)
-  end
-
-  # arg: flags(ImGuiSeparatorFlags), thickness(float)
-  # ret: void
-  def self.SeparatorExEx(flags, thickness = 1.0)
-    ImGui_SeparatorExEx(flags, thickness)
-  end
-
   # arg: id(ImGuiID), label(const char*), label_end(const char*), extra_width(float)
   # ret: void
   def self.SeparatorTextEx(id, label, label_end, extra_width)
     ImGui_SeparatorTextEx(id, label, label_end, extra_width)
-  end
-
-  # arg: label(const char*), flags(ImS64*), flags_value(ImS64)
-  # ret: bool
-  def self.CheckboxFlagsImS64Ptr(label, flags, flags_value)
-    ImGui_CheckboxFlagsImS64Ptr(label, flags, flags_value)
-  end
-
-  # arg: label(const char*), flags(ImU64*), flags_value(ImU64)
-  # ret: bool
-  def self.CheckboxFlagsImU64Ptr(label, flags, flags_value)
-    ImGui_CheckboxFlagsImU64Ptr(label, flags, flags_value)
   end
 
   # arg: id(ImGuiID), pos(ImVec2)
@@ -11821,18 +9930,6 @@ module ImGui
   # ret: void
   def self.Scrollbar(axis)
     ImGui_Scrollbar(axis)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), axis(ImGuiAxis), p_scroll_v(ImS64*), avail_v(ImS64), contents_v(ImS64)
-  # ret: bool
-  def self.ScrollbarEx(bb, id, axis, p_scroll_v, avail_v, contents_v)
-    ImGui_ScrollbarEx(bb, id, axis, p_scroll_v, avail_v, contents_v)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), axis(ImGuiAxis), p_scroll_v(ImS64*), avail_v(ImS64), contents_v(ImS64), draw_rounding_flags(ImDrawFlags)
-  # ret: bool
-  def self.ScrollbarExEx(bb, id, axis, p_scroll_v, avail_v, contents_v, draw_rounding_flags = 0)
-    ImGui_ScrollbarExEx(bb, id, axis, p_scroll_v, avail_v, contents_v, draw_rounding_flags)
   end
 
   # arg: window(ImGuiWindow*), axis(ImGuiAxis)
@@ -11883,30 +9980,6 @@ module ImGui
     ImGui_SliderBehavior(bb, id, data_type, p_v, p_min, p_max, format, flags, out_grab_bb)
   end
 
-  # arg: bb(ImRect), id(ImGuiID), axis(ImGuiAxis), size1(float*), size2(float*), min_size1(float), min_size2(float)
-  # ret: bool
-  def self.SplitterBehavior(bb, id, axis, size1, size2, min_size1, min_size2)
-    ImGui_SplitterBehavior(bb, id, axis, size1, size2, min_size1, min_size2)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), axis(ImGuiAxis), size1(float*), size2(float*), min_size1(float), min_size2(float), hover_extend(float), hover_visibility_delay(float), bg_col(ImU32)
-  # ret: bool
-  def self.SplitterBehaviorEx(bb, id, axis, size1, size2, min_size1, min_size2, hover_extend = 0.0, hover_visibility_delay = 0.0, bg_col = 0)
-    ImGui_SplitterBehaviorEx(bb, id, axis, size1, size2, min_size1, min_size2, hover_extend, hover_visibility_delay, bg_col)
-  end
-
-  # arg: id(ImGuiID), flags(ImGuiTreeNodeFlags), label(const char*)
-  # ret: bool
-  def self.TreeNodeBehavior(id, flags, label)
-    ImGui_TreeNodeBehavior(id, flags, label)
-  end
-
-  # arg: id(ImGuiID), flags(ImGuiTreeNodeFlags), label(const char*), label_end(const char*)
-  # ret: bool
-  def self.TreeNodeBehaviorEx(id, flags, label, label_end = nil)
-    ImGui_TreeNodeBehaviorEx(id, flags, label, label_end)
-  end
-
   # arg: target_pos(ImVec2)
   # ret: void
   def self.TreeNodeDrawLineToChildNode(target_pos)
@@ -11955,18 +10028,6 @@ module ImGui
     ImGui_DataTypeApplyOp(data_type, op, output, arg_1, arg_2)
   end
 
-  # arg: buf(const char*), data_type(ImGuiDataType), p_data(void*), format(const char*)
-  # ret: bool
-  def self.DataTypeApplyFromText(buf, data_type, p_data, format)
-    ImGui_DataTypeApplyFromText(buf, data_type, p_data, format)
-  end
-
-  # arg: buf(const char*), data_type(ImGuiDataType), p_data(void*), format(const char*), p_data_when_empty(void*)
-  # ret: bool
-  def self.DataTypeApplyFromTextEx(buf, data_type, p_data, format, p_data_when_empty = nil)
-    ImGui_DataTypeApplyFromTextEx(buf, data_type, p_data, format, p_data_when_empty)
-  end
-
   # arg: data_type(ImGuiDataType), arg_1(const void*), arg_2(const void*)
   # ret: int
   def self.DataTypeCompare(data_type, arg_1, arg_2)
@@ -11985,46 +10046,10 @@ module ImGui
     ImGui_DataTypeIsZero(data_type, p_data)
   end
 
-  # arg: label(const char*), hint(const char*), buf(char*), buf_size(int), size_arg(ImVec2), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.InputTextWithHintAndSize(label, hint, buf, buf_size, size_arg, flags)
-    ImGui_InputTextWithHintAndSize(label, hint, buf, buf_size, size_arg, flags)
-  end
-
-  # arg: label(const char*), hint(const char*), buf(char*), buf_size(int), size_arg(ImVec2), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
-  # ret: bool
-  def self.InputTextWithHintAndSizeEx(label, hint, buf, buf_size, size_arg, flags, callback = nil, user_data = nil)
-    ImGui_InputTextWithHintAndSizeEx(label, hint, buf, buf_size, size_arg, flags, callback, user_data)
-  end
-
   # arg: id(ImGuiID)
   # ret: void
   def self.InputTextDeactivateHook(id)
     ImGui_InputTextDeactivateHook(id)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), label(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags)
-  # ret: bool
-  def self.TempInputText(bb, id, label, buf, buf_size, flags = 0)
-    ImGui_TempInputText(bb, id, label, buf, buf_size, flags)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), label(const char*), buf(char*), buf_size(size_t), flags(ImGuiInputTextFlags), callback(ImGuiInputTextCallback), user_data(void*)
-  # ret: bool
-  def self.TempInputTextEx(bb, id, label, buf, buf_size, flags = 0, callback = nil, user_data = nil)
-    ImGui_TempInputTextEx(bb, id, label, buf, buf_size, flags, callback, user_data)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), label(const char*), data_type(ImGuiDataType), p_data(void*), format(const char*)
-  # ret: bool
-  def self.TempInputScalar(bb, id, label, data_type, p_data, format)
-    ImGui_TempInputScalar(bb, id, label, data_type, p_data, format)
-  end
-
-  # arg: bb(ImRect), id(ImGuiID), label(const char*), data_type(ImGuiDataType), p_data(void*), format(const char*), p_clamp_min(const void*), p_clamp_max(const void*)
-  # ret: bool
-  def self.TempInputScalarEx(bb, id, label, data_type, p_data, format, p_clamp_min = nil, p_clamp_max = nil)
-    ImGui_TempInputScalarEx(bb, id, label, data_type, p_data, format, p_clamp_min, p_clamp_max)
   end
 
   # arg: id(ImGuiID)
@@ -12165,39 +10190,6 @@ module ImGui
     ImGui_DebugAllocHook(info, frame_count, ptr, size)
   end
 
-  # ret: void
-  def self.DebugDrawCursorPos()
-    ImGui_DebugDrawCursorPos()
-  end
-
-  # arg: col(ImU32)
-  # ret: void
-  def self.DebugDrawCursorPosEx(col = IM_COL32(255, 0, 0, 255))
-    ImGui_DebugDrawCursorPosEx(col)
-  end
-
-  # ret: void
-  def self.DebugDrawLineExtents()
-    ImGui_DebugDrawLineExtents()
-  end
-
-  # arg: col(ImU32)
-  # ret: void
-  def self.DebugDrawLineExtentsEx(col = IM_COL32(255, 0, 0, 255))
-    ImGui_DebugDrawLineExtentsEx(col)
-  end
-
-  # ret: void
-  def self.DebugDrawItemRect()
-    ImGui_DebugDrawItemRect()
-  end
-
-  # arg: col(ImU32)
-  # ret: void
-  def self.DebugDrawItemRectEx(col = IM_COL32(255, 0, 0, 255))
-    ImGui_DebugDrawItemRectEx(col)
-  end
-
   # arg: line_begin(const char*), line_end(const char*)
   # ret: void
   def self.DebugTextUnformattedWithLocateItem(line_begin, line_end)
@@ -12290,18 +10282,6 @@ module ImGui
   # ret: void
   def self.DebugNodeFontGlyph(font, glyph)
     ImGui_DebugNodeFontGlyph(font, glyph)
-  end
-
-  # arg: tex(ImTextureData*), int_id(int)
-  # ret: void
-  def self.DebugNodeTexture(tex, int_id)
-    ImGui_DebugNodeTexture(tex, int_id)
-  end
-
-  # arg: tex(ImTextureData*), int_id(int), highlight_rect(const ImFontAtlasRect*)
-  # ret: void
-  def self.DebugNodeTextureEx(tex, int_id, highlight_rect = nil)
-    ImGui_DebugNodeTextureEx(tex, int_id, highlight_rect)
   end
 
   # arg: storage(ImGuiStorage*), label(const char*)
@@ -12410,6 +10390,7 @@ module ImGui
     return ImGui_ShowIDStackToolWindow() if arg.empty?
     # arg: 0:p_open(bool*)
     # ret: void
+    return ImGui_ShowIDStackToolWindowEx(nil) if arg.length == 0 && (true)
     return ImGui_ShowIDStackToolWindowEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::ShowIDStackToolWindow : No matching functions found (#{arg})")
   end
@@ -12417,9 +10398,15 @@ module ImGui
   def self.BeginChild(*arg)
     # arg: 0:str_id(const char*), 1:size(ImVec2), 2:child_flags(ImGuiChildFlags), 3:window_flags(ImGuiWindowFlags)
     # ret: bool
+    return ImGui_BeginChild(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
+    return ImGui_BeginChild(arg[0], arg[1], 0, 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2))
+    return ImGui_BeginChild(arg[0], ImVec2.create(0,0), 0, 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_BeginChild(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:id(ImGuiID), 1:size(ImVec2), 2:child_flags(ImGuiChildFlags), 3:window_flags(ImGuiWindowFlags)
     # ret: bool
+    return ImGui_BeginChildID(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
+    return ImGui_BeginChildID(arg[0], arg[1], 0, 0) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2))
+    return ImGui_BeginChildID(arg[0], ImVec2.create(0,0), 0, 0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_BeginChildID(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::BeginChild : No matching functions found (#{arg})")
   end
@@ -12427,9 +10414,12 @@ module ImGui
   def self.SetNextWindowPos(*arg)
     # arg: 0:pos(ImVec2), 1:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetNextWindowPos(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
     return ImGui_SetNextWindowPos(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
     # arg: 0:pos(ImVec2), 1:cond(ImGuiCond), 2:pivot(ImVec2)
     # ret: void
+    return ImGui_SetNextWindowPosEx(arg[0], arg[1], ImVec2.create(0,0)) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
+    return ImGui_SetNextWindowPosEx(arg[0], 0, ImVec2.create(0,0)) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
     return ImGui_SetNextWindowPosEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer) && arg[2].kind_of?(ImVec2))
     $stderr.puts("[Warning] ImGui::SetNextWindowPos : No matching functions found (#{arg})")
   end
@@ -12437,12 +10427,15 @@ module ImGui
   def self.SetWindowPos(*arg)
     # arg: 0:pos(ImVec2), 1:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowPos(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
     return ImGui_SetWindowPos(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
     # arg: 0:name(const char*), 1:pos(ImVec2), 2:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowPosStr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2))
     return ImGui_SetWindowPosStr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     # arg: 0:window(ImGuiWindow*), 1:pos(ImVec2), 2:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowPosImGuiWindowPtr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2))
     return ImGui_SetWindowPosImGuiWindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SetWindowPos : No matching functions found (#{arg})")
   end
@@ -12450,12 +10443,15 @@ module ImGui
   def self.SetWindowSize(*arg)
     # arg: 0:size(ImVec2), 1:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowSize(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
     return ImGui_SetWindowSize(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Integer))
     # arg: 0:name(const char*), 1:size(ImVec2), 2:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowSizeStr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2))
     return ImGui_SetWindowSizeStr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     # arg: 0:window(ImGuiWindow*), 1:size(ImVec2), 2:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowSizeImGuiWindowPtr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2))
     return ImGui_SetWindowSizeImGuiWindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SetWindowSize : No matching functions found (#{arg})")
   end
@@ -12463,12 +10459,15 @@ module ImGui
   def self.SetWindowCollapsed(*arg)
     # arg: 0:collapsed(bool), 1:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowCollapsed(arg[0], 0) if arg.length == 1 && ((arg[0].is_a?(TrueClass) || arg[0].is_a?(FalseClass)))
     return ImGui_SetWindowCollapsed(arg[0], arg[1]) if arg.length == 2 && ((arg[0].is_a?(TrueClass) || arg[0].is_a?(FalseClass)) && arg[1].kind_of?(Integer))
     # arg: 0:name(const char*), 1:collapsed(bool), 2:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowCollapsedStr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
     return ImGui_SetWindowCollapsedStr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer))
     # arg: 0:window(ImGuiWindow*), 1:collapsed(bool), 2:cond(ImGuiCond)
     # ret: void
+    return ImGui_SetWindowCollapsedImGuiWindowPtr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
     return ImGui_SetWindowCollapsedImGuiWindowPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SetWindowCollapsed : No matching functions found (#{arg})")
   end
@@ -12506,6 +10505,7 @@ module ImGui
   def self.SetScrollFromPosX(*arg)
     # arg: 0:local_x(float), 1:center_x_ratio(float)
     # ret: void
+    return ImGui_SetScrollFromPosX(arg[0], 0.5) if arg.length == 1 && (arg[0].kind_of?(Float))
     return ImGui_SetScrollFromPosX(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Float) && arg[1].kind_of?(Float))
     # arg: 0:window(ImGuiWindow*), 1:local_x(float), 2:center_x_ratio(float)
     # ret: void
@@ -12516,6 +10516,7 @@ module ImGui
   def self.SetScrollFromPosY(*arg)
     # arg: 0:local_y(float), 1:center_y_ratio(float)
     # ret: void
+    return ImGui_SetScrollFromPosY(arg[0], 0.5) if arg.length == 1 && (arg[0].kind_of?(Float))
     return ImGui_SetScrollFromPosY(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Float) && arg[1].kind_of?(Float))
     # arg: 0:window(ImGuiWindow*), 1:local_y(float), 2:center_y_ratio(float)
     # ret: void
@@ -12549,6 +10550,7 @@ module ImGui
     return ImGui_PopStyleColor() if arg.empty?
     # arg: 0:count(int)
     # ret: void
+    return ImGui_PopStyleColorEx(1) if arg.length == 0 && (true)
     return ImGui_PopStyleColorEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::PopStyleColor : No matching functions found (#{arg})")
   end
@@ -12569,6 +10571,7 @@ module ImGui
     return ImGui_PopStyleVar() if arg.empty?
     # arg: 0:count(int)
     # ret: void
+    return ImGui_PopStyleVarEx(1) if arg.length == 0 && (true)
     return ImGui_PopStyleVarEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::PopStyleVar : No matching functions found (#{arg})")
   end
@@ -12579,6 +10582,7 @@ module ImGui
     return ImGui_GetColorU32(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:idx(ImGuiCol), 1:alpha_mul(float)
     # ret: uint
+    return ImGui_GetColorU32Ex(arg[0], 1.0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_GetColorU32Ex(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
     # arg: 0:col(ImVec4)
     # ret: uint
@@ -12588,6 +10592,7 @@ module ImGui
     return ImGui_GetColorU32ImU32(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:col(ImU32), 1:alpha_mul(float)
     # ret: uint
+    return ImGui_GetColorU32ImU32Ex(arg[0], 1.0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_GetColorU32ImU32Ex(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::GetColorU32 : No matching functions found (#{arg})")
   end
@@ -12598,6 +10603,8 @@ module ImGui
     return ImGui_SameLine() if arg.empty?
     # arg: 0:offset_from_start_x(float), 1:spacing(float)
     # ret: void
+    return ImGui_SameLineEx(arg[0], -1.0) if arg.length == 1 && (arg[0].kind_of?(Float))
+    return ImGui_SameLineEx(0.0, -1.0) if arg.length == 0 && (true)
     return ImGui_SameLineEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Float) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::SameLine : No matching functions found (#{arg})")
   end
@@ -12608,6 +10615,7 @@ module ImGui
     return ImGui_Indent() if arg.empty?
     # arg: 0:indent_w(float)
     # ret: void
+    return ImGui_IndentEx(0.0) if arg.length == 0 && (true)
     return ImGui_IndentEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::Indent : No matching functions found (#{arg})")
   end
@@ -12618,6 +10626,7 @@ module ImGui
     return ImGui_Unindent() if arg.empty?
     # arg: 0:indent_w(float)
     # ret: void
+    return ImGui_UnindentEx(0.0) if arg.length == 0 && (true)
     return ImGui_UnindentEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::Unindent : No matching functions found (#{arg})")
   end
@@ -12660,6 +10669,7 @@ module ImGui
     return ImGui_TextUnformatted(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:text(const char*), 1:text_end(const char*)
     # ret: void
+    return ImGui_TextUnformattedEx(arg[0], nil) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_TextUnformattedEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
     $stderr.puts("[Warning] ImGui::TextUnformatted : No matching functions found (#{arg})")
   end
@@ -12670,6 +10680,7 @@ module ImGui
     return ImGui_Button(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:label(const char*), 1:size(ImVec2)
     # ret: bool
+    return ImGui_ButtonEx(arg[0], ImVec2.create(0,0)) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_ButtonEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2))
     $stderr.puts("[Warning] ImGui::Button : No matching functions found (#{arg})")
   end
@@ -12706,6 +10717,7 @@ module ImGui
     return ImGui_TextLinkOpenURL(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:label(const char*), 1:url(const char*)
     # ret: bool
+    return ImGui_TextLinkOpenURLEx(arg[0], nil) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_TextLinkOpenURLEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
     $stderr.puts("[Warning] ImGui::TextLinkOpenURL : No matching functions found (#{arg})")
   end
@@ -12716,6 +10728,8 @@ module ImGui
     return ImGui_Image(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2))
     # arg: 0:tex_ref(ImTextureRef), 1:image_size(ImVec2), 2:uv0(ImVec2), 3:uv1(ImVec2)
     # ret: void
+    return ImGui_ImageEx(arg[0], arg[1], arg[2], ImVec2.create(1,1)) if arg.length == 3 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2))
+    return ImGui_ImageEx(arg[0], arg[1], ImVec2.create(0,0), ImVec2.create(1,1)) if arg.length == 2 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2))
     return ImGui_ImageEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2))
     # arg: 0:tex_ref(ImTextureRef), 1:image_size(ImVec2), 2:uv0(ImVec2), 3:uv1(ImVec2), 4:tint_col(ImVec4), 5:border_col(ImVec4)
     # ret: void
@@ -12729,6 +10743,10 @@ module ImGui
     return ImGui_ImageWithBg(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2))
     # arg: 0:tex_ref(ImTextureRef), 1:image_size(ImVec2), 2:uv0(ImVec2), 3:uv1(ImVec2), 4:bg_col(ImVec4), 5:tint_col(ImVec4)
     # ret: void
+    return ImGui_ImageWithBgEx(arg[0], arg[1], arg[2], arg[3], arg[4], ImVec4.create(1,1,1,1)) if arg.length == 5 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(ImVec4))
+    return ImGui_ImageWithBgEx(arg[0], arg[1], arg[2], arg[3], ImVec4.create(0,0,0,0), ImVec4.create(1,1,1,1)) if arg.length == 4 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2))
+    return ImGui_ImageWithBgEx(arg[0], arg[1], arg[2], ImVec2.create(1,1), ImVec4.create(0,0,0,0), ImVec4.create(1,1,1,1)) if arg.length == 3 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2))
+    return ImGui_ImageWithBgEx(arg[0], arg[1], ImVec2.create(0,0), ImVec2.create(1,1), ImVec4.create(0,0,0,0), ImVec4.create(1,1,1,1)) if arg.length == 2 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2))
     return ImGui_ImageWithBgEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImTextureRef) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(ImVec4) && arg[5].kind_of?(ImVec4))
     $stderr.puts("[Warning] ImGui::ImageWithBg : No matching functions found (#{arg})")
   end
@@ -12739,6 +10757,10 @@ module ImGui
     return ImGui_ImageButton(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImTextureRef) && arg[2].kind_of?(ImVec2))
     # arg: 0:str_id(const char*), 1:tex_ref(ImTextureRef), 2:image_size(ImVec2), 3:uv0(ImVec2), 4:uv1(ImVec2), 5:bg_col(ImVec4), 6:tint_col(ImVec4)
     # ret: bool
+    return ImGui_ImageButtonEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], ImVec4.create(1,1,1,1)) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImTextureRef) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(ImVec4))
+    return ImGui_ImageButtonEx(arg[0], arg[1], arg[2], arg[3], arg[4], ImVec4.create(0,0,0,0), ImVec4.create(1,1,1,1)) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImTextureRef) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(ImVec2))
+    return ImGui_ImageButtonEx(arg[0], arg[1], arg[2], arg[3], ImVec2.create(1,1), ImVec4.create(0,0,0,0), ImVec4.create(1,1,1,1)) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImTextureRef) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2))
+    return ImGui_ImageButtonEx(arg[0], arg[1], arg[2], ImVec2.create(0,0), ImVec2.create(1,1), ImVec4.create(0,0,0,0), ImVec4.create(1,1,1,1)) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImTextureRef) && arg[2].kind_of?(ImVec2))
     return ImGui_ImageButtonEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImTextureRef) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(ImVec4) && arg[6].kind_of?(ImVec4))
     $stderr.puts("[Warning] ImGui::ImageButton : No matching functions found (#{arg})")
   end
@@ -12749,18 +10771,21 @@ module ImGui
     return ImGui_ComboChar(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:items(const char*const[]), 3:items_count(int), 4:popup_max_height_in_items(int)
     # ret: bool
+    return ImGui_ComboCharEx(arg[0], arg[1], arg[2], arg[3], -1) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     return ImGui_ComboCharEx(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:items_separated_by_zeros(const char*)
     # ret: bool
     return ImGui_Combo(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String))
     # arg: 0:label(const char*), 1:current_item(int*), 2:items_separated_by_zeros(const char*), 3:popup_max_height_in_items(int)
     # ret: bool
+    return ImGui_ComboEx(arg[0], arg[1], arg[2], -1) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String))
     return ImGui_ComboEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int)
     # ret: bool
     return ImGui_ComboCallback(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int), 5:popup_max_height_in_items(int)
     # ret: bool
+    return ImGui_ComboCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], -1) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
     return ImGui_ComboCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::Combo : No matching functions found (#{arg})")
   end
@@ -12771,6 +10796,11 @@ module ImGui
     return ImGui_DragFloat(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float*), 2:v_speed(float), 3:v_min(float), 4:v_max(float), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String))
+    return ImGui_DragFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], "%.3f", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float))
+    return ImGui_DragFloatEx(arg[0], arg[1], arg[2], arg[3], 0.0, "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
+    return ImGui_DragFloatEx(arg[0], arg[1], arg[2], 0.0, 0.0, "%.3f", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragFloatEx(arg[0], arg[1], 1.0, 0.0, 0.0, "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragFloat : No matching functions found (#{arg})")
   end
@@ -12781,6 +10811,11 @@ module ImGui
     return ImGui_DragFloat2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float[2]), 2:v_speed(float), 3:v_min(float), 4:v_max(float), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragFloat2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String))
+    return ImGui_DragFloat2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], "%.3f", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float))
+    return ImGui_DragFloat2Ex(arg[0], arg[1], arg[2], arg[3], 0.0, "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
+    return ImGui_DragFloat2Ex(arg[0], arg[1], arg[2], 0.0, 0.0, "%.3f", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragFloat2Ex(arg[0], arg[1], 1.0, 0.0, 0.0, "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragFloat2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragFloat2 : No matching functions found (#{arg})")
   end
@@ -12791,6 +10826,11 @@ module ImGui
     return ImGui_DragFloat3(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float[3]), 2:v_speed(float), 3:v_min(float), 4:v_max(float), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragFloat3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String))
+    return ImGui_DragFloat3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], "%.3f", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float))
+    return ImGui_DragFloat3Ex(arg[0], arg[1], arg[2], arg[3], 0.0, "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
+    return ImGui_DragFloat3Ex(arg[0], arg[1], arg[2], 0.0, 0.0, "%.3f", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragFloat3Ex(arg[0], arg[1], 1.0, 0.0, 0.0, "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragFloat3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragFloat3 : No matching functions found (#{arg})")
   end
@@ -12801,6 +10841,11 @@ module ImGui
     return ImGui_DragFloat4(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float[4]), 2:v_speed(float), 3:v_min(float), 4:v_max(float), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragFloat4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String))
+    return ImGui_DragFloat4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], "%.3f", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float))
+    return ImGui_DragFloat4Ex(arg[0], arg[1], arg[2], arg[3], 0.0, "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
+    return ImGui_DragFloat4Ex(arg[0], arg[1], arg[2], 0.0, 0.0, "%.3f", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragFloat4Ex(arg[0], arg[1], 1.0, 0.0, 0.0, "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragFloat4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragFloat4 : No matching functions found (#{arg})")
   end
@@ -12811,6 +10856,12 @@ module ImGui
     return ImGui_DragFloatRange2(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v_current_min(float*), 2:v_current_max(float*), 3:v_speed(float), 4:v_min(float), 5:v_max(float), 6:format(const char*), 7:format_max(const char*), 8:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragFloatRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], 0) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(Float) && arg[6].kind_of?(String) && arg[7].kind_of?(String))
+    return ImGui_DragFloatRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil, 0) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(Float) && arg[6].kind_of?(String))
+    return ImGui_DragFloatRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], "%.3f", nil, 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(Float))
+    return ImGui_DragFloatRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0.0, "%.3f", nil, 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float))
+    return ImGui_DragFloatRange2Ex(arg[0], arg[1], arg[2], arg[3], 0.0, 0.0, "%.3f", nil, 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float))
+    return ImGui_DragFloatRange2Ex(arg[0], arg[1], arg[2], 1.0, 0.0, 0.0, "%.3f", nil, 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer))
     return ImGui_DragFloatRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(Float) && arg[6].kind_of?(String) && arg[7].kind_of?(String) && arg[8].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragFloatRange2 : No matching functions found (#{arg})")
   end
@@ -12821,6 +10872,11 @@ module ImGui
     return ImGui_DragInt(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(int*), 2:v_speed(float), 3:v_min(int), 4:v_max(int), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String))
+    return ImGui_DragIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], "%d", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_DragIntEx(arg[0], arg[1], arg[2], arg[3], 0, "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer))
+    return ImGui_DragIntEx(arg[0], arg[1], arg[2], 0, 0, "%d", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragIntEx(arg[0], arg[1], 1.0, 0, 0, "%d", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragInt : No matching functions found (#{arg})")
   end
@@ -12831,6 +10887,11 @@ module ImGui
     return ImGui_DragInt2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(int[2]), 2:v_speed(float), 3:v_min(int), 4:v_max(int), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragInt2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String))
+    return ImGui_DragInt2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], "%d", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_DragInt2Ex(arg[0], arg[1], arg[2], arg[3], 0, "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer))
+    return ImGui_DragInt2Ex(arg[0], arg[1], arg[2], 0, 0, "%d", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragInt2Ex(arg[0], arg[1], 1.0, 0, 0, "%d", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragInt2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragInt2 : No matching functions found (#{arg})")
   end
@@ -12841,6 +10902,11 @@ module ImGui
     return ImGui_DragInt3(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(int[3]), 2:v_speed(float), 3:v_min(int), 4:v_max(int), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragInt3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String))
+    return ImGui_DragInt3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], "%d", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_DragInt3Ex(arg[0], arg[1], arg[2], arg[3], 0, "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer))
+    return ImGui_DragInt3Ex(arg[0], arg[1], arg[2], 0, 0, "%d", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragInt3Ex(arg[0], arg[1], 1.0, 0, 0, "%d", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragInt3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragInt3 : No matching functions found (#{arg})")
   end
@@ -12851,6 +10917,11 @@ module ImGui
     return ImGui_DragInt4(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(int[4]), 2:v_speed(float), 3:v_min(int), 4:v_max(int), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragInt4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String))
+    return ImGui_DragInt4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], "%d", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_DragInt4Ex(arg[0], arg[1], arg[2], arg[3], 0, "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer))
+    return ImGui_DragInt4Ex(arg[0], arg[1], arg[2], 0, 0, "%d", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_DragInt4Ex(arg[0], arg[1], 1.0, 0, 0, "%d", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_DragInt4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragInt4 : No matching functions found (#{arg})")
   end
@@ -12861,6 +10932,12 @@ module ImGui
     return ImGui_DragIntRange2(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v_current_min(int*), 2:v_current_max(int*), 3:v_speed(float), 4:v_min(int), 5:v_max(int), 6:format(const char*), 7:format_max(const char*), 8:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragIntRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], 0) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(String) && arg[7].kind_of?(String))
+    return ImGui_DragIntRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil, 0) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(String))
+    return ImGui_DragIntRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], "%d", nil, 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_DragIntRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0, "%d", nil, 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Integer))
+    return ImGui_DragIntRange2Ex(arg[0], arg[1], arg[2], arg[3], 0, 0, "%d", nil, 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float))
+    return ImGui_DragIntRange2Ex(arg[0], arg[1], arg[2], 1.0, 0, 0, "%d", nil, 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer))
     return ImGui_DragIntRange2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(String) && arg[7].kind_of?(String) && arg[8].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragIntRange2 : No matching functions found (#{arg})")
   end
@@ -12871,6 +10948,11 @@ module ImGui
     return ImGui_DragScalar(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:data_type(ImGuiDataType), 2:p_data(void*), 3:v_speed(float), 4:p_min(const void*), 5:p_max(const void*), 6:format(const char*), 7:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], 0) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String))
+    return ImGui_DragScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer))
+    return ImGui_DragScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil, 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(FFI::Pointer))
+    return ImGui_DragScalarEx(arg[0], arg[1], arg[2], arg[3], nil, nil, nil, 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float))
+    return ImGui_DragScalarEx(arg[0], arg[1], arg[2], 1.0, nil, nil, nil, 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer))
     return ImGui_DragScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String) && arg[7].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragScalar : No matching functions found (#{arg})")
   end
@@ -12881,6 +10963,11 @@ module ImGui
     return ImGui_DragScalarN(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:data_type(ImGuiDataType), 2:p_data(void*), 3:components(int), 4:v_speed(float), 5:p_min(const void*), 6:p_max(const void*), 7:format(const char*), 8:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_DragScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], 0) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(FFI::Pointer) && arg[7].kind_of?(String))
+    return ImGui_DragScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil, 0) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(FFI::Pointer))
+    return ImGui_DragScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil, 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(FFI::Pointer))
+    return ImGui_DragScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil, nil, 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float))
+    return ImGui_DragScalarNEx(arg[0], arg[1], arg[2], arg[3], 1.0, nil, nil, nil, 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     return ImGui_DragScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(FFI::Pointer) && arg[7].kind_of?(String) && arg[8].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DragScalarN : No matching functions found (#{arg})")
   end
@@ -12891,6 +10978,8 @@ module ImGui
     return ImGui_SliderFloat(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     # arg: 0:label(const char*), 1:v(float*), 2:v_min(float), 3:v_max(float), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String))
+    return ImGui_SliderFloatEx(arg[0], arg[1], arg[2], arg[3], "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     return ImGui_SliderFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderFloat : No matching functions found (#{arg})")
   end
@@ -12901,6 +10990,8 @@ module ImGui
     return ImGui_SliderFloat2(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     # arg: 0:label(const char*), 1:v(float[2]), 2:v_min(float), 3:v_max(float), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderFloat2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String))
+    return ImGui_SliderFloat2Ex(arg[0], arg[1], arg[2], arg[3], "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     return ImGui_SliderFloat2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderFloat2 : No matching functions found (#{arg})")
   end
@@ -12911,6 +11002,8 @@ module ImGui
     return ImGui_SliderFloat3(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     # arg: 0:label(const char*), 1:v(float[3]), 2:v_min(float), 3:v_max(float), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderFloat3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String))
+    return ImGui_SliderFloat3Ex(arg[0], arg[1], arg[2], arg[3], "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     return ImGui_SliderFloat3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderFloat3 : No matching functions found (#{arg})")
   end
@@ -12921,6 +11014,8 @@ module ImGui
     return ImGui_SliderFloat4(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     # arg: 0:label(const char*), 1:v(float[4]), 2:v_min(float), 3:v_max(float), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderFloat4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String))
+    return ImGui_SliderFloat4Ex(arg[0], arg[1], arg[2], arg[3], "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
     return ImGui_SliderFloat4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderFloat4 : No matching functions found (#{arg})")
   end
@@ -12931,6 +11026,10 @@ module ImGui
     return ImGui_SliderAngle(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v_rad(float*), 2:v_degrees_min(float), 3:v_degrees_max(float), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderAngleEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String))
+    return ImGui_SliderAngleEx(arg[0], arg[1], arg[2], arg[3], "%.0f deg", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
+    return ImGui_SliderAngleEx(arg[0], arg[1], arg[2], +360.0, "%.0f deg", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_SliderAngleEx(arg[0], arg[1], -360.0, +360.0, "%.0f deg", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_SliderAngleEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderAngle : No matching functions found (#{arg})")
   end
@@ -12941,6 +11040,8 @@ module ImGui
     return ImGui_SliderInt(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:v(int*), 2:v_min(int), 3:v_max(int), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String))
+    return ImGui_SliderIntEx(arg[0], arg[1], arg[2], arg[3], "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     return ImGui_SliderIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderInt : No matching functions found (#{arg})")
   end
@@ -12951,6 +11052,8 @@ module ImGui
     return ImGui_SliderInt2(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:v(int[2]), 2:v_min(int), 3:v_max(int), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderInt2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String))
+    return ImGui_SliderInt2Ex(arg[0], arg[1], arg[2], arg[3], "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     return ImGui_SliderInt2Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderInt2 : No matching functions found (#{arg})")
   end
@@ -12961,6 +11064,8 @@ module ImGui
     return ImGui_SliderInt3(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:v(int[3]), 2:v_min(int), 3:v_max(int), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderInt3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String))
+    return ImGui_SliderInt3Ex(arg[0], arg[1], arg[2], arg[3], "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     return ImGui_SliderInt3Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderInt3 : No matching functions found (#{arg})")
   end
@@ -12971,6 +11076,8 @@ module ImGui
     return ImGui_SliderInt4(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:v(int[4]), 2:v_min(int), 3:v_max(int), 4:format(const char*), 5:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderInt4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String))
+    return ImGui_SliderInt4Ex(arg[0], arg[1], arg[2], arg[3], "%d", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     return ImGui_SliderInt4Ex(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderInt4 : No matching functions found (#{arg})")
   end
@@ -12981,6 +11088,8 @@ module ImGui
     return ImGui_SliderScalar(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:data_type(ImGuiDataType), 2:p_data(void*), 3:p_min(const void*), 4:p_max(const void*), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String))
+    return ImGui_SliderScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer))
     return ImGui_SliderScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderScalar : No matching functions found (#{arg})")
   end
@@ -12991,6 +11100,8 @@ module ImGui
     return ImGui_SliderScalarN(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:data_type(ImGuiDataType), 2:p_data(void*), 3:components(int), 4:p_min(const void*), 5:p_max(const void*), 6:format(const char*), 7:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_SliderScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], 0) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String))
+    return ImGui_SliderScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer))
     return ImGui_SliderScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String) && arg[7].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SliderScalarN : No matching functions found (#{arg})")
   end
@@ -13001,6 +11112,8 @@ module ImGui
     return ImGui_VSliderFloat(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float))
     # arg: 0:label(const char*), 1:size(ImVec2), 2:v(float*), 3:v_min(float), 4:v_max(float), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_VSliderFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String))
+    return ImGui_VSliderFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], "%.3f", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float))
     return ImGui_VSliderFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Float) && arg[4].kind_of?(Float) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::VSliderFloat : No matching functions found (#{arg})")
   end
@@ -13011,6 +11124,8 @@ module ImGui
     return ImGui_VSliderInt(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:size(ImVec2), 2:v(int*), 3:v_min(int), 4:v_max(int), 5:format(const char*), 6:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_VSliderIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String))
+    return ImGui_VSliderIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], "%d", 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     return ImGui_VSliderIntEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::VSliderInt : No matching functions found (#{arg})")
   end
@@ -13021,6 +11136,8 @@ module ImGui
     return ImGui_VSliderScalar(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:size(ImVec2), 2:data_type(ImGuiDataType), 3:p_data(void*), 4:p_min(const void*), 5:p_max(const void*), 6:format(const char*), 7:flags(ImGuiSliderFlags)
     # ret: bool
+    return ImGui_VSliderScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], 0) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String))
+    return ImGui_VSliderScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer))
     return ImGui_VSliderScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String) && arg[7].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::VSliderScalar : No matching functions found (#{arg})")
   end
@@ -13028,9 +11145,13 @@ module ImGui
   def self.InputText(*arg)
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputText(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
     return ImGui_InputText(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:flags(ImGuiInputTextFlags), 4:callback(ImGuiInputTextCallback), 5:user_data(void*)
     # ret: bool
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], 0, nil, nil) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
     return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputText : No matching functions found (#{arg})")
   end
@@ -13041,6 +11162,10 @@ module ImGui
     return ImGui_InputTextMultiline(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:size(ImVec2), 4:flags(ImGuiInputTextFlags), 5:callback(ImGuiInputTextCallback), 6:user_data(void*)
     # ret: bool
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], 0, nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], ImVec2.create(0,0), 0, nil, nil) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
     return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextMultiline : No matching functions found (#{arg})")
   end
@@ -13048,9 +11173,13 @@ module ImGui
   def self.InputTextWithHint(*arg)
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(size_t), 4:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
     return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(size_t), 4:flags(ImGuiInputTextFlags), 5:callback(ImGuiInputTextCallback), 6:user_data(void*)
     # ret: bool
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], 0, nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
     return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextWithHint : No matching functions found (#{arg})")
   end
@@ -13061,6 +11190,10 @@ module ImGui
     return ImGui_InputFloat(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float*), 2:step(float), 3:step_fast(float), 4:format(const char*), 5:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String))
+    return ImGui_InputFloatEx(arg[0], arg[1], arg[2], arg[3], "%.3f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
+    return ImGui_InputFloatEx(arg[0], arg[1], arg[2], 0.0, "%.3f", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_InputFloatEx(arg[0], arg[1], 0.0, 0.0, "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_InputFloatEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputFloat : No matching functions found (#{arg})")
   end
@@ -13071,6 +11204,8 @@ module ImGui
     return ImGui_InputFloat2(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float[2]), 2:format(const char*), 3:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputFloat2Ex(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String))
+    return ImGui_InputFloat2Ex(arg[0], arg[1], "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_InputFloat2Ex(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputFloat2 : No matching functions found (#{arg})")
   end
@@ -13081,6 +11216,8 @@ module ImGui
     return ImGui_InputFloat3(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float[3]), 2:format(const char*), 3:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputFloat3Ex(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String))
+    return ImGui_InputFloat3Ex(arg[0], arg[1], "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_InputFloat3Ex(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputFloat3 : No matching functions found (#{arg})")
   end
@@ -13091,6 +11228,8 @@ module ImGui
     return ImGui_InputFloat4(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(float[4]), 2:format(const char*), 3:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputFloat4Ex(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String))
+    return ImGui_InputFloat4Ex(arg[0], arg[1], "%.3f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_InputFloat4Ex(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputFloat4 : No matching functions found (#{arg})")
   end
@@ -13101,6 +11240,9 @@ module ImGui
     return ImGui_InputInt(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(int*), 2:step(int), 3:step_fast(int), 4:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputIntEx(arg[0], arg[1], arg[2], arg[3], 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_InputIntEx(arg[0], arg[1], arg[2], 100, 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    return ImGui_InputIntEx(arg[0], arg[1], 1, 100, 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_InputIntEx(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputInt : No matching functions found (#{arg})")
   end
@@ -13111,6 +11253,10 @@ module ImGui
     return ImGui_InputDouble(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:v(double*), 2:step(double), 3:step_fast(double), 4:format(const char*), 5:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputDoubleEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String))
+    return ImGui_InputDoubleEx(arg[0], arg[1], arg[2], arg[3], "%.6f", 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float))
+    return ImGui_InputDoubleEx(arg[0], arg[1], arg[2], 0.0, "%.6f", 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float))
+    return ImGui_InputDoubleEx(arg[0], arg[1], 0.0, 0.0, "%.6f", 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_InputDoubleEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Float) && arg[4].kind_of?(String) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputDouble : No matching functions found (#{arg})")
   end
@@ -13121,6 +11267,10 @@ module ImGui
     return ImGui_InputScalar(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer))
     # arg: 0:label(const char*), 1:data_type(ImGuiDataType), 2:p_data(void*), 3:p_step(const void*), 4:p_step_fast(const void*), 5:format(const char*), 6:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String))
+    return ImGui_InputScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer))
+    return ImGui_InputScalarEx(arg[0], arg[1], arg[2], arg[3], nil, nil, 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer))
+    return ImGui_InputScalarEx(arg[0], arg[1], arg[2], nil, nil, nil, 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer))
     return ImGui_InputScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputScalar : No matching functions found (#{arg})")
   end
@@ -13131,6 +11281,10 @@ module ImGui
     return ImGui_InputScalarN(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:data_type(ImGuiDataType), 2:p_data(void*), 3:components(int), 4:p_step(const void*), 5:p_step_fast(const void*), 6:format(const char*), 7:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_InputScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], 0) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String))
+    return ImGui_InputScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, 0) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer))
+    return ImGui_InputScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil, 0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer))
+    return ImGui_InputScalarNEx(arg[0], arg[1], arg[2], arg[3], nil, nil, nil, 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     return ImGui_InputScalarNEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(String) && arg[7].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::InputScalarN : No matching functions found (#{arg})")
   end
@@ -13138,9 +11292,12 @@ module ImGui
   def self.ColorButton(*arg)
     # arg: 0:desc_id(const char*), 1:col(ImVec4), 2:flags(ImGuiColorEditFlags)
     # ret: bool
+    return ImGui_ColorButton(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec4))
     return ImGui_ColorButton(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec4) && arg[2].kind_of?(Integer))
     # arg: 0:desc_id(const char*), 1:col(ImVec4), 2:flags(ImGuiColorEditFlags), 3:size(ImVec2)
     # ret: bool
+    return ImGui_ColorButtonEx(arg[0], arg[1], arg[2], ImVec2.create(0,0)) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec4) && arg[2].kind_of?(Integer))
+    return ImGui_ColorButtonEx(arg[0], arg[1], 0, ImVec2.create(0,0)) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec4))
     return ImGui_ColorButtonEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec4) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
     $stderr.puts("[Warning] ImGui::ColorButton : No matching functions found (#{arg})")
   end
@@ -13161,6 +11318,7 @@ module ImGui
   def self.TreeNodeEx(*arg)
     # arg: 0:label(const char*), 1:flags(ImGuiTreeNodeFlags)
     # ret: bool
+    return ImGui_TreeNodeEx(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_TreeNodeEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     # arg: 0:str_id(const char*), 1:flags(ImGuiTreeNodeFlags), 2:fmt(const char*), 3:__unnamed_arg3__(...)
     # ret: bool
@@ -13184,9 +11342,11 @@ module ImGui
   def self.CollapsingHeader(*arg)
     # arg: 0:label(const char*), 1:flags(ImGuiTreeNodeFlags)
     # ret: bool
+    return ImGui_CollapsingHeader(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_CollapsingHeader(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     # arg: 0:label(const char*), 1:p_visible(bool*), 2:flags(ImGuiTreeNodeFlags)
     # ret: bool
+    return ImGui_CollapsingHeaderBoolPtr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_CollapsingHeaderBoolPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::CollapsingHeader : No matching functions found (#{arg})")
   end
@@ -13197,12 +11357,18 @@ module ImGui
     return ImGui_Selectable(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:label(const char*), 1:selected(bool), 2:flags(ImGuiSelectableFlags), 3:size(ImVec2)
     # ret: bool
+    return ImGui_SelectableEx(arg[0], arg[1], arg[2], ImVec2.create(0,0)) if arg.length == 3 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer))
+    return ImGui_SelectableEx(arg[0], arg[1], 0, ImVec2.create(0,0)) if arg.length == 2 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
+    return ImGui_SelectableEx(arg[0], false, 0, ImVec2.create(0,0)) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_SelectableEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
     # arg: 0:label(const char*), 1:p_selected(bool*), 2:flags(ImGuiSelectableFlags)
     # ret: bool
+    return ImGui_SelectableBoolPtr(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_SelectableBoolPtr(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     # arg: 0:label(const char*), 1:p_selected(bool*), 2:flags(ImGuiSelectableFlags), 3:size(ImVec2)
     # ret: bool
+    return ImGui_SelectableBoolPtrEx(arg[0], arg[1], arg[2], ImVec2.create(0,0)) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    return ImGui_SelectableBoolPtrEx(arg[0], arg[1], 0, ImVec2.create(0,0)) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer))
     return ImGui_SelectableBoolPtrEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
     $stderr.puts("[Warning] ImGui::Selectable : No matching functions found (#{arg})")
   end
@@ -13213,6 +11379,8 @@ module ImGui
     return ImGui_BeginMultiSelect(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:flags(ImGuiMultiSelectFlags), 1:selection_size(int), 2:items_count(int)
     # ret: pointer
+    return ImGui_BeginMultiSelectEx(arg[0], arg[1], -1) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
+    return ImGui_BeginMultiSelectEx(arg[0], -1, -1) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_BeginMultiSelectEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::BeginMultiSelect : No matching functions found (#{arg})")
   end
@@ -13220,12 +11388,14 @@ module ImGui
   def self.ListBox(*arg)
     # arg: 0:label(const char*), 1:current_item(int*), 2:items(const char*const[]), 3:items_count(int), 4:height_in_items(int)
     # ret: bool
+    return ImGui_ListBox(arg[0], arg[1], arg[2], arg[3], -1) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     return ImGui_ListBox(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int)
     # ret: bool
     return ImGui_ListBoxCallback(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int), 5:height_in_items(int)
     # ret: bool
+    return ImGui_ListBoxCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], -1) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
     return ImGui_ListBoxCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ListBox : No matching functions found (#{arg})")
   end
@@ -13236,12 +11406,23 @@ module ImGui
     return ImGui_PlotLines(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     # arg: 0:label(const char*), 1:values(const float*), 2:values_count(int), 3:values_offset(int), 4:overlay_text(const char*), 5:scale_min(float), 6:scale_max(float), 7:graph_size(ImVec2), 8:stride(int)
     # ret: void
+    return ImGui_PlotLinesEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], FFI::TYPE_FLOAT32.size) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2))
+    return ImGui_PlotLinesEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float))
+    return ImGui_PlotLinesEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float))
+    return ImGui_PlotLinesEx(arg[0], arg[1], arg[2], arg[3], arg[4], Float::MAX, Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String))
+    return ImGui_PlotLinesEx(arg[0], arg[1], arg[2], arg[3], nil, Float::MAX, Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_PlotLinesEx(arg[0], arg[1], arg[2], 0, nil, Float::MAX, Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     return ImGui_PlotLinesEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2) && arg[8].kind_of?(Integer))
     # arg: 0:label(const char*), 1:values_getter(float (*values_getter)(void* data, int idx)), 2:data(void*), 3:values_count(int)
     # ret: void
     return ImGui_PlotLinesCallback(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:values_getter(float (*values_getter)(void* data, int idx)), 2:data(void*), 3:values_count(int), 4:values_offset(int), 5:overlay_text(const char*), 6:scale_min(float), 7:scale_max(float), 8:graph_size(ImVec2)
     # ret: void
+    return ImGui_PlotLinesCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], ImVec2.create(0,0)) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float))
+    return ImGui_PlotLinesCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], Float::MAX, ImVec2.create(0,0)) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float))
+    return ImGui_PlotLinesCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], Float::MAX, Float::MAX, ImVec2.create(0,0)) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String))
+    return ImGui_PlotLinesCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, Float::MAX, Float::MAX, ImVec2.create(0,0)) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_PlotLinesCallbackEx(arg[0], arg[1], arg[2], arg[3], 0, nil, Float::MAX, Float::MAX, ImVec2.create(0,0)) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     return ImGui_PlotLinesCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(ImVec2))
     $stderr.puts("[Warning] ImGui::PlotLines : No matching functions found (#{arg})")
   end
@@ -13252,12 +11433,23 @@ module ImGui
     return ImGui_PlotHistogram(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     # arg: 0:label(const char*), 1:values(const float*), 2:values_count(int), 3:values_offset(int), 4:overlay_text(const char*), 5:scale_min(float), 6:scale_max(float), 7:graph_size(ImVec2), 8:stride(int)
     # ret: void
+    return ImGui_PlotHistogramEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], FFI::TYPE_FLOAT32.size) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2))
+    return ImGui_PlotHistogramEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float))
+    return ImGui_PlotHistogramEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float))
+    return ImGui_PlotHistogramEx(arg[0], arg[1], arg[2], arg[3], arg[4], Float::MAX, Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String))
+    return ImGui_PlotHistogramEx(arg[0], arg[1], arg[2], arg[3], nil, Float::MAX, Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_PlotHistogramEx(arg[0], arg[1], arg[2], 0, nil, Float::MAX, Float::MAX, ImVec2.create(0,0), FFI::TYPE_FLOAT32.size) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     return ImGui_PlotHistogramEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(String) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(ImVec2) && arg[8].kind_of?(Integer))
     # arg: 0:label(const char*), 1:values_getter(float (*values_getter)(void* data, int idx)), 2:data(void*), 3:values_count(int)
     # ret: void
     return ImGui_PlotHistogramCallback(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:values_getter(float (*values_getter)(void* data, int idx)), 2:data(void*), 3:values_count(int), 4:values_offset(int), 5:overlay_text(const char*), 6:scale_min(float), 7:scale_max(float), 8:graph_size(ImVec2)
     # ret: void
+    return ImGui_PlotHistogramCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], ImVec2.create(0,0)) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float))
+    return ImGui_PlotHistogramCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], Float::MAX, ImVec2.create(0,0)) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float))
+    return ImGui_PlotHistogramCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], Float::MAX, Float::MAX, ImVec2.create(0,0)) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String))
+    return ImGui_PlotHistogramCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, Float::MAX, Float::MAX, ImVec2.create(0,0)) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_PlotHistogramCallbackEx(arg[0], arg[1], arg[2], arg[3], 0, nil, Float::MAX, Float::MAX, ImVec2.create(0,0)) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     return ImGui_PlotHistogramCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8]) if arg.length == 9 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(String) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(ImVec2))
     $stderr.puts("[Warning] ImGui::PlotHistogram : No matching functions found (#{arg})")
   end
@@ -13268,6 +11460,7 @@ module ImGui
     return ImGui_BeginMenu(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:label(const char*), 1:enabled(bool)
     # ret: bool
+    return ImGui_BeginMenuEx(arg[0], true) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_BeginMenuEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
     $stderr.puts("[Warning] ImGui::BeginMenu : No matching functions found (#{arg})")
   end
@@ -13278,9 +11471,13 @@ module ImGui
     return ImGui_MenuItem(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:label(const char*), 1:shortcut(const char*), 2:selected(bool), 3:enabled(bool)
     # ret: bool
+    return ImGui_MenuItemEx(arg[0], arg[1], arg[2], true) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)))
+    return ImGui_MenuItemEx(arg[0], arg[1], false, true) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
+    return ImGui_MenuItemEx(arg[0], nil, false, true) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_MenuItemEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
     # arg: 0:label(const char*), 1:shortcut(const char*), 2:p_selected(bool*), 3:enabled(bool)
     # ret: bool
+    return ImGui_MenuItemBoolPtr(arg[0], arg[1], arg[2], true) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer))
     return ImGui_MenuItemBoolPtr(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
     $stderr.puts("[Warning] ImGui::MenuItem : No matching functions found (#{arg})")
   end
@@ -13288,9 +11485,11 @@ module ImGui
   def self.OpenPopup(*arg)
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: void
+    return ImGui_OpenPopup(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_OpenPopup(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     # arg: 0:id(ImGuiID), 1:popup_flags(ImGuiPopupFlags)
     # ret: void
+    return ImGui_OpenPopupID(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_OpenPopupID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::OpenPopup : No matching functions found (#{arg})")
   end
@@ -13301,6 +11500,8 @@ module ImGui
     return ImGui_BeginPopupContextItem() if arg.empty?
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: bool
+    return ImGui_BeginPopupContextItemEx(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
+    return ImGui_BeginPopupContextItemEx(nil, 0) if arg.length == 0 && (true)
     return ImGui_BeginPopupContextItemEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::BeginPopupContextItem : No matching functions found (#{arg})")
   end
@@ -13311,6 +11512,8 @@ module ImGui
     return ImGui_BeginPopupContextWindow() if arg.empty?
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: bool
+    return ImGui_BeginPopupContextWindowEx(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
+    return ImGui_BeginPopupContextWindowEx(nil, 0) if arg.length == 0 && (true)
     return ImGui_BeginPopupContextWindowEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::BeginPopupContextWindow : No matching functions found (#{arg})")
   end
@@ -13321,6 +11524,8 @@ module ImGui
     return ImGui_BeginPopupContextVoid() if arg.empty?
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
     # ret: bool
+    return ImGui_BeginPopupContextVoidEx(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
+    return ImGui_BeginPopupContextVoidEx(nil, 0) if arg.length == 0 && (true)
     return ImGui_BeginPopupContextVoidEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::BeginPopupContextVoid : No matching functions found (#{arg})")
   end
@@ -13328,6 +11533,7 @@ module ImGui
   def self.IsPopupOpen(*arg)
     # arg: 0:str_id(const char*), 1:flags(ImGuiPopupFlags)
     # ret: bool
+    return ImGui_IsPopupOpen(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_IsPopupOpen(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     # arg: 0:id(ImGuiID), 1:popup_flags(ImGuiPopupFlags)
     # ret: bool
@@ -13338,9 +11544,13 @@ module ImGui
   def self.BeginTable(*arg)
     # arg: 0:str_id(const char*), 1:columns(int), 2:flags(ImGuiTableFlags)
     # ret: bool
+    return ImGui_BeginTable(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     return ImGui_BeginTable(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     # arg: 0:str_id(const char*), 1:columns(int), 2:flags(ImGuiTableFlags), 3:outer_size(ImVec2), 4:inner_width(float)
     # ret: bool
+    return ImGui_BeginTableEx(arg[0], arg[1], arg[2], arg[3], 0.0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
+    return ImGui_BeginTableEx(arg[0], arg[1], arg[2], ImVec2.create(0.0,0.0), 0.0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
+    return ImGui_BeginTableEx(arg[0], arg[1], 0, ImVec2.create(0.0,0.0), 0.0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     return ImGui_BeginTableEx(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::BeginTable : No matching functions found (#{arg})")
   end
@@ -13351,6 +11561,8 @@ module ImGui
     return ImGui_TableNextRow() if arg.empty?
     # arg: 0:row_flags(ImGuiTableRowFlags), 1:min_row_height(float)
     # ret: void
+    return ImGui_TableNextRowEx(arg[0], 0.0) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    return ImGui_TableNextRowEx(0, 0.0) if arg.length == 0 && (true)
     return ImGui_TableNextRowEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::TableNextRow : No matching functions found (#{arg})")
   end
@@ -13358,9 +11570,13 @@ module ImGui
   def self.TableSetupColumn(*arg)
     # arg: 0:label(const char*), 1:flags(ImGuiTableColumnFlags)
     # ret: void
+    return ImGui_TableSetupColumn(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_TableSetupColumn(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     # arg: 0:label(const char*), 1:flags(ImGuiTableColumnFlags), 2:init_width_or_weight(float), 3:user_id(ImGuiID)
     # ret: void
+    return ImGui_TableSetupColumnEx(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Float))
+    return ImGui_TableSetupColumnEx(arg[0], arg[1], 0.0, 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
+    return ImGui_TableSetupColumnEx(arg[0], 0, 0.0, 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_TableSetupColumnEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Float) && arg[3].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::TableSetupColumn : No matching functions found (#{arg})")
   end
@@ -13368,6 +11584,7 @@ module ImGui
   def self.TableGetColumnName(*arg)
     # arg: 0:column_n(int)
     # ret: pointer
+    return ImGui_TableGetColumnName(-1) if arg.length == 0 && (true)
     return ImGui_TableGetColumnName(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:table(const ImGuiTable*), 1:column_n(int)
     # ret: pointer
@@ -13381,6 +11598,9 @@ module ImGui
     return ImGui_Columns() if arg.empty?
     # arg: 0:count(int), 1:id(const char*), 2:borders(bool)
     # ret: void
+    return ImGui_ColumnsEx(arg[0], arg[1], true) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(String))
+    return ImGui_ColumnsEx(arg[0], nil, true) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    return ImGui_ColumnsEx(1, nil, true) if arg.length == 0 && (true)
     return ImGui_ColumnsEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)))
     $stderr.puts("[Warning] ImGui::Columns : No matching functions found (#{arg})")
   end
@@ -13391,6 +11611,7 @@ module ImGui
     return ImGui_SetKeyboardFocusHere() if arg.empty?
     # arg: 0:offset(int)
     # ret: void
+    return ImGui_SetKeyboardFocusHereEx(0) if arg.length == 0 && (true)
     return ImGui_SetKeyboardFocusHereEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SetKeyboardFocusHere : No matching functions found (#{arg})")
   end
@@ -13401,6 +11622,7 @@ module ImGui
     return ImGui_IsItemClicked() if arg.empty?
     # arg: 0:mouse_button(ImGuiMouseButton)
     # ret: bool
+    return ImGui_IsItemClickedEx(0) if arg.length == 0 && (true)
     return ImGui_IsItemClickedEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::IsItemClicked : No matching functions found (#{arg})")
   end
@@ -13444,6 +11666,9 @@ module ImGui
     return ImGui_CalcTextSize(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:text(const char*), 1:text_end(const char*), 2:hide_text_after_double_hash(bool), 3:wrap_width(float)
     # ret: ImVec2.by_value
+    return ImGui_CalcTextSizeEx(arg[0], arg[1], arg[2], -1.0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)))
+    return ImGui_CalcTextSizeEx(arg[0], arg[1], false, -1.0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
+    return ImGui_CalcTextSizeEx(arg[0], nil, false, -1.0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_CalcTextSizeEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)) && arg[3].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::CalcTextSize : No matching functions found (#{arg})")
   end
@@ -13464,12 +11689,14 @@ module ImGui
     return ImGui_IsKeyPressed(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:key(ImGuiKey), 1:repeat(bool)
     # ret: bool
+    return ImGui_IsKeyPressedEx(arg[0], true) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_IsKeyPressedEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
     # arg: 0:key(ImGuiKey), 1:flags(ImGuiInputFlags)
     # ret: bool
     return ImGui_IsKeyPressedImGuiInputFlags(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     # arg: 0:key(ImGuiKey), 1:flags(ImGuiInputFlags), 2:owner_id(ImGuiID)
     # ret: bool
+    return ImGui_IsKeyPressedImGuiInputFlagsEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     return ImGui_IsKeyPressedImGuiInputFlagsEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::IsKeyPressed : No matching functions found (#{arg})")
   end
@@ -13493,6 +11720,7 @@ module ImGui
     return ImGui_IsKeyChordPressedImGuiInputFlags(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     # arg: 0:key_chord(ImGuiKeyChord), 1:flags(ImGuiInputFlags), 2:owner_id(ImGuiID)
     # ret: bool
+    return ImGui_IsKeyChordPressedImGuiInputFlagsEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     return ImGui_IsKeyChordPressedImGuiInputFlagsEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::IsKeyChordPressed : No matching functions found (#{arg})")
   end
@@ -13500,6 +11728,7 @@ module ImGui
   def self.Shortcut(*arg)
     # arg: 0:key_chord(ImGuiKeyChord), 1:flags(ImGuiInputFlags)
     # ret: bool
+    return ImGui_Shortcut(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_Shortcut(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     # arg: 0:key_chord(ImGuiKeyChord), 1:flags(ImGuiInputFlags), 2:owner_id(ImGuiID)
     # ret: bool
@@ -13533,12 +11762,14 @@ module ImGui
     return ImGui_IsMouseClicked(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:button(ImGuiMouseButton), 1:repeat(bool)
     # ret: bool
+    return ImGui_IsMouseClickedEx(arg[0], false) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_IsMouseClickedEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && (arg[1].is_a?(TrueClass) || arg[1].is_a?(FalseClass)))
     # arg: 0:button(ImGuiMouseButton), 1:flags(ImGuiInputFlags)
     # ret: bool
     return ImGui_IsMouseClickedImGuiInputFlags(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     # arg: 0:button(ImGuiMouseButton), 1:flags(ImGuiInputFlags), 2:owner_id(ImGuiID)
     # ret: bool
+    return ImGui_IsMouseClickedImGuiInputFlagsEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     return ImGui_IsMouseClickedImGuiInputFlagsEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::IsMouseClicked : No matching functions found (#{arg})")
   end
@@ -13569,6 +11800,7 @@ module ImGui
     return ImGui_IsMouseHoveringRect(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2))
     # arg: 0:r_min(ImVec2), 1:r_max(ImVec2), 2:clip(bool)
     # ret: bool
+    return ImGui_IsMouseHoveringRectEx(arg[0], arg[1], true) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2))
     return ImGui_IsMouseHoveringRectEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)))
     $stderr.puts("[Warning] ImGui::IsMouseHoveringRect : No matching functions found (#{arg})")
   end
@@ -13579,6 +11811,7 @@ module ImGui
     return ImGui_ResetMouseDragDelta() if arg.empty?
     # arg: 0:button(ImGuiMouseButton)
     # ret: void
+    return ImGui_ResetMouseDragDeltaEx(0) if arg.length == 0 && (true)
     return ImGui_ResetMouseDragDeltaEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ResetMouseDragDelta : No matching functions found (#{arg})")
   end
@@ -13609,12 +11842,14 @@ module ImGui
     return ImGui_ItemSize(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
     # arg: 0:size(ImVec2), 1:text_baseline_y(float)
     # ret: void
+    return ImGui_ItemSizeEx(arg[0], -1.0) if arg.length == 1 && (arg[0].kind_of?(ImVec2))
     return ImGui_ItemSizeEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(Float))
     # arg: 0:bb(ImRect)
     # ret: void
     return ImGui_ItemSizeImRect(arg[0]) if arg.length == 1 && (arg[0].kind_of?(ImRect))
     # arg: 0:bb(ImRect), 1:text_baseline_y(float)
     # ret: void
+    return ImGui_ItemSizeImRectEx(arg[0], -1.0) if arg.length == 1 && (arg[0].kind_of?(ImRect))
     return ImGui_ItemSizeImRectEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::ItemSize : No matching functions found (#{arg})")
   end
@@ -13625,6 +11860,8 @@ module ImGui
     return ImGui_ItemAdd(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:nav_bb(const ImRect*), 3:extra_flags(ImGuiItemFlags)
     # ret: bool
+    return ImGui_ItemAddEx(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer))
+    return ImGui_ItemAddEx(arg[0], arg[1], nil, 0) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
     return ImGui_ItemAddEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ItemAdd : No matching functions found (#{arg})")
   end
@@ -13635,6 +11872,7 @@ module ImGui
     return ImGui_LogToBuffer() if arg.empty?
     # arg: 0:auto_open_depth(int)
     # ret: void
+    return ImGui_LogToBufferEx(-1) if arg.length == 0 && (true)
     return ImGui_LogToBufferEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::LogToBuffer : No matching functions found (#{arg})")
   end
@@ -13645,6 +11883,7 @@ module ImGui
     return ImGui_LogRenderedText(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(String))
     # arg: 0:ref_pos(const ImVec2*), 1:text(const char*), 2:text_end(const char*)
     # ret: void
+    return ImGui_LogRenderedTextEx(arg[0], arg[1], nil) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(String))
     return ImGui_LogRenderedTextEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(String) && arg[2].kind_of?(String))
     $stderr.puts("[Warning] ImGui::LogRenderedText : No matching functions found (#{arg})")
   end
@@ -13655,6 +11894,7 @@ module ImGui
     return ImGui_OpenPopupEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:id(ImGuiID), 1:popup_flags(ImGuiPopupFlags)
     # ret: void
+    return ImGui_OpenPopupExEx(arg[0], ImGuiPopupFlags_None) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_OpenPopupExEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::OpenPopupEx : No matching functions found (#{arg})")
   end
@@ -13665,6 +11905,7 @@ module ImGui
     return ImGui_BeginMenuWithIcon(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
     # arg: 0:label(const char*), 1:icon(const char*), 2:enabled(bool)
     # ret: bool
+    return ImGui_BeginMenuWithIconEx(arg[0], arg[1], true) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
     return ImGui_BeginMenuWithIconEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && (arg[2].is_a?(TrueClass) || arg[2].is_a?(FalseClass)))
     $stderr.puts("[Warning] ImGui::BeginMenuEx : No matching functions found (#{arg})")
   end
@@ -13675,6 +11916,9 @@ module ImGui
     return ImGui_MenuItemWithIcon(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
     # arg: 0:label(const char*), 1:icon(const char*), 2:shortcut(const char*), 3:selected(bool), 4:enabled(bool)
     # ret: bool
+    return ImGui_MenuItemWithIconEx(arg[0], arg[1], arg[2], arg[3], true) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
+    return ImGui_MenuItemWithIconEx(arg[0], arg[1], arg[2], false, true) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String))
+    return ImGui_MenuItemWithIconEx(arg[0], arg[1], nil, false, true) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
     return ImGui_MenuItemWithIconEx(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)) && (arg[4].is_a?(TrueClass) || arg[4].is_a?(FalseClass)))
     $stderr.puts("[Warning] ImGui::MenuItemEx : No matching functions found (#{arg})")
   end
@@ -13695,6 +11939,7 @@ module ImGui
     return ImGui_IsMouseDragPastThreshold(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:button(ImGuiMouseButton), 1:lock_threshold(float)
     # ret: bool
+    return ImGui_IsMouseDragPastThresholdEx(arg[0], -1.0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_IsMouseDragPastThresholdEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::IsMouseDragPastThreshold : No matching functions found (#{arg})")
   end
@@ -13705,6 +11950,7 @@ module ImGui
     return ImGui_BeginDragDropTargetViewport(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
     # arg: 0:viewport(ImGuiViewport*), 1:p_bb(const ImRect*)
     # ret: bool
+    return ImGui_BeginDragDropTargetViewportEx(arg[0], nil) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
     return ImGui_BeginDragDropTargetViewportEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::BeginDragDropTargetViewport : No matching functions found (#{arg})")
   end
@@ -13715,6 +11961,7 @@ module ImGui
     return ImGui_GetTypingSelectRequest() if arg.empty?
     # arg: 0:flags(ImGuiTypingSelectFlags)
     # ret: pointer
+    return ImGui_GetTypingSelectRequestEx(ImGuiTypingSelectFlags_None) if arg.length == 0 && (true)
     return ImGui_GetTypingSelectRequestEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::GetTypingSelectRequest : No matching functions found (#{arg})")
   end
@@ -13725,6 +11972,7 @@ module ImGui
     return ImGui_TableOpenContextMenu() if arg.empty?
     # arg: 0:column_n(int)
     # ret: void
+    return ImGui_TableOpenContextMenuEx(-1) if arg.length == 0 && (true)
     return ImGui_TableOpenContextMenuEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::TableOpenContextMenu : No matching functions found (#{arg})")
   end
@@ -13732,9 +11980,13 @@ module ImGui
   def self.BeginTableEx(*arg)
     # arg: 0:name(const char*), 1:id(ImGuiID), 2:columns_count(int), 3:flags(ImGuiTableFlags)
     # ret: bool
+    return ImGui_BeginTableWithID(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     return ImGui_BeginTableWithID(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:name(const char*), 1:id(ImGuiID), 2:columns_count(int), 3:flags(ImGuiTableFlags), 4:outer_size(ImVec2), 5:inner_width(float)
     # ret: bool
+    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0.0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2))
+    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], ImVec2.create(0,0), 0.0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], 0, ImVec2.create(0,0), 0.0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::BeginTableEx : No matching functions found (#{arg})")
   end
@@ -13745,6 +11997,7 @@ module ImGui
     return ImGui_TableGetColumnResizeID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
     # arg: 0:table(ImGuiTable*), 1:column_n(int), 2:instance_no(int)
     # ret: uint
+    return ImGui_TableGetColumnResizeIDEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
     return ImGui_TableGetColumnResizeIDEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::TableGetColumnResizeID : No matching functions found (#{arg})")
   end
@@ -13785,6 +12038,8 @@ module ImGui
     return ImGui_RenderText(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(String))
     # arg: 0:pos(ImVec2), 1:text(const char*), 2:text_end(const char*), 3:hide_text_after_hash(bool)
     # ret: void
+    return ImGui_RenderTextEx(arg[0], arg[1], arg[2], true) if arg.length == 3 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(String) && arg[2].kind_of?(String))
+    return ImGui_RenderTextEx(arg[0], arg[1], nil, true) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(String))
     return ImGui_RenderTextEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
     $stderr.puts("[Warning] ImGui::RenderText : No matching functions found (#{arg})")
   end
@@ -13795,6 +12050,8 @@ module ImGui
     return ImGui_RenderTextClipped(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(FFI::Pointer))
     # arg: 0:pos_min(ImVec2), 1:pos_max(ImVec2), 2:text(const char*), 3:text_end(const char*), 4:text_size_if_known(const ImVec2*), 5:align(ImVec2), 6:clip_rect(const ImRect*)
     # ret: void
+    return ImGui_RenderTextClippedEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil) if arg.length == 6 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(ImVec2))
+    return ImGui_RenderTextClippedEx(arg[0], arg[1], arg[2], arg[3], arg[4], ImVec2.create(0,0), nil) if arg.length == 5 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(FFI::Pointer))
     return ImGui_RenderTextClippedEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(ImVec2) && arg[6].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::RenderTextClipped : No matching functions found (#{arg})")
   end
@@ -13805,6 +12062,8 @@ module ImGui
     return ImGui_RenderTextClippedWithDrawList(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(String) && arg[4].kind_of?(String) && arg[5].kind_of?(FFI::Pointer))
     # arg: 0:draw_list(ImDrawList*), 1:pos_min(ImVec2), 2:pos_max(ImVec2), 3:text(const char*), 4:text_end(const char*), 5:text_size_if_known(const ImVec2*), 6:align(ImVec2), 7:clip_rect(const ImRect*)
     # ret: void
+    return ImGui_RenderTextClippedWithDrawListEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(String) && arg[4].kind_of?(String) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(ImVec2))
+    return ImGui_RenderTextClippedWithDrawListEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], ImVec2.create(0,0), nil) if arg.length == 6 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(String) && arg[4].kind_of?(String) && arg[5].kind_of?(FFI::Pointer))
     return ImGui_RenderTextClippedWithDrawListEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(String) && arg[4].kind_of?(String) && arg[5].kind_of?(FFI::Pointer) && arg[6].kind_of?(ImVec2) && arg[7].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::RenderTextClippedEx : No matching functions found (#{arg})")
   end
@@ -13815,6 +12074,8 @@ module ImGui
     return ImGui_RenderFrame(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     # arg: 0:p_min(ImVec2), 1:p_max(ImVec2), 2:fill_col(ImU32), 3:borders(bool), 4:rounding(float)
     # ret: void
+    return ImGui_RenderFrameEx(arg[0], arg[1], arg[2], arg[3], 0.0) if arg.length == 4 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)))
+    return ImGui_RenderFrameEx(arg[0], arg[1], arg[2], true, 0.0) if arg.length == 3 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     return ImGui_RenderFrameEx(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && (arg[3].is_a?(TrueClass) || arg[3].is_a?(FalseClass)) && arg[4].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::RenderFrame : No matching functions found (#{arg})")
   end
@@ -13825,6 +12086,7 @@ module ImGui
     return ImGui_RenderFrameBorder(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2))
     # arg: 0:p_min(ImVec2), 1:p_max(ImVec2), 2:rounding(float)
     # ret: void
+    return ImGui_RenderFrameBorderEx(arg[0], arg[1], 0.0) if arg.length == 2 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2))
     return ImGui_RenderFrameBorderEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(ImVec2) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::RenderFrameBorder : No matching functions found (#{arg})")
   end
@@ -13835,6 +12097,8 @@ module ImGui
     return ImGui_RenderColorRectWithAlphaCheckerboard(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(ImVec2))
     # arg: 0:draw_list(ImDrawList*), 1:p_min(ImVec2), 2:p_max(ImVec2), 3:fill_col(ImU32), 4:grid_step(float), 5:grid_off(ImVec2), 6:rounding(float), 7:flags(ImDrawFlags)
     # ret: void
+    return ImGui_RenderColorRectWithAlphaCheckerboardEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], 0) if arg.length == 7 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(ImVec2) && arg[6].kind_of?(Float))
+    return ImGui_RenderColorRectWithAlphaCheckerboardEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0.0, 0) if arg.length == 6 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(ImVec2))
     return ImGui_RenderColorRectWithAlphaCheckerboardEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(ImVec2) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float) && arg[5].kind_of?(ImVec2) && arg[6].kind_of?(Float) && arg[7].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::RenderColorRectWithAlphaCheckerboard : No matching functions found (#{arg})")
   end
@@ -13845,6 +12109,7 @@ module ImGui
     return ImGui_RenderNavCursor(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:flags(ImGuiNavRenderCursorFlags)
     # ret: void
+    return ImGui_RenderNavCursorEx(arg[0], arg[1], ImGuiNavRenderCursorFlags_None) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
     return ImGui_RenderNavCursorEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::RenderNavCursor : No matching functions found (#{arg})")
   end
@@ -13855,6 +12120,7 @@ module ImGui
     return ImGui_RenderNavHighlight(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:flags(ImGuiNavRenderCursorFlags)
     # ret: void
+    return ImGui_RenderNavHighlightEx(arg[0], arg[1], ImGuiNavRenderCursorFlags_None) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
     return ImGui_RenderNavHighlightEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::RenderNavHighlight : No matching functions found (#{arg})")
   end
@@ -13865,6 +12131,7 @@ module ImGui
     return ImGui_FindRenderedTextEnd(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:text(const char*), 1:text_end(const char*)
     # ret: pointer
+    return ImGui_FindRenderedTextEndEx(arg[0], nil) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_FindRenderedTextEndEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
     $stderr.puts("[Warning] ImGui::FindRenderedTextEnd : No matching functions found (#{arg})")
   end
@@ -13875,6 +12142,7 @@ module ImGui
     return ImGui_RenderArrow(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:draw_list(ImDrawList*), 1:pos(ImVec2), 2:col(ImU32), 3:dir(ImGuiDir), 4:scale(float)
     # ret: void
+    return ImGui_RenderArrowEx(arg[0], arg[1], arg[2], arg[3], 1.0) if arg.length == 4 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     return ImGui_RenderArrowEx(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::RenderArrow : No matching functions found (#{arg})")
   end
@@ -13885,6 +12153,8 @@ module ImGui
     return ImGui_TextEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:text(const char*), 1:text_end(const char*), 2:flags(ImGuiTextFlags)
     # ret: void
+    return ImGui_TextExEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(String))
+    return ImGui_TextExEx(arg[0], nil, 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_TextExEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::TextEx : No matching functions found (#{arg})")
   end
@@ -13895,6 +12165,8 @@ module ImGui
     return ImGui_ButtonWithFlags(arg[0]) if arg.length == 1 && (arg[0].kind_of?(String))
     # arg: 0:label(const char*), 1:size_arg(ImVec2), 2:flags(ImGuiButtonFlags)
     # ret: bool
+    return ImGui_ButtonWithFlagsEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2))
+    return ImGui_ButtonWithFlagsEx(arg[0], ImVec2.create(0,0), 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_ButtonWithFlagsEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(ImVec2) && arg[2].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ButtonEx : No matching functions found (#{arg})")
   end
@@ -13905,6 +12177,7 @@ module ImGui
     return ImGui_SeparatorEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:flags(ImGuiSeparatorFlags), 1:thickness(float)
     # ret: void
+    return ImGui_SeparatorExEx(arg[0], 1.0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_SeparatorExEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::SeparatorEx : No matching functions found (#{arg})")
   end
@@ -13915,6 +12188,7 @@ module ImGui
     return ImGui_ScrollbarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:axis(ImGuiAxis), 3:p_scroll_v(ImS64*), 4:avail_v(ImS64), 5:contents_v(ImS64), 6:draw_rounding_flags(ImDrawFlags)
     # ret: bool
+    return ImGui_ScrollbarExEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], 0) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     return ImGui_ScrollbarExEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ScrollbarEx : No matching functions found (#{arg})")
   end
@@ -13925,6 +12199,9 @@ module ImGui
     return ImGui_SplitterBehavior(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:axis(ImGuiAxis), 3:size1(float*), 4:size2(float*), 5:min_size1(float), 6:min_size2(float), 7:hover_extend(float), 8:hover_visibility_delay(float), 9:bg_col(ImU32)
     # ret: bool
+    return ImGui_SplitterBehaviorEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], 0) if arg.length == 9 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(Float))
+    return ImGui_SplitterBehaviorEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], 0.0, 0) if arg.length == 8 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float))
+    return ImGui_SplitterBehaviorEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], 0.0, 0.0, 0) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float))
     return ImGui_SplitterBehaviorEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], arg[9]) if arg.length == 10 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(Float) && arg[6].kind_of?(Float) && arg[7].kind_of?(Float) && arg[8].kind_of?(Float) && arg[9].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SplitterBehavior : No matching functions found (#{arg})")
   end
@@ -13935,6 +12212,7 @@ module ImGui
     return ImGui_TreeNodeBehavior(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String))
     # arg: 0:id(ImGuiID), 1:flags(ImGuiTreeNodeFlags), 2:label(const char*), 3:label_end(const char*)
     # ret: bool
+    return ImGui_TreeNodeBehaviorEx(arg[0], arg[1], arg[2], nil) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String))
     return ImGui_TreeNodeBehaviorEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String))
     $stderr.puts("[Warning] ImGui::TreeNodeBehavior : No matching functions found (#{arg})")
   end
@@ -13945,6 +12223,7 @@ module ImGui
     return ImGui_DataTypeApplyFromText(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(String))
     # arg: 0:buf(const char*), 1:data_type(ImGuiDataType), 2:p_data(void*), 3:format(const char*), 4:p_data_when_empty(void*)
     # ret: bool
+    return ImGui_DataTypeApplyFromTextEx(arg[0], arg[1], arg[2], arg[3], nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(String))
     return ImGui_DataTypeApplyFromTextEx(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(String) && arg[4].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::DataTypeApplyFromText : No matching functions found (#{arg})")
   end
@@ -13955,6 +12234,8 @@ module ImGui
     return ImGui_InputTextWithHintAndSize(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer))
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(int), 4:size_arg(ImVec2), 5:flags(ImGuiInputTextFlags), 6:callback(ImGuiInputTextCallback), 7:user_data(void*)
     # ret: bool
+    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
+    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer))
     return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextEx : No matching functions found (#{arg})")
   end
@@ -13962,9 +12243,13 @@ module ImGui
   def self.TempInputText(*arg)
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:label(const char*), 3:buf(char*), 4:buf_size(size_t), 5:flags(ImGuiInputTextFlags)
     # ret: bool
+    return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer))
     return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:label(const char*), 3:buf(char*), 4:buf_size(size_t), 5:flags(ImGuiInputTextFlags), 6:callback(ImGuiInputTextCallback), 7:user_data(void*)
     # ret: bool
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0, nil, nil) if arg.length == 5 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer))
     return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::TempInputText : No matching functions found (#{arg})")
   end
@@ -13975,6 +12260,8 @@ module ImGui
     return ImGui_TempInputScalar(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:label(const char*), 3:data_type(ImGuiDataType), 4:p_data(void*), 5:format(const char*), 6:p_clamp_min(const void*), 7:p_clamp_max(const void*)
     # ret: bool
+    return ImGui_TempInputScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String) && arg[6].kind_of?(FFI::Pointer))
+    return ImGui_TempInputScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String))
     return ImGui_TempInputScalarEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(FFI::Pointer) && arg[5].kind_of?(String) && arg[6].kind_of?(FFI::Pointer) && arg[7].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::TempInputScalar : No matching functions found (#{arg})")
   end
@@ -13985,6 +12272,7 @@ module ImGui
     return ImGui_DebugDrawCursorPos() if arg.empty?
     # arg: 0:col(ImU32)
     # ret: void
+    return ImGui_DebugDrawCursorPosEx(IM_COL32(255, 0, 0, 255)) if arg.length == 0 && (true)
     return ImGui_DebugDrawCursorPosEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DebugDrawCursorPos : No matching functions found (#{arg})")
   end
@@ -13995,6 +12283,7 @@ module ImGui
     return ImGui_DebugDrawLineExtents() if arg.empty?
     # arg: 0:col(ImU32)
     # ret: void
+    return ImGui_DebugDrawLineExtentsEx(IM_COL32(255, 0, 0, 255)) if arg.length == 0 && (true)
     return ImGui_DebugDrawLineExtentsEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DebugDrawLineExtents : No matching functions found (#{arg})")
   end
@@ -14005,6 +12294,7 @@ module ImGui
     return ImGui_DebugDrawItemRect() if arg.empty?
     # arg: 0:col(ImU32)
     # ret: void
+    return ImGui_DebugDrawItemRectEx(IM_COL32(255, 0, 0, 255)) if arg.length == 0 && (true)
     return ImGui_DebugDrawItemRectEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::DebugDrawItemRect : No matching functions found (#{arg})")
   end
@@ -14015,6 +12305,7 @@ module ImGui
     return ImGui_DebugNodeTexture(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
     # arg: 0:tex(ImTextureData*), 1:int_id(int), 2:highlight_rect(const ImFontAtlasRect*)
     # ret: void
+    return ImGui_DebugNodeTextureEx(arg[0], arg[1], nil) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
     return ImGui_DebugNodeTextureEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::DebugNodeTexture : No matching functions found (#{arg})")
   end
