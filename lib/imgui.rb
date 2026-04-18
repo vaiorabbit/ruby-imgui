@@ -6949,7 +6949,7 @@ module ImGui
     ]
     entries.each do |entry|
       attach_function entry[0], entry[1], entry[2], entry[3]
-    rescue FFI::NotFoundError => e
+    rescue FFI::NotFoundError
       warn "[Warning] Failed to import #{entry[0]}."
     end
     @@imgui_import_done = true

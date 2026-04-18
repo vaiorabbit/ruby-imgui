@@ -323,7 +323,7 @@ module Generator
     out.push_indent
     out.write("attach_function entry[0], entry[1], entry[2], entry[3]\n")
     out.pop_indent
-    out.write("rescue FFI::NotFoundError => e\n")
+    out.write("rescue FFI::NotFoundError\n")
     out.push_indent
     out.write("warn \"[Warning] Failed to import \#{entry[0]}.\"\n")
     out.pop_indent
