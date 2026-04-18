@@ -73,6 +73,18 @@ module Generator
     end
   end
 
+  def self.normalize_c_type_name(type_name)
+    type_name.to_s.gsub(/\s+/, ' ').strip
+  end
+
+  def self.const_char_pointer?(type_name)
+    normalize_c_type_name(type_name).match?(/\Aconst char\s*\*\s*(?:const)?\z/)
+  end
+
+  def self.char_pointer?(type_name)
+    normalize_c_type_name(type_name).match?(/\A(?:const\s+)?char\s*\*\s*(?:const)?\z/)
+  end
+
   def self.sanitize_default_value(default_values)
     default_values.map! do |default_value|
       case default_value
@@ -495,8 +507,10 @@ module Generator
           has_bool = false
           ruby_type = if type_name.include?(']')
                         FFI::Pointer
-                      elsif type_name.include?('char*')
+                      elsif const_char_pointer?(type_name)
                         String
+                      elsif char_pointer?(type_name)
+                        FFI::Pointer
                       elsif type_name.include?('*')
                         FFI::Pointer
                       elsif [:size_t, :int, :uint, :short, :ushort, :long, :ulong, :int32, :uint32, :int64, :uint64].include?(ffi_type)

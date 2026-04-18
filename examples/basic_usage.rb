@@ -79,7 +79,7 @@ end # module ImGuiDemo
 
 module ImGuiDemo::BasicWindow
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("ウィンドウタイトル")
 
     ImGui::Text("通常の文章")
@@ -114,7 +114,7 @@ end
 module ImGuiDemo::ButtonAndCheckboxWindow
   @@is_open = FFI::MemoryPointer.new(:bool, 1) # static bool is_open = true;
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("ボタンとチェックボックス")
     if ImGui::Button("Open/Close##Button")
       # ボタンがクリックされるとここにきます。
@@ -142,7 +142,7 @@ end
 module ImGuiDemo::RadioButtonWindow
   @@radio = FFI::MemoryPointer.new(:int, 1) # static int radio = 0;
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("ラジオボタン")
     # ラジオボタンがクリックされると第3引数の整数が第2引数のradioに格納されます。
     # ImGui::RadioButton_IntPtr("ラジオボタン 0", @@radio, 0); ImGui::SameLine() # TODO define overload to hide RadioButtonIntPtr
@@ -163,7 +163,7 @@ end
 module ImGuiDemo::ArrowButtonWindow
   @@counter = FFI::MemoryPointer.new(:int, 1) # static int counter = 0;
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("長押しで急増/急減する三角矢印ボタン")
     ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true)
     if ImGui::ArrowButton("##left", ImGuiDir_Left)
@@ -195,7 +195,7 @@ module ImGuiDemo::DropdownListAndInputWindow
   @@f0 = FFI::MemoryPointer.new(:float, 1).put_float32(0, 0.001) # static float f0 = 0.001f;
   @@vec3 = FFI::MemoryPointer.new(:float, 3).put_array_of_float32(0, [0.10, 0.20, 0.30]) # static float vec3[3] = { 0.10f, 0.20f, 0.30f};
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("ドロップダウンリストと文章入力欄/数字入力欄")
     ImGui::LabelText("ラベル", "値")
 
@@ -230,7 +230,7 @@ module ImGuiDemo::SlidersWindow1
   @@f3 = FFI::MemoryPointer.new(:float, 1).put_float32(0, 0.0)  # static float f2 = 0.123f, f3 = 0.0f;
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("スライダー(1)")
     ImGui::DragInt("ドラッグして整数変更", @@i1, 1.0, 0, 0, "%d", 0)
     ImGui::DragInt("％表示", @@i2, 1.0, 0, 100, "%d%%", 0) # 最後の引数で値の表示の仕方を指定できます。
@@ -275,7 +275,7 @@ module ImGuiDemo::SlidersWindow2
   @@item = FFI::MemoryPointer.new(:int, 1).put_int32(0, -1) # static int item = -1;
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("スライダー(2)")
 
     ImGui::SliderAngle("角度", @@angle) # -360から360までドラッグして変化させることができます。
@@ -310,7 +310,7 @@ end
 module ImGuiDemo::SlidersWindow3
   @@values = [0.0, 0.60, 0.35, 0.9, 0.70, 0.20, 0.0].map! {|f| FFI::MemoryPointer.new(:float, 1).put_float32(0, f) }
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("スライダー(3)")
     7.times do |i|
       ImGui::SameLine() if i > 0
@@ -348,7 +348,7 @@ module ImGuiDemo::EnumAndColorSelectionWindow
   @@col2 = FFI::MemoryPointer.new(:float, 4).put_array_of_float32(0, [0.4, 0.7, 0.0, 0.5]) # static float col2[4] = { 0.4f,0.7f,0.0f,0.5f };
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("enum選択UIとカラー選択UI")
     current_element = @@current_element.get_int32(0)
     current_element_name = (0 <= current_element && current_element < Element::COUNT) ? @@element_names[current_element] : "Unknown"
@@ -382,7 +382,7 @@ module ImGuiDemo::ListBoxWindow
   @@reorder_items_str = @@reorder_item_names.map {|s| FFI::MemoryPointer.from_string(s)} # static const char* item_names[] = { "並び替え可能 1", "並び替え可能 2", "並び替え可能 3", "並び替え可能 4", "並び替え可能 5" };
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("リストボックス/複数選択")
     # ImGui::ListBox_Str_arr("リストボックス", @@listbox_item_current, @@listbox_items, @@listbox_items_str.length, 4)
     ImGui::ListBox("リストボックス", @@listbox_item_current, @@listbox_items, @@listbox_items_str.length, 4)
@@ -471,7 +471,7 @@ HERE
   end
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("文章入力欄")
     flags = ImGuiInputTextFlags_AllowTabInput # Tabキーを押すことでタブが入力されるようになります。
     # flags |= ImGuiInputTextFlags_ReadOnly; # 編集できないようにするにはこのようにします。
@@ -507,7 +507,7 @@ end
 module ImGuiDemo::TreeNodeWindow
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("ツリーノード")
 
     # if ImGui::CollapsingHeader_TreeNodeFlags("開閉可能なフィールド")
@@ -543,7 +543,7 @@ module ImGuiDemo::TooltipAndPopupWindow
   @@selected = FFI::MemoryPointer.new(:int, 1).put_int32(0, -1) # static int selected = -1;
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("ツールチップ/ポップアップ")
 
     ImGui::TextDisabled("(?)")
@@ -593,7 +593,7 @@ module ImGuiDemo::PlotAndProgressWindow
   @@progress = FFI::MemoryPointer.new(:float, 1).put_float(0, 0.22) # static float progress = 0.22f;
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("折れ線グラフ・ヒストグラム・プログレスバー")
 
     # 最小値 0, 最大値 1 のグラフを作成します。
@@ -619,7 +619,7 @@ module ImGuiDemo::ChildWindow
   @@line = FFI::MemoryPointer.new(:int, 1).put_int32(0, 50) # static int line = 50;
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("子ウィンドウ")
 
     goto_line = ImGui::Button("Goto")
@@ -685,7 +685,7 @@ module ImGuiDemo::TabWindow
   @@opened = FFI::MemoryPointer.new(:int8, @@opened_values.length).put_array_of_int8(0, @@opened_values) # static bool opened[8] = { true, true, true, true, true, true, true, true };
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("タブ")
 
     flag = ImGuiTabBarFlags_Reorderable                   # タブをドラッグして並び替えができるようになります。
@@ -721,7 +721,7 @@ module ImGuiDemo::SearchWindow
   @@filter = ImGuiTextFilter.new # static ImGuiTextFilter filter;
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("文字検索機能・フィルタリング")
 
     ImGuiTextFilter.new(@@filter.pointer).Draw(FFI::MemoryPointer.from_string("フィルターラベル"))
@@ -750,7 +750,7 @@ end
 module ImGuiDemo::MainMenuBarWindow
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
 
     if (ImGui::BeginMainMenuBar())
       # メインメニューを表示している時の処理をここに書きます。
@@ -819,7 +819,7 @@ module ImGuiDemo::ClippingAndDummyWindow
   @@offset = ImVec2.create(50, 20)
 
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("クリッピング/ダミー")
 
     ImGui::DragFloat2("size", @@size_buf, 0.5, 1.0, 200.0, "%.0f")
@@ -867,7 +867,7 @@ end
 # Available since v1.85
 module ImGuiDemo::StackToolWindow
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::ShowIDStackToolWindow()
     ImGui::PopFont()
   end
@@ -878,7 +878,7 @@ end
 # Available since v1.89.3
 module ImGuiDemo::SeparatorTextWindow
   def self.Show(is_open = nil)
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("セパレーター")
 
     ImGui::Separator()
@@ -900,7 +900,7 @@ module ImGuiDemo::PopupWindow
 
     ok_clicked = false
 
-    ImGui::PushFontFloat(ImGuiDemo::GetFont(), 20.0)
+    ImGui::PushFont(ImGuiDemo::GetFont(), 20.0)
     ImGui::Begin("ポップアップ")
 
     if ImGui::Button("アプリの終了")

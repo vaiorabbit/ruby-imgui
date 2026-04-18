@@ -10782,11 +10782,11 @@ module ImGui
     return ImGui_ComboEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int)
     # ret: bool
-    return ImGui_ComboCallback(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
+    return ImGui_ComboCallback(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int), 5:popup_max_height_in_items(int)
     # ret: bool
-    return ImGui_ComboCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], -1) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
-    return ImGui_ComboCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_ComboCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], -1) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
+    return ImGui_ComboCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::Combo : No matching functions found (#{arg})")
   end
 
@@ -11145,42 +11145,42 @@ module ImGui
   def self.InputText(*arg)
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_InputText(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
-    return ImGui_InputText(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_InputText(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    return ImGui_InputText(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:flags(ImGuiInputTextFlags), 4:callback(ImGuiInputTextCallback), 5:user_data(void*)
     # ret: bool
-    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
-    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
-    return ImGui_InputTextEx(arg[0], arg[1], arg[2], 0, nil, nil) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
-    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(FFI::Pointer))
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], 0, nil, nil) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    return ImGui_InputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputText : No matching functions found (#{arg})")
   end
 
   def self.InputTextMultiline(*arg)
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t)
     # ret: bool
-    return ImGui_InputTextMultiline(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
+    return ImGui_InputTextMultiline(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
     # arg: 0:label(const char*), 1:buf(char*), 2:buf_size(size_t), 3:size(ImVec2), 4:flags(ImGuiInputTextFlags), 5:callback(ImGuiInputTextCallback), 6:user_data(void*)
     # ret: bool
-    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
-    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer))
-    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], 0, nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
-    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], ImVec2.create(0,0), 0, nil, nil) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer))
-    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], 0, nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], ImVec2.create(0,0), 0, nil, nil) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer))
+    return ImGui_InputTextMultilineEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(ImVec2) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextMultiline : No matching functions found (#{arg})")
   end
 
   def self.InputTextWithHint(*arg)
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(size_t), 4:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
-    return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], 0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
+    return ImGui_InputTextWithHint(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(size_t), 4:flags(ImGuiInputTextFlags), 5:callback(ImGuiInputTextCallback), 6:user_data(void*)
     # ret: bool
-    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
-    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
-    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], 0, nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer))
-    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], nil, nil) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], 0, nil, nil) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
+    return ImGui_InputTextWithHintEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6]) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextWithHint : No matching functions found (#{arg})")
   end
 
@@ -11392,11 +11392,11 @@ module ImGui
     return ImGui_ListBox(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int)
     # ret: bool
-    return ImGui_ListBoxCallback(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
+    return ImGui_ListBoxCallback(arg[0], arg[1], arg[2], arg[3], arg[4]) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
     # arg: 0:label(const char*), 1:current_item(int*), 2:getter(const char* (*getter)(void* user_data, int idx)), 3:user_data(void*), 4:items_count(int), 5:height_in_items(int)
     # ret: bool
-    return ImGui_ListBoxCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], -1) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
-    return ImGui_ListBoxCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_ListBoxCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], -1) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
+    return ImGui_ListBoxCallbackEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::ListBox : No matching functions found (#{arg})")
   end
 
@@ -12231,26 +12231,26 @@ module ImGui
   def self.InputTextEx(*arg)
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(int), 4:size_arg(ImVec2), 5:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_InputTextWithHintAndSize(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer))
+    return ImGui_InputTextWithHintAndSize(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer))
     # arg: 0:label(const char*), 1:hint(const char*), 2:buf(char*), 3:buf_size(int), 4:size_arg(ImVec2), 5:flags(ImGuiInputTextFlags), 6:callback(ImGuiInputTextCallback), 7:user_data(void*)
     # ret: bool
-    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
-    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer))
-    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(String) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
+    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
+    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer))
+    return ImGui_InputTextWithHintAndSizeEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(String) && arg[1].kind_of?(String) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::InputTextEx : No matching functions found (#{arg})")
   end
 
   def self.TempInputText(*arg)
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:label(const char*), 3:buf(char*), 4:buf_size(size_t), 5:flags(ImGuiInputTextFlags)
     # ret: bool
-    return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer))
-    return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], 0) if arg.length == 5 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
+    return ImGui_TempInputText(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
     # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:label(const char*), 3:buf(char*), 4:buf_size(size_t), 5:flags(ImGuiInputTextFlags), 6:callback(ImGuiInputTextCallback), 7:user_data(void*)
     # ret: bool
-    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
-    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
-    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0, nil, nil) if arg.length == 5 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer))
-    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(String) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], nil) if arg.length == 7 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer))
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], nil, nil) if arg.length == 6 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer))
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0, nil, nil) if arg.length == 5 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer))
+    return ImGui_TempInputTextEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7]) if arg.length == 8 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(String) && arg[3].kind_of?(FFI::Pointer) && arg[4].kind_of?(Integer) && arg[5].kind_of?(Integer) && arg[6].kind_of?(Integer) && arg[7].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::TempInputText : No matching functions found (#{arg})")
   end
 
