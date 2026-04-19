@@ -3,24 +3,21 @@ project(imgui)
 
 set (CMAKE_CXX_STANDARD 11)
 
-set(IMGUI_ROOT ${CMAKE_CURRENT_LIST_DIR}/../third_party/imgui)
-set(DEARBINDINGS_ROOT ${CMAKE_CURRENT_LIST_DIR}/../third_party/dear_bindings)
+set(SOURCE_ROOT ${CMAKE_CURRENT_LIST_DIR}/../source)
 
-include_directories( ${IMGUI_ROOT} )
-include_directories( ${DEARBINDINGS_ROOT} )
-include_directories( ${DEARBINDINGS_ROOT}/generated )
+include_directories( ${SOURCE_ROOT} )
 include_directories( ${CMAKE_CURRENT_LIST_DIR} )
 
 add_definitions("-DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1")
 
 set(IMGUI_SOURCES
-    ${DEARBINDINGS_ROOT}/generated/dcimgui.cpp
-    ${DEARBINDINGS_ROOT}/generated/dcimgui_internal.cpp
-    ${IMGUI_ROOT}/imgui.cpp
-    ${IMGUI_ROOT}/imgui_draw.cpp
-    ${IMGUI_ROOT}/imgui_demo.cpp
-    ${IMGUI_ROOT}/imgui_tables.cpp
-    ${IMGUI_ROOT}/imgui_widgets.cpp
+    ${SOURCE_ROOT}/dcimgui.cpp
+    ${SOURCE_ROOT}/dcimgui_internal.cpp
+    ${SOURCE_ROOT}/imgui.cpp
+    ${SOURCE_ROOT}/imgui_draw.cpp
+    ${SOURCE_ROOT}/imgui_demo.cpp
+    ${SOURCE_ROOT}/imgui_tables.cpp
+    ${SOURCE_ROOT}/imgui_widgets.cpp
     )
 
 set(IMGUI_LIBRARIES )

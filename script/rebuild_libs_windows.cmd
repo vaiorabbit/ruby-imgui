@@ -9,23 +9,11 @@
 
 @echo off
 setlocal enabledelayedexpansion
-set CMAKE_EXE=%1
-if %CMAKE_EXE% == "" (
-    set CMAKE_EXE="%PROGRAMFILES%\CMake\bin\cmake"
-)
 
 pushd %~dp0
-cd ..\imgui_dll
+cd ..\dll
 if exist build (
     rmdir /s /q build
 )
-call build_imgui_windows.cmd %CMAKE_EXE%
-popd
-
-pushd %~dp0
-cd ..\physac_dll
-if exist build (
-    rmdir /s /q build
-)
-call build_imnodes_windows.cmd %CMAKE_EXE%
+call build_imgui_windows.cmd
 popd

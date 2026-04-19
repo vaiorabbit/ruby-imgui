@@ -502,26 +502,26 @@ end
 
 if __FILE__ == $0 # test code snippets
 
-  type_map = ImGuiBindings.build_ffi_typedef_map( '../third_party/dear_bindings/generated/dcimgui.json' )
-  type_map_i = ImGuiBindings.build_ffi_typedef_map( '../third_party/dear_bindings/generated/dcimgui_internal.json' )
+  type_map = ImGuiBindings.build_ffi_typedef_map( '../source/dcimgui.json' )
+  type_map_i = ImGuiBindings.build_ffi_typedef_map( '../source/dcimgui_internal.json' )
   # pp type_map
   # pp type_map_i
   # exit()
 
-  structs = ImGuiBindings.build_struct_map( '../third_party/dear_bindings/generated/dcimgui.json' )
-  structs_i = ImGuiBindings.build_struct_map( '../third_party/dear_bindings/generated/dcimgui_internal.json' )
+  structs = ImGuiBindings.build_struct_map( '../source/dcimgui.json' )
+  structs_i = ImGuiBindings.build_struct_map( '../source/dcimgui_internal.json' )
   # pp structs
   # pp structs_i
   # exit()
 
-  enums = ImGuiBindings.build_enum_map( '../third_party/dear_bindings/generated/dcimgui.json' )
+  enums = ImGuiBindings.build_enum_map( '../source/dcimgui.json' )
   # enums.each do |e|
   #   print "#{e.name}\n"
   #   e.members.each do |m|
   #     print "    #{m.name} = #{m.value} # #{m.original}\n"
   #   end
   # end
-  enums_i = ImGuiBindings.build_enum_map( '../third_party/dear_bindings/generated/dcimgui_internal.json' )
+  enums_i = ImGuiBindings.build_enum_map( '../source/dcimgui_internal.json' )
   # enums_i.each do |e|
   #   print "#{e.name}\n"
   #   e.members.each do |m|
@@ -530,14 +530,14 @@ if __FILE__ == $0 # test code snippets
   # end
   # exit()
 
-  defines = ImGuiBindings.build_define_map( '../third_party/dear_bindings/generated/dcimgui.json' )
-  defines_i = ImGuiBindings.build_define_map( '../third_party/dear_bindings/generated/dcimgui_internal.json' )
+  defines = ImGuiBindings.build_define_map( '../source/dcimgui.json' )
+  defines_i = ImGuiBindings.build_define_map( '../source/dcimgui_internal.json' )
   # pp defines
   # pp defines_i
   # exit()
 
-  funcs_base = ImGuiBindings.build_function_map( '../third_party/dear_bindings/generated/dcimgui.json' )
-  funcs_base_i = ImGuiBindings.build_function_map( '../third_party/dear_bindings/generated/dcimgui_internal.json' )
+  funcs_base = ImGuiBindings.build_function_map( '../source/dcimgui.json' )
+  funcs_base_i = ImGuiBindings.build_function_map( '../source/dcimgui_internal.json' )
   # pp funcs_base
   # pp funcs_base_i
 end

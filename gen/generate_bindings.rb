@@ -628,8 +628,8 @@ if __FILE__ == $PROGRAM_NAME
   # Setup
   #
 
-  metadata_json = '../third_party/dear_bindings/generated/dcimgui.json'
-  metadata_internal_json = '../third_party/dear_bindings/generated/dcimgui_internal.json'
+  metadata_json = '../source/dcimgui.json'
+  metadata_internal_json = '../source/dcimgui_internal.json'
 
   merge_hash_preserve_order = lambda do |base_map, extra_map|
     merged = base_map.dup
