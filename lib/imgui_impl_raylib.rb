@@ -6,16 +6,18 @@ require_relative 'imgui'
 module ImGui
 
   @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_raylib")
+  @@g_BackendRendererName = FFI::MemoryPointer.from_string("imgui_impl_raylib")
 
   # ImGui::GetCurrentContext().address => ImGui_ImplRaylib_Data
   @@g_BackendData = Hash.new
 
   # [INTERNAL]
   class ImGui_ImplRaylib_Data
-    attr_accessor :time
+    attr_accessor :time, :textures
 
     def initialize
       @time = 0.0
+      @textures = {}
     end
   end
 
@@ -25,6 +27,95 @@ module ImGui
       @@g_BackendData[ImGui::GetCurrentContext().address]
     else
       nil
+    end
+  end
+
+  # [INTERNAL]
+  def self.ImplRaylib_UpdateTexture(tex_raw)
+    bd = ImGui_ImplRaylib_GetBackendData()
+    return if bd == nil
+
+    tex = tex_raw.kind_of?(ImTextureData) ? tex_raw : ImTextureData.new(tex_raw)
+
+    case tex[:Status]
+    when ImTextureStatus_WantCreate
+      return if tex[:Format] != ImTextureFormat_RGBA32
+
+      image = Raylib::Image.new
+      image[:data] = tex.GetPixels()
+      image[:width] = tex[:Width]
+      image[:height] = tex[:Height]
+      image[:mipmaps] = 1
+      image[:format] = Raylib::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8
+
+      texture = Raylib.LoadTextureFromImage(image)
+      raise 'Backend failed to create Raylib texture!' if texture[:id] == 0
+
+      Raylib.SetTextureFilter(texture, Raylib::TEXTURE_FILTER_BILINEAR)
+      Raylib.SetTextureWrap(texture, Raylib::TEXTURE_WRAP_CLAMP)
+
+      bd.textures[texture[:id]] = texture
+
+      tex.SetTexID(texture[:id])
+      tex.SetStatus(ImTextureStatus_OK)
+
+    when ImTextureStatus_WantUpdates
+      tex_id = tex.GetTexID()
+      return if tex_id == 0
+
+      texture = bd.textures[tex_id]
+      if texture == nil
+        texture = Raylib::Texture.new
+        texture[:id] = tex_id
+        texture[:width] = tex[:Width]
+        texture[:height] = tex[:Height]
+        texture[:mipmaps] = 1
+        texture[:format] = Raylib::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8
+      end
+
+      updates = tex[:Updates]
+      updates[:Size].times do |i|
+        r = ImTextureRect.new(updates[:Data] + ImTextureRect.size * i)
+        rec = Raylib::Rectangle.new
+        rec[:x] = r[:x].to_f
+        rec[:y] = r[:y].to_f
+        rec[:width] = r[:w].to_f
+        rec[:height] = r[:h].to_f
+        Raylib.UpdateTextureRec(texture, rec, tex.GetPixelsAt(r[:x], r[:y]))
+      end
+      tex.SetStatus(ImTextureStatus_OK)
+
+    when ImTextureStatus_WantDestroy
+      tex_id = tex.GetTexID()
+      if tex_id != 0 && tex[:UnusedFrames] > 0
+        texture = bd.textures.delete(tex_id)
+        if texture == nil
+          texture = Raylib::Texture.new
+          texture[:id] = tex_id
+          texture[:width] = tex[:Width]
+          texture[:height] = tex[:Height]
+          texture[:mipmaps] = 1
+          texture[:format] = Raylib::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8
+        end
+
+        Raylib.UnloadTexture(texture)
+        tex.SetTexID(0)
+        tex.SetStatus(ImTextureStatus_Destroyed)
+      end
+    end
+  end
+
+  # [INTERNAL]
+  def self.ImplRaylib_ProcessTextureUpdates(draw_data)
+    return if draw_data[:Textures] == nil || draw_data[:Textures].address == 0
+
+    textures = ImVector_ImTextureDataPtr.new(draw_data[:Textures])
+    textures[:Size].times do |i|
+      tex_ptr = (textures[:Data] + FFI.type_size(:pointer) * i).read_pointer
+      next if tex_ptr == nil || tex_ptr.address == 0
+
+      tex = ImTextureData.new(tex_ptr)
+      ImplRaylib_UpdateTexture(tex) if tex[:Status] != ImTextureStatus_OK
     end
   end
 
@@ -203,7 +294,7 @@ module ImGui
     when Raylib::KEY_RIGHT_SHIFT then ImGuiKey_RightShift
     when Raylib::KEY_RIGHT_ALT then ImGuiKey_RightAlt
     when Raylib::KEY_RIGHT_SUPER then ImGuiKey_RightSuper
-    when Raylib::KEY_MENU then ImGuiKey_Menu
+    when Raylib::KEY_KB_MENU then ImGuiKey_Menu
     when Raylib::KEY_ZERO then ImGuiKey_0
     when Raylib::KEY_ONE then ImGuiKey_1
     when Raylib::KEY_TWO then ImGuiKey_2
@@ -289,7 +380,6 @@ module ImGui
 
   # [INTERNAL]
   def self.ImplRaylib_UpdateMouseData()
-    bd = ImGui_ImplRaylib_GetBackendData()
     io = ImGuiIO.new(ImGui::GetIO())
 
     # Set OS mouse position if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
@@ -341,11 +431,20 @@ module ImGui
     @@g_BackendData[ImGui::GetCurrentContext().address] = bd
 
     io = ImGuiIO.new(ImGui::GetIO())
+    platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
 
     io[:BackendPlatformUserData] = nil
     io[:BackendPlatformName] = @@g_BackendPlatformName
+    io[:BackendRendererUserData] = nil
+    io[:BackendRendererName] = @@g_BackendRendererName
     io[:BackendFlags] |= ImGuiBackendFlags_HasMouseCursors # We can honor GetMouseCursor() values (optional)
     io[:BackendFlags] |= ImGuiBackendFlags_HasSetMousePos  # We can honor io.WantSetMousePos requests (optional, rarely used)
+    io[:BackendFlags] |= ImGuiBackendFlags_RendererHasVtxOffset
+    io[:BackendFlags] |= ImGuiBackendFlags_RendererHasTextures
+
+    # Conservative limit suitable for most GL backends used by raylib.
+    platform_io[:Renderer_TextureMaxWidth] = 8192
+    platform_io[:Renderer_TextureMaxHeight] = 8192
 
     bd.time = 0.0
 
@@ -353,10 +452,32 @@ module ImGui
   end
 
   def self.ImplRaylib_Shutdown()
+    bd = ImGui_ImplRaylib_GetBackendData()
     io = ImGuiIO.new(ImGui::GetIO())
+    platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
+
+    if bd != nil
+      bd.textures.each_value do |texture|
+        Raylib.UnloadTexture(texture) if texture != nil && texture[:id] != 0
+      end
+      bd.textures.clear
+    end
+
     io[:BackendPlatformName] = nil
     io[:BackendPlatformUserData] = nil
-    @@g_BackendData[ImGui::GetCurrentContext()] = nil
+    io[:BackendRendererName] = nil
+    io[:BackendRendererUserData] = nil
+    io[:BackendFlags] &= ~(ImGuiBackendFlags_HasMouseCursors | ImGuiBackendFlags_HasSetMousePos | ImGuiBackendFlags_RendererHasVtxOffset | ImGuiBackendFlags_RendererHasTextures)
+
+    begin
+      platform_io.ClearRendererHandlers()
+    rescue StandardError
+      # Older generated bindings may not expose this helper.
+    end
+
+    if ImGui::GetCurrentContext() != nil
+      @@g_BackendData.delete(ImGui::GetCurrentContext().address)
+    end
   end
 
   def self.ImplRaylib_NewFrame()
@@ -389,9 +510,17 @@ module ImGui
 
   def self.ImplRaylib_RenderDrawData(draw_data_raw)
     draw_data = ImDrawData.new(draw_data_raw)
+
+    fb_width = (draw_data[:DisplaySize][:x] * draw_data[:FramebufferScale][:x]).to_i
+    fb_height = (draw_data[:DisplaySize][:y] * draw_data[:FramebufferScale][:y]).to_i
+    return if fb_width <= 0 || fb_height <= 0
+
+    ImplRaylib_ProcessTextureUpdates(draw_data)
+
     Raylib.rlDisableBackfaceCulling()
 
     clip_offset = draw_data[:DisplayPos]
+    clip_scale = draw_data[:FramebufferScale]
     draw_data[:CmdListsCount].times do |n|
       cmd_list = ImDrawList.new((draw_data[:CmdLists][:Data] + FFI.type_size(:pointer) * n).read_pointer)
       vtx_buffer = cmd_list[:VtxBuffer][:Data] # const ImDrawVert*
@@ -402,15 +531,21 @@ module ImGui
         if pcmd[:UserCallback] != nil
           # [TODO] Handle user callback (Ref.: https://github.com/ffi/ffi/wiki/Callbacks )
         else
-          rect_min_x = (pcmd[:ClipRect][:x] - clip_offset[:x])
-          rect_min_y = (pcmd[:ClipRect][:y] - clip_offset[:y])
-          rect_max_x = (pcmd[:ClipRect][:z] - clip_offset[:x])
-          rect_max_y = (pcmd[:ClipRect][:w] - clip_offset[:y])
+          rect_min_x = (pcmd[:ClipRect][:x] - clip_offset[:x]) * clip_scale[:x]
+          rect_min_y = (pcmd[:ClipRect][:y] - clip_offset[:y]) * clip_scale[:y]
+          rect_max_x = (pcmd[:ClipRect][:z] - clip_offset[:x]) * clip_scale[:x]
+          rect_max_y = (pcmd[:ClipRect][:w] - clip_offset[:y]) * clip_scale[:y]
+
+          rect_min_x = 0.0 if rect_min_x < 0.0
+          rect_min_y = 0.0 if rect_min_y < 0.0
+          rect_max_x = fb_width.to_f if rect_max_x > fb_width
+          rect_max_y = fb_height.to_f if rect_max_y > fb_height
+          next if rect_max_x <= rect_min_x || rect_max_y <= rect_min_y
 
           rect_w = rect_max_x - rect_min_x
           rect_h = rect_max_y - rect_min_y
 
-          Raylib.BeginScissorMode(rect_min_x, rect_min_y, rect_w, rect_h)
+          Raylib.BeginScissorMode(rect_min_x.to_i, rect_min_y.to_i, rect_w.to_i, rect_h.to_i)
 
           # Render triangles
           indices = idx_buffer + FFI.type_size(:ImDrawIdx) * pcmd[:IdxOffset]
@@ -418,8 +553,7 @@ module ImGui
           0.step(pcmd[:ElemCount] - 3, 3) do |i|
             Raylib.rlPushMatrix()
               Raylib.rlBegin(Raylib::RL_TRIANGLES)
-              # Raylib.rlSetTexture(pcmd[:TextureId].read_uint32)
-              Raylib.rlSetTexture(pcmd[:TextureId])
+              Raylib.rlSetTexture(pcmd.GetTexID())
 
                 index = indices.get_array_of_uint16(i * FFI::type_size(:ImDrawIdx), 3)
 
