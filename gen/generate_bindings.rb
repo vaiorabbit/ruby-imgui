@@ -655,20 +655,20 @@ if __FILE__ == $PROGRAM_NAME
   end
 
   conditions = [
-    
+    'IMGUI_HAS_DOCK'
   ]
 
   defines_map = merge_array_by_name.call(
-    ImGuiBindings.build_define_map(metadata_json),
-    ImGuiBindings.build_define_map(metadata_internal_json)
+    ImGuiBindings.build_define_map(metadata_json, conditions),
+    ImGuiBindings.build_define_map(metadata_internal_json, conditions)
   )
   typedefs_map = merge_hash_preserve_order.call(
     ImGuiBindings.build_ffi_typedef_map(metadata_json),
     ImGuiBindings.build_ffi_typedef_map(metadata_internal_json)
   )
   enums_map = merge_array_by_name.call(
-    ImGuiBindings.build_enum_map(metadata_json),
-    ImGuiBindings.build_enum_map(metadata_internal_json)
+    ImGuiBindings.build_enum_map(metadata_json, conditions),
+    ImGuiBindings.build_enum_map(metadata_internal_json, conditions)
   )
   structs_map = structs = merge_array_by_name.call(
     ImGuiBindings.build_struct_map(metadata_json),
