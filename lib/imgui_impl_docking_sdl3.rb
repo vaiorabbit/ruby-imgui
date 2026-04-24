@@ -78,27 +78,27 @@ module ImGui
   end
 
   def self.ImGui_ImplDockingSDL3_GetViewportToken(viewport)
-    FFI::Pointer.new(viewport.address)
+    FFI::Pointer.new(viewport.pointer)
   end
 
   def self.ImGui_ImplDockingSDL3_GetViewportData(viewport_raw)
     viewport = viewport_raw.kind_of?(ImGuiViewport) ? viewport_raw : ImGuiViewport.new(viewport_raw)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return nil if bd == nil
 
-    bd.viewport_data[viewport.address]
+    bd.viewport_data[viewport.pointer]
   end
 
   def self.ImGui_ImplDockingSDL3_SetViewportData(viewport_raw, data)
     viewport = viewport_raw.kind_of?(ImGuiViewport) ? viewport_raw : ImGuiViewport.new(viewport_raw)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     if data == nil
       bd.viewport_data.delete(viewport.address)
       viewport[:PlatformUserData] = nil
     else
-      bd.viewport_data[viewport.address] = data
+      bd.viewport_data[viewport.pointer] = data
       viewport[:PlatformUserData] = ImGui_ImplDockingSDL3_GetViewportToken(viewport)
     end
   end
@@ -277,7 +277,7 @@ module ImGui
   end
 
   def self.ImGui_ImplDockingSDL3_GetClipboardText(_context)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return nil if bd == nil
 
     SDL.free(bd.clipboard_text_data) if bd.clipboard_text_data != nil
@@ -290,7 +290,7 @@ module ImGui
   end
 
   def self.ImGui_ImplDockingSDL3_PlatformSetImeData(_context, _viewport, data_raw)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     data = data_raw.kind_of?(ImGuiPlatformImeData) ? data_raw : ImGuiPlatformImeData.new(data_raw)
@@ -300,7 +300,7 @@ module ImGui
   end
 
   def self.ImGui_ImplDockingSDL3_UpdateIme
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     data = bd.ime_data
@@ -345,7 +345,7 @@ module ImGui
   end
 
   def self.ImGui_ImplDockingSDL3_UpdateMonitors
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
@@ -457,7 +457,7 @@ module ImGui
 
   def self.ImplDockingSDL3_ProcessEvent(event)
     io = ImGuiIO.new(ImGui::GetIO())
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return false if bd == nil
 
     event_type = event[:type]
@@ -591,7 +591,7 @@ module ImGui
       io[:BackendFlags] |= ImGuiBackendFlags_HasParentViewport
     end
 
-    callbacks = ImGui_ImplDockingSDL3_EnsureCallbacks
+    callbacks = ImGui_ImplDockingSDL3_EnsureCallbacks()
     platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
     platform_io[:Platform_SetClipboardTextFn] = callbacks[:set_clipboard_text]
     platform_io[:Platform_GetClipboardTextFn] = callbacks[:get_clipboard_text]
@@ -599,7 +599,7 @@ module ImGui
     platform_io[:Platform_OpenInShellFn] = callbacks[:open_in_shell]
 
     bd.want_update_monitors = true
-    ImGui_ImplDockingSDL3_UpdateMonitors
+    ImGui_ImplDockingSDL3_UpdateMonitors()
 
     bd.mouse_cursors[ImGuiMouseCursor_Arrow] = SDL.CreateSystemCursor(SDL::SYSTEM_CURSOR_DEFAULT)
     bd.mouse_cursors[ImGuiMouseCursor_TextInput] = SDL.CreateSystemCursor(SDL::SYSTEM_CURSOR_TEXT)
@@ -630,7 +630,7 @@ module ImGui
 
   def self.ImplDockingSDL3_InitForVulkan(window)
     result = ImplDockingSDL3_Init(window, nil, nil)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     bd.use_vulkan = true if result && bd != nil
     result
   end
@@ -656,7 +656,7 @@ module ImGui
   end
 
   def self.ImplDockingSDL3_CloseGamepads
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     if bd.gamepad_mode != ImGui_ImplDockingSDL3_GamepadMode_Manual
@@ -666,11 +666,11 @@ module ImGui
   end
 
   def self.ImplDockingSDL3_SetGamepadMode(mode, manual_gamepads_array = nil)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
-    ImplDockingSDL3_CloseGamepads
-    if mode == ImGui_ImplDockingSDL3_GamepadMode_Manual
+    ImplDockingSDL3_CloseGamepads()
+    if mode == ImGui_ImplDockingSDL3_GamepadMode_Manual()
       bd.gamepads = manual_gamepads_array ? manual_gamepads_array.compact : []
     else
       bd.want_update_gamepads_list = true
@@ -681,13 +681,13 @@ module ImGui
   def self.ImplDockingSDL3_Shutdown
     io = ImGuiIO.new(ImGui::GetIO())
     platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
-    ImGui_ImplDockingSDL3_ShutdownMultiViewportSupport
+    ImGui_ImplDockingSDL3_ShutdownMultiViewportSupport()
     SDL.free(bd.clipboard_text_data) if bd.clipboard_text_data != nil
     bd.mouse_cursors.each { |cursor| SDL.DestroyCursor(cursor) if cursor != nil }
-    ImplDockingSDL3_CloseGamepads
+    ImplDockingSDL3_CloseGamepads()
 
     io[:BackendPlatformName] = nil
     io[:BackendPlatformUserData] = nil
@@ -697,7 +697,7 @@ module ImGui
   end
 
   def self.ImplDockingSDL3_SetMouseCaptureMode(mode)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     SDL.CaptureMouse(false) if mode == ImGui_ImplDockingSDL3_MouseCaptureMode_Disabled && bd.mouse_capture_mode != ImGui_ImplDockingSDL3_MouseCaptureMode_Disabled
@@ -705,7 +705,7 @@ module ImGui
   end
 
   def self.ImplDockingSDL3_UpdateMouseData
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     io = ImGuiIO.new(ImGui::GetIO())
     return if bd == nil
 
@@ -764,7 +764,7 @@ module ImGui
     io = ImGuiIO.new(ImGui::GetIO())
     return if (io[:ConfigFlags] & ImGuiConfigFlags_NoMouseCursorChange) != 0
 
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     imgui_cursor = ImGui::GetMouseCursor()
@@ -806,11 +806,11 @@ module ImGui
 
   def self.ImplDockingSDL3_UpdateGamepads
     io = ImGuiIO.new(ImGui::GetIO())
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     if bd.want_update_gamepads_list && bd.gamepad_mode != ImGui_ImplDockingSDL3_GamepadMode_Manual
-      ImplDockingSDL3_CloseGamepads
+      ImplDockingSDL3_CloseGamepads()
       count_ptr = FFI::MemoryPointer.new(:int)
       gamepads_ptr = SDL.GetGamepads(count_ptr)
       count = count_ptr.read_int
@@ -858,7 +858,7 @@ module ImGui
   end
 
   def self.ImplDockingSDL3_NewFrame
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     raise 'Context or backend not initialized! Did you call ImGui::ImplDockingSDL3_Init()?' if bd == nil
 
     io = ImGuiIO.new(ImGui::GetIO())
@@ -869,7 +869,7 @@ module ImGui
     io[:DisplayFramebufferScale][:y] = scale_y
 
     bd.want_update_monitors = true if FFI::Platform.windows?
-    ImGui_ImplDockingSDL3_UpdateMonitors if bd.want_update_monitors
+    ImGui_ImplDockingSDL3_UpdateMonitors() if bd.want_update_monitors
 
     frequency = SDL.GetPerformanceFrequency()
     current_time = SDL.GetPerformanceCounter()
@@ -890,15 +890,15 @@ module ImGui
       io[:BackendFlags] &= ~ImGuiBackendFlags_HasMouseHoveredViewport
     end
 
-    ImplDockingSDL3_UpdateMouseData
-    ImplDockingSDL3_UpdateMouseCursor
-    ImGui_ImplDockingSDL3_UpdateIme
-    ImplDockingSDL3_UpdateGamepads
+    ImplDockingSDL3_UpdateMouseData()
+    ImplDockingSDL3_UpdateMouseCursor()
+    ImGui_ImplDockingSDL3_UpdateIme()
+    ImplDockingSDL3_UpdateGamepads()
   end
 
   def self.ImGui_ImplDockingSDL3_CreateWindow(viewport_raw)
     viewport = viewport_raw.kind_of?(ImGuiViewport) ? viewport_raw : ImGuiViewport.new(viewport_raw)
-    bd = ImGui_ImplDockingSDL3_GetBackendData
+    bd = ImGui_ImplDockingSDL3_GetBackendData()
     return if bd == nil
 
     vd = ImGui_ImplDockingSDL3_ViewportData.new
@@ -1092,7 +1092,7 @@ module ImGui
   end
 
   def self.ImGui_ImplDockingSDL3_InitMultiViewportSupport(window, sdl_gl_context)
-    callbacks = ImGui_ImplDockingSDL3_EnsureCallbacks
+    callbacks = ImGui_ImplDockingSDL3_EnsureCallbacks()
     platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
     platform_io[:Platform_CreateWindow] = callbacks[:create_window]
     platform_io[:Platform_DestroyWindow] = callbacks[:destroy_window]
