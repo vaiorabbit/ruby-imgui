@@ -373,6 +373,11 @@ module ImGui
     bd = ImGui_ImplSDL3_GetBackendData()
     return if bd == nil
 
+    # Docking branch requires viewport platform handles to be cleared before DestroyContext().
+    main_viewport = ImGuiViewport.new(ImGui::GetMainViewport())
+    main_viewport[:PlatformHandle] = nil
+    main_viewport[:PlatformHandleRaw] = nil
+
     bd.mouse_cursors.each { |cursor| SDL.DestroyCursor(cursor) if cursor != nil }
     ImplSDL3_CloseGamepads()
 
