@@ -2,36 +2,7 @@ name: Build (Windows)
 
 on:
   workflow_call:
-    inputs:
-      imgui_commit:
-        description: 'SHA-1 hash to checkout'
-        default: ''
-        required: false
-        type: string
-      imgui_branch:
-        description: 'ImGui branch to checkout. If you change this value from default, please set `fetch_depth` to 0.'
-        default: 'master'
-        required: false
-        type: string
-      fetch_depth:
-        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
-        default: '1'
-        required: false
-        type: string
   workflow_dispatch:
-    inputs:
-      imgui_commit:
-        description: 'SHA-1 hash to checkout'
-        default: ''
-        required: false
-      imgui_branch:
-        description: 'ImGui branch to checkout. If you change this value from default, please set `fetch_depth` to 0.'
-        default: 'master'
-        required: false
-      fetch_depth:
-        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
-        default: '1'
-        required: false
 
 jobs:
   build:
@@ -44,41 +15,17 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         ref: ${{github.ref}}
-        fetch-depth: ${{ github.event.inputs.fetch_depth }}
+        fetch-depth: 1
         submodules: recursive
-
-    - name: Checkout specific ImGui commit
-      if: "${{ github.event.inputs.imgui_commit != ''}}"
-      run: |
-        cd third_party/imgui
-        git fetch --all
-        git switch ${{ github.event.inputs.imgui_branch }}
-        git checkout -f --detach ${{ github.event.inputs.imgui_commit }}
-        cd ../..
-
-    - name: Install Python deps
-      run: pip install ply==3.11
-
-    - name: Generate dear_bindings C wrapper
-      shell: cmd
-      run: |
-        imgui_dll\generate_dearbindings.cmd
 
     - name: Build imgui dll
       shell: cmd
       run: |
-        cd imgui_dll
+        cd dll
         build_imgui_windows.cmd cmake
-        cd ..
-
-    - name: Build imnodes dll
-      shell: cmd
-      run: |
-        cd imnodes_dll
-        build_imnodes_windows.cmd cmake
         cd ..
 
     - name: Commit new libraries

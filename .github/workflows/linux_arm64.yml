@@ -2,89 +2,29 @@ name: Build (Linux ARM64)
 
 on:
   workflow_call:
-    inputs:
-      imgui_commit:
-        description: 'SHA-1 hash to checkout'
-        default: ''
-        required: false
-        type: string
-      imgui_branch:
-        description: 'ImGui branch to checkout. If you change this value from default, please set `fetch_depth` to 0.'
-        default: 'master'
-        required: false
-        type: string
-      fetch_depth:
-        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
-        default: '1'
-        required: false
-        type: string
   workflow_dispatch:
-    inputs:
-      imgui_commit:
-        description: 'SHA-1 hash to checkout'
-        default: ''
-        required: false
-      imgui_branch:
-        description: 'ImGui branch to checkout. If you change this value from default, please set `fetch_depth` to 0.'
-        default: 'master'
-        required: false
-      fetch_depth:
-        description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
-        default: '1'
-        required: false
 
 jobs:
   build:
     permissions:
       contents: write
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-24.04-arm
     strategy:
       fail-fast: false
       max-parallel: 1
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         ref: ${{github.ref}}
-        fetch-depth: ${{ github.event.inputs.fetch_depth }}
+        fetch-depth: 1
         submodules: recursive
-
-    # - name: Setup OpenGL
-    #   run: sudo apt -y install libopengl-dev libxrandr-dev mesa-common-dev libxinerama-dev libxcursor-dev libxi-dev
-
-    - name: Checkout specific ImGui commit
-      if: "${{ github.event.inputs.imgui_commit != ''}}"
-      run: |
-        cd third_party/imgui
-        git fetch --all
-        git switch ${{ github.event.inputs.imgui_branch }}
-        git checkout -f --detach ${{ github.event.inputs.imgui_commit }}
-        cd ../..
-
-    - name: Install Python deps
-      run: pip3 install ply==3.11
-
-    - name: Generate dear_bindings C wrapper
-      run: |
-        python3 third_party/dear_bindings/dear_bindings.py \
-          -o imgui_dll/dearbindings \
-          third_party/imgui/imgui.h
-        python3 third_party/dear_bindings/dear_bindings.py \
-          --include third_party/imgui/imgui.h \
-          -o imgui_dll/dearbindings_internal \
-          third_party/imgui/imgui_internal.h
 
     - name: Build imgui so
       run: |
-        cd imgui_dll
+        cd dll
         bash ./build_imgui_linux.sh
-        cd ..
-
-    - name: Build imnodes so
-      run: |
-        cd imnodes_dll
-        bash ./build_imnodes_linux.sh
         cd ..
 
     - name: Commit new libraries
