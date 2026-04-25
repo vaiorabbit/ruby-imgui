@@ -85,8 +85,7 @@ module ImGui
     io[:BackendRendererName] = @@g_DockingGL3BackendRendererName
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasVtxOffset if @@g_DockingGL3GlVersion >= 320
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasTextures
-    # TBI : Enabling ImGuiBackendFlags_RendererHasViewports causes crash [2026-04-23]
-    # io[:BackendFlags] |= ImGuiBackendFlags_RendererHasViewports
+    io[:BackendFlags] |= ImGuiBackendFlags_RendererHasViewports
 
     platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
     platform_io[:Renderer_TextureMaxWidth] = @@g_DockingGL3MaxTextureSize

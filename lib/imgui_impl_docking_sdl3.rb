@@ -86,7 +86,7 @@ module ImGui
     bd = ImGui_ImplDockingSDL3_GetBackendData()
     return nil if bd == nil
 
-    bd.viewport_data[viewport.pointer]
+    bd.viewport_data[viewport.pointer.address]
   end
 
   def self.ImGui_ImplDockingSDL3_SetViewportData(viewport_raw, data)
@@ -95,10 +95,10 @@ module ImGui
     return if bd == nil
 
     if data == nil
-      bd.viewport_data.delete(viewport.address)
+      bd.viewport_data.delete(viewport.pointer.address)
       viewport[:PlatformUserData] = nil
     else
-      bd.viewport_data[viewport.pointer] = data
+      bd.viewport_data[viewport.pointer.address] = data
       viewport[:PlatformUserData] = ImGui_ImplDockingSDL3_GetViewportToken(viewport)
     end
   end
@@ -1123,7 +1123,7 @@ module ImGui
   end
 
   def self.ImGui_ImplDockingSDL3_ShutdownMultiViewportSupport
-    ImGui::DestroyPlatformWindows
+    ImGui::DestroyPlatformWindows()
   end
 
 end
