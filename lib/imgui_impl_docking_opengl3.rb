@@ -23,6 +23,7 @@ module ImGui
   @@g_DockingGL3ElementsHandle = 0
 
   @@g_DockingGL3BackendRendererName = FFI::MemoryPointer.from_string("imgui_impl_docking_opengl3")
+  @@g_DockingGL3RendererCallbacks = nil
 
   def self.ImplDockingOpenGL3_PrintShaderCompileStatus(handle)
     rvalue = ' ' * 4
@@ -100,6 +101,8 @@ module ImGui
     end
 
     @@g_DockingGL3GlslVersionString = glsl_version.end_with?("\n") ? glsl_version.dup : "#{glsl_version}\n"
+
+    ImplDockingOpenGL3_InitMultiViewportSupport()
 
     true
   end
@@ -296,6 +299,29 @@ module ImGui
   # Compatibility wrapper retained for older caller code.
   def self.ImplDockingOpenGL3_DestroyFontsTexture()
     nil
+  end
+
+  def self.ImGui_ImplDockingOpenGL3_RenderWindow(viewport_raw, _render_arg)
+    viewport = viewport_raw.kind_of?(ImGuiViewport) ? viewport_raw : ImGuiViewport.new(viewport_raw)
+    return if viewport[:DrawData] == nil || viewport[:DrawData].address == 0
+
+    if (viewport[:Flags] & ImGuiViewportFlags_NoRendererClear) == 0
+      GL.ClearColor(0.0, 0.0, 0.0, 1.0)
+      GL.Clear(GL::COLOR_BUFFER_BIT)
+    end
+
+    ImplDockingOpenGL3_RenderDrawData(viewport[:DrawData])
+  end
+
+  def self.ImplDockingOpenGL3_InitMultiViewportSupport()
+    if @@g_DockingGL3RendererCallbacks == nil
+      @@g_DockingGL3RendererCallbacks = {
+        render_window: FFI::Function.new(:void, [:pointer, :pointer]) { |viewport, arg| ImGui_ImplDockingOpenGL3_RenderWindow(viewport, arg) }
+      }
+    end
+
+    platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
+    platform_io[:Renderer_RenderWindow] = @@g_DockingGL3RendererCallbacks[:render_window]
   end
 
   def self.ImplDockingOpenGL3_ProcessTextureUpdates(draw_data)
