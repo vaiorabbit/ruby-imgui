@@ -1,7 +1,7 @@
 # [Usage]
 # $ gem install raylib-bindings
 # $ gem install imgui-bindings
-# $ ruby test_raylib.rb
+# $ ruby examples/raylib_with_imgui.rb
 
 require 'raylib'
 
@@ -15,10 +15,10 @@ end
 
 if imgui_bindings_gem_available?
   require 'imgui'
-  require 'imgui_impl_raylib'
+  require 'imgui_impl_docking_raylib'
 else
   require_relative '../lib/imgui'
-  require_relative '../lib/imgui_impl_raylib'
+  require_relative '../lib/imgui_impl_docking_raylib'
 end
 
 if __FILE__ == $PROGRAM_NAME
@@ -63,11 +63,16 @@ if __FILE__ == $PROGRAM_NAME
   ImGui.CreateContext()
   ImGui.StyleColorsDark()
 
-  ImGui.ImplRaylib_Init()
+  ImGui.ImplDockingRaylib_Init()
 
   io = ImGuiIO.new(ImGui.GetIO())
   fonts = ImFontAtlas.new(io[:Fonts])
   fonts.AddFontDefault()
+
+  # - docking: enabled
+  # - multi-viewports: unsupported by raylib backend (auto-disabled in backend)
+  io[:ConfigFlags] |= ImGuiConfigFlags_DockingEnable
+  io[:ConfigFlags] |= ImGuiConfigFlags_ViewportsEnable
 
   cube_color = Raylib::GREEN
 
@@ -100,15 +105,27 @@ if __FILE__ == $PROGRAM_NAME
       Raylib.DrawGrid(10, 1)
       Raylib.EndMode3D()
 
-      ImGui.ImplRaylib_NewFrame()
+      ImGui.ImplDockingRaylib_NewFrame()
       ImGui.NewFrame()
+
+      ImGui.Begin('Raylib Backend Check')
+      ImGui.Text('Backend target: Docking ON, Multi-Viewport OFF')
+      ImGui.Separator()
+      ImGui.Text("DockingEnable: #{(io[:ConfigFlags] & ImGuiConfigFlags_DockingEnable) != 0}")
+      ImGui.Text('ViewportsEnable request: true')
+      ImGui.Text("ViewportsEnable effective: #{(io[:ConfigFlags] & ImGuiConfigFlags_ViewportsEnable) != 0}")
+      ImGui.Separator()
+      ImGui.Text('Cube turns red when clicking outside ImGui window.')
+      ImGui.End()
+
       ImGui.ShowDemoWindow()
+
       ImGui.Render()
-      ImGui.ImplRaylib_RenderDrawData(ImGui.GetDrawData())
+      ImGui.ImplDockingRaylib_RenderDrawData(ImGui.GetDrawData())
     Raylib.EndDrawing()
   end
 
-  ImGui.ImplRaylib_Shutdown()
+  ImGui.ImplDockingRaylib_Shutdown()
   ImGui.DestroyContext(nil)
   Raylib.CloseWindow()
 end

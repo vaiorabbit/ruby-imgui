@@ -13,11 +13,26 @@ module ImGui
 
   # [INTERNAL]
   class ImGui_ImplRaylib_Data
-    attr_accessor :time, :textures
+    attr_accessor :time, :textures, :warned_viewports_unsupported
 
     def initialize
       @time = 0.0
       @textures = {}
+      @warned_viewports_unsupported = false
+    end
+  end
+
+  # [INTERNAL]
+  def self.ImplRaylib_DisableUnsupportedViewports(io = nil)
+    io = ImGuiIO.new(ImGui::GetIO()) if io == nil
+    return if (io[:ConfigFlags] & ImGuiConfigFlags_ViewportsEnable) == 0
+
+    io[:ConfigFlags] &= ~ImGuiConfigFlags_ViewportsEnable
+    bd = ImGui_ImplRaylib_GetBackendData()
+    if bd != nil && !bd.warned_viewports_unsupported
+      # raylib backend currently supports docking in a single OS window only.
+      $stderr.puts('[imgui_impl_raylib] ImGuiConfigFlags_ViewportsEnable is not supported and was disabled.')
+      bd.warned_viewports_unsupported = true
     end
   end
 
@@ -441,6 +456,9 @@ module ImGui
     io[:BackendFlags] |= ImGuiBackendFlags_HasSetMousePos  # We can honor io.WantSetMousePos requests (optional, rarely used)
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasVtxOffset
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasTextures
+    io[:BackendFlags] &= ~(ImGuiBackendFlags_PlatformHasViewports | ImGuiBackendFlags_RendererHasViewports)
+
+    ImplRaylib_DisableUnsupportedViewports(io)
 
     # Conservative limit suitable for most GL backends used by raylib.
     platform_io[:Renderer_TextureMaxWidth] = 8192
@@ -467,7 +485,7 @@ module ImGui
     io[:BackendPlatformUserData] = nil
     io[:BackendRendererName] = nil
     io[:BackendRendererUserData] = nil
-    io[:BackendFlags] &= ~(ImGuiBackendFlags_HasMouseCursors | ImGuiBackendFlags_HasSetMousePos | ImGuiBackendFlags_RendererHasVtxOffset | ImGuiBackendFlags_RendererHasTextures)
+    io[:BackendFlags] &= ~(ImGuiBackendFlags_HasMouseCursors | ImGuiBackendFlags_HasSetMousePos | ImGuiBackendFlags_RendererHasVtxOffset | ImGuiBackendFlags_RendererHasTextures | ImGuiBackendFlags_PlatformHasViewports | ImGuiBackendFlags_RendererHasViewports)
 
     begin
       platform_io.ClearRendererHandlers()
@@ -493,6 +511,8 @@ module ImGui
 
     io[:DeltaTime] = bd.time > 0 ? (current_time - bd.time).to_f : 1.0 / 60.0
     bd.time = current_time
+
+    ImplRaylib_DisableUnsupportedViewports(io)
 
     ImplRaylib_ProcessKeyboard()
     ImplRaylib_UpdateMouseData()
@@ -584,6 +604,26 @@ module ImGui
       end
     end
     Raylib.rlEnableBackfaceCulling()
+  end
+
+  # Docking-compatible wrapper API (single viewport only)
+  def self.ImplDockingRaylib_Init()
+    ImplRaylib_Init()
+  end
+
+  # Docking-compatible wrapper API (single viewport only)
+  def self.ImplDockingRaylib_Shutdown()
+    ImplRaylib_Shutdown()
+  end
+
+  # Docking-compatible wrapper API (single viewport only)
+  def self.ImplDockingRaylib_NewFrame()
+    ImplRaylib_NewFrame()
+  end
+
+  # Docking-compatible wrapper API (single viewport only)
+  def self.ImplDockingRaylib_RenderDrawData(draw_data_raw)
+    ImplRaylib_RenderDrawData(draw_data_raw)
   end
 
 end
