@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.31)
 project(imgui)
 
 set (CMAKE_CXX_STANDARD 11)
