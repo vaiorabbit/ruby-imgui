@@ -1,3 +1,9 @@
+2026-04-26  vaiorabbit  <http://twitter.com/vaiorabbit>
+
+	* ImGui v1.92.7-docking
+	* Ruby ImGui bindings now uses Dear Bindings ( https://github.com/dearimgui/dear_bindings ) to generate codes
+	* Removed ImNodes
+
 2025-04-29  vaiorabbit  <http://twitter.com/vaiorabbit>
 
 	* ImGui v1.91.9b
