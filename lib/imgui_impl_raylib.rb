@@ -5,6 +5,12 @@ require_relative 'imgui'
 
 module ImGui
 
+  CAMERA_MOVE_SPEED = 5.4
+  CAMERA_ROTATION_SPEED = 0.03
+  CAMERA_PAN_SPEED = 2.0
+  CAMERA_MOUSE_MOVE_SENSITIVITY = 0.003
+  CAMERA_ORBITAL_SPEED = 0.5
+
   @@g_BackendPlatformName = FFI::MemoryPointer.from_string("imgui_impl_raylib")
   @@g_BackendRendererName = FFI::MemoryPointer.from_string("imgui_impl_raylib")
 
@@ -440,6 +446,147 @@ module ImGui
   # [TODO] Support ImplRaylib_UpdateGamepads
   #
 
+  # [INTERNAL]
+  def self.ImplRaylib_CameraPointer(camera)
+    if camera.kind_of?(FFI::Pointer)
+      camera
+    elsif camera.respond_to?(:pointer)
+      camera.pointer
+    else
+      raise ArgumentError, 'camera must be Raylib::Camera (FFI::Struct) or FFI::Pointer'
+    end
+  end
+
+  # ImGui-aware UpdateCamera implementation in Ruby.
+  # Unlike Raylib.UpdateCamera(), this checks io[:WantCaptureMouse]/io[:WantCaptureKeyboard]
+  # and avoids camera control while ImGui is consuming corresponding inputs.
+  def self.ImplRaylib_UpdateCamera(camera, mode)
+    camera_ptr = ImplRaylib_CameraPointer(camera)
+    io = ImGuiIO.new(ImGui::GetIO())
+
+    mouse_position_delta = Raylib.GetMouseDelta()
+
+    move_in_world_plane = (mode == Raylib::CAMERA_FIRST_PERSON) || (mode == Raylib::CAMERA_THIRD_PERSON)
+    rotate_around_target = (mode == Raylib::CAMERA_THIRD_PERSON) || (mode == Raylib::CAMERA_ORBITAL)
+    lock_view = (mode == Raylib::CAMERA_FREE) || (mode == Raylib::CAMERA_FIRST_PERSON) || (mode == Raylib::CAMERA_THIRD_PERSON) || (mode == Raylib::CAMERA_ORBITAL)
+    rotate_up = false
+
+    frame_time = Raylib.GetFrameTime()
+    camera_move_speed = CAMERA_MOVE_SPEED * frame_time
+    camera_rotation_speed = CAMERA_ROTATION_SPEED * frame_time
+    camera_pan_speed = CAMERA_PAN_SPEED * frame_time
+    camera_orbital_speed = CAMERA_ORBITAL_SPEED * frame_time
+
+    wants_mouse = io[:WantCaptureMouse]
+    wants_keyboard = io[:WantCaptureKeyboard]
+
+    if mode == Raylib::CAMERA_CUSTOM
+      # no-op
+    elsif mode == Raylib::CAMERA_ORBITAL
+      if !wants_mouse
+        rotation = Raylib.MatrixRotate(Raylib.GetCameraUp(camera_ptr), camera_orbital_speed)
+        view = Raylib.Vector3Subtract(Raylib::Camera.new(camera_ptr)[:position], Raylib::Camera.new(camera_ptr)[:target])
+        view = Raylib.Vector3Transform(view, rotation)
+        camera_data = Raylib::Camera.new(camera_ptr)
+        camera_data[:position] = Raylib.Vector3Add(camera_data[:target], view)
+      end
+    else
+      if !wants_keyboard
+        if Raylib.IsKeyDown(Raylib::KEY_DOWN)
+          Raylib.CameraPitch(camera_ptr, -camera_rotation_speed, lock_view, rotate_around_target, rotate_up)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_UP)
+          Raylib.CameraPitch(camera_ptr, camera_rotation_speed, lock_view, rotate_around_target, rotate_up)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_RIGHT)
+          Raylib.CameraYaw(camera_ptr, -camera_rotation_speed, rotate_around_target)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_LEFT)
+          Raylib.CameraYaw(camera_ptr, camera_rotation_speed, rotate_around_target)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_Q)
+          Raylib.CameraRoll(camera_ptr, -camera_rotation_speed)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_E)
+          Raylib.CameraRoll(camera_ptr, camera_rotation_speed)
+        end
+      end
+
+      if !wants_mouse
+        if (mode == Raylib::CAMERA_FREE) && Raylib.IsMouseButtonDown(Raylib::MOUSE_BUTTON_MIDDLE)
+          mouse_delta = Raylib.GetMouseDelta()
+          if mouse_delta[:x] > 0.0
+            Raylib.CameraMoveRight(camera_ptr, camera_pan_speed, move_in_world_plane)
+          end
+          if mouse_delta[:x] < 0.0
+            Raylib.CameraMoveRight(camera_ptr, -camera_pan_speed, move_in_world_plane)
+          end
+          if mouse_delta[:y] > 0.0
+            Raylib.CameraMoveUp(camera_ptr, -camera_pan_speed)
+          end
+          if mouse_delta[:y] < 0.0
+            Raylib.CameraMoveUp(camera_ptr, camera_pan_speed)
+          end
+        else
+          Raylib.CameraYaw(camera_ptr, -mouse_position_delta[:x] * CAMERA_MOUSE_MOVE_SENSITIVITY, rotate_around_target)
+          Raylib.CameraPitch(camera_ptr, -mouse_position_delta[:y] * CAMERA_MOUSE_MOVE_SENSITIVITY, lock_view, rotate_around_target, rotate_up)
+        end
+      end
+
+      if !wants_keyboard
+        if Raylib.IsKeyDown(Raylib::KEY_W)
+          Raylib.CameraMoveForward(camera_ptr, camera_move_speed, move_in_world_plane)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_A)
+          Raylib.CameraMoveRight(camera_ptr, -camera_move_speed, move_in_world_plane)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_S)
+          Raylib.CameraMoveForward(camera_ptr, -camera_move_speed, move_in_world_plane)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_D)
+          Raylib.CameraMoveRight(camera_ptr, camera_move_speed, move_in_world_plane)
+        end
+      end
+
+      if Raylib.IsGamepadAvailable(0)
+        Raylib.CameraYaw(camera_ptr, -(Raylib.GetGamepadAxisMovement(0, Raylib::GAMEPAD_AXIS_RIGHT_X) * 2.0) * CAMERA_MOUSE_MOVE_SENSITIVITY, rotate_around_target)
+        Raylib.CameraPitch(camera_ptr, -(Raylib.GetGamepadAxisMovement(0, Raylib::GAMEPAD_AXIS_RIGHT_Y) * 2.0) * CAMERA_MOUSE_MOVE_SENSITIVITY, lock_view, rotate_around_target, rotate_up)
+
+        if Raylib.GetGamepadAxisMovement(0, Raylib::GAMEPAD_AXIS_LEFT_Y) <= -0.25
+          Raylib.CameraMoveForward(camera_ptr, camera_move_speed, move_in_world_plane)
+        end
+        if Raylib.GetGamepadAxisMovement(0, Raylib::GAMEPAD_AXIS_LEFT_X) <= -0.25
+          Raylib.CameraMoveRight(camera_ptr, -camera_move_speed, move_in_world_plane)
+        end
+        if Raylib.GetGamepadAxisMovement(0, Raylib::GAMEPAD_AXIS_LEFT_Y) >= 0.25
+          Raylib.CameraMoveForward(camera_ptr, -camera_move_speed, move_in_world_plane)
+        end
+        if Raylib.GetGamepadAxisMovement(0, Raylib::GAMEPAD_AXIS_LEFT_X) >= 0.25
+          Raylib.CameraMoveRight(camera_ptr, camera_move_speed, move_in_world_plane)
+        end
+      end
+
+      if mode == Raylib::CAMERA_FREE && !wants_keyboard
+        if Raylib.IsKeyDown(Raylib::KEY_SPACE)
+          Raylib.CameraMoveUp(camera_ptr, camera_move_speed)
+        end
+        if Raylib.IsKeyDown(Raylib::KEY_LEFT_CONTROL)
+          Raylib.CameraMoveUp(camera_ptr, -camera_move_speed)
+        end
+      end
+    end
+
+    if ((mode == Raylib::CAMERA_THIRD_PERSON) || (mode == Raylib::CAMERA_ORBITAL) || (mode == Raylib::CAMERA_FREE)) && !wants_mouse
+      Raylib.CameraMoveToTarget(camera_ptr, -Raylib.GetMouseWheelMove())
+      if Raylib.IsKeyPressed(Raylib::KEY_KP_SUBTRACT)
+        Raylib.CameraMoveToTarget(camera_ptr, 2.0)
+      end
+      if Raylib.IsKeyPressed(Raylib::KEY_KP_ADD)
+        Raylib.CameraMoveToTarget(camera_ptr, -2.0)
+      end
+    end
+  end
+
   def self.ImplRaylib_Init()
     # Setup backend capabilities flags
     bd = ImGui_ImplRaylib_Data.new
@@ -624,6 +771,11 @@ module ImGui
   # Docking-compatible wrapper API (single viewport only)
   def self.ImplDockingRaylib_RenderDrawData(draw_data_raw)
     ImplRaylib_RenderDrawData(draw_data_raw)
+  end
+
+  # Docking-compatible wrapper API (single viewport only)
+  def self.ImplDockingRaylib_UpdateCamera(camera, mode)
+    ImplRaylib_UpdateCamera(camera, mode)
   end
 
 end

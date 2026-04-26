@@ -91,9 +91,9 @@ if __FILE__ == $PROGRAM_NAME
                    Raylib::GREEN
                  end
 
-    # [NOTE] We can't use UpdateCamera because Keyboard API (IsKeyDown, etc.) and
-    #        Mouse API (GetMouseWheelMove, etc.) are used inside without checking io[:WantCaptureMouse].
-    # Raylib.UpdateCamera(camera.pointer, Raylib::CAMERA_ORBITAL)
+    # ImGui-aware camera update: skips mouse/keyboard camera controls
+    # while ImGui is actively capturing those inputs.
+    ImGui.ImplRaylib_UpdateCamera(camera, Raylib::CAMERA_FIRST_PERSON)
 
     Raylib.BeginDrawing()
       Raylib.ClearBackground(Raylib::RAYWHITE)
