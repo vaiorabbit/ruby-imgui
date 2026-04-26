@@ -79,6 +79,9 @@ if __FILE__ == $PROGRAM_NAME
   Raylib.SetTargetFPS(60)
 
   until Raylib.WindowShouldClose()
+    ImGui.ImplDockingRaylib_NewFrame()
+    ImGui.NewFrame()
+
     # Check io[:WantCaptureMouse] to detect the timing when ImGui exclusively requires Mosue/Keyboard information
     cube_color = if not io[:WantCaptureMouse]
                    # Change cube color to Raylib::RED when user clicked outside of ImGui window
@@ -104,9 +107,6 @@ if __FILE__ == $PROGRAM_NAME
       Raylib.DrawCubeWires(Raylib::Vector3.create(0, 0, 0), 1.0, 1.0, 1.0, Raylib::BLUE)
       Raylib.DrawGrid(10, 1)
       Raylib.EndMode3D()
-
-      ImGui.ImplDockingRaylib_NewFrame()
-      ImGui.NewFrame()
 
       ImGui.Begin('Raylib Backend Check')
       ImGui.Text('Backend target: Docking ON, Multi-Viewport OFF')

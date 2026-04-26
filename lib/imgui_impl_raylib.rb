@@ -479,6 +479,14 @@ module ImGui
 
     wants_mouse = io[:WantCaptureMouse]
     wants_keyboard = io[:WantCaptureKeyboard]
+    any_imgui_window_focused = false
+    begin
+      any_imgui_window_focused = ImGui.IsWindowFocused(ImGuiFocusedFlags_AnyWindow)
+    rescue StandardError
+      # Keep backward compatibility with older bindings.
+      any_imgui_window_focused = false
+    end
+    block_keyboard_controls = wants_keyboard || any_imgui_window_focused
 
     if mode == Raylib::CAMERA_CUSTOM
       # no-op
@@ -491,7 +499,7 @@ module ImGui
         camera_data[:position] = Raylib.Vector3Add(camera_data[:target], view)
       end
     else
-      if !wants_keyboard
+      if !block_keyboard_controls
         if Raylib.IsKeyDown(Raylib::KEY_DOWN)
           Raylib.CameraPitch(camera_ptr, -camera_rotation_speed, lock_view, rotate_around_target, rotate_up)
         end
@@ -533,7 +541,7 @@ module ImGui
         end
       end
 
-      if !wants_keyboard
+      if !block_keyboard_controls
         if Raylib.IsKeyDown(Raylib::KEY_W)
           Raylib.CameraMoveForward(camera_ptr, camera_move_speed, move_in_world_plane)
         end
@@ -566,7 +574,7 @@ module ImGui
         end
       end
 
-      if mode == Raylib::CAMERA_FREE && !wants_keyboard
+      if mode == Raylib::CAMERA_FREE && !block_keyboard_controls
         if Raylib.IsKeyDown(Raylib::KEY_SPACE)
           Raylib.CameraMoveUp(camera_ptr, camera_move_speed)
         end
