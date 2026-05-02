@@ -491,13 +491,11 @@ module ImGui
     if mode == Raylib::CAMERA_CUSTOM
       # no-op
     elsif mode == Raylib::CAMERA_ORBITAL
-      if !wants_mouse
-        rotation = Raylib.MatrixRotate(Raylib.GetCameraUp(camera_ptr), camera_orbital_speed)
-        view = Raylib.Vector3Subtract(Raylib::Camera.new(camera_ptr)[:position], Raylib::Camera.new(camera_ptr)[:target])
-        view = Raylib.Vector3Transform(view, rotation)
-        camera_data = Raylib::Camera.new(camera_ptr)
-        camera_data[:position] = Raylib.Vector3Add(camera_data[:target], view)
-      end
+      rotation = Raylib.MatrixRotate(Raylib.GetCameraUp(camera_ptr), camera_orbital_speed)
+      view = Raylib.Vector3Subtract(Raylib::Camera.new(camera_ptr)[:position], Raylib::Camera.new(camera_ptr)[:target])
+      view = Raylib.Vector3Transform(view, rotation)
+      camera_data = Raylib::Camera.new(camera_ptr)
+      camera_data[:position] = Raylib.Vector3Add(camera_data[:target], view)
     else
       if !block_keyboard_controls
         if Raylib.IsKeyDown(Raylib::KEY_DOWN)
