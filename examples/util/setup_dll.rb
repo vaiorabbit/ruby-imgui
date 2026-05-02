@@ -29,7 +29,7 @@ if imgui_bindings_gem_available?
     raise RuntimeError, "setup_dll.rb : Unknown OS: #{RUBY_PLATFORM}"
   end
 else
-  # puts("Loaging from local path.")
+  # puts("Loading from local path.")
   require '../lib/imgui'
   require_relative '../../lib/imgui_impl_opengl2'
   require_relative '../../lib/imgui_impl_opengl3'
