@@ -94,16 +94,10 @@ module ImGui
         texture[:format] = Raylib::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8
       end
 
-      updates = tex[:Updates]
-      updates[:Size].times do |i|
-        r = ImTextureRect.new(updates[:Data] + ImTextureRect.size * i)
-        rec = Raylib::Rectangle.new
-        rec[:x] = r[:x].to_f
-        rec[:y] = r[:y].to_f
-        rec[:width] = r[:w].to_f
-        rec[:height] = r[:h].to_f
-        Raylib.UpdateTextureRec(texture, rec, tex.GetPixelsAt(r[:x], r[:y]))
-      end
+      # Raylib.UpdateTextureRec has no row-pitch argument, so sub-rect updates
+      # sourced from a larger atlas can sample incorrect rows and corrupt glyphs.
+      # Uploading the full atlas keeps texture data consistent across backends.
+      Raylib.UpdateTexture(texture, tex.GetPixels())
       tex.SetStatus(ImTextureStatus_OK)
 
     when ImTextureStatus_WantDestroy
