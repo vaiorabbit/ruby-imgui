@@ -857,6 +857,16 @@ CIMGUI_API void   cimgui::ImRect_AddImRect(cimgui::ImRect* self, cimgui::ImRect 
     reinterpret_cast<::ImRect*>(self)->Add(ConvertToCPP_ImRect(r));
 }
 
+CIMGUI_API void   cimgui::ImRect_AddX(cimgui::ImRect* self, float x)
+{
+    reinterpret_cast<::ImRect*>(self)->AddX(x);
+}
+
+CIMGUI_API void   cimgui::ImRect_AddY(cimgui::ImRect* self, float y)
+{
+    reinterpret_cast<::ImRect*>(self)->AddY(y);
+}
+
 CIMGUI_API void   cimgui::ImRect_Expand(cimgui::ImRect* self, const float amount)
 {
     reinterpret_cast<::ImRect*>(self)->Expand(amount);
@@ -1956,9 +1966,14 @@ CIMGUI_API void cimgui::ImGui_LogSetNextTextDecoration(const char* prefix, const
     ::ImGui::LogSetNextTextDecoration(prefix, suffix);
 }
 
-CIMGUI_API bool cimgui::ImGui_BeginChildEx(const char* name, ImGuiID id, cimgui::ImVec2 size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
+CIMGUI_API bool         cimgui::ImGui_BeginChildEx(const char* name, ImGuiID id, cimgui::ImVec2 size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
 {
     return ::ImGui::BeginChildEx(name, id, ConvertToCPP_ImVec2(size_arg), child_flags, window_flags);
+}
+
+CIMGUI_API cimgui::ImGuiWindow* cimgui::ImGui_FindFrontMostVisibleChildWindow(cimgui::ImGuiWindow* window)
+{
+    return reinterpret_cast<::cimgui::ImGuiWindow*>(::ImGui::FindFrontMostVisibleChildWindow(reinterpret_cast<::ImGuiWindow*>(window)));
 }
 
 CIMGUI_API bool             cimgui::ImGui_BeginPopupEx(ImGuiID id, ImGuiWindowFlags extra_window_flags)
@@ -2321,9 +2336,9 @@ CIMGUI_API void               cimgui::ImGui_SetKeyOwnersForKeyChord(ImGuiKeyChor
     ::ImGui::SetKeyOwnersForKeyChord(key, owner_id, flags);
 }
 
-CIMGUI_API void               cimgui::ImGui_SetItemKeyOwnerImGuiInputFlags(cimgui::ImGuiKey key, ImGuiInputFlags flags)
+CIMGUI_API bool               cimgui::ImGui_SetItemKeyOwnerImGuiInputFlags(cimgui::ImGuiKey key, ImGuiInputFlags flags)
 {
-    ::ImGui::SetItemKeyOwner(static_cast<::ImGuiKey>(key), flags);
+    return ::ImGui::SetItemKeyOwner(static_cast<::ImGuiKey>(key), flags);
 }
 
 CIMGUI_API bool               cimgui::ImGui_TestKeyOwner(cimgui::ImGuiKey key, ImGuiID owner_id)
@@ -2646,6 +2661,11 @@ CIMGUI_API void    cimgui::ImGui_PopFocusScope(void)
     ::ImGui::PopFocusScope();
 }
 
+CIMGUI_API bool    cimgui::ImGui_IsInNavFocusRoute(ImGuiID focus_scope_id)
+{
+    return ::ImGui::IsInNavFocusRoute(focus_scope_id);
+}
+
 CIMGUI_API ImGuiID cimgui::ImGui_GetCurrentFocusScope(void)
 {
     return ::ImGui::GetCurrentFocusScope();
@@ -2686,9 +2706,9 @@ CIMGUI_API void cimgui::ImGui_RenderDragDropTargetRectForItem(cimgui::ImRect bb)
     ::ImGui::RenderDragDropTargetRectForItem(ConvertToCPP_ImRect(bb));
 }
 
-CIMGUI_API void cimgui::ImGui_RenderDragDropTargetRectEx(cimgui::ImDrawList* draw_list, cimgui::ImRect bb)
+CIMGUI_API void cimgui::ImGui_RenderDragDropTargetRectEx(cimgui::ImDrawList* draw_list, cimgui::ImRect bb, float rounding)
 {
-    ::ImGui::RenderDragDropTargetRectEx(reinterpret_cast<::ImDrawList*>(draw_list), ConvertToCPP_ImRect(bb));
+    ::ImGui::RenderDragDropTargetRectEx(reinterpret_cast<::ImDrawList*>(draw_list), ConvertToCPP_ImRect(bb), rounding);
 }
 
 CIMGUI_API cimgui::ImGuiTypingSelectRequest* cimgui::ImGui_GetTypingSelectRequest(void)
@@ -2914,6 +2934,11 @@ CIMGUI_API void                    cimgui::ImGui_TableUpdateBorders(cimgui::ImGu
 CIMGUI_API void                    cimgui::ImGui_TableUpdateColumnsWeightFromWidth(cimgui::ImGuiTable* table)
 {
     ::ImGui::TableUpdateColumnsWeightFromWidth(reinterpret_cast<::ImGuiTable*>(table));
+}
+
+CIMGUI_API void                    cimgui::ImGui_TableApplyExternalUnclipRect(cimgui::ImGuiTable* table, cimgui::ImRect* rect)
+{
+    ::ImGui::TableApplyExternalUnclipRect(reinterpret_cast<::ImGuiTable*>(table), reinterpret_cast<::ImRect&>(*rect));
 }
 
 CIMGUI_API void                    cimgui::ImGui_TableDrawBorders(cimgui::ImGuiTable* table)
@@ -3593,52 +3618,57 @@ CIMGUI_API bool                     cimgui::ImGui_DataTypeIsZero(ImGuiDataType d
     return ::ImGui::DataTypeIsZero(data_type, p_data);
 }
 
-CIMGUI_API bool cimgui::ImGui_InputTextWithHintAndSize(const char* label, const char* hint, char* buf, int buf_size, cimgui::ImVec2 size_arg, ImGuiInputTextFlags flags)
+CIMGUI_API bool                 cimgui::ImGui_InputTextWithHintAndSize(const char* label, const char* hint, char* buf, int buf_size, cimgui::ImVec2 size_arg, ImGuiInputTextFlags flags)
 {
     return ::ImGui::InputTextEx(label, hint, buf, buf_size, ConvertToCPP_ImVec2(size_arg), flags);
 }
 
-CIMGUI_API bool cimgui::ImGui_InputTextWithHintAndSizeEx(const char* label, const char* hint, char* buf, int buf_size, cimgui::ImVec2 size_arg, ImGuiInputTextFlags flags, cimgui::ImGuiInputTextCallback callback, void* user_data)
+CIMGUI_API bool                 cimgui::ImGui_InputTextWithHintAndSizeEx(const char* label, const char* hint, char* buf, int buf_size, cimgui::ImVec2 size_arg, ImGuiInputTextFlags flags, cimgui::ImGuiInputTextCallback callback, void* user_data)
 {
     return ::ImGui::InputTextEx(label, hint, buf, buf_size, ConvertToCPP_ImVec2(size_arg), flags, reinterpret_cast<::ImGuiInputTextCallback>(callback), user_data);
 }
 
-CIMGUI_API void cimgui::ImGui_InputTextDeactivateHook(ImGuiID id)
+CIMGUI_API void                 cimgui::ImGui_InputTextDeactivateHook(ImGuiID id)
 {
     ::ImGui::InputTextDeactivateHook(id);
 }
 
-CIMGUI_API bool cimgui::ImGui_TempInputText(cimgui::ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags)
+CIMGUI_API bool                 cimgui::ImGui_TempInputText(cimgui::ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags)
 {
     return ::ImGui::TempInputText(ConvertToCPP_ImRect(bb), id, label, buf, buf_size, flags);
 }
 
-CIMGUI_API bool cimgui::ImGui_TempInputTextEx(cimgui::ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags, cimgui::ImGuiInputTextCallback callback, void* user_data)
+CIMGUI_API bool                 cimgui::ImGui_TempInputTextEx(cimgui::ImRect bb, ImGuiID id, const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags, cimgui::ImGuiInputTextCallback callback, void* user_data)
 {
     return ::ImGui::TempInputText(ConvertToCPP_ImRect(bb), id, label, buf, buf_size, flags, reinterpret_cast<::ImGuiInputTextCallback>(callback), user_data);
 }
 
-CIMGUI_API bool cimgui::ImGui_TempInputScalar(cimgui::ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format)
+CIMGUI_API bool                 cimgui::ImGui_TempInputScalar(cimgui::ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format)
 {
     return ::ImGui::TempInputScalar(ConvertToCPP_ImRect(bb), id, label, data_type, p_data, format);
 }
 
-CIMGUI_API bool cimgui::ImGui_TempInputScalarEx(cimgui::ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min, const void* p_clamp_max)
+CIMGUI_API bool                 cimgui::ImGui_TempInputScalarEx(cimgui::ImRect bb, ImGuiID id, const char* label, ImGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min, const void* p_clamp_max)
 {
     return ::ImGui::TempInputScalar(ConvertToCPP_ImRect(bb), id, label, data_type, p_data, format, p_clamp_min, p_clamp_max);
 }
 
-CIMGUI_API bool cimgui::ImGui_TempInputIsActive(ImGuiID id)
+CIMGUI_API bool                 cimgui::ImGui_TempInputIsActive(ImGuiID id)
 {
     return ::ImGui::TempInputIsActive(id);
 }
 
-CIMGUI_API void cimgui::ImGui_SetNextItemRefVal(ImGuiDataType data_type, void* p_data)
+CIMGUI_API cimgui::ImGuiInputTextState* cimgui::ImGui_GetInputTextState(ImGuiID id)
+{
+    return reinterpret_cast<::cimgui::ImGuiInputTextState*>(::ImGui::GetInputTextState(id));
+}
+
+CIMGUI_API void                 cimgui::ImGui_SetNextItemRefVal(ImGuiDataType data_type, void* p_data)
 {
     ::ImGui::SetNextItemRefVal(data_type, p_data);
 }
 
-CIMGUI_API bool cimgui::ImGui_IsItemActiveAsInputText(void)
+CIMGUI_API bool                 cimgui::ImGui_IsItemActiveAsInputText(void)
 {
     return ::ImGui::IsItemActiveAsInputText();
 }
@@ -3891,6 +3921,11 @@ CIMGUI_API void  cimgui::ImGui_DebugNodeTable(cimgui::ImGuiTable* table)
 CIMGUI_API void  cimgui::ImGui_DebugNodeTableSettings(cimgui::ImGuiTableSettings* settings)
 {
     ::ImGui::DebugNodeTableSettings(reinterpret_cast<::ImGuiTableSettings*>(settings));
+}
+
+CIMGUI_API void  cimgui::ImGui_DebugNodeInputTextState(cimgui::ImGuiInputTextState* state)
+{
+    ::ImGui::DebugNodeInputTextState(reinterpret_cast<::ImGuiInputTextState*>(state));
 }
 
 CIMGUI_API void  cimgui::ImGui_DebugNodeTypingSelectState(cimgui::ImGuiTypingSelectState* state)
@@ -4225,6 +4260,11 @@ CIMGUI_API void cimgui::cImFontAtlasTextureBlockCopy(cimgui::ImTextureData* src_
 CIMGUI_API void cimgui::cImFontAtlasTextureBlockQueueUpload(cimgui::ImFontAtlas* atlas, cimgui::ImTextureData* tex, int x, int y, int w, int h)
 {
     ::ImFontAtlasTextureBlockQueueUpload(reinterpret_cast<::ImFontAtlas*>(atlas), reinterpret_cast<::ImTextureData*>(tex), x, y, w, h);
+}
+
+CIMGUI_API void        cimgui::cImTextureDataQueueUpload(cimgui::ImTextureData* tex, int x, int y, int w, int h)
+{
+    ::ImTextureDataQueueUpload(reinterpret_cast<::ImTextureData*>(tex), x, y, w, h);
 }
 
 CIMGUI_API int         cimgui::cImTextureDataGetFormatBytesPerPixel(cimgui::ImTextureFormat format)

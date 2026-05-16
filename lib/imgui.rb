@@ -7,7 +7,7 @@
 require 'ffi'
 
 # defines
-IMGUI_VERSION_NUM = 19270 # 0x4B46
+IMGUI_VERSION_NUM = 19280 # 0x4B50
 IM_UNICODE_CODEPOINT_INVALID = 65533 # 0xFFFD
 IM_UNICODE_CODEPOINT_MAX = 65535 # 0xFFFF
 IM_COL32_R_SHIFT = 0 # 0x0
@@ -618,54 +618,55 @@ ImGuiCol_ScrollbarGrab = 15 # 0xF
 ImGuiCol_ScrollbarGrabHovered = 16 # 0x10
 ImGuiCol_ScrollbarGrabActive = 17 # 0x11
 ImGuiCol_CheckMark = 18 # 0x12
-ImGuiCol_SliderGrab = 19 # 0x13
-ImGuiCol_SliderGrabActive = 20 # 0x14
-ImGuiCol_Button = 21 # 0x15
-ImGuiCol_ButtonHovered = 22 # 0x16
-ImGuiCol_ButtonActive = 23 # 0x17
-ImGuiCol_Header = 24 # 0x18
-ImGuiCol_HeaderHovered = 25 # 0x19
-ImGuiCol_HeaderActive = 26 # 0x1A
-ImGuiCol_Separator = 27 # 0x1B
-ImGuiCol_SeparatorHovered = 28 # 0x1C
-ImGuiCol_SeparatorActive = 29 # 0x1D
-ImGuiCol_ResizeGrip = 30 # 0x1E
-ImGuiCol_ResizeGripHovered = 31 # 0x1F
-ImGuiCol_ResizeGripActive = 32 # 0x20
-ImGuiCol_InputTextCursor = 33 # 0x21
-ImGuiCol_TabHovered = 34 # 0x22
-ImGuiCol_Tab = 35 # 0x23
-ImGuiCol_TabSelected = 36 # 0x24
-ImGuiCol_TabSelectedOverline = 37 # 0x25
-ImGuiCol_TabDimmed = 38 # 0x26
-ImGuiCol_TabDimmedSelected = 39 # 0x27
-ImGuiCol_TabDimmedSelectedOverline = 40 # 0x28
-ImGuiCol_DockingPreview = 41 # 0x29
-ImGuiCol_DockingEmptyBg = 42 # 0x2A
-ImGuiCol_PlotLines = 43 # 0x2B
-ImGuiCol_PlotLinesHovered = 44 # 0x2C
-ImGuiCol_PlotHistogram = 45 # 0x2D
-ImGuiCol_PlotHistogramHovered = 46 # 0x2E
-ImGuiCol_TableHeaderBg = 47 # 0x2F
-ImGuiCol_TableBorderStrong = 48 # 0x30
-ImGuiCol_TableBorderLight = 49 # 0x31
-ImGuiCol_TableRowBg = 50 # 0x32
-ImGuiCol_TableRowBgAlt = 51 # 0x33
-ImGuiCol_TextLink = 52 # 0x34
-ImGuiCol_TextSelectedBg = 53 # 0x35
-ImGuiCol_TreeLines = 54 # 0x36
-ImGuiCol_DragDropTarget = 55 # 0x37
-ImGuiCol_DragDropTargetBg = 56 # 0x38
-ImGuiCol_UnsavedMarker = 57 # 0x39
-ImGuiCol_NavCursor = 58 # 0x3A
-ImGuiCol_NavWindowingHighlight = 59 # 0x3B
-ImGuiCol_NavWindowingDimBg = 60 # 0x3C
-ImGuiCol_ModalWindowDimBg = 61 # 0x3D
-ImGuiCol_COUNT = 62 # 0x3E
-ImGuiCol_TabActive = 36 # 0x24
-ImGuiCol_TabUnfocused = 38 # 0x26
-ImGuiCol_TabUnfocusedActive = 39 # 0x27
-ImGuiCol_NavHighlight = 58 # 0x3A
+ImGuiCol_CheckboxSelectedBg = 19 # 0x13
+ImGuiCol_SliderGrab = 20 # 0x14
+ImGuiCol_SliderGrabActive = 21 # 0x15
+ImGuiCol_Button = 22 # 0x16
+ImGuiCol_ButtonHovered = 23 # 0x17
+ImGuiCol_ButtonActive = 24 # 0x18
+ImGuiCol_Header = 25 # 0x19
+ImGuiCol_HeaderHovered = 26 # 0x1A
+ImGuiCol_HeaderActive = 27 # 0x1B
+ImGuiCol_Separator = 28 # 0x1C
+ImGuiCol_SeparatorHovered = 29 # 0x1D
+ImGuiCol_SeparatorActive = 30 # 0x1E
+ImGuiCol_ResizeGrip = 31 # 0x1F
+ImGuiCol_ResizeGripHovered = 32 # 0x20
+ImGuiCol_ResizeGripActive = 33 # 0x21
+ImGuiCol_InputTextCursor = 34 # 0x22
+ImGuiCol_TabHovered = 35 # 0x23
+ImGuiCol_Tab = 36 # 0x24
+ImGuiCol_TabSelected = 37 # 0x25
+ImGuiCol_TabSelectedOverline = 38 # 0x26
+ImGuiCol_TabDimmed = 39 # 0x27
+ImGuiCol_TabDimmedSelected = 40 # 0x28
+ImGuiCol_TabDimmedSelectedOverline = 41 # 0x29
+ImGuiCol_DockingPreview = 42 # 0x2A
+ImGuiCol_DockingEmptyBg = 43 # 0x2B
+ImGuiCol_PlotLines = 44 # 0x2C
+ImGuiCol_PlotLinesHovered = 45 # 0x2D
+ImGuiCol_PlotHistogram = 46 # 0x2E
+ImGuiCol_PlotHistogramHovered = 47 # 0x2F
+ImGuiCol_TableHeaderBg = 48 # 0x30
+ImGuiCol_TableBorderStrong = 49 # 0x31
+ImGuiCol_TableBorderLight = 50 # 0x32
+ImGuiCol_TableRowBg = 51 # 0x33
+ImGuiCol_TableRowBgAlt = 52 # 0x34
+ImGuiCol_TextLink = 53 # 0x35
+ImGuiCol_TextSelectedBg = 54 # 0x36
+ImGuiCol_TreeLines = 55 # 0x37
+ImGuiCol_DragDropTarget = 56 # 0x38
+ImGuiCol_DragDropTargetBg = 57 # 0x39
+ImGuiCol_UnsavedMarker = 58 # 0x3A
+ImGuiCol_NavCursor = 59 # 0x3B
+ImGuiCol_NavWindowingHighlight = 60 # 0x3C
+ImGuiCol_NavWindowingDimBg = 61 # 0x3D
+ImGuiCol_ModalWindowDimBg = 62 # 0x3E
+ImGuiCol_COUNT = 63 # 0x3F
+ImGuiCol_TabActive = 37 # 0x25
+ImGuiCol_TabUnfocused = 39 # 0x27
+ImGuiCol_TabUnfocusedActive = 40 # 0x28
+ImGuiCol_NavHighlight = 59 # 0x3B
 
 # ImGuiStyleVar_
 ImGuiStyleVar_Alpha = 0 # 0x0
@@ -703,14 +704,15 @@ ImGuiStyleVar_TableAngledHeadersAngle = 31 # 0x1F
 ImGuiStyleVar_TableAngledHeadersTextAlign = 32 # 0x20
 ImGuiStyleVar_TreeLinesSize = 33 # 0x21
 ImGuiStyleVar_TreeLinesRounding = 34 # 0x22
-ImGuiStyleVar_ButtonTextAlign = 35 # 0x23
-ImGuiStyleVar_SelectableTextAlign = 36 # 0x24
-ImGuiStyleVar_SeparatorSize = 37 # 0x25
-ImGuiStyleVar_SeparatorTextBorderSize = 38 # 0x26
-ImGuiStyleVar_SeparatorTextAlign = 39 # 0x27
-ImGuiStyleVar_SeparatorTextPadding = 40 # 0x28
-ImGuiStyleVar_DockingSeparatorSize = 41 # 0x29
-ImGuiStyleVar_COUNT = 42 # 0x2A
+ImGuiStyleVar_DragDropTargetRounding = 35 # 0x23
+ImGuiStyleVar_ButtonTextAlign = 36 # 0x24
+ImGuiStyleVar_SelectableTextAlign = 37 # 0x25
+ImGuiStyleVar_SeparatorSize = 38 # 0x26
+ImGuiStyleVar_SeparatorTextBorderSize = 39 # 0x27
+ImGuiStyleVar_SeparatorTextAlign = 40 # 0x28
+ImGuiStyleVar_SeparatorTextPadding = 41 # 0x29
+ImGuiStyleVar_DockingSeparatorSize = 42 # 0x2A
+ImGuiStyleVar_COUNT = 43 # 0x2B
 
 # ImGuiButtonFlags_
 ImGuiButtonFlags_None = 0 # 0x0
@@ -916,12 +918,12 @@ ImGuiSelectionRequestType_SetRange = 2 # 0x2
 
 # ImDrawFlags_
 ImDrawFlags_None = 0 # 0x0
-ImDrawFlags_Closed = 1 # 0x1
 ImDrawFlags_RoundCornersTopLeft = 16 # 0x10
 ImDrawFlags_RoundCornersTopRight = 32 # 0x20
 ImDrawFlags_RoundCornersBottomLeft = 64 # 0x40
 ImDrawFlags_RoundCornersBottomRight = 128 # 0x80
 ImDrawFlags_RoundCornersNone = 256 # 0x100
+ImDrawFlags_Closed = 512 # 0x200
 ImDrawFlags_RoundCornersTop = 48 # 0x30
 ImDrawFlags_RoundCornersBottom = 192 # 0xC0
 ImDrawFlags_RoundCornersLeft = 80 # 0x50
@@ -929,6 +931,7 @@ ImDrawFlags_RoundCornersRight = 160 # 0xA0
 ImDrawFlags_RoundCornersAll = 240 # 0xF0
 ImDrawFlags_RoundCornersDefault_ = 240 # 0xF0
 ImDrawFlags_RoundCornersMask_ = 496 # 0x1F0
+ImDrawFlags_InvalidMask_ = 2147483663 # 0x8000000F
 
 # ImDrawListFlags_
 ImDrawListFlags_None = 0 # 0x0
@@ -959,6 +962,7 @@ ImFontFlags_None = 0 # 0x0
 ImFontFlags_NoLoadError = 2 # 0x2
 ImFontFlags_NoLoadGlyphs = 4 # 0x4
 ImFontFlags_LockBakedSizes = 8 # 0x8
+ImFontFlags_ImplicitRefSize = 16 # 0x10
 
 # ImGuiViewportFlags_
 ImGuiViewportFlags_None = 0 # 0x0
@@ -1018,6 +1022,7 @@ ImGuiItemStatusFlags_HoveredWindow = 128 # 0x80
 ImGuiItemStatusFlags_Visible = 256 # 0x100
 ImGuiItemStatusFlags_HasClipRect = 512 # 0x200
 ImGuiItemStatusFlags_HasShortcut = 1024 # 0x400
+ImGuiItemStatusFlags_EditedInternal = 2048 # 0x800
 
 # ImGuiHoveredFlagsPrivate_
 ImGuiHoveredFlags_DelayMask_ = 245760 # 0x3C000
@@ -1522,12 +1527,28 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddLineEx(self, p1, p2, col, thickness)
   end
 
+  def AddLineH(min_x, max_x, y, col)
+    ImGui::ImDrawList_AddLineH(self, min_x, max_x, y, col)
+  end
+
+  def AddLineHEx(min_x, max_x, y, col, thickness = 1.0)
+    ImGui::ImDrawList_AddLineHEx(self, min_x, max_x, y, col, thickness)
+  end
+
+  def AddLineV(x, min_y, max_y, col)
+    ImGui::ImDrawList_AddLineV(self, x, min_y, max_y, col)
+  end
+
+  def AddLineVEx(x, min_y, max_y, col, thickness = 1.0)
+    ImGui::ImDrawList_AddLineVEx(self, x, min_y, max_y, col, thickness)
+  end
+
   def AddRect(p_min, p_max, col)
     ImGui::ImDrawList_AddRect(self, p_min, p_max, col)
   end
 
-  def AddRectEx(p_min, p_max, col, rounding = 0.0, flags = 0, thickness = 1.0)
-    ImGui::ImDrawList_AddRectEx(self, p_min, p_max, col, rounding, flags, thickness)
+  def AddRectEx(p_min, p_max, col, rounding = 0.0, thickness = 1.0, flags = 0)
+    ImGui::ImDrawList_AddRectEx(self, p_min, p_max, col, rounding, thickness, flags)
   end
 
   def AddRectFilled(p_min, p_max, col)
@@ -1630,8 +1651,8 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_AddBezierQuadratic(self, p1, p2, p3, col, thickness, num_segments)
   end
 
-  def AddPolyline(points, num_points, col, flags, thickness)
-    ImGui::ImDrawList_AddPolyline(self, points, num_points, col, flags, thickness)
+  def AddPolyline(points, num_points, col, thickness, flags = 0)
+    ImGui::ImDrawList_AddPolyline(self, points, num_points, col, thickness, flags)
   end
 
   def AddConvexPolyFilled(points, num_points, col)
@@ -1682,8 +1703,8 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PathFillConcave(self, col)
   end
 
-  def PathStroke(col, flags = 0, thickness = 1.0)
-    ImGui::ImDrawList_PathStroke(self, col, flags, thickness)
+  def PathStroke(col, thickness = 1.0, flags = 0)
+    ImGui::ImDrawList_PathStroke(self, col, thickness, flags)
   end
 
   def PathArcTo(center, radius, a_min, a_max, num_segments = 0)
@@ -1714,11 +1735,11 @@ class ImDrawList < FFI::Struct
     ImGui::ImDrawList_PathRect(self, rect_min, rect_max, rounding, flags)
   end
 
-  def AddCallback(callback, userdata)
-    ImGui::ImDrawList_AddCallback(self, callback, userdata)
+  def AddCallback(callback)
+    ImGui::ImDrawList_AddCallback(self, callback)
   end
 
-  def AddCallbackEx(callback, userdata, userdata_size = 0)
+  def AddCallbackEx(callback, userdata = nil, userdata_size = 0)
     ImGui::ImDrawList_AddCallbackEx(self, callback, userdata, userdata_size)
   end
 
@@ -1772,6 +1793,18 @@ class ImDrawList < FFI::Struct
 
   def PrimVtx(pos, uv, col)
     ImGui::ImDrawList_PrimVtx(self, pos, uv, col)
+  end
+
+  def AddRectImDrawFlags(p_min, p_max, col, rounding, flags, thickness)
+    ImGui::ImDrawList_AddRectImDrawFlags(self, p_min, p_max, col, rounding, flags, thickness)
+  end
+
+  def AddPolylineImDrawFlags(points, num_points, col, flags, thickness)
+    ImGui::ImDrawList_AddPolylineImDrawFlags(self, points, num_points, col, flags, thickness)
+  end
+
+  def PathStrokeImDrawFlags(col, flags, thickness)
+    ImGui::ImDrawList_PathStrokeImDrawFlags(self, col, flags, thickness)
   end
 
   def PushTextureID(tex_ref)
@@ -1918,6 +1951,10 @@ class ImFontAtlas < FFI::Struct
     ImGui::ImFontAtlas_Clear(self)
   end
 
+  def ClearFonts()
+    ImGui::ImFontAtlas_ClearFonts(self)
+  end
+
   def CompactCache()
     ImGui::ImFontAtlas_CompactCache(self)
   end
@@ -1928,10 +1965,6 @@ class ImFontAtlas < FFI::Struct
 
   def ClearInputData()
     ImGui::ImFontAtlas_ClearInputData(self)
-  end
-
-  def ClearFonts()
-    ImGui::ImFontAtlas_ClearFonts(self)
   end
 
   def ClearTexData()
@@ -2605,7 +2638,8 @@ class ImGuiWindowClass < FFI::Struct
     :TabItemFlagsOverrideSet, :int,
     :DockNodeFlagsOverrideSet, :int,
     :DockingAlwaysTabBar, :bool,
-    :DockingAllowUnclassed, :bool
+    :DockingAllowUnclassed, :bool,
+    :PlatformIconData, :pointer
   )
 end
 
@@ -3264,6 +3298,7 @@ class ImGuiViewport < FFI::Struct
     :DrawData, :pointer,
     :RendererUserData, :pointer,
     :PlatformUserData, :pointer,
+    :PlatformIconData, :pointer,
     :PlatformHandle, :pointer,
     :PlatformHandleRaw, :pointer,
     :PlatformWindowCreated, :bool,
@@ -3299,6 +3334,9 @@ class ImGuiPlatformIO < FFI::Struct
     :Renderer_TextureMaxWidth, :int,
     :Renderer_TextureMaxHeight, :int,
     :Renderer_RenderState, :pointer,
+    :DrawCallback_ResetRenderState, :pointer,
+    :DrawCallback_SetSamplerLinear, :pointer,
+    :DrawCallback_SetSamplerNearest, :pointer,
     :Platform_CreateWindow, :pointer,
     :Platform_DestroyWindow, :pointer,
     :Platform_ShowWindow, :pointer,
@@ -3460,6 +3498,14 @@ class ImRect < FFI::Struct
 
   def AddImRect(r)
     ImGui::ImRect_AddImRect(self, r)
+  end
+
+  def AddX(x)
+    ImGui::ImRect_AddX(self, x)
+  end
+
+  def AddY(y)
+    ImGui::ImRect_AddY(self, y)
   end
 
   def Expand(amount)
@@ -4558,6 +4604,7 @@ class ImGuiBoxSelectState < FFI::Struct
     :Window, :pointer,
     :UnclipMode, :bool,
     :UnclipRect, ImRect.by_value,
+    :UnclipRects, [ImRect.by_value, 2],
     :BoxSelectRectPrev, ImRect.by_value,
     :BoxSelectRectCurr, ImRect.by_value
   )
@@ -4571,7 +4618,6 @@ class ImGuiMultiSelectTempData < FFI::Struct
     :Flags, :int,
     :ScopeRectMin, ImVec2.by_value,
     :BackupCursorMaxPos, ImVec2.by_value,
-    :LastSubmittedItem, :int64,
     :BoxSelectId, :uint,
     :KeyMods, :int,
     :LoopRequestSetAll, :char,
@@ -4622,8 +4668,8 @@ class ImGuiDockNode < FFI::Struct
     :Size, ImVec2.by_value,
     :SizeRef, ImVec2.by_value,
     :SplitAxis, :int,
-    :WindowClass, ImGuiWindowClass.by_value,
     :LastBgColor, :uint,
+    :WindowClass, ImGuiWindowClass.by_value,
     :HostWindow, :pointer,
     :VisibleWindow, :pointer,
     :CentralNode, :pointer,
@@ -4683,6 +4729,7 @@ class ImGuiViewportP < FFI::Struct
     :DrawData, :pointer,
     :RendererUserData, :pointer,
     :PlatformUserData, :pointer,
+    :PlatformIconData, :pointer,
     :PlatformHandle, :pointer,
     :PlatformHandleRaw, :pointer,
     :PlatformWindowCreated, :bool,
@@ -4891,6 +4938,7 @@ class ImGuiContext < FFI::Struct
     :CurrentDpiScale, :float,
     :DrawListSharedData, ImDrawListSharedData.by_value,
     :WithinEndChildID, :uint,
+    :WithinEndPopupID, :uint,
     :TestEngine, :pointer,
     :InputEventsQueue, ImVector.by_value,
     :InputEventsTrail, ImVector.by_value,
@@ -6295,7 +6343,7 @@ module ImGui
       [:ImGui_SetNextFrameWantCaptureKeyboard, :ImGui_SetNextFrameWantCaptureKeyboard, [:bool], :void],
       [:ImGui_Shortcut, :ImGui_Shortcut, [:int, :int], :bool],
       [:ImGui_SetNextItemShortcut, :ImGui_SetNextItemShortcut, [:int, :int], :void],
-      [:ImGui_SetItemKeyOwner, :ImGui_SetItemKeyOwner, [:int], :void],
+      [:ImGui_SetItemKeyOwner, :ImGui_SetItemKeyOwner, [:int], :bool],
       [:ImGui_IsMouseDown, :ImGui_IsMouseDown, [:int], :bool],
       [:ImGui_IsMouseClicked, :ImGui_IsMouseClicked, [:int], :bool],
       [:ImGui_IsMouseClickedEx, :ImGui_IsMouseClickedEx, [:int, :bool], :bool],
@@ -6434,8 +6482,12 @@ module ImGui
       [:ImDrawList_GetClipRectMax, :ImDrawList_GetClipRectMax, [:pointer], ImVec2.by_value],
       [:ImDrawList_AddLine, :ImDrawList_AddLine, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void],
       [:ImDrawList_AddLineEx, :ImDrawList_AddLineEx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float], :void],
+      [:ImDrawList_AddLineH, :ImDrawList_AddLineH, [:pointer, :float, :float, :float, :uint], :void],
+      [:ImDrawList_AddLineHEx, :ImDrawList_AddLineHEx, [:pointer, :float, :float, :float, :uint, :float], :void],
+      [:ImDrawList_AddLineV, :ImDrawList_AddLineV, [:pointer, :float, :float, :float, :uint], :void],
+      [:ImDrawList_AddLineVEx, :ImDrawList_AddLineVEx, [:pointer, :float, :float, :float, :uint, :float], :void],
       [:ImDrawList_AddRect, :ImDrawList_AddRect, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void],
-      [:ImDrawList_AddRectEx, :ImDrawList_AddRectEx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float], :void],
+      [:ImDrawList_AddRectEx, :ImDrawList_AddRectEx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :float, :int], :void],
       [:ImDrawList_AddRectFilled, :ImDrawList_AddRectFilled, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void],
       [:ImDrawList_AddRectFilledEx, :ImDrawList_AddRectFilledEx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void],
       [:ImDrawList_AddRectFilledMultiColor, :ImDrawList_AddRectFilledMultiColor, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :uint, :uint, :uint], :void],
@@ -6461,7 +6513,7 @@ module ImGui
       [:ImDrawList_AddTextImFontPtrEx, :ImDrawList_AddTextImFontPtrEx, [:pointer, :pointer, :float, ImVec2.by_value, :uint, :pointer, :pointer, :float, :pointer], :void],
       [:ImDrawList_AddBezierCubic, :ImDrawList_AddBezierCubic, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void],
       [:ImDrawList_AddBezierQuadratic, :ImDrawList_AddBezierQuadratic, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int], :void],
-      [:ImDrawList_AddPolyline, :ImDrawList_AddPolyline, [:pointer, :pointer, :int, :uint, :int, :float], :void],
+      [:ImDrawList_AddPolyline, :ImDrawList_AddPolyline, [:pointer, :pointer, :int, :uint, :float, :int], :void],
       [:ImDrawList_AddConvexPolyFilled, :ImDrawList_AddConvexPolyFilled, [:pointer, :pointer, :int, :uint], :void],
       [:ImDrawList_AddConcavePolyFilled, :ImDrawList_AddConcavePolyFilled, [:pointer, :pointer, :int, :uint], :void],
       [:ImDrawList_AddImage, :ImDrawList_AddImage, [:pointer, ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value], :void],
@@ -6474,7 +6526,7 @@ module ImGui
       [:ImDrawList_PathLineToMergeDuplicate, :ImDrawList_PathLineToMergeDuplicate, [:pointer, ImVec2.by_value], :void],
       [:ImDrawList_PathFillConvex, :ImDrawList_PathFillConvex, [:pointer, :uint], :void],
       [:ImDrawList_PathFillConcave, :ImDrawList_PathFillConcave, [:pointer, :uint], :void],
-      [:ImDrawList_PathStroke, :ImDrawList_PathStroke, [:pointer, :uint, :int, :float], :void],
+      [:ImDrawList_PathStroke, :ImDrawList_PathStroke, [:pointer, :uint, :float, :int], :void],
       [:ImDrawList_PathArcTo, :ImDrawList_PathArcTo, [:pointer, ImVec2.by_value, :float, :float, :float, :int], :void],
       [:ImDrawList_PathArcToFast, :ImDrawList_PathArcToFast, [:pointer, ImVec2.by_value, :float, :int, :int], :void],
       [:ImDrawList_PathEllipticalArcTo, :ImDrawList_PathEllipticalArcTo, [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :float, :float], :void],
@@ -6482,7 +6534,7 @@ module ImGui
       [:ImDrawList_PathBezierCubicCurveTo, :ImDrawList_PathBezierCubicCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, :int], :void],
       [:ImDrawList_PathBezierQuadraticCurveTo, :ImDrawList_PathBezierQuadraticCurveTo, [:pointer, ImVec2.by_value, ImVec2.by_value, :int], :void],
       [:ImDrawList_PathRect, :ImDrawList_PathRect, [:pointer, ImVec2.by_value, ImVec2.by_value, :float, :int], :void],
-      [:ImDrawList_AddCallback, :ImDrawList_AddCallback, [:pointer, :ImDrawCallback, :pointer], :void],
+      [:ImDrawList_AddCallback, :ImDrawList_AddCallback, [:pointer, :ImDrawCallback], :void],
       [:ImDrawList_AddCallbackEx, :ImDrawList_AddCallbackEx, [:pointer, :ImDrawCallback, :pointer, :size_t], :void],
       [:ImDrawList_AddDrawCmd, :ImDrawList_AddDrawCmd, [:pointer], :void],
       [:ImDrawList_CloneOutput, :ImDrawList_CloneOutput, [:pointer], :pointer],
@@ -6497,6 +6549,9 @@ module ImGui
       [:ImDrawList_PrimWriteVtx, :ImDrawList_PrimWriteVtx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void],
       [:ImDrawList_PrimWriteIdx, :ImDrawList_PrimWriteIdx, [:pointer, :ushort], :void],
       [:ImDrawList_PrimVtx, :ImDrawList_PrimVtx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint], :void],
+      [:ImDrawList_AddRectImDrawFlags, :ImDrawList_AddRectImDrawFlags, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, :int, :float], :void],
+      [:ImDrawList_AddPolylineImDrawFlags, :ImDrawList_AddPolylineImDrawFlags, [:pointer, :pointer, :int, :uint, :int, :float], :void],
+      [:ImDrawList_PathStrokeImDrawFlags, :ImDrawList_PathStrokeImDrawFlags, [:pointer, :uint, :int, :float], :void],
       [:ImDrawList_PushTextureID, :ImDrawList_PushTextureID, [:pointer, ImTextureRef.by_value], :void],
       [:ImDrawList_PopTextureID, :ImDrawList_PopTextureID, [:pointer], :void],
       [:ImDrawList__SetDrawListSharedData, :ImDrawList__SetDrawListSharedData, [:pointer, :pointer], :void],
@@ -6542,10 +6597,10 @@ module ImGui
       [:ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, :ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer],
       [:ImFontAtlas_RemoveFont, :ImFontAtlas_RemoveFont, [:pointer, :pointer], :void],
       [:ImFontAtlas_Clear, :ImFontAtlas_Clear, [:pointer], :void],
+      [:ImFontAtlas_ClearFonts, :ImFontAtlas_ClearFonts, [:pointer], :void],
       [:ImFontAtlas_CompactCache, :ImFontAtlas_CompactCache, [:pointer], :void],
       [:ImFontAtlas_SetFontLoader, :ImFontAtlas_SetFontLoader, [:pointer, :pointer], :void],
       [:ImFontAtlas_ClearInputData, :ImFontAtlas_ClearInputData, [:pointer], :void],
-      [:ImFontAtlas_ClearFonts, :ImFontAtlas_ClearFonts, [:pointer], :void],
       [:ImFontAtlas_ClearTexData, :ImFontAtlas_ClearTexData, [:pointer], :void],
       [:ImFontAtlas_Build, :ImFontAtlas_Build, [:pointer], :bool],
       [:ImFontAtlas_GetTexDataAsAlpha8, :ImFontAtlas_GetTexDataAsAlpha8, [:pointer, :pointer, :pointer, :pointer, :pointer], :void],
@@ -6726,6 +6781,8 @@ module ImGui
       [:ImRect_Overlaps, :ImRect_Overlaps, [:pointer, ImRect.by_value], :bool],
       [:ImRect_Add, :ImRect_Add, [:pointer, ImVec2.by_value], :void],
       [:ImRect_AddImRect, :ImRect_AddImRect, [:pointer, ImRect.by_value], :void],
+      [:ImRect_AddX, :ImRect_AddX, [:pointer, :float], :void],
+      [:ImRect_AddY, :ImRect_AddY, [:pointer, :float], :void],
       [:ImRect_Expand, :ImRect_Expand, [:pointer, :float], :void],
       [:ImRect_ExpandImVec2, :ImRect_ExpandImVec2, [:pointer, ImVec2.by_value], :void],
       [:ImRect_Translate, :ImRect_Translate, [:pointer, ImVec2.by_value], :void],
@@ -6934,6 +6991,7 @@ module ImGui
       [:ImGui_LogRenderedTextEx, :ImGui_LogRenderedTextEx, [:pointer, :pointer, :pointer], :void],
       [:ImGui_LogSetNextTextDecoration, :ImGui_LogSetNextTextDecoration, [:pointer, :pointer], :void],
       [:ImGui_BeginChildEx, :ImGui_BeginChildEx, [:pointer, :uint, ImVec2.by_value, :int, :int], :bool],
+      [:ImGui_FindFrontMostVisibleChildWindow, :ImGui_FindFrontMostVisibleChildWindow, [:pointer], :pointer],
       [:ImGui_BeginPopupEx, :ImGui_BeginPopupEx, [:uint, :int], :bool],
       [:ImGui_BeginPopupMenuEx, :ImGui_BeginPopupMenuEx, [:uint, :pointer, :int], :bool],
       [:ImGui_OpenPopupEx, :ImGui_OpenPopupEx, [:uint], :void],
@@ -7006,7 +7064,7 @@ module ImGui
       [:ImGui_GetKeyOwner, :ImGui_GetKeyOwner, [:int], :uint],
       [:ImGui_SetKeyOwner, :ImGui_SetKeyOwner, [:int, :uint, :int], :void],
       [:ImGui_SetKeyOwnersForKeyChord, :ImGui_SetKeyOwnersForKeyChord, [:int, :uint, :int], :void],
-      [:ImGui_SetItemKeyOwnerImGuiInputFlags, :ImGui_SetItemKeyOwnerImGuiInputFlags, [:int, :int], :void],
+      [:ImGui_SetItemKeyOwnerImGuiInputFlags, :ImGui_SetItemKeyOwnerImGuiInputFlags, [:int, :int], :bool],
       [:ImGui_TestKeyOwner, :ImGui_TestKeyOwner, [:int, :uint], :bool],
       [:ImGui_GetKeyOwnerData, :ImGui_GetKeyOwnerData, [:pointer, :int], :pointer],
       [:ImGui_IsKeyDownID, :ImGui_IsKeyDownID, [:int, :uint], :bool],
@@ -7071,6 +7129,7 @@ module ImGui
       [:ImGui_DockBuilderFinish, :ImGui_DockBuilderFinish, [:uint], :void],
       [:ImGui_PushFocusScope, :ImGui_PushFocusScope, [:uint], :void],
       [:ImGui_PopFocusScope, :ImGui_PopFocusScope, [], :void],
+      [:ImGui_IsInNavFocusRoute, :ImGui_IsInNavFocusRoute, [:uint], :bool],
       [:ImGui_GetCurrentFocusScope, :ImGui_GetCurrentFocusScope, [], :uint],
       [:ImGui_IsDragDropActive, :ImGui_IsDragDropActive, [], :bool],
       [:ImGui_BeginDragDropTargetCustom, :ImGui_BeginDragDropTargetCustom, [ImRect.by_value, :uint], :bool],
@@ -7079,7 +7138,7 @@ module ImGui
       [:ImGui_ClearDragDrop, :ImGui_ClearDragDrop, [], :void],
       [:ImGui_IsDragDropPayloadBeingAccepted, :ImGui_IsDragDropPayloadBeingAccepted, [], :bool],
       [:ImGui_RenderDragDropTargetRectForItem, :ImGui_RenderDragDropTargetRectForItem, [ImRect.by_value], :void],
-      [:ImGui_RenderDragDropTargetRectEx, :ImGui_RenderDragDropTargetRectEx, [:pointer, ImRect.by_value], :void],
+      [:ImGui_RenderDragDropTargetRectEx, :ImGui_RenderDragDropTargetRectEx, [:pointer, ImRect.by_value, :float], :void],
       [:ImGui_GetTypingSelectRequest, :ImGui_GetTypingSelectRequest, [], :pointer],
       [:ImGui_GetTypingSelectRequestEx, :ImGui_GetTypingSelectRequestEx, [:int], :pointer],
       [:ImGui_TypingSelectFindMatch, :ImGui_TypingSelectFindMatch, [:pointer, :int, :pointer, :pointer, :int], :int],
@@ -7125,6 +7184,7 @@ module ImGui
       [:ImGui_TableUpdateLayout, :ImGui_TableUpdateLayout, [:pointer], :void],
       [:ImGui_TableUpdateBorders, :ImGui_TableUpdateBorders, [:pointer], :void],
       [:ImGui_TableUpdateColumnsWeightFromWidth, :ImGui_TableUpdateColumnsWeightFromWidth, [:pointer], :void],
+      [:ImGui_TableApplyExternalUnclipRect, :ImGui_TableApplyExternalUnclipRect, [:pointer, :pointer], :void],
       [:ImGui_TableDrawBorders, :ImGui_TableDrawBorders, [:pointer], :void],
       [:ImGui_TableDrawDefaultContextMenu, :ImGui_TableDrawDefaultContextMenu, [:pointer, :int], :void],
       [:ImGui_TableBeginContextMenuPopup, :ImGui_TableBeginContextMenuPopup, [:pointer], :bool],
@@ -7266,6 +7326,7 @@ module ImGui
       [:ImGui_TempInputScalar, :ImGui_TempInputScalar, [ImRect.by_value, :uint, :pointer, :int, :pointer, :pointer], :bool],
       [:ImGui_TempInputScalarEx, :ImGui_TempInputScalarEx, [ImRect.by_value, :uint, :pointer, :int, :pointer, :pointer, :pointer, :pointer], :bool],
       [:ImGui_TempInputIsActive, :ImGui_TempInputIsActive, [:uint], :bool],
+      [:ImGui_GetInputTextState, :ImGui_GetInputTextState, [:uint], :pointer],
       [:ImGui_SetNextItemRefVal, :ImGui_SetNextItemRefVal, [:int, :pointer], :void],
       [:ImGui_IsItemActiveAsInputText, :ImGui_IsItemActiveAsInputText, [], :bool],
       [:ImGui_ColorTooltip, :ImGui_ColorTooltip, [:pointer, :pointer, :int], :void],
@@ -7318,6 +7379,7 @@ module ImGui
       [:ImGui_DebugNodeTabBar, :ImGui_DebugNodeTabBar, [:pointer, :pointer], :void],
       [:ImGui_DebugNodeTable, :ImGui_DebugNodeTable, [:pointer], :void],
       [:ImGui_DebugNodeTableSettings, :ImGui_DebugNodeTableSettings, [:pointer], :void],
+      [:ImGui_DebugNodeInputTextState, :ImGui_DebugNodeInputTextState, [:pointer], :void],
       [:ImGui_DebugNodeTypingSelectState, :ImGui_DebugNodeTypingSelectState, [:pointer], :void],
       [:ImGui_DebugNodeMultiSelectState, :ImGui_DebugNodeMultiSelectState, [:pointer], :void],
       [:ImGui_DebugNodeWindow, :ImGui_DebugNodeWindow, [:pointer, :pointer], :void],
@@ -7383,6 +7445,7 @@ module ImGui
       [:cImFontAtlasTextureBlockFill, :cImFontAtlasTextureBlockFill, [:pointer, :int, :int, :int, :int, :uint], :void],
       [:cImFontAtlasTextureBlockCopy, :cImFontAtlasTextureBlockCopy, [:pointer, :int, :int, :pointer, :int, :int, :int, :int], :void],
       [:cImFontAtlasTextureBlockQueueUpload, :cImFontAtlasTextureBlockQueueUpload, [:pointer, :pointer, :int, :int, :int, :int], :void],
+      [:cImTextureDataQueueUpload, :cImTextureDataQueueUpload, [:pointer, :int, :int, :int, :int], :void],
       [:cImTextureDataGetFormatBytesPerPixel, :cImTextureDataGetFormatBytesPerPixel, [:int], :int],
       [:cImTextureDataGetStatusName, :cImTextureDataGetStatusName, [:int], :pointer],
       [:cImTextureDataGetFormatName, :cImTextureDataGetFormatName, [:int], :pointer],
@@ -9417,6 +9480,12 @@ module ImGui
     ImGui_BeginChildEx(name, id, size_arg, child_flags, window_flags)
   end
 
+  # arg: window(ImGuiWindow*)
+  # ret: pointer
+  def self.FindFrontMostVisibleChildWindow(window)
+    ImGui_FindFrontMostVisibleChildWindow(window)
+  end
+
   # arg: id(ImGuiID), extra_window_flags(ImGuiWindowFlags)
   # ret: bool
   def self.BeginPopupEx(id, extra_window_flags)
@@ -10042,6 +10111,12 @@ module ImGui
     ImGui_PopFocusScope()
   end
 
+  # arg: focus_scope_id(ImGuiID)
+  # ret: bool
+  def self.IsInNavFocusRoute(focus_scope_id)
+    ImGui_IsInNavFocusRoute(focus_scope_id)
+  end
+
   # ret: uint
   def self.GetCurrentFocusScope()
     ImGui_GetCurrentFocusScope()
@@ -10074,10 +10149,10 @@ module ImGui
     ImGui_RenderDragDropTargetRectForItem(bb)
   end
 
-  # arg: draw_list(ImDrawList*), bb(ImRect)
+  # arg: draw_list(ImDrawList*), bb(ImRect), rounding(float)
   # ret: void
-  def self.RenderDragDropTargetRectEx(draw_list, bb)
-    ImGui_RenderDragDropTargetRectEx(draw_list, bb)
+  def self.RenderDragDropTargetRectEx(draw_list, bb, rounding)
+    ImGui_RenderDragDropTargetRectEx(draw_list, bb, rounding)
   end
 
   # arg: req(ImGuiTypingSelectRequest*), items_count(int), get_item_name_func(const char* (*get_item_name_func)(void*, int)), user_data(void*), nav_item_idx(int)
@@ -10302,6 +10377,12 @@ module ImGui
   # ret: void
   def self.TableUpdateColumnsWeightFromWidth(table)
     ImGui_TableUpdateColumnsWeightFromWidth(table)
+  end
+
+  # arg: table(ImGuiTable*), rect(ImRect*)
+  # ret: void
+  def self.TableApplyExternalUnclipRect(table, rect)
+    ImGui_TableApplyExternalUnclipRect(table, rect)
   end
 
   # arg: table(ImGuiTable*)
@@ -10841,6 +10922,12 @@ module ImGui
     ImGui_TempInputIsActive(id)
   end
 
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.GetInputTextState(id)
+    ImGui_GetInputTextState(id)
+  end
+
   # arg: data_type(ImGuiDataType), p_data(void*)
   # ret: void
   def self.SetNextItemRefVal(data_type, p_data)
@@ -11095,6 +11182,12 @@ module ImGui
   # ret: void
   def self.DebugNodeTableSettings(settings)
     ImGui_DebugNodeTableSettings(settings)
+  end
+
+  # arg: state(ImGuiInputTextState*)
+  # ret: void
+  def self.DebugNodeInputTextState(state)
+    ImGui_DebugNodeInputTextState(state)
   end
 
   # arg: state(ImGuiTypingSelectState*)
@@ -12562,10 +12655,10 @@ module ImGui
 
   def self.SetItemKeyOwner(*arg)
     # arg: 0:key(ImGuiKey)
-    # ret: void
+    # ret: bool
     return ImGui_SetItemKeyOwner(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:key(ImGuiKey), 1:flags(ImGuiInputFlags)
-    # ret: void
+    # ret: bool
     return ImGui_SetItemKeyOwnerImGuiInputFlags(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::SetItemKeyOwner : No matching functions found (#{arg})")
   end
