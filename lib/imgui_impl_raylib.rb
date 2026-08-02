@@ -125,8 +125,11 @@ module ImGui
     return if draw_data[:Textures] == nil || draw_data[:Textures].address == 0
 
     textures = ImVector_ImTextureDataPtr.new(draw_data[:Textures])
+    textures_data = textures[:Data]
+    return if textures_data == nil || textures_data.address == 0
+
     textures[:Size].times do |i|
-      tex_ptr = (textures[:Data] + FFI.type_size(:pointer) * i).read_pointer
+      tex_ptr = (textures_data + FFI.type_size(:pointer) * i).read_pointer
       next if tex_ptr == nil || tex_ptr.address == 0
 
       tex = ImTextureData.new(tex_ptr)
@@ -688,16 +691,26 @@ module ImGui
 
     clip_offset = draw_data[:DisplayPos]
     clip_scale = draw_data[:FramebufferScale]
-    draw_data[:CmdListsCount].times do |n|
-      cmd_list = ImDrawList.new((draw_data[:CmdLists][:Data] + FFI.type_size(:pointer) * n).read_pointer)
-      vtx_buffer = cmd_list[:VtxBuffer][:Data] # const ImDrawVert*
-      idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
+    cmd_lists = draw_data[:CmdLists]
+    cmd_lists_data = cmd_lists[:Data]
 
-      cmd_list[:CmdBuffer][:Size].times do |cmd_i|
-        pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i) # const ImDrawCmd*
-        if pcmd[:UserCallback] != nil
-          # [TODO] Handle user callback (Ref.: https://github.com/ffi/ffi/wiki/Callbacks )
-        else
+    if cmd_lists_data != nil && cmd_lists_data.address != 0
+      cmd_lists[:Size].times do |n|
+        cmd_list_ptr = (cmd_lists_data + FFI.type_size(:pointer) * n).read_pointer
+        next if cmd_list_ptr == nil || cmd_list_ptr.address == 0
+
+        cmd_list = ImDrawList.new(cmd_list_ptr)
+        vtx_buffer = cmd_list[:VtxBuffer][:Data] # const ImDrawVert*
+        idx_buffer = cmd_list[:IdxBuffer][:Data] # const ImDrawIdx*
+
+        cmd_list[:CmdBuffer][:Size].times do |cmd_i|
+          pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i) # const ImDrawCmd*
+          callback_ptr = pcmd[:UserCallback]
+          if callback_ptr != nil && callback_ptr.address != 0
+            # [TODO] Handle user callback (Ref.: https://github.com/ffi/ffi/wiki/Callbacks )
+            next
+          end
+
           rect_min_x = (pcmd[:ClipRect][:x] - clip_offset[:x]) * clip_scale[:x]
           rect_min_y = (pcmd[:ClipRect][:y] - clip_offset[:y]) * clip_scale[:y]
           rect_max_x = (pcmd[:ClipRect][:z] - clip_offset[:x]) * clip_scale[:x]
@@ -719,31 +732,31 @@ module ImGui
           vertices = vtx_buffer + ImDrawVert.size * pcmd[:VtxOffset]
           0.step(pcmd[:ElemCount] - 3, 3) do |i|
             Raylib.rlPushMatrix()
-              Raylib.rlBegin(Raylib::RL_TRIANGLES)
-              Raylib.rlSetTexture(pcmd.GetTexID())
+            Raylib.rlBegin(Raylib::RL_TRIANGLES)
+            Raylib.rlSetTexture(pcmd.GetTexID())
 
-                index = indices.get_array_of_uint16(i * FFI::type_size(:ImDrawIdx), 3)
+            index = indices.get_array_of_uint16(i * FFI::type_size(:ImDrawIdx), 3)
 
-                base_offset = ImDrawVert.size * index[0]
-                xy = vertices + (base_offset + ImDrawVert.offset_of(:pos))
-                uv = vertices + (base_offset + ImDrawVert.offset_of(:uv))
-                color = vertices + (base_offset + ImDrawVert.offset_of(:col))
-                set_vertex(xy.read_array_of_float(2), uv.read_array_of_float(2), color.read_array_of_uint8(4))
+            base_offset = ImDrawVert.size * index[0]
+            xy = vertices + (base_offset + ImDrawVert.offset_of(:pos))
+            uv = vertices + (base_offset + ImDrawVert.offset_of(:uv))
+            color = vertices + (base_offset + ImDrawVert.offset_of(:col))
+            set_vertex(xy.read_array_of_float(2), uv.read_array_of_float(2), color.read_array_of_uint8(4))
 
-                base_offset = ImDrawVert.size * index[2]
-                xy = vertices + (base_offset + ImDrawVert.offset_of(:pos))
-                uv = vertices + (base_offset + ImDrawVert.offset_of(:uv))
-                color = vertices + (base_offset + ImDrawVert.offset_of(:col))
-                set_vertex(xy.read_array_of_float(2), uv.read_array_of_float(2), color.read_array_of_uint8(4))
+            base_offset = ImDrawVert.size * index[2]
+            xy = vertices + (base_offset + ImDrawVert.offset_of(:pos))
+            uv = vertices + (base_offset + ImDrawVert.offset_of(:uv))
+            color = vertices + (base_offset + ImDrawVert.offset_of(:col))
+            set_vertex(xy.read_array_of_float(2), uv.read_array_of_float(2), color.read_array_of_uint8(4))
 
-                base_offset = ImDrawVert.size * index[1]
-                xy = vertices + (base_offset + ImDrawVert.offset_of(:pos))
-                uv = vertices + (base_offset + ImDrawVert.offset_of(:uv))
-                color = vertices + (base_offset + ImDrawVert.offset_of(:col))
-                set_vertex(xy.read_array_of_float(2), uv.read_array_of_float(2), color.read_array_of_uint8(4))
+            base_offset = ImDrawVert.size * index[1]
+            xy = vertices + (base_offset + ImDrawVert.offset_of(:pos))
+            uv = vertices + (base_offset + ImDrawVert.offset_of(:uv))
+            color = vertices + (base_offset + ImDrawVert.offset_of(:col))
+            set_vertex(xy.read_array_of_float(2), uv.read_array_of_float(2), color.read_array_of_uint8(4))
 
-                Raylib.rlSetTexture(0)
-              Raylib.rlEnd()
+            Raylib.rlSetTexture(0)
+            Raylib.rlEnd()
             Raylib.rlPopMatrix()
           end
           Raylib.EndScissorMode()

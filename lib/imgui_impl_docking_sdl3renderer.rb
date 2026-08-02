@@ -18,6 +18,15 @@ module ImGui
 
   @@g_DockingSDL3BackendRendererName = FFI::MemoryPointer.from_string('imgui_impl_docking_sdlrenderer3')
   @@g_DockingSDL3BackendRendererUserData = {}
+  @@g_DockingSDL3RendererResetRenderStateCallback = FFI::Function.new(:void, [:pointer, :pointer]) { |_draw_list, _draw_cmd| }
+  @@g_DockingSDL3RendererSetSamplerLinearCallback = FFI::Function.new(:void, [:pointer, :pointer]) do |_draw_list, _draw_cmd|
+    backend_data = ImGui_ImplDockingSDLRenderer3_GetBackendData
+    backend_data[:current_scale_mode] = SDL::SCALEMODE_LINEAR if backend_data != nil
+  end
+  @@g_DockingSDL3RendererSetSamplerNearestCallback = FFI::Function.new(:void, [:pointer, :pointer]) do |_draw_list, _draw_cmd|
+    backend_data = ImGui_ImplDockingSDLRenderer3_GetBackendData
+    backend_data[:current_scale_mode] = SDL::SCALEMODE_NEAREST if backend_data != nil
+  end
 
   def self.ImGui_ImplDockingSDLRenderer3_GetBackendData
     return nil if ImGui::GetCurrentContext() == nil
@@ -32,7 +41,8 @@ module ImGui
       bd: ImGui_ImplDockingSDLRenderer3_Data.new,
       color_buffer: nil,
       color_buffer_capacity: 0,
-      render_state: nil
+      render_state: nil,
+      current_scale_mode: SDL::SCALEMODE_LINEAR
     }
     backend_data[:bd][:Renderer] = renderer
 
@@ -42,6 +52,11 @@ module ImGui
     io[:BackendRendererName] = @@g_DockingSDL3BackendRendererName
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasVtxOffset
     io[:BackendFlags] |= ImGuiBackendFlags_RendererHasTextures
+
+    platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
+    platform_io[:DrawCallback_ResetRenderState] = @@g_DockingSDL3RendererResetRenderStateCallback
+    platform_io[:DrawCallback_SetSamplerLinear] = @@g_DockingSDL3RendererSetSamplerLinearCallback
+    platform_io[:DrawCallback_SetSamplerNearest] = @@g_DockingSDL3RendererSetSamplerNearestCallback
     true
   end
 
@@ -49,7 +64,7 @@ module ImGui
     io = ImGuiIO.new(ImGui::GetIO())
     platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
 
-    ImplDockingSDL3Renderer_DestroyDeviceObjects
+    self.ImplDockingSDL3Renderer_DestroyDeviceObjects
 
     if ImGui::GetCurrentContext() != nil
       @@g_DockingSDL3BackendRendererUserData.delete(ImGui::GetCurrentContext().address)
@@ -62,8 +77,11 @@ module ImGui
   end
 
   def self.ImplDockingSDL3Renderer_SetupRenderState(renderer)
+    backend_data = ImGui_ImplDockingSDLRenderer3_GetBackendData
+
     SDL.SetRenderViewport(renderer, nil)
     SDL.SetRenderClipRect(renderer, nil)
+    backend_data[:current_scale_mode] = SDL::SCALEMODE_LINEAR if backend_data != nil
   end
 
   def self.ImplDockingSDL3Renderer_NewFrame
@@ -158,12 +176,15 @@ module ImGui
 
     if draw_data[:Textures] != nil && draw_data[:Textures].address != 0
       textures = ImVector_ImTextureDataPtr.new(draw_data[:Textures])
-      textures[:Size].times do |i|
-        tex_ptr = (textures[:Data] + FFI.type_size(:pointer) * i).read_pointer
-        next if tex_ptr == nil || tex_ptr.address == 0
+      textures_data = textures[:Data]
+      if textures_data != nil && textures_data.address != 0
+        textures[:Size].times do |i|
+          tex_ptr = (textures_data + FFI.type_size(:pointer) * i).read_pointer
+          next if tex_ptr == nil || tex_ptr.address == 0
 
-        tex = ImTextureData.new(tex_ptr)
-        ImplDockingSDL3Renderer_UpdateTexture(tex) if tex[:Status] != ImTextureStatus_OK
+          tex = ImTextureData.new(tex_ptr)
+          ImplDockingSDL3Renderer_UpdateTexture(tex) if tex[:Status] != ImTextureStatus_OK
+        end
       end
     end
 
@@ -183,51 +204,74 @@ module ImGui
 
     clip_off = draw_data[:DisplayPos]
     clip_scale = render_scale
+    last_scale_mode = backend_data[:current_scale_mode]
 
-    draw_data[:CmdListsCount].times do |n|
-      cmd_list = ImDrawList.new((draw_data[:CmdLists][:Data] + FFI.type_size(:pointer) * n).read_pointer)
-      vtx_buffer = cmd_list[:VtxBuffer][:Data]
-      idx_buffer = cmd_list[:IdxBuffer][:Data]
+    cmd_lists = draw_data[:CmdLists]
+    cmd_lists_data = cmd_lists[:Data]
+    if cmd_lists_data != nil && cmd_lists_data.address != 0
+      cmd_lists[:Size].times do |n|
+        cmd_list_ptr = (cmd_lists_data + FFI.type_size(:pointer) * n).read_pointer
+        next if cmd_list_ptr == nil || cmd_list_ptr.address == 0
 
-      cmd_list[:CmdBuffer][:Size].times do |cmd_i|
-        pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i)
-        if pcmd[:UserCallback] != nil && pcmd[:UserCallback].address != 0
-          ImplDockingSDL3Renderer_SetupRenderState(renderer)
-          next
+        cmd_list = ImDrawList.new(cmd_list_ptr)
+        vtx_buffer = cmd_list[:VtxBuffer][:Data]
+        idx_buffer = cmd_list[:IdxBuffer][:Data]
+
+        cmd_list[:CmdBuffer][:Size].times do |cmd_i|
+          pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i)
+          callback_ptr = pcmd[:UserCallback]
+          if callback_ptr != nil && callback_ptr.address != 0
+            callback_addr = callback_ptr.address
+            if callback_addr == @@g_DockingSDL3RendererResetRenderStateCallback.address
+              ImplDockingSDL3Renderer_SetupRenderState(renderer)
+            elsif callback_addr == @@g_DockingSDL3RendererSetSamplerLinearCallback.address
+              backend_data[:current_scale_mode] = SDL::SCALEMODE_LINEAR
+            elsif callback_addr == @@g_DockingSDL3RendererSetSamplerNearestCallback.address
+              backend_data[:current_scale_mode] = SDL::SCALEMODE_NEAREST
+            else
+              FFI::Function.new(:void, [:pointer, :pointer], callback_ptr).call(cmd_list.pointer, pcmd.pointer)
+            end
+            next
+          end
+
+          clip_min = ImVec2.create((pcmd[:ClipRect][:x] - clip_off[:x]) * clip_scale[:x], (pcmd[:ClipRect][:y] - clip_off[:y]) * clip_scale[:y])
+          clip_max = ImVec2.create((pcmd[:ClipRect][:z] - clip_off[:x]) * clip_scale[:x], (pcmd[:ClipRect][:w] - clip_off[:y]) * clip_scale[:y])
+          clip_min[:x] = 0.0 if clip_min[:x] < 0.0
+          clip_min[:y] = 0.0 if clip_min[:y] < 0.0
+          clip_max[:x] = fb_width.to_f if clip_max[:x] > fb_width
+          clip_max[:y] = fb_height.to_f if clip_max[:y] > fb_height
+          next if clip_max[:x] <= clip_min[:x] || clip_max[:y] <= clip_min[:y]
+
+          sdl_rect = SDL::Rect.new
+          sdl_rect[:x] = clip_min[:x].to_i
+          sdl_rect[:y] = clip_min[:y].to_i
+          sdl_rect[:w] = (clip_max[:x] - clip_min[:x]).to_i
+          sdl_rect[:h] = (clip_max[:y] - clip_min[:y]).to_i
+          SDL.SetRenderClipRect(renderer, sdl_rect)
+
+          vtx_base = pcmd[:VtxOffset] * ImDrawVert.size
+          xy = vtx_buffer + vtx_base + ImDrawVert.offset_of(:pos)
+          uv = vtx_buffer + vtx_base + ImDrawVert.offset_of(:uv)
+          color_src = vtx_buffer + vtx_base + ImDrawVert.offset_of(:col)
+
+          num_vertices = cmd_list[:VtxBuffer][:Size] - pcmd[:VtxOffset]
+          color_f = ImplDockingSDL3Renderer_UpdateColorBuffer(backend_data, color_src, ImDrawVert.size, num_vertices)
+
+          tex_id = pcmd.GetTexID
+          tex_ptr = tex_id == 0 ? nil : FFI::Pointer.new(tex_id)
+          if last_scale_mode != backend_data[:current_scale_mode]
+            SDL.FlushRenderer(renderer)
+            last_scale_mode = backend_data[:current_scale_mode]
+          end
+          SDL.SetTextureScaleMode(tex_ptr, backend_data[:current_scale_mode]) if tex_ptr != nil
+          SDL.RenderGeometryRaw(renderer,
+                                tex_ptr,
+                                xy, ImDrawVert.size,
+                                color_f, SDL::FColor.size,
+                                uv, ImDrawVert.size,
+                                num_vertices,
+                                idx_buffer + FFI.type_size(:ImDrawIdx) * pcmd[:IdxOffset], pcmd[:ElemCount], FFI.type_size(:ImDrawIdx))
         end
-
-        clip_min = ImVec2.create((pcmd[:ClipRect][:x] - clip_off[:x]) * clip_scale[:x], (pcmd[:ClipRect][:y] - clip_off[:y]) * clip_scale[:y])
-        clip_max = ImVec2.create((pcmd[:ClipRect][:z] - clip_off[:x]) * clip_scale[:x], (pcmd[:ClipRect][:w] - clip_off[:y]) * clip_scale[:y])
-        clip_min[:x] = 0.0 if clip_min[:x] < 0.0
-        clip_min[:y] = 0.0 if clip_min[:y] < 0.0
-        clip_max[:x] = fb_width.to_f if clip_max[:x] > fb_width
-        clip_max[:y] = fb_height.to_f if clip_max[:y] > fb_height
-        next if clip_max[:x] <= clip_min[:x] || clip_max[:y] <= clip_min[:y]
-
-        sdl_rect = SDL::Rect.new
-        sdl_rect[:x] = clip_min[:x].to_i
-        sdl_rect[:y] = clip_min[:y].to_i
-        sdl_rect[:w] = (clip_max[:x] - clip_min[:x]).to_i
-        sdl_rect[:h] = (clip_max[:y] - clip_min[:y]).to_i
-        SDL.SetRenderClipRect(renderer, sdl_rect)
-
-        vtx_base = pcmd[:VtxOffset] * ImDrawVert.size
-        xy = vtx_buffer + vtx_base + ImDrawVert.offset_of(:pos)
-        uv = vtx_buffer + vtx_base + ImDrawVert.offset_of(:uv)
-        color_src = vtx_buffer + vtx_base + ImDrawVert.offset_of(:col)
-
-        num_vertices = cmd_list[:VtxBuffer][:Size] - pcmd[:VtxOffset]
-        color_f = ImplDockingSDL3Renderer_UpdateColorBuffer(backend_data, color_src, ImDrawVert.size, num_vertices)
-
-        tex_id = pcmd.GetTexID
-        tex_ptr = tex_id == 0 ? nil : FFI::Pointer.new(tex_id)
-        SDL.RenderGeometryRaw(renderer,
-                              tex_ptr,
-                              xy, ImDrawVert.size,
-                              color_f, SDL::FColor.size,
-                              uv, ImDrawVert.size,
-                              num_vertices,
-                              idx_buffer + FFI.type_size(:ImDrawIdx) * pcmd[:IdxOffset], pcmd[:ElemCount], FFI.type_size(:ImDrawIdx))
       end
     end
 
@@ -244,14 +288,17 @@ module ImGui
   def self.ImplDockingSDL3Renderer_DestroyDeviceObjects
     platform_io = ImGuiPlatformIO.new(ImGui::GetPlatformIO())
     textures = platform_io[:Textures]
-    textures[:Size].times do |i|
-      tex_ptr = (textures[:Data] + FFI.type_size(:pointer) * i).read_pointer
-      next if tex_ptr == nil || tex_ptr.address == 0
+    textures_data = textures[:Data]
+    if textures_data != nil && textures_data.address != 0
+      textures[:Size].times do |i|
+        tex_ptr = (textures_data + FFI.type_size(:pointer) * i).read_pointer
+        next if tex_ptr == nil || tex_ptr.address == 0
 
-      tex = ImTextureData.new(tex_ptr)
-      if tex[:RefCount] == 1
-        tex.SetStatus(ImTextureStatus_WantDestroy)
-        ImplDockingSDL3Renderer_UpdateTexture(tex)
+        tex = ImTextureData.new(tex_ptr)
+        if tex[:RefCount] == 1
+          tex.SetStatus(ImTextureStatus_WantDestroy)
+          ImplDockingSDL3Renderer_UpdateTexture(tex)
+        end
       end
     end
   end

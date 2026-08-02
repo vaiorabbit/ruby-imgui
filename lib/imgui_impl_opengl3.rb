@@ -171,41 +171,46 @@ module ImGui
     clip_off = draw_data[:DisplayPos]
     clip_scale = draw_data[:FramebufferScale]
 
-    cmd_list_data = draw_data[:CmdLists][:Data]
+    cmd_lists = draw_data[:CmdLists]
+    cmd_list_data = cmd_lists[:Data]
     pointer_stride = FFI::Pointer.size
 
-    draw_data[:CmdListsCount].times do |n|
-      cmd_list_ptr = (cmd_list_data + pointer_stride * n).read_pointer
-      cmd_list = ImDrawList.new(cmd_list_ptr)
+    if !cmd_list_data.nil? && !cmd_list_data.null?
+      cmd_lists[:Size].times do |n|
+        cmd_list_ptr = (cmd_list_data + pointer_stride * n).read_pointer
+        next if cmd_list_ptr.nil? || cmd_list_ptr.null?
 
-      vtx_size = cmd_list[:VtxBuffer][:Size] * ImDrawVert.size
-      idx_size = cmd_list[:IdxBuffer][:Size] * 2 # ImDrawIdx is currently ushort in generated bindings.
+        cmd_list = ImDrawList.new(cmd_list_ptr)
 
-      GL.BufferData(GL::ARRAY_BUFFER, vtx_size, Fiddle::Pointer.new(cmd_list[:VtxBuffer][:Data]), GL::STREAM_DRAW)
-      GL.BufferData(GL::ELEMENT_ARRAY_BUFFER, idx_size, Fiddle::Pointer.new(cmd_list[:IdxBuffer][:Data]), GL::STREAM_DRAW)
+        vtx_size = cmd_list[:VtxBuffer][:Size] * ImDrawVert.size
+        idx_size = cmd_list[:IdxBuffer][:Size] * 2 # ImDrawIdx is currently ushort in generated bindings.
 
-      cmd_list[:CmdBuffer][:Size].times do |cmd_i|
-        pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i)
-        if pcmd[:UserCallback] != nil
-          # Reset callback token is not exposed cleanly in current bindings, so keep old behavior.
-          ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object)
-          next
-        end
+        GL.BufferData(GL::ARRAY_BUFFER, vtx_size, Fiddle::Pointer.new(cmd_list[:VtxBuffer][:Data]), GL::STREAM_DRAW)
+        GL.BufferData(GL::ELEMENT_ARRAY_BUFFER, idx_size, Fiddle::Pointer.new(cmd_list[:IdxBuffer][:Data]), GL::STREAM_DRAW)
 
-        clip_min_x = (pcmd[:ClipRect][:x] - clip_off[:x]) * clip_scale[:x]
-        clip_min_y = (pcmd[:ClipRect][:y] - clip_off[:y]) * clip_scale[:y]
-        clip_max_x = (pcmd[:ClipRect][:z] - clip_off[:x]) * clip_scale[:x]
-        clip_max_y = (pcmd[:ClipRect][:w] - clip_off[:y]) * clip_scale[:y]
+        cmd_list[:CmdBuffer][:Size].times do |cmd_i|
+          pcmd = ImDrawCmd.new(cmd_list[:CmdBuffer][:Data] + ImDrawCmd.size * cmd_i)
+          if pcmd[:UserCallback] != nil
+            # Reset callback token is not exposed cleanly in current bindings, so keep old behavior.
+            ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object)
+            next
+          end
 
-        next if clip_max_x <= clip_min_x || clip_max_y <= clip_min_y
+          clip_min_x = (pcmd[:ClipRect][:x] - clip_off[:x]) * clip_scale[:x]
+          clip_min_y = (pcmd[:ClipRect][:y] - clip_off[:y]) * clip_scale[:y]
+          clip_max_x = (pcmd[:ClipRect][:z] - clip_off[:x]) * clip_scale[:x]
+          clip_max_y = (pcmd[:ClipRect][:w] - clip_off[:y]) * clip_scale[:y]
 
-        GL.Scissor(clip_min_x.to_i, (fb_height - clip_max_y).to_i, (clip_max_x - clip_min_x).to_i, (clip_max_y - clip_min_y).to_i)
+          next if clip_max_x <= clip_min_x || clip_max_y <= clip_min_y
 
-        GL.BindTexture(GL::TEXTURE_2D, pcmd.GetTexID())
-        if @@g_GlVersion >= 320
-          GL.DrawElementsBaseVertex(GL::TRIANGLES, pcmd[:ElemCount], GL::UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2), pcmd[:VtxOffset])
-        else
-          GL.DrawElements(GL::TRIANGLES, pcmd[:ElemCount], GL::UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2))
+          GL.Scissor(clip_min_x.to_i, (fb_height - clip_max_y).to_i, (clip_max_x - clip_min_x).to_i, (clip_max_y - clip_min_y).to_i)
+
+          GL.BindTexture(GL::TEXTURE_2D, pcmd.GetTexID())
+          if @@g_GlVersion >= 320
+            GL.DrawElementsBaseVertex(GL::TRIANGLES, pcmd[:ElemCount], GL::UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2), pcmd[:VtxOffset])
+          else
+            GL.DrawElements(GL::TRIANGLES, pcmd[:ElemCount], GL::UNSIGNED_SHORT, Fiddle::Pointer.new(pcmd[:IdxOffset] * 2))
+          end
         end
       end
     end
@@ -303,6 +308,8 @@ module ImGui
 
     textures = ImVector.new(textures_ptr)
     data_ptr = textures[:Data]
+    return if data_ptr.nil? || data_ptr.null?
+
     pointer_stride = FFI::Pointer.size
 
     textures[:Size].times do |i|

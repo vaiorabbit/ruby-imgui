@@ -7,7 +7,7 @@
 require 'ffi'
 
 # defines
-IMGUI_VERSION_NUM = 19280 # 0x4B50
+IMGUI_VERSION_NUM = 19290 # 0x4B5A
 IM_UNICODE_CODEPOINT_INVALID = 65533 # 0xFFFD
 IM_UNICODE_CODEPOINT_MAX = 65535 # 0xFFFF
 IM_COL32_R_SHIFT = 0 # 0x0
@@ -99,7 +99,7 @@ FFI.typedef :int, :ImFontAtlasRectId
 FFI.typedef :int, :ImFontAtlasCustomRect
 FFI.typedef :short, :ImGuiTableColumnIdx
 FFI.typedef :int, :ImGuiLocKey
-FFI.typedef :int, :ImGuiDataAuthority
+FFI.typedef :uint, :ImGuiDataAuthority
 FFI.typedef :int, :ImGuiLayoutType
 FFI.typedef :int, :ImGuiActivateFlags
 FFI.typedef :int, :ImGuiDebugLogFlags
@@ -179,6 +179,9 @@ ImGuiItemFlags_ButtonRepeat = 8 # 0x8
 ImGuiItemFlags_AutoClosePopups = 16 # 0x10
 ImGuiItemFlags_AllowDuplicateId = 32 # 0x20
 ImGuiItemFlags_Disabled = 64 # 0x40
+ImGuiItemFlags_LiveEditOnInputText = 128 # 0x80
+ImGuiItemFlags_LiveEditOnInputScalar = 256 # 0x100
+ImGuiItemFlags_LiveEditOnInput = 384 # 0x180
 
 # ImGuiInputTextFlags_
 ImGuiInputTextFlags_None = 0 # 0x0
@@ -232,7 +235,6 @@ ImGuiTreeNodeFlags_DrawLinesNone = 262144 # 0x40000
 ImGuiTreeNodeFlags_DrawLinesFull = 524288 # 0x80000
 ImGuiTreeNodeFlags_DrawLinesToNodes = 1048576 # 0x100000
 ImGuiTreeNodeFlags_NavLeftJumpsBackHere = 131072 # 0x20000
-ImGuiTreeNodeFlags_SpanTextWidth = 8192 # 0x2000
 
 # ImGuiPopupFlags_
 ImGuiPopupFlags_None = 0 # 0x0
@@ -359,7 +361,6 @@ ImGuiDragDropFlags_AcceptNoDrawDefaultRect = 2048 # 0x800
 ImGuiDragDropFlags_AcceptNoPreviewTooltip = 4096 # 0x1000
 ImGuiDragDropFlags_AcceptDrawAsHovered = 8192 # 0x2000
 ImGuiDragDropFlags_AcceptPeekOnly = 3072 # 0xC00
-ImGuiDragDropFlags_SourceAutoExpirePayload = 32 # 0x20
 
 # ImGuiDataType_
 ImGuiDataType_S8 = 0 # 0x0
@@ -704,15 +705,17 @@ ImGuiStyleVar_TableAngledHeadersAngle = 31 # 0x1F
 ImGuiStyleVar_TableAngledHeadersTextAlign = 32 # 0x20
 ImGuiStyleVar_TreeLinesSize = 33 # 0x21
 ImGuiStyleVar_TreeLinesRounding = 34 # 0x22
-ImGuiStyleVar_DragDropTargetRounding = 35 # 0x23
-ImGuiStyleVar_ButtonTextAlign = 36 # 0x24
-ImGuiStyleVar_SelectableTextAlign = 37 # 0x25
-ImGuiStyleVar_SeparatorSize = 38 # 0x26
-ImGuiStyleVar_SeparatorTextBorderSize = 39 # 0x27
-ImGuiStyleVar_SeparatorTextAlign = 40 # 0x28
-ImGuiStyleVar_SeparatorTextPadding = 41 # 0x29
-ImGuiStyleVar_DockingSeparatorSize = 42 # 0x2A
-ImGuiStyleVar_COUNT = 43 # 0x2B
+ImGuiStyleVar_MenuItemRounding = 35 # 0x23
+ImGuiStyleVar_SelectableRounding = 36 # 0x24
+ImGuiStyleVar_DragDropTargetRounding = 37 # 0x25
+ImGuiStyleVar_ButtonTextAlign = 38 # 0x26
+ImGuiStyleVar_SelectableTextAlign = 39 # 0x27
+ImGuiStyleVar_SeparatorSize = 40 # 0x28
+ImGuiStyleVar_SeparatorTextBorderSize = 41 # 0x29
+ImGuiStyleVar_SeparatorTextAlign = 42 # 0x2A
+ImGuiStyleVar_SeparatorTextPadding = 43 # 0x2B
+ImGuiStyleVar_DockingSeparatorSize = 44 # 0x2C
+ImGuiStyleVar_COUNT = 45 # 0x2D
 
 # ImGuiButtonFlags_
 ImGuiButtonFlags_None = 0 # 0x0
@@ -748,14 +751,15 @@ ImGuiColorEditFlags_Uint8 = 8388608 # 0x800000
 ImGuiColorEditFlags_Float = 16777216 # 0x1000000
 ImGuiColorEditFlags_PickerHueBar = 33554432 # 0x2000000
 ImGuiColorEditFlags_PickerHueWheel = 67108864 # 0x4000000
-ImGuiColorEditFlags_InputRGB = 134217728 # 0x8000000
-ImGuiColorEditFlags_InputHSV = 268435456 # 0x10000000
-ImGuiColorEditFlags_DefaultOptions_ = 177209344 # 0xA900000
+ImGuiColorEditFlags_PickerNoRotate = 134217728 # 0x8000000
+ImGuiColorEditFlags_InputRGB = 268435456 # 0x10000000
+ImGuiColorEditFlags_InputHSV = 536870912 # 0x20000000
+ImGuiColorEditFlags_DefaultOptions_ = 311427072 # 0x12900000
 ImGuiColorEditFlags_AlphaMask_ = 28674 # 0x7002
 ImGuiColorEditFlags_DisplayMask_ = 7340032 # 0x700000
 ImGuiColorEditFlags_DataTypeMask_ = 25165824 # 0x1800000
 ImGuiColorEditFlags_PickerMask_ = 100663296 # 0x6000000
-ImGuiColorEditFlags_InputMask_ = 402653184 # 0x18000000
+ImGuiColorEditFlags_InputMask_ = 805306368 # 0x30000000
 ImGuiColorEditFlags_AlphaPreview = 0 # 0x0
 
 # ImGuiSliderFlags_
@@ -909,6 +913,7 @@ ImGuiMultiSelectFlags_SelectOnClickRelease = 32768 # 0x8000
 ImGuiMultiSelectFlags_NavWrapX = 65536 # 0x10000
 ImGuiMultiSelectFlags_NoSelectOnRightClick = 131072 # 0x20000
 ImGuiMultiSelectFlags_SelectOnMask_ = 57344 # 0xE000
+ImGuiMultiSelectFlags_CheckboxMode_ = 1048576 # 0x100000
 ImGuiMultiSelectFlags_SelectOnClick = 8192 # 0x2000
 
 # ImGuiSelectionRequestType
@@ -923,15 +928,15 @@ ImDrawFlags_RoundCornersTopRight = 32 # 0x20
 ImDrawFlags_RoundCornersBottomLeft = 64 # 0x40
 ImDrawFlags_RoundCornersBottomRight = 128 # 0x80
 ImDrawFlags_RoundCornersNone = 256 # 0x100
-ImDrawFlags_Closed = 512 # 0x200
+ImDrawFlags_RoundCornersAll = 240 # 0xF0
+ImDrawFlags_RoundCornersDefault_ = 240 # 0xF0
 ImDrawFlags_RoundCornersTop = 48 # 0x30
 ImDrawFlags_RoundCornersBottom = 192 # 0xC0
 ImDrawFlags_RoundCornersLeft = 80 # 0x50
 ImDrawFlags_RoundCornersRight = 160 # 0xA0
-ImDrawFlags_RoundCornersAll = 240 # 0xF0
-ImDrawFlags_RoundCornersDefault_ = 240 # 0xF0
 ImDrawFlags_RoundCornersMask_ = 496 # 0x1F0
-ImDrawFlags_InvalidMask_ = 2147483663 # 0x8000000F
+ImDrawFlags_Closed = 512 # 0x200
+ImDrawFlags_InvalidMask_ = -2147483633 # -0x7FFFFFF1
 
 # ImDrawListFlags_
 ImDrawListFlags_None = 0 # 0x0
@@ -939,6 +944,7 @@ ImDrawListFlags_AntiAliasedLines = 1 # 0x1
 ImDrawListFlags_AntiAliasedLinesUseTex = 2 # 0x2
 ImDrawListFlags_AntiAliasedFill = 4 # 0x4
 ImDrawListFlags_AllowVtxOffset = 8 # 0x8
+ImDrawListFlags_TextNoPixelSnap = 16 # 0x10
 
 # ImTextureFormat
 ImTextureFormat_RGBA32 = 0 # 0x0
@@ -1007,7 +1013,7 @@ ImGuiItemFlags_NoFocus = 131072 # 0x20000
 ImGuiItemFlags_Inputable = 1048576 # 0x100000
 ImGuiItemFlags_HasSelectionUserData = 2097152 # 0x200000
 ImGuiItemFlags_IsMultiSelect = 4194304 # 0x400000
-ImGuiItemFlags_Default_ = 16 # 0x10
+ImGuiItemFlags_Default_ = 144 # 0x90
 
 # ImGuiItemStatusFlags_
 ImGuiItemStatusFlags_None = 0 # 0x0
@@ -1318,16 +1324,18 @@ ImGuiLocKey_VersionStr = 0 # 0x0
 ImGuiLocKey_TableSizeOne = 1 # 0x1
 ImGuiLocKey_TableSizeAllFit = 2 # 0x2
 ImGuiLocKey_TableSizeAllDefault = 3 # 0x3
-ImGuiLocKey_TableResetOrder = 4 # 0x4
-ImGuiLocKey_WindowingMainMenuBar = 5 # 0x5
-ImGuiLocKey_WindowingPopup = 6 # 0x6
-ImGuiLocKey_WindowingUntitled = 7 # 0x7
-ImGuiLocKey_OpenLink_s = 8 # 0x8
-ImGuiLocKey_CopyLink = 9 # 0x9
-ImGuiLocKey_DockingHideTabBar = 10 # 0xA
-ImGuiLocKey_DockingHoldShiftToDock = 11 # 0xB
-ImGuiLocKey_DockingDragToUndockOrMoveNode = 12 # 0xC
-ImGuiLocKey_COUNT = 13 # 0xD
+ImGuiLocKey_TableReset = 4 # 0x4
+ImGuiLocKey_TableResetOrder = 5 # 0x5
+ImGuiLocKey_TableResetVisibility = 6 # 0x6
+ImGuiLocKey_WindowingMainMenuBar = 7 # 0x7
+ImGuiLocKey_WindowingPopup = 8 # 0x8
+ImGuiLocKey_WindowingUntitled = 9 # 0x9
+ImGuiLocKey_OpenLink_s = 10 # 0xA
+ImGuiLocKey_CopyLink = 11 # 0xB
+ImGuiLocKey_DockingHideTabBar = 12 # 0xC
+ImGuiLocKey_DockingHoldShiftToDock = 13 # 0xD
+ImGuiLocKey_DockingDragToUndockOrMoveNode = 14 # 0xE
+ImGuiLocKey_COUNT = 15 # 0xF
 
 # ImGuiDebugLogFlags_
 ImGuiDebugLogFlags_None = 0 # 0x0
@@ -1343,7 +1351,8 @@ ImGuiDebugLogFlags_EventFont = 256 # 0x100
 ImGuiDebugLogFlags_EventInputRouting = 512 # 0x200
 ImGuiDebugLogFlags_EventDocking = 1024 # 0x400
 ImGuiDebugLogFlags_EventViewport = 2048 # 0x800
-ImGuiDebugLogFlags_EventMask_ = 4095 # 0xFFF
+ImGuiDebugLogFlags_EventTable = 4096 # 0x1000
+ImGuiDebugLogFlags_EventMask_ = 8191 # 0x1FFF
 ImGuiDebugLogFlags_OutputToTTY = 1048576 # 0x100000
 ImGuiDebugLogFlags_OutputToDebugger = 2097152 # 0x200000
 ImGuiDebugLogFlags_OutputToTestEngine = 4194304 # 0x400000
@@ -1947,20 +1956,20 @@ class ImFontAtlas < FFI::Struct
     ImGui::ImFontAtlas_RemoveFont(self, font)
   end
 
-  def Clear()
-    ImGui::ImFontAtlas_Clear(self)
-  end
-
-  def ClearFonts()
-    ImGui::ImFontAtlas_ClearFonts(self)
-  end
-
   def CompactCache()
     ImGui::ImFontAtlas_CompactCache(self)
   end
 
   def SetFontLoader(font_loader)
     ImGui::ImFontAtlas_SetFontLoader(self, font_loader)
+  end
+
+  def Clear()
+    ImGui::ImFontAtlas_Clear(self)
+  end
+
+  def ClearFonts()
+    ImGui::ImFontAtlas_ClearFonts(self)
   end
 
   def ClearInputData()
@@ -2347,6 +2356,8 @@ class ImGuiStyle < FFI::Struct
     :TreeLinesFlags, :int,
     :TreeLinesSize, :float,
     :TreeLinesRounding, :float,
+    :MenuItemRounding, :float,
+    :SelectableRounding, :float,
     :DragDropTargetRounding, :float,
     :DragDropTargetBorderSize, :float,
     :DragDropTargetPadding, :float,
@@ -2354,6 +2365,7 @@ class ImGuiStyle < FFI::Struct
     :ColorButtonPosition, :int,
     :ButtonTextAlign, ImVec2.by_value,
     :SelectableTextAlign, ImVec2.by_value,
+    :InputTextCursorSize, :float,
     :SeparatorSize, :float,
     :SeparatorTextBorderSize, :float,
     :SeparatorTextAlign, ImVec2.by_value,
@@ -2417,19 +2429,24 @@ class ImGuiIO < FFI::Struct
     :ConfigViewportsPlatformFocusSetsImGuiFocus, :bool,
     :ConfigDpiScaleFonts, :bool,
     :ConfigDpiScaleViewports, :bool,
-    :MouseDrawCursor, :bool,
     :ConfigMacOSXBehaviors, :bool,
     :ConfigInputTrickleEventQueue, :bool,
     :ConfigInputTextCursorBlink, :bool,
     :ConfigInputTextEnterKeepActive, :bool,
+    :ConfigColorEditFlags, :int,
     :ConfigDragClickToInputText, :bool,
     :ConfigWindowsResizeFromEdges, :bool,
     :ConfigWindowsMoveFromTitleBarOnly, :bool,
     :ConfigWindowsCopyContentsWithCtrlC, :bool,
     :ConfigScrollbarScrollByPage, :bool,
+    :ConfigIniSettingsSaveLastUsedDate, :bool,
+    :ConfigIniSettingsAutoDiscardMonths, :int,
+    :ConfigDebugIniSettings, :bool,
+    :MouseDrawCursor, :bool,
     :ConfigMemoryCompactTimer, :float,
     :MouseDoubleClickTime, :float,
     :MouseDoubleClickMaxDist, :float,
+    :MouseSingleClickDelay, :float,
     :MouseDragThreshold, :float,
     :KeyRepeatDelay, :float,
     :KeyRepeatRate, :float,
@@ -2443,7 +2460,6 @@ class ImGuiIO < FFI::Struct
     :ConfigDebugBeginReturnValueOnce, :bool,
     :ConfigDebugBeginReturnValueLoop, :bool,
     :ConfigDebugIgnoreFocusLoss, :bool,
-    :ConfigDebugIniSettings, :bool,
     :BackendPlatformName, :pointer,
     :BackendRendererName, :pointer,
     :BackendPlatformUserData, :pointer,
@@ -2976,7 +2992,7 @@ end
 class ImDrawData < FFI::Struct
   layout(
     :Valid, :bool,
-    :CmdListsCount, :int,
+    :FrameCount, :int,
     :TotalIdxCount, :int,
     :TotalVtxCount, :int,
     :CmdLists, ImVector.by_value,
@@ -2984,7 +3000,8 @@ class ImDrawData < FFI::Struct
     :DisplaySize, ImVec2.by_value,
     :FramebufferScale, ImVec2.by_value,
     :OwnerViewport, :pointer,
-    :Textures, :pointer
+    :Textures, :pointer,
+    :CmdListsCount, :int
   )
 
   def Clear()
@@ -3019,6 +3036,7 @@ class ImTextureData < FFI::Struct
     :UniqueID, :int,
     :Status, :int,
     :BackendUserData, :pointer,
+    :QueueUserData, :pointer,
     :TexID, :uint64,
     :Format, :int,
     :Width, :int,
@@ -3331,6 +3349,7 @@ class ImGuiPlatformIO < FFI::Struct
     :Platform_SetImeDataFn, :pointer,
     :Platform_ImeUserData, :pointer,
     :Platform_LocaleDecimalPoint, :ushort,
+    :Platform_SessionDate, :int,
     :Renderer_TextureMaxWidth, :int,
     :Renderer_TextureMaxHeight, :int,
     :Renderer_RenderState, :pointer,
@@ -3573,13 +3592,6 @@ class ImBitVector < FFI::Struct
 
 end
 
-class ImSpan_ImGuiTableColumn < FFI::Struct
-  layout(
-    :Data, :pointer,
-    :DataEnd, :pointer
-  )
-end
-
 class ImSpan_ImGuiTableColumnIdx < FFI::Struct
   layout(
     :Data, :pointer,
@@ -3588,6 +3600,13 @@ class ImSpan_ImGuiTableColumnIdx < FFI::Struct
 end
 
 class ImSpan_ImGuiTableCellData < FFI::Struct
+  layout(
+    :Data, :pointer,
+    :DataEnd, :pointer
+  )
+end
+
+class ImSpan_ImGuiTableColumn < FFI::Struct
   layout(
     :Data, :pointer,
     :DataEnd, :pointer
@@ -3615,6 +3634,27 @@ class ImStableVector_ImFontBaked_32 < FFI::Struct
 
 end
 
+class ImGuiPackedDate < FFI::Struct
+  layout(
+    :Year, :ushort,
+    :Month, :ushort,
+    :Day, :ushort
+  )
+
+  def IsValid()
+    ImGui::ImGuiPackedDate_IsValid(self)
+  end
+
+  def Unpack()
+    ImGui::ImGuiPackedDate_Unpack(self)
+  end
+
+  def SubtractMonths(m)
+    ImGui::ImGuiPackedDate_SubtractMonths(self, m)
+  end
+
+end
+
 class ImDrawListSharedData < FFI::Struct
   layout(
     :TexUvWhitePixel, ImVec2.by_value,
@@ -3624,7 +3664,7 @@ class ImDrawListSharedData < FFI::Struct
     :FontSize, :float,
     :FontScale, :float,
     :CurveTessellationTol, :float,
-    :CircleSegmentMaxError, :float,
+    :CircleTessellationMaxError, :float,
     :InitialFringeScale, :float,
     :InitialFlags, :int,
     :ClipRectFullscreen, ImVec4.by_value,
@@ -4083,7 +4123,7 @@ class ImGuiGroupData < FFI::Struct
     :BackupCurrLineSize, ImVec2.by_value,
     :BackupCurrLineTextBaseOffset, :float,
     :BackupActiveIdIsAlive, :uint,
-    :BackupActiveIdHasBeenEditedThisFrame, :bool,
+    :BackupAnyIdHasBeenEditedThisFrame, :bool,
     :BackupDeactivatedIdIsAlive, :bool,
     :BackupHoveredIdIsAlive, :bool,
     :BackupIsSameLine, :bool,
@@ -4120,6 +4160,7 @@ end
 class ImGuiInputTextDeactivatedState < FFI::Struct
   layout(
     :ID, :uint,
+    :ElapseFrame, :int,
     :TextA, ImVector.by_value
   )
 
@@ -4266,7 +4307,7 @@ end
 class ImGuiNextItemData < FFI::Struct
   layout(
     :HasFlags, :int,
-    :ItemFlags, :int,
+    :ItemFlagsSet, :int,
     :FocusScopeId, :uint,
     :SelectionUserData, :int64,
     :Width, :float,
@@ -4626,7 +4667,8 @@ class ImGuiMultiSelectTempData < FFI::Struct
     :IsKeyboardSetRange, :bool,
     :NavIdPassedBy, :bool,
     :RangeSrcPassedBy, :bool,
-    :RangeDstPassedBy, :bool
+    :RangeDstPassedBy, :bool,
+    :IsSoleOrUnknownSelectionSize, :bool
   )
 
   def Clear()
@@ -4682,9 +4724,9 @@ class ImGuiDockNode < FFI::Struct
     :SelectedTabId, :uint,
     :WantCloseTabId, :uint,
     :RefViewportId, :uint,
-    :AuthorityForPos, :int,
-    :AuthorityForSize, :int,
-    :AuthorityForViewport, :int,
+    :AuthorityForPos, :uchar,
+    :AuthorityForSize, :uchar,
+    :AuthorityForViewport, :uchar,
     :IsVisible, :bool,
     :IsFocused, :bool,
     :IsBgDrawnThisFrame, :bool,
@@ -4800,6 +4842,7 @@ class ImGuiWindowSettings < FFI::Struct
     :DockId, :uint,
     :ClassId, :uint,
     :DockOrder, :short,
+    :LastUsedDate, ImGuiPackedDate.by_value,
     :Collapsed, :bool,
     :IsChild, :bool,
     :WantApply, :bool,
@@ -4812,6 +4855,18 @@ class ImGuiWindowSettings < FFI::Struct
 
 end
 
+class ImGuiSettingsCleanupArgs < FFI::Struct
+  layout(
+    :TypeHashFilter, :uint,
+    :DiscardOlderThanMonths, :int,
+    :DiscardWhenMissingDate, :bool,
+    :DiscardAll, :bool,
+    :SetCurrentSessionDateToAll, :bool,
+    :SetCurrentSessionDateWhenMissingDate, :bool,
+    :_DiscardOlderThanDate, :int
+  )
+end
+
 class ImGuiSettingsHandler < FFI::Struct
   layout(
     :TypeName, :pointer,
@@ -4822,6 +4877,7 @@ class ImGuiSettingsHandler < FFI::Struct
     :ReadLineFn, :pointer,
     :ApplyAllFn, :pointer,
     :WriteAllFn, :pointer,
+    :CleanupFn, :pointer,
     :UserData, :pointer
   )
 end
@@ -4866,6 +4922,8 @@ class ImGuiMetricsConfig < FFI::Struct
     :ShowTablesRectsType, :int,
     :HighlightMonitorIdx, :int,
     :HighlightViewportID, :uint,
+    :SettingsDiscardMonths, :int,
+    :SettingsHighlightOldEntries, :bool,
     :ShowFontPreview, :bool
   )
 end
@@ -4974,10 +5032,13 @@ class ImGuiContext < FFI::Struct
     :HoveredIdAllowOverlap, :bool,
     :HoveredIdIsDisabled, :bool,
     :ItemUnclipByLog, :bool,
+    :AnyIdHasBeenEditedThisFrame, :bool,
     :ActiveId, :uint,
     :ActiveIdIsAlive, :uint,
     :ActiveIdTimer, :float,
     :ActiveIdIsJustActivated, :bool,
+    :ActiveIdWasSelected, :bool,
+    :ActiveIdWasSoleSelected, :bool,
     :ActiveIdAllowOverlap, :bool,
     :ActiveIdNoClearOnFocusLoss, :bool,
     :ActiveIdHasBeenPressedBefore, :bool,
@@ -4994,6 +5055,8 @@ class ImGuiContext < FFI::Struct
     :ActiveIdValueOnActivation, ImGuiDataTypeStorage.by_value,
     :LastActiveId, :uint,
     :LastActiveIdTimer, :float,
+    :LastActiveIdWasSelected, :bool,
+    :LastActiveIdWasSoleSelected, :bool,
     :LastKeyModsChangeTime, :double,
     :LastKeyModsChangeFromNoneTime, :double,
     :LastKeyboardKeyPressTime, :double,
@@ -5154,7 +5217,6 @@ class ImGuiContext < FFI::Struct
     :DataTypeZeroValue, ImGuiDataTypeStorage.by_value,
     :BeginMenuDepth, :int,
     :BeginComboDepth, :int,
-    :ColorEditOptions, :int,
     :ColorEditCurrentID, :uint,
     :ColorEditSavedID, :uint,
     :ColorEditSavedHue, :float,
@@ -5184,6 +5246,7 @@ class ImGuiContext < FFI::Struct
     :UserTextures, ImVector.by_value,
     :DockContext, ImGuiDockContext.by_value,
     :DockNodeWindowMenuHandler, :pointer,
+    :SessionDate, ImGuiPackedDate.by_value,
     :SettingsLoaded, :bool,
     :SettingsDirtyTimer, :float,
     :SettingsIniData, ImGuiTextBuffer.by_value,
@@ -5535,7 +5598,8 @@ class ImGuiTableColumn < FFI::Struct
     :StretchWeight, :float,
     :InitStretchWeightOrWidth, :float,
     :ClipRect, ImRect.by_value,
-    :UserID, :uint,
+    :ID, :uint,
+    :UserData, :uint,
     :WorkMinX, :float,
     :WorkMaxX, :float,
     :ItemWidth, :float,
@@ -5560,6 +5624,10 @@ class ImGuiTableColumn < FFI::Struct
     :IsRequestOutput, :bool,
     :IsSkipItems, :bool,
     :IsPreserveWidthAuto, :bool,
+    :IsJustCreated, :bool,
+    :IsLoadedSettings, :bool,
+    :IsNeedReconcileSrc, :bool,
+    :IsNeedReconcileDst, :bool,
     :NavLayerCurrent, :char,
     :AutoFitQueue, :uchar,
     :CannotSkipItemsQueue, :uchar,
@@ -5567,6 +5635,27 @@ class ImGuiTableColumn < FFI::Struct
     :SortDirectionsAvailCount, :uchar,
     :SortDirectionsAvailMask, :uchar,
     :SortDirectionsAvailList, :uchar
+  )
+end
+
+class ImGuiTableReconcileColumnData < FFI::Struct
+  layout(
+    :ID, :uint,
+    :NameOffset, :short,
+    :Flags, :int,
+    :InitWidthOrWeight, :float,
+    :UserData, :uint,
+    :ColumnNewIdx, :short,
+    :ColumnOldIdx, :short,
+    :ColumnOldData, ImGuiTableColumn.by_value
+  )
+end
+
+class ImVector_ImGuiTableReconcileColumnData < FFI::Struct
+  layout(
+    :Size, :int,
+    :Capacity, :int,
+    :Data, :pointer
   )
 end
 
@@ -5696,6 +5785,7 @@ class ImGuiTable < FFI::Struct
     :IsLayoutLocked, :bool,
     :IsInsideRow, :bool,
     :IsInitializing, :bool,
+    :IsReconcileMode, :bool,
     :IsSortSpecsDirty, :bool,
     :IsUsingHeaders, :bool,
     :IsContextPopupOpen, :bool,
@@ -5703,8 +5793,10 @@ class ImGuiTable < FFI::Struct
     :IsSettingsRequestLoad, :bool,
     :IsSettingsDirty, :bool,
     :IsDefaultDisplayOrder, :bool,
+    :IsDefaultVisibility, :bool,
     :IsResetAllRequest, :bool,
     :IsResetDisplayOrderRequest, :bool,
+    :IsResetVisibilityRequest, :bool,
     :IsUnfrozenRows, :bool,
     :IsDefaultSizingPolicy, :bool,
     :IsActiveIdAliveBeforeTable, :bool,
@@ -5723,6 +5815,9 @@ class ImGuiTableTempData < FFI::Struct
     :LastTimeActive, :float,
     :AngledHeadersExtraWidth, :float,
     :AngledHeadersRequests, ImVector.by_value,
+    :ReconcileColumnsRequests, ImVector.by_value,
+    :OldColumnsRawData, :pointer,
+    :OldColumnsData, ImSpan_ImGuiTableColumn.by_value,
     :UserOuterSize, ImVec2.by_value,
     :DrawSplitter, ImDrawListSplitter.by_value,
     :HostBackupWorkRect, ImRect.by_value,
@@ -5739,13 +5834,14 @@ end
 class ImGuiTableColumnSettings < FFI::Struct
   layout(
     :WidthOrWeight, :float,
-    :UserID, :uint,
+    :ID, :uint,
     :Index, :short,
     :DisplayOrder, :short,
     :SortOrder, :short,
     :SortDirection, :uchar,
     :IsEnabled, :char,
-    :IsStretch, :uchar
+    :IsStretch, :uchar,
+    :IsLoaded, :bool
   )
 end
 
@@ -5756,6 +5852,7 @@ class ImGuiTableSettings < FFI::Struct
     :RefScale, :float,
     :ColumnsCount, :short,
     :ColumnsCountMax, :short,
+    :LastUsedDate, ImGuiPackedDate.by_value,
     :WantApply, :bool
   )
 
@@ -6161,7 +6258,6 @@ module ImGui
       [:ImGui_ColorPicker4, :ImGui_ColorPicker4, [:pointer, :pointer, :int, :pointer], :bool],
       [:ImGui_ColorButton, :ImGui_ColorButton, [:pointer, ImVec4.by_value, :int], :bool],
       [:ImGui_ColorButtonEx, :ImGui_ColorButtonEx, [:pointer, ImVec4.by_value, :int, ImVec2.by_value], :bool],
-      [:ImGui_SetColorEditOptions, :ImGui_SetColorEditOptions, [:int], :void],
       [:ImGui_TreeNode, :ImGui_TreeNode, [:pointer], :bool],
       [:ImGui_TreeNodeStr, :ImGui_TreeNodeStr, [:pointer, :pointer, :varargs], :bool],
       [:ImGui_TreeNodePtr, :ImGui_TreeNodePtr, [:pointer, :pointer, :varargs], :bool],
@@ -6217,9 +6313,9 @@ module ImGui
       [:ImGui_BeginPopup, :ImGui_BeginPopup, [:pointer, :int], :bool],
       [:ImGui_BeginPopupModal, :ImGui_BeginPopupModal, [:pointer, :pointer, :int], :bool],
       [:ImGui_EndPopup, :ImGui_EndPopup, [], :void],
-      [:ImGui_OpenPopup, :ImGui_OpenPopup, [:pointer, :int], :void],
-      [:ImGui_OpenPopupID, :ImGui_OpenPopupID, [:uint, :int], :void],
-      [:ImGui_OpenPopupOnItemClick, :ImGui_OpenPopupOnItemClick, [:pointer, :int], :void],
+      [:ImGui_OpenPopup, :ImGui_OpenPopup, [:pointer, :int], :bool],
+      [:ImGui_OpenPopupID, :ImGui_OpenPopupID, [:uint, :int], :bool],
+      [:ImGui_OpenPopupOnItemClick, :ImGui_OpenPopupOnItemClick, [:pointer, :int], :bool],
       [:ImGui_CloseCurrentPopup, :ImGui_CloseCurrentPopup, [], :void],
       [:ImGui_BeginPopupContextItem, :ImGui_BeginPopupContextItem, [], :bool],
       [:ImGui_BeginPopupContextItemEx, :ImGui_BeginPopupContextItemEx, [:pointer, :int], :bool],
@@ -6314,6 +6410,8 @@ module ImGui
       [:ImGui_GetItemRectMax, :ImGui_GetItemRectMax, [], ImVec2.by_value],
       [:ImGui_GetItemRectSize, :ImGui_GetItemRectSize, [], ImVec2.by_value],
       [:ImGui_GetItemFlags, :ImGui_GetItemFlags, [], :int],
+      [:ImGui_GetItemClickedCountWithSingleClickDelay, :ImGui_GetItemClickedCountWithSingleClickDelay, [], :int],
+      [:ImGui_GetItemClickedCountWithSingleClickDelayEx, :ImGui_GetItemClickedCountWithSingleClickDelayEx, [:int, :float], :int],
       [:ImGui_GetMainViewport, :ImGui_GetMainViewport, [], :pointer],
       [:ImGui_GetBackgroundDrawList, :ImGui_GetBackgroundDrawList, [], :pointer],
       [:ImGui_GetBackgroundDrawListEx, :ImGui_GetBackgroundDrawListEx, [:pointer], :pointer],
@@ -6349,7 +6447,8 @@ module ImGui
       [:ImGui_IsMouseClickedEx, :ImGui_IsMouseClickedEx, [:int, :bool], :bool],
       [:ImGui_IsMouseReleased, :ImGui_IsMouseReleased, [:int], :bool],
       [:ImGui_IsMouseDoubleClicked, :ImGui_IsMouseDoubleClicked, [:int], :bool],
-      [:ImGui_IsMouseReleasedWithDelay, :ImGui_IsMouseReleasedWithDelay, [:int, :float], :bool],
+      [:ImGui_IsMouseReleasedWithDelay, :ImGui_IsMouseReleasedWithDelay, [:int], :bool],
+      [:ImGui_IsMouseReleasedWithDelayEx, :ImGui_IsMouseReleasedWithDelayEx, [:int, :float], :bool],
       [:ImGui_GetMouseClickedCount, :ImGui_GetMouseClickedCount, [:int], :int],
       [:ImGui_IsMouseHoveringRect, :ImGui_IsMouseHoveringRect, [ImVec2.by_value, ImVec2.by_value], :bool],
       [:ImGui_IsMouseHoveringRectEx, :ImGui_IsMouseHoveringRectEx, [ImVec2.by_value, ImVec2.by_value, :bool], :bool],
@@ -6596,10 +6695,10 @@ module ImGui
       [:ImFontAtlas_AddFontFromMemoryCompressedTTF, :ImFontAtlas_AddFontFromMemoryCompressedTTF, [:pointer, :pointer, :int, :float, :pointer, :pointer], :pointer],
       [:ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, :ImFontAtlas_AddFontFromMemoryCompressedBase85TTF, [:pointer, :pointer, :float, :pointer, :pointer], :pointer],
       [:ImFontAtlas_RemoveFont, :ImFontAtlas_RemoveFont, [:pointer, :pointer], :void],
-      [:ImFontAtlas_Clear, :ImFontAtlas_Clear, [:pointer], :void],
-      [:ImFontAtlas_ClearFonts, :ImFontAtlas_ClearFonts, [:pointer], :void],
       [:ImFontAtlas_CompactCache, :ImFontAtlas_CompactCache, [:pointer], :void],
       [:ImFontAtlas_SetFontLoader, :ImFontAtlas_SetFontLoader, [:pointer, :pointer], :void],
+      [:ImFontAtlas_Clear, :ImFontAtlas_Clear, [:pointer], :void],
+      [:ImFontAtlas_ClearFonts, :ImFontAtlas_ClearFonts, [:pointer], :void],
       [:ImFontAtlas_ClearInputData, :ImFontAtlas_ClearInputData, [:pointer], :void],
       [:ImFontAtlas_ClearTexData, :ImFontAtlas_ClearTexData, [:pointer], :void],
       [:ImFontAtlas_Build, :ImFontAtlas_Build, [:pointer], :bool],
@@ -6650,6 +6749,7 @@ module ImGui
       [:ImGuiViewport_GetDebugName, :ImGuiViewport_GetDebugName, [:pointer], :pointer],
       [:ImGuiPlatformIO_ClearPlatformHandlers, :ImGuiPlatformIO_ClearPlatformHandlers, [:pointer], :void],
       [:ImGuiPlatformIO_ClearRendererHandlers, :ImGuiPlatformIO_ClearRendererHandlers, [:pointer], :void],
+      [:ImGui_SetColorEditOptions, :ImGui_SetColorEditOptions, [:int], :void],
       [:ImGui_PushFont, :ImGui_PushFont, [:pointer], :void],
       [:ImGui_SetWindowFontScale, :ImGui_SetWindowFontScale, [:float], :void],
       [:ImGui_ImageImVec4, :ImGui_ImageImVec4, [ImTextureRef.by_value, ImVec2.by_value, ImVec2.by_value, ImVec2.by_value, ImVec4.by_value, ImVec4.by_value], :void],
@@ -6748,6 +6848,7 @@ module ImGui
       [:cImFloorImVec2, :cImFloorImVec2, [ImVec2.by_value], ImVec2.by_value],
       [:cImTrunc64, :cImTrunc64, [:float], :float],
       [:cImRound64, :cImRound64, [:float], :float],
+      [:cImCeilFast, :cImCeilFast, [:float], :float],
       [:cImModPositive, :cImModPositive, [:int, :int], :int],
       [:cImDot, :cImDot, [ImVec2.by_value, ImVec2.by_value], :float],
       [:cImRotate, :cImRotate, [ImVec2.by_value, :float, :float], ImVec2.by_value],
@@ -6811,6 +6912,9 @@ module ImGui
       [:ImGuiTextIndex_get_line_begin, :ImGuiTextIndex_get_line_begin, [:pointer, :pointer, :int], :pointer],
       [:ImGuiTextIndex_get_line_end, :ImGuiTextIndex_get_line_end, [:pointer, :pointer, :int], :pointer],
       [:ImGuiTextIndex_append, :ImGuiTextIndex_append, [:pointer, :pointer, :int, :int], :void],
+      [:ImGuiPackedDate_IsValid, :ImGuiPackedDate_IsValid, [:pointer], :bool],
+      [:ImGuiPackedDate_Unpack, :ImGuiPackedDate_Unpack, [:pointer], :int],
+      [:ImGuiPackedDate_SubtractMonths, :ImGuiPackedDate_SubtractMonths, [:pointer, :int], :void],
       [:cImLowerBound, :cImLowerBound, [:pointer, :pointer, :uint], :pointer],
       [:ImDrawListSharedData_SetCircleTessellationMaxError, :ImDrawListSharedData_SetCircleTessellationMaxError, [:pointer, :float], :void],
       [:ImGuiStyleVarInfo_GetVarPtr, :ImGuiStyleVarInfo_GetVarPtr, [:pointer, :pointer], :pointer],
@@ -6864,6 +6968,79 @@ module ImGui
       [:ImGuiWindow_TitleBarRect, :ImGuiWindow_TitleBarRect, [:pointer], ImRect.by_value],
       [:ImGuiWindow_MenuBarRect, :ImGuiWindow_MenuBarRect, [:pointer], ImRect.by_value],
       [:ImGuiTableSettings_GetColumnSettings, :ImGuiTableSettings_GetColumnSettings, [:pointer], :pointer],
+      [:ImGui_TableOpenContextMenu, :ImGui_TableOpenContextMenu, [], :void],
+      [:ImGui_TableOpenContextMenuEx, :ImGui_TableOpenContextMenuEx, [:int], :void],
+      [:ImGui_TableSetColumnWidth, :ImGui_TableSetColumnWidth, [:int, :float], :void],
+      [:ImGui_TableSetColumnSortDirection, :ImGui_TableSetColumnSortDirection, [:int, :uchar, :bool], :void],
+      [:ImGui_TableGetHoveredRow, :ImGui_TableGetHoveredRow, [], :int],
+      [:ImGui_TableGetHeaderRowHeight, :ImGui_TableGetHeaderRowHeight, [], :float],
+      [:ImGui_TableGetHeaderAngledMaxLabelWidth, :ImGui_TableGetHeaderAngledMaxLabelWidth, [], :float],
+      [:ImGui_TablePushBackgroundChannel, :ImGui_TablePushBackgroundChannel, [], :void],
+      [:ImGui_TablePopBackgroundChannel, :ImGui_TablePopBackgroundChannel, [], :void],
+      [:ImGui_TablePushColumnChannel, :ImGui_TablePushColumnChannel, [:int], :void],
+      [:ImGui_TablePopColumnChannel, :ImGui_TablePopColumnChannel, [], :void],
+      [:ImGui_TableAngledHeadersRowEx, :ImGui_TableAngledHeadersRowEx, [:uint, :float, :float, :pointer, :int], :void],
+      [:ImGui_GetCurrentTable, :ImGui_GetCurrentTable, [], :pointer],
+      [:ImGui_TableFindByID, :ImGui_TableFindByID, [:uint], :pointer],
+      [:ImGui_BeginTableWithID, :ImGui_BeginTableWithID, [:pointer, :uint, :int, :int], :bool],
+      [:ImGui_BeginTableWithIDEx, :ImGui_BeginTableWithIDEx, [:pointer, :uint, :int, :int, ImVec2.by_value, :float], :bool],
+      [:ImGui_TableBeginInitMemory, :ImGui_TableBeginInitMemory, [:pointer, :int], :void],
+      [:ImGui_TableApplyQueuedRequests, :ImGui_TableApplyQueuedRequests, [:pointer], :void],
+      [:ImGui_TableSetupDrawChannels, :ImGui_TableSetupDrawChannels, [:pointer], :void],
+      [:ImGui_TableReconcileColumns, :ImGui_TableReconcileColumns, [:pointer], :void],
+      [:ImGui_TableUpdateLayout, :ImGui_TableUpdateLayout, [:pointer], :void],
+      [:ImGui_TableUpdateBorders, :ImGui_TableUpdateBorders, [:pointer], :void],
+      [:ImGui_TableUpdateColumnsWeightFromWidth, :ImGui_TableUpdateColumnsWeightFromWidth, [:pointer], :void],
+      [:ImGui_TableApplyExternalUnclipRect, :ImGui_TableApplyExternalUnclipRect, [:pointer, :pointer], :void],
+      [:ImGui_TableDrawBorders, :ImGui_TableDrawBorders, [:pointer], :void],
+      [:ImGui_TableDrawDefaultContextMenu, :ImGui_TableDrawDefaultContextMenu, [:pointer, :int], :void],
+      [:ImGui_TableBeginContextMenuPopup, :ImGui_TableBeginContextMenuPopup, [:pointer], :bool],
+      [:ImGui_TableMergeDrawChannels, :ImGui_TableMergeDrawChannels, [:pointer], :void],
+      [:ImGui_TableGetInstanceData, :ImGui_TableGetInstanceData, [:pointer, :int], :pointer],
+      [:ImGui_TableGetInstanceID, :ImGui_TableGetInstanceID, [:pointer, :int], :uint],
+      [:ImGui_TableFixDisplayOrder, :ImGui_TableFixDisplayOrder, [:pointer], :void],
+      [:ImGui_TableSortSpecsSanitize, :ImGui_TableSortSpecsSanitize, [:pointer], :void],
+      [:ImGui_TableSortSpecsBuild, :ImGui_TableSortSpecsBuild, [:pointer], :void],
+      [:ImGui_TableInitColumnDefaults, :ImGui_TableInitColumnDefaults, [:pointer, :pointer, :int], :void],
+      [:ImGui_TableGetColumnNextSortDirection, :ImGui_TableGetColumnNextSortDirection, [:pointer], :uchar],
+      [:ImGui_TableFixColumnSortDirection, :ImGui_TableFixColumnSortDirection, [:pointer, :pointer], :void],
+      [:ImGui_TableGetColumnWidthAuto, :ImGui_TableGetColumnWidthAuto, [:pointer, :pointer], :float],
+      [:ImGui_TableBeginRow, :ImGui_TableBeginRow, [:pointer], :void],
+      [:ImGui_TableEndRow, :ImGui_TableEndRow, [:pointer], :void],
+      [:ImGui_TableBeginCell, :ImGui_TableBeginCell, [:pointer, :int], :void],
+      [:ImGui_TableEndCell, :ImGui_TableEndCell, [:pointer], :void],
+      [:ImGui_TableGetCellBgRect, :ImGui_TableGetCellBgRect, [:pointer, :int], ImRect.by_value],
+      [:ImGui_TableGetColumnNameImGuiTablePtr, :ImGui_TableGetColumnNameImGuiTablePtr, [:pointer, :int], :pointer],
+      [:ImGui_TableGetColumnResizeID, :ImGui_TableGetColumnResizeID, [:pointer, :int], :uint],
+      [:ImGui_TableGetColumnResizeIDEx, :ImGui_TableGetColumnResizeIDEx, [:pointer, :int, :int], :uint],
+      [:ImGui_TableCalcMaxColumnWidth, :ImGui_TableCalcMaxColumnWidth, [:pointer, :int], :float],
+      [:ImGui_TableSetColumnWidthAutoSingle, :ImGui_TableSetColumnWidthAutoSingle, [:pointer, :int], :void],
+      [:ImGui_TableSetColumnWidthAutoAll, :ImGui_TableSetColumnWidthAutoAll, [:pointer], :void],
+      [:ImGui_TableSetColumnDisplayOrder, :ImGui_TableSetColumnDisplayOrder, [:pointer, :int, :int], :void],
+      [:ImGui_TableQueueSetColumnDisplayOrder, :ImGui_TableQueueSetColumnDisplayOrder, [:pointer, :int, :int], :void],
+      [:ImGui_TableRemove, :ImGui_TableRemove, [:pointer], :void],
+      [:ImGui_TableGcCompactTransientBuffers, :ImGui_TableGcCompactTransientBuffers, [:pointer], :void],
+      [:ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr, :ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr, [:pointer], :void],
+      [:ImGui_TableGcCompactSettings, :ImGui_TableGcCompactSettings, [], :void],
+      [:ImGui_TableLoadSettings, :ImGui_TableLoadSettings, [:pointer], :void],
+      [:ImGui_TableLoadSettingsForColumns, :ImGui_TableLoadSettingsForColumns, [:pointer], :void],
+      [:ImGui_TableLoadSettingsForColumn, :ImGui_TableLoadSettingsForColumn, [:pointer, :pointer, :int], :void],
+      [:ImGui_TableSaveSettings, :ImGui_TableSaveSettings, [:pointer], :void],
+      [:ImGui_TableResetSettings, :ImGui_TableResetSettings, [:pointer], :void],
+      [:ImGui_TableGetBoundSettings, :ImGui_TableGetBoundSettings, [:pointer], :pointer],
+      [:ImGui_TableSettingsAddSettingsHandler, :ImGui_TableSettingsAddSettingsHandler, [], :void],
+      [:ImGui_TableSettingsCreate, :ImGui_TableSettingsCreate, [:uint, :int], :pointer],
+      [:ImGui_TableSettingsFindByID, :ImGui_TableSettingsFindByID, [:uint], :pointer],
+      [:ImGui_SetWindowClipRectBeforeSetChannel, :ImGui_SetWindowClipRectBeforeSetChannel, [:pointer, ImRect.by_value], :void],
+      [:ImGui_BeginColumns, :ImGui_BeginColumns, [:pointer, :int, :int], :void],
+      [:ImGui_EndColumns, :ImGui_EndColumns, [], :void],
+      [:ImGui_PushColumnClipRect, :ImGui_PushColumnClipRect, [:int], :void],
+      [:ImGui_PushColumnsBackground, :ImGui_PushColumnsBackground, [], :void],
+      [:ImGui_PopColumnsBackground, :ImGui_PopColumnsBackground, [], :void],
+      [:ImGui_GetColumnsID, :ImGui_GetColumnsID, [:pointer, :int], :uint],
+      [:ImGui_FindOrCreateColumns, :ImGui_FindOrCreateColumns, [:pointer, :uint], :pointer],
+      [:ImGui_GetColumnOffsetFromNorm, :ImGui_GetColumnOffsetFromNorm, [:pointer, :float], :float],
+      [:ImGui_GetColumnNormFromOffset, :ImGui_GetColumnNormFromOffset, [:pointer, :float], :float],
       [:ImGui_GetIOImGuiContextPtr, :ImGui_GetIOImGuiContextPtr, [:pointer], :pointer],
       [:ImGui_GetPlatformIOImGuiContextPtr, :ImGui_GetPlatformIOImGuiContextPtr, [:pointer], :pointer],
       [:ImGui_GetScale, :ImGui_GetScale, [], :float],
@@ -6936,6 +7113,7 @@ module ImGui
       [:ImGui_MarkIniSettingsDirty, :ImGui_MarkIniSettingsDirty, [], :void],
       [:ImGui_MarkIniSettingsDirtyImGuiWindowPtr, :ImGui_MarkIniSettingsDirtyImGuiWindowPtr, [:pointer], :void],
       [:ImGui_ClearIniSettings, :ImGui_ClearIniSettings, [], :void],
+      [:ImGui_CleanupIniSettings, :ImGui_CleanupIniSettings, [:pointer], :void],
       [:ImGui_AddSettingsHandler, :ImGui_AddSettingsHandler, [:pointer], :void],
       [:ImGui_RemoveSettingsHandler, :ImGui_RemoveSettingsHandler, [:pointer], :void],
       [:ImGui_FindSettingsHandler, :ImGui_FindSettingsHandler, [:pointer], :pointer],
@@ -6994,8 +7172,8 @@ module ImGui
       [:ImGui_FindFrontMostVisibleChildWindow, :ImGui_FindFrontMostVisibleChildWindow, [:pointer], :pointer],
       [:ImGui_BeginPopupEx, :ImGui_BeginPopupEx, [:uint, :int], :bool],
       [:ImGui_BeginPopupMenuEx, :ImGui_BeginPopupMenuEx, [:uint, :pointer, :int], :bool],
-      [:ImGui_OpenPopupEx, :ImGui_OpenPopupEx, [:uint], :void],
-      [:ImGui_OpenPopupExEx, :ImGui_OpenPopupExEx, [:uint, :int], :void],
+      [:ImGui_OpenPopupEx, :ImGui_OpenPopupEx, [:uint], :bool],
+      [:ImGui_OpenPopupExEx, :ImGui_OpenPopupExEx, [:uint, :int], :bool],
       [:ImGui_ClosePopupToLevel, :ImGui_ClosePopupToLevel, [:int, :bool], :void],
       [:ImGui_ClosePopupsOverWindow, :ImGui_ClosePopupsOverWindow, [:pointer, :bool], :void],
       [:ImGui_ClosePopupsExceptModals, :ImGui_ClosePopupsExceptModals, [], :void],
@@ -7148,79 +7326,11 @@ module ImGui
       [:ImGui_EndBoxSelect, :ImGui_EndBoxSelect, [ImRect.by_value, :int], :void],
       [:ImGui_MultiSelectItemHeader, :ImGui_MultiSelectItemHeader, [:uint, :pointer, :pointer], :void],
       [:ImGui_MultiSelectItemFooter, :ImGui_MultiSelectItemFooter, [:uint, :pointer, :pointer], :void],
+      [:ImGui_MultiSelectItemFooterEx, :ImGui_MultiSelectItemFooterEx, [:uint, :pointer, :pointer, :int], :void],
       [:ImGui_MultiSelectAddSetAll, :ImGui_MultiSelectAddSetAll, [:pointer, :bool], :void],
       [:ImGui_MultiSelectAddSetRange, :ImGui_MultiSelectAddSetRange, [:pointer, :bool, :int, :int64, :int64], :void],
       [:ImGui_GetBoxSelectState, :ImGui_GetBoxSelectState, [:uint], :pointer],
       [:ImGui_GetMultiSelectState, :ImGui_GetMultiSelectState, [:uint], :pointer],
-      [:ImGui_SetWindowClipRectBeforeSetChannel, :ImGui_SetWindowClipRectBeforeSetChannel, [:pointer, ImRect.by_value], :void],
-      [:ImGui_BeginColumns, :ImGui_BeginColumns, [:pointer, :int, :int], :void],
-      [:ImGui_EndColumns, :ImGui_EndColumns, [], :void],
-      [:ImGui_PushColumnClipRect, :ImGui_PushColumnClipRect, [:int], :void],
-      [:ImGui_PushColumnsBackground, :ImGui_PushColumnsBackground, [], :void],
-      [:ImGui_PopColumnsBackground, :ImGui_PopColumnsBackground, [], :void],
-      [:ImGui_GetColumnsID, :ImGui_GetColumnsID, [:pointer, :int], :uint],
-      [:ImGui_FindOrCreateColumns, :ImGui_FindOrCreateColumns, [:pointer, :uint], :pointer],
-      [:ImGui_GetColumnOffsetFromNorm, :ImGui_GetColumnOffsetFromNorm, [:pointer, :float], :float],
-      [:ImGui_GetColumnNormFromOffset, :ImGui_GetColumnNormFromOffset, [:pointer, :float], :float],
-      [:ImGui_TableOpenContextMenu, :ImGui_TableOpenContextMenu, [], :void],
-      [:ImGui_TableOpenContextMenuEx, :ImGui_TableOpenContextMenuEx, [:int], :void],
-      [:ImGui_TableSetColumnWidth, :ImGui_TableSetColumnWidth, [:int, :float], :void],
-      [:ImGui_TableSetColumnSortDirection, :ImGui_TableSetColumnSortDirection, [:int, :uchar, :bool], :void],
-      [:ImGui_TableGetHoveredRow, :ImGui_TableGetHoveredRow, [], :int],
-      [:ImGui_TableGetHeaderRowHeight, :ImGui_TableGetHeaderRowHeight, [], :float],
-      [:ImGui_TableGetHeaderAngledMaxLabelWidth, :ImGui_TableGetHeaderAngledMaxLabelWidth, [], :float],
-      [:ImGui_TablePushBackgroundChannel, :ImGui_TablePushBackgroundChannel, [], :void],
-      [:ImGui_TablePopBackgroundChannel, :ImGui_TablePopBackgroundChannel, [], :void],
-      [:ImGui_TablePushColumnChannel, :ImGui_TablePushColumnChannel, [:int], :void],
-      [:ImGui_TablePopColumnChannel, :ImGui_TablePopColumnChannel, [], :void],
-      [:ImGui_TableAngledHeadersRowEx, :ImGui_TableAngledHeadersRowEx, [:uint, :float, :float, :pointer, :int], :void],
-      [:ImGui_GetCurrentTable, :ImGui_GetCurrentTable, [], :pointer],
-      [:ImGui_TableFindByID, :ImGui_TableFindByID, [:uint], :pointer],
-      [:ImGui_BeginTableWithID, :ImGui_BeginTableWithID, [:pointer, :uint, :int, :int], :bool],
-      [:ImGui_BeginTableWithIDEx, :ImGui_BeginTableWithIDEx, [:pointer, :uint, :int, :int, ImVec2.by_value, :float], :bool],
-      [:ImGui_TableBeginInitMemory, :ImGui_TableBeginInitMemory, [:pointer, :int], :void],
-      [:ImGui_TableBeginApplyRequests, :ImGui_TableBeginApplyRequests, [:pointer], :void],
-      [:ImGui_TableSetupDrawChannels, :ImGui_TableSetupDrawChannels, [:pointer], :void],
-      [:ImGui_TableUpdateLayout, :ImGui_TableUpdateLayout, [:pointer], :void],
-      [:ImGui_TableUpdateBorders, :ImGui_TableUpdateBorders, [:pointer], :void],
-      [:ImGui_TableUpdateColumnsWeightFromWidth, :ImGui_TableUpdateColumnsWeightFromWidth, [:pointer], :void],
-      [:ImGui_TableApplyExternalUnclipRect, :ImGui_TableApplyExternalUnclipRect, [:pointer, :pointer], :void],
-      [:ImGui_TableDrawBorders, :ImGui_TableDrawBorders, [:pointer], :void],
-      [:ImGui_TableDrawDefaultContextMenu, :ImGui_TableDrawDefaultContextMenu, [:pointer, :int], :void],
-      [:ImGui_TableBeginContextMenuPopup, :ImGui_TableBeginContextMenuPopup, [:pointer], :bool],
-      [:ImGui_TableMergeDrawChannels, :ImGui_TableMergeDrawChannels, [:pointer], :void],
-      [:ImGui_TableGetInstanceData, :ImGui_TableGetInstanceData, [:pointer, :int], :pointer],
-      [:ImGui_TableGetInstanceID, :ImGui_TableGetInstanceID, [:pointer, :int], :uint],
-      [:ImGui_TableFixDisplayOrder, :ImGui_TableFixDisplayOrder, [:pointer], :void],
-      [:ImGui_TableSortSpecsSanitize, :ImGui_TableSortSpecsSanitize, [:pointer], :void],
-      [:ImGui_TableSortSpecsBuild, :ImGui_TableSortSpecsBuild, [:pointer], :void],
-      [:ImGui_TableGetColumnNextSortDirection, :ImGui_TableGetColumnNextSortDirection, [:pointer], :uchar],
-      [:ImGui_TableFixColumnSortDirection, :ImGui_TableFixColumnSortDirection, [:pointer, :pointer], :void],
-      [:ImGui_TableGetColumnWidthAuto, :ImGui_TableGetColumnWidthAuto, [:pointer, :pointer], :float],
-      [:ImGui_TableBeginRow, :ImGui_TableBeginRow, [:pointer], :void],
-      [:ImGui_TableEndRow, :ImGui_TableEndRow, [:pointer], :void],
-      [:ImGui_TableBeginCell, :ImGui_TableBeginCell, [:pointer, :int], :void],
-      [:ImGui_TableEndCell, :ImGui_TableEndCell, [:pointer], :void],
-      [:ImGui_TableGetCellBgRect, :ImGui_TableGetCellBgRect, [:pointer, :int], ImRect.by_value],
-      [:ImGui_TableGetColumnNameImGuiTablePtr, :ImGui_TableGetColumnNameImGuiTablePtr, [:pointer, :int], :pointer],
-      [:ImGui_TableGetColumnResizeID, :ImGui_TableGetColumnResizeID, [:pointer, :int], :uint],
-      [:ImGui_TableGetColumnResizeIDEx, :ImGui_TableGetColumnResizeIDEx, [:pointer, :int, :int], :uint],
-      [:ImGui_TableCalcMaxColumnWidth, :ImGui_TableCalcMaxColumnWidth, [:pointer, :int], :float],
-      [:ImGui_TableSetColumnWidthAutoSingle, :ImGui_TableSetColumnWidthAutoSingle, [:pointer, :int], :void],
-      [:ImGui_TableSetColumnWidthAutoAll, :ImGui_TableSetColumnWidthAutoAll, [:pointer], :void],
-      [:ImGui_TableSetColumnDisplayOrder, :ImGui_TableSetColumnDisplayOrder, [:pointer, :int, :int], :void],
-      [:ImGui_TableQueueSetColumnDisplayOrder, :ImGui_TableQueueSetColumnDisplayOrder, [:pointer, :int, :int], :void],
-      [:ImGui_TableRemove, :ImGui_TableRemove, [:pointer], :void],
-      [:ImGui_TableGcCompactTransientBuffers, :ImGui_TableGcCompactTransientBuffers, [:pointer], :void],
-      [:ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr, :ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr, [:pointer], :void],
-      [:ImGui_TableGcCompactSettings, :ImGui_TableGcCompactSettings, [], :void],
-      [:ImGui_TableLoadSettings, :ImGui_TableLoadSettings, [:pointer], :void],
-      [:ImGui_TableSaveSettings, :ImGui_TableSaveSettings, [:pointer], :void],
-      [:ImGui_TableResetSettings, :ImGui_TableResetSettings, [:pointer], :void],
-      [:ImGui_TableGetBoundSettings, :ImGui_TableGetBoundSettings, [:pointer], :pointer],
-      [:ImGui_TableSettingsAddSettingsHandler, :ImGui_TableSettingsAddSettingsHandler, [], :void],
-      [:ImGui_TableSettingsCreate, :ImGui_TableSettingsCreate, [:uint, :int], :pointer],
-      [:ImGui_TableSettingsFindByID, :ImGui_TableSettingsFindByID, [:uint], :pointer],
       [:ImGui_GetCurrentTabBar, :ImGui_GetCurrentTabBar, [], :pointer],
       [:ImGui_TabBarFindByID, :ImGui_TabBarFindByID, [:uint], :pointer],
       [:ImGui_TabBarRemove, :ImGui_TabBarRemove, [:pointer], :void],
@@ -7261,7 +7371,7 @@ module ImGui
       [:ImGui_RenderColorRectWithAlphaCheckerboard, :ImGui_RenderColorRectWithAlphaCheckerboard, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, ImVec2.by_value], :void],
       [:ImGui_RenderColorRectWithAlphaCheckerboardEx, :ImGui_RenderColorRectWithAlphaCheckerboardEx, [:pointer, ImVec2.by_value, ImVec2.by_value, :uint, :float, ImVec2.by_value, :float, :int], :void],
       [:ImGui_RenderNavCursor, :ImGui_RenderNavCursor, [ImRect.by_value, :uint], :void],
-      [:ImGui_RenderNavCursorEx, :ImGui_RenderNavCursorEx, [ImRect.by_value, :uint, :int], :void],
+      [:ImGui_RenderNavCursorEx, :ImGui_RenderNavCursorEx, [ImRect.by_value, :uint, :int, :float], :void],
       [:ImGui_RenderNavHighlight, :ImGui_RenderNavHighlight, [ImRect.by_value, :uint], :void],
       [:ImGui_RenderNavHighlightEx, :ImGui_RenderNavHighlightEx, [ImRect.by_value, :uint, :int], :void],
       [:ImGui_FindRenderedTextEnd, :ImGui_FindRenderedTextEnd, [:pointer], :pointer],
@@ -7378,7 +7488,7 @@ module ImGui
       [:ImGui_DebugNodeStorage, :ImGui_DebugNodeStorage, [:pointer, :pointer], :void],
       [:ImGui_DebugNodeTabBar, :ImGui_DebugNodeTabBar, [:pointer, :pointer], :void],
       [:ImGui_DebugNodeTable, :ImGui_DebugNodeTable, [:pointer], :void],
-      [:ImGui_DebugNodeTableSettings, :ImGui_DebugNodeTableSettings, [:pointer], :void],
+      [:ImGui_DebugNodeTableSettings, :ImGui_DebugNodeTableSettings, [:pointer, :pointer], :void],
       [:ImGui_DebugNodeInputTextState, :ImGui_DebugNodeInputTextState, [:pointer], :void],
       [:ImGui_DebugNodeTypingSelectState, :ImGui_DebugNodeTypingSelectState, [:pointer], :void],
       [:ImGui_DebugNodeMultiSelectState, :ImGui_DebugNodeMultiSelectState, [:pointer], :void],
@@ -7445,6 +7555,7 @@ module ImGui
       [:cImFontAtlasTextureBlockFill, :cImFontAtlasTextureBlockFill, [:pointer, :int, :int, :int, :int, :uint], :void],
       [:cImFontAtlasTextureBlockCopy, :cImFontAtlasTextureBlockCopy, [:pointer, :int, :int, :pointer, :int, :int, :int, :int], :void],
       [:cImFontAtlasTextureBlockQueueUpload, :cImFontAtlasTextureBlockQueueUpload, [:pointer, :pointer, :int, :int, :int, :int], :void],
+      [:cImTextureDataUpdateNewFrame, :cImTextureDataUpdateNewFrame, [:pointer], :bool],
       [:cImTextureDataQueueUpload, :cImTextureDataQueueUpload, [:pointer, :int, :int, :int, :int], :void],
       [:cImTextureDataGetFormatBytesPerPixel, :cImTextureDataGetFormatBytesPerPixel, [:int], :int],
       [:cImTextureDataGetStatusName, :cImTextureDataGetStatusName, [:int], :pointer],
@@ -8069,12 +8180,6 @@ module ImGui
     ImGui_ColorPicker4(label, col, flags, ref_col)
   end
 
-  # arg: flags(ImGuiColorEditFlags)
-  # ret: void
-  def self.SetColorEditOptions(flags)
-    ImGui_SetColorEditOptions(flags)
-  end
-
   # ret: void
   def self.TreePop()
     ImGui_TreePop()
@@ -8200,7 +8305,7 @@ module ImGui
   end
 
   # arg: str_id(const char*), popup_flags(ImGuiPopupFlags)
-  # ret: void
+  # ret: bool
   def self.OpenPopupOnItemClick(str_id = nil, popup_flags = 0)
     ImGui_OpenPopupOnItemClick(str_id, popup_flags)
   end
@@ -8667,12 +8772,6 @@ module ImGui
     ImGui_SetNextItemShortcut(key_chord, flags)
   end
 
-  # arg: button(ImGuiMouseButton), delay(float)
-  # ret: bool
-  def self.IsMouseReleasedWithDelay(button, delay)
-    ImGui_IsMouseReleasedWithDelay(button, delay)
-  end
-
   # arg: button(ImGuiMouseButton)
   # ret: int
   def self.GetMouseClickedCount(button)
@@ -8839,6 +8938,12 @@ module ImGui
     ImGui_FindViewportByPlatformHandle(platform_handle)
   end
 
+  # arg: flags(ImGuiColorEditFlags)
+  # ret: void
+  def self.SetColorEditOptions(flags)
+    ImGui_SetColorEditOptions(flags)
+  end
+
   # arg: scale(float)
   # ret: void
   def self.SetWindowFontScale(scale)
@@ -8880,6 +8985,378 @@ module ImGui
   # ret: ImVec2.by_value
   def self.GetWindowContentRegionMax()
     ImGui_GetWindowContentRegionMax()
+  end
+
+  # arg: column_n(int), width(float)
+  # ret: void
+  def self.TableSetColumnWidth(column_n, width)
+    ImGui_TableSetColumnWidth(column_n, width)
+  end
+
+  # arg: column_n(int), sort_direction(ImGuiSortDirection), append_to_sort_specs(bool)
+  # ret: void
+  def self.TableSetColumnSortDirection(column_n, sort_direction, append_to_sort_specs)
+    ImGui_TableSetColumnSortDirection(column_n, sort_direction, append_to_sort_specs)
+  end
+
+  # ret: int
+  def self.TableGetHoveredRow()
+    ImGui_TableGetHoveredRow()
+  end
+
+  # ret: float
+  def self.TableGetHeaderRowHeight()
+    ImGui_TableGetHeaderRowHeight()
+  end
+
+  # ret: float
+  def self.TableGetHeaderAngledMaxLabelWidth()
+    ImGui_TableGetHeaderAngledMaxLabelWidth()
+  end
+
+  # ret: void
+  def self.TablePushBackgroundChannel()
+    ImGui_TablePushBackgroundChannel()
+  end
+
+  # ret: void
+  def self.TablePopBackgroundChannel()
+    ImGui_TablePopBackgroundChannel()
+  end
+
+  # arg: column_n(int)
+  # ret: void
+  def self.TablePushColumnChannel(column_n)
+    ImGui_TablePushColumnChannel(column_n)
+  end
+
+  # ret: void
+  def self.TablePopColumnChannel()
+    ImGui_TablePopColumnChannel()
+  end
+
+  # arg: row_id(ImGuiID), angle(float), max_label_width(float), data(const ImGuiTableHeaderData*), data_count(int)
+  # ret: void
+  def self.TableAngledHeadersRowEx(row_id, angle, max_label_width, data, data_count)
+    ImGui_TableAngledHeadersRowEx(row_id, angle, max_label_width, data, data_count)
+  end
+
+  # ret: pointer
+  def self.GetCurrentTable()
+    ImGui_GetCurrentTable()
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.TableFindByID(id)
+    ImGui_TableFindByID(id)
+  end
+
+  # arg: table(ImGuiTable*), columns_count(int)
+  # ret: void
+  def self.TableBeginInitMemory(table, columns_count)
+    ImGui_TableBeginInitMemory(table, columns_count)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableApplyQueuedRequests(table)
+    ImGui_TableApplyQueuedRequests(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSetupDrawChannels(table)
+    ImGui_TableSetupDrawChannels(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableReconcileColumns(table)
+    ImGui_TableReconcileColumns(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableUpdateLayout(table)
+    ImGui_TableUpdateLayout(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableUpdateBorders(table)
+    ImGui_TableUpdateBorders(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableUpdateColumnsWeightFromWidth(table)
+    ImGui_TableUpdateColumnsWeightFromWidth(table)
+  end
+
+  # arg: table(ImGuiTable*), rect(ImRect*)
+  # ret: void
+  def self.TableApplyExternalUnclipRect(table, rect)
+    ImGui_TableApplyExternalUnclipRect(table, rect)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableDrawBorders(table)
+    ImGui_TableDrawBorders(table)
+  end
+
+  # arg: table(ImGuiTable*), flags_for_section_to_display(ImGuiTableFlags)
+  # ret: void
+  def self.TableDrawDefaultContextMenu(table, flags_for_section_to_display)
+    ImGui_TableDrawDefaultContextMenu(table, flags_for_section_to_display)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: bool
+  def self.TableBeginContextMenuPopup(table)
+    ImGui_TableBeginContextMenuPopup(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableMergeDrawChannels(table)
+    ImGui_TableMergeDrawChannels(table)
+  end
+
+  # arg: table(ImGuiTable*), instance_no(int)
+  # ret: pointer
+  def self.TableGetInstanceData(table, instance_no)
+    ImGui_TableGetInstanceData(table, instance_no)
+  end
+
+  # arg: table(ImGuiTable*), instance_no(int)
+  # ret: uint
+  def self.TableGetInstanceID(table, instance_no)
+    ImGui_TableGetInstanceID(table, instance_no)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableFixDisplayOrder(table)
+    ImGui_TableFixDisplayOrder(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSortSpecsSanitize(table)
+    ImGui_TableSortSpecsSanitize(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSortSpecsBuild(table)
+    ImGui_TableSortSpecsBuild(table)
+  end
+
+  # arg: table(ImGuiTable*), column(ImGuiTableColumn*), init_mask(ImGuiTableColumnFlags)
+  # ret: void
+  def self.TableInitColumnDefaults(table, column, init_mask)
+    ImGui_TableInitColumnDefaults(table, column, init_mask)
+  end
+
+  # arg: column(ImGuiTableColumn*)
+  # ret: uchar
+  def self.TableGetColumnNextSortDirection(column)
+    ImGui_TableGetColumnNextSortDirection(column)
+  end
+
+  # arg: table(ImGuiTable*), column(ImGuiTableColumn*)
+  # ret: void
+  def self.TableFixColumnSortDirection(table, column)
+    ImGui_TableFixColumnSortDirection(table, column)
+  end
+
+  # arg: table(ImGuiTable*), column(ImGuiTableColumn*)
+  # ret: float
+  def self.TableGetColumnWidthAuto(table, column)
+    ImGui_TableGetColumnWidthAuto(table, column)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableBeginRow(table)
+    ImGui_TableBeginRow(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableEndRow(table)
+    ImGui_TableEndRow(table)
+  end
+
+  # arg: table(ImGuiTable*), column_n(int)
+  # ret: void
+  def self.TableBeginCell(table, column_n)
+    ImGui_TableBeginCell(table, column_n)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableEndCell(table)
+    ImGui_TableEndCell(table)
+  end
+
+  # arg: table(const ImGuiTable*), column_n(int)
+  # ret: ImRect.by_value
+  def self.TableGetCellBgRect(table, column_n)
+    ImGui_TableGetCellBgRect(table, column_n)
+  end
+
+  # arg: table(const ImGuiTable*), column_n(int)
+  # ret: float
+  def self.TableCalcMaxColumnWidth(table, column_n)
+    ImGui_TableCalcMaxColumnWidth(table, column_n)
+  end
+
+  # arg: table(ImGuiTable*), column_n(int)
+  # ret: void
+  def self.TableSetColumnWidthAutoSingle(table, column_n)
+    ImGui_TableSetColumnWidthAutoSingle(table, column_n)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSetColumnWidthAutoAll(table)
+    ImGui_TableSetColumnWidthAutoAll(table)
+  end
+
+  # arg: table(ImGuiTable*), column_n(int), dst_order(int)
+  # ret: void
+  def self.TableSetColumnDisplayOrder(table, column_n, dst_order)
+    ImGui_TableSetColumnDisplayOrder(table, column_n, dst_order)
+  end
+
+  # arg: table(ImGuiTable*), column_n(int), dst_order(int)
+  # ret: void
+  def self.TableQueueSetColumnDisplayOrder(table, column_n, dst_order)
+    ImGui_TableQueueSetColumnDisplayOrder(table, column_n, dst_order)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableRemove(table)
+    ImGui_TableRemove(table)
+  end
+
+  # ret: void
+  def self.TableGcCompactSettings()
+    ImGui_TableGcCompactSettings()
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableLoadSettings(table)
+    ImGui_TableLoadSettings(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableLoadSettingsForColumns(table)
+    ImGui_TableLoadSettingsForColumns(table)
+  end
+
+  # arg: column(ImGuiTableColumn*), column_settings(ImGuiTableColumnSettings*), load_flags(ImGuiTableFlags)
+  # ret: void
+  def self.TableLoadSettingsForColumn(column, column_settings, load_flags)
+    ImGui_TableLoadSettingsForColumn(column, column_settings, load_flags)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableSaveSettings(table)
+    ImGui_TableSaveSettings(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: void
+  def self.TableResetSettings(table)
+    ImGui_TableResetSettings(table)
+  end
+
+  # arg: table(ImGuiTable*)
+  # ret: pointer
+  def self.TableGetBoundSettings(table)
+    ImGui_TableGetBoundSettings(table)
+  end
+
+  # ret: void
+  def self.TableSettingsAddSettingsHandler()
+    ImGui_TableSettingsAddSettingsHandler()
+  end
+
+  # arg: id(ImGuiID), columns_count(int)
+  # ret: pointer
+  def self.TableSettingsCreate(id, columns_count)
+    ImGui_TableSettingsCreate(id, columns_count)
+  end
+
+  # arg: id(ImGuiID)
+  # ret: pointer
+  def self.TableSettingsFindByID(id)
+    ImGui_TableSettingsFindByID(id)
+  end
+
+  # arg: window(ImGuiWindow*), clip_rect(ImRect)
+  # ret: void
+  def self.SetWindowClipRectBeforeSetChannel(window, clip_rect)
+    ImGui_SetWindowClipRectBeforeSetChannel(window, clip_rect)
+  end
+
+  # arg: str_id(const char*), count(int), flags(ImGuiOldColumnFlags)
+  # ret: void
+  def self.BeginColumns(str_id, count, flags = 0)
+    ImGui_BeginColumns(str_id, count, flags)
+  end
+
+  # ret: void
+  def self.EndColumns()
+    ImGui_EndColumns()
+  end
+
+  # arg: column_index(int)
+  # ret: void
+  def self.PushColumnClipRect(column_index)
+    ImGui_PushColumnClipRect(column_index)
+  end
+
+  # ret: void
+  def self.PushColumnsBackground()
+    ImGui_PushColumnsBackground()
+  end
+
+  # ret: void
+  def self.PopColumnsBackground()
+    ImGui_PopColumnsBackground()
+  end
+
+  # arg: str_id(const char*), count(int)
+  # ret: uint
+  def self.GetColumnsID(str_id, count)
+    ImGui_GetColumnsID(str_id, count)
+  end
+
+  # arg: window(ImGuiWindow*), id(ImGuiID)
+  # ret: pointer
+  def self.FindOrCreateColumns(window, id)
+    ImGui_FindOrCreateColumns(window, id)
+  end
+
+  # arg: columns(const ImGuiOldColumns*), offset_norm(float)
+  # ret: float
+  def self.GetColumnOffsetFromNorm(columns, offset_norm)
+    ImGui_GetColumnOffsetFromNorm(columns, offset_norm)
+  end
+
+  # arg: columns(const ImGuiOldColumns*), offset(float)
+  # ret: float
+  def self.GetColumnNormFromOffset(columns, offset)
+    ImGui_GetColumnNormFromOffset(columns, offset)
   end
 
   # ret: float
@@ -9251,6 +9728,12 @@ module ImGui
   # ret: void
   def self.ClearIniSettings()
     ImGui_ClearIniSettings()
+  end
+
+  # arg: args(ImGuiSettingsCleanupArgs*)
+  # ret: void
+  def self.CleanupIniSettings(args)
+    ImGui_CleanupIniSettings(args)
   end
 
   # arg: handler(const ImGuiSettingsHandler*)
@@ -10191,12 +10674,6 @@ module ImGui
     ImGui_MultiSelectItemHeader(id, p_selected, p_button_flags)
   end
 
-  # arg: id(ImGuiID), p_selected(bool*), p_pressed(bool*)
-  # ret: void
-  def self.MultiSelectItemFooter(id, p_selected, p_pressed)
-    ImGui_MultiSelectItemFooter(id, p_selected, p_pressed)
-  end
-
   # arg: ms(ImGuiMultiSelectTempData*), selected(bool)
   # ret: void
   def self.MultiSelectAddSetAll(ms, selected)
@@ -10219,354 +10696,6 @@ module ImGui
   # ret: pointer
   def self.GetMultiSelectState(id)
     ImGui_GetMultiSelectState(id)
-  end
-
-  # arg: window(ImGuiWindow*), clip_rect(ImRect)
-  # ret: void
-  def self.SetWindowClipRectBeforeSetChannel(window, clip_rect)
-    ImGui_SetWindowClipRectBeforeSetChannel(window, clip_rect)
-  end
-
-  # arg: str_id(const char*), count(int), flags(ImGuiOldColumnFlags)
-  # ret: void
-  def self.BeginColumns(str_id, count, flags = 0)
-    ImGui_BeginColumns(str_id, count, flags)
-  end
-
-  # ret: void
-  def self.EndColumns()
-    ImGui_EndColumns()
-  end
-
-  # arg: column_index(int)
-  # ret: void
-  def self.PushColumnClipRect(column_index)
-    ImGui_PushColumnClipRect(column_index)
-  end
-
-  # ret: void
-  def self.PushColumnsBackground()
-    ImGui_PushColumnsBackground()
-  end
-
-  # ret: void
-  def self.PopColumnsBackground()
-    ImGui_PopColumnsBackground()
-  end
-
-  # arg: str_id(const char*), count(int)
-  # ret: uint
-  def self.GetColumnsID(str_id, count)
-    ImGui_GetColumnsID(str_id, count)
-  end
-
-  # arg: window(ImGuiWindow*), id(ImGuiID)
-  # ret: pointer
-  def self.FindOrCreateColumns(window, id)
-    ImGui_FindOrCreateColumns(window, id)
-  end
-
-  # arg: columns(const ImGuiOldColumns*), offset_norm(float)
-  # ret: float
-  def self.GetColumnOffsetFromNorm(columns, offset_norm)
-    ImGui_GetColumnOffsetFromNorm(columns, offset_norm)
-  end
-
-  # arg: columns(const ImGuiOldColumns*), offset(float)
-  # ret: float
-  def self.GetColumnNormFromOffset(columns, offset)
-    ImGui_GetColumnNormFromOffset(columns, offset)
-  end
-
-  # arg: column_n(int), width(float)
-  # ret: void
-  def self.TableSetColumnWidth(column_n, width)
-    ImGui_TableSetColumnWidth(column_n, width)
-  end
-
-  # arg: column_n(int), sort_direction(ImGuiSortDirection), append_to_sort_specs(bool)
-  # ret: void
-  def self.TableSetColumnSortDirection(column_n, sort_direction, append_to_sort_specs)
-    ImGui_TableSetColumnSortDirection(column_n, sort_direction, append_to_sort_specs)
-  end
-
-  # ret: int
-  def self.TableGetHoveredRow()
-    ImGui_TableGetHoveredRow()
-  end
-
-  # ret: float
-  def self.TableGetHeaderRowHeight()
-    ImGui_TableGetHeaderRowHeight()
-  end
-
-  # ret: float
-  def self.TableGetHeaderAngledMaxLabelWidth()
-    ImGui_TableGetHeaderAngledMaxLabelWidth()
-  end
-
-  # ret: void
-  def self.TablePushBackgroundChannel()
-    ImGui_TablePushBackgroundChannel()
-  end
-
-  # ret: void
-  def self.TablePopBackgroundChannel()
-    ImGui_TablePopBackgroundChannel()
-  end
-
-  # arg: column_n(int)
-  # ret: void
-  def self.TablePushColumnChannel(column_n)
-    ImGui_TablePushColumnChannel(column_n)
-  end
-
-  # ret: void
-  def self.TablePopColumnChannel()
-    ImGui_TablePopColumnChannel()
-  end
-
-  # arg: row_id(ImGuiID), angle(float), max_label_width(float), data(const ImGuiTableHeaderData*), data_count(int)
-  # ret: void
-  def self.TableAngledHeadersRowEx(row_id, angle, max_label_width, data, data_count)
-    ImGui_TableAngledHeadersRowEx(row_id, angle, max_label_width, data, data_count)
-  end
-
-  # ret: pointer
-  def self.GetCurrentTable()
-    ImGui_GetCurrentTable()
-  end
-
-  # arg: id(ImGuiID)
-  # ret: pointer
-  def self.TableFindByID(id)
-    ImGui_TableFindByID(id)
-  end
-
-  # arg: table(ImGuiTable*), columns_count(int)
-  # ret: void
-  def self.TableBeginInitMemory(table, columns_count)
-    ImGui_TableBeginInitMemory(table, columns_count)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableBeginApplyRequests(table)
-    ImGui_TableBeginApplyRequests(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableSetupDrawChannels(table)
-    ImGui_TableSetupDrawChannels(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableUpdateLayout(table)
-    ImGui_TableUpdateLayout(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableUpdateBorders(table)
-    ImGui_TableUpdateBorders(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableUpdateColumnsWeightFromWidth(table)
-    ImGui_TableUpdateColumnsWeightFromWidth(table)
-  end
-
-  # arg: table(ImGuiTable*), rect(ImRect*)
-  # ret: void
-  def self.TableApplyExternalUnclipRect(table, rect)
-    ImGui_TableApplyExternalUnclipRect(table, rect)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableDrawBorders(table)
-    ImGui_TableDrawBorders(table)
-  end
-
-  # arg: table(ImGuiTable*), flags_for_section_to_display(ImGuiTableFlags)
-  # ret: void
-  def self.TableDrawDefaultContextMenu(table, flags_for_section_to_display)
-    ImGui_TableDrawDefaultContextMenu(table, flags_for_section_to_display)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: bool
-  def self.TableBeginContextMenuPopup(table)
-    ImGui_TableBeginContextMenuPopup(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableMergeDrawChannels(table)
-    ImGui_TableMergeDrawChannels(table)
-  end
-
-  # arg: table(ImGuiTable*), instance_no(int)
-  # ret: pointer
-  def self.TableGetInstanceData(table, instance_no)
-    ImGui_TableGetInstanceData(table, instance_no)
-  end
-
-  # arg: table(ImGuiTable*), instance_no(int)
-  # ret: uint
-  def self.TableGetInstanceID(table, instance_no)
-    ImGui_TableGetInstanceID(table, instance_no)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableFixDisplayOrder(table)
-    ImGui_TableFixDisplayOrder(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableSortSpecsSanitize(table)
-    ImGui_TableSortSpecsSanitize(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableSortSpecsBuild(table)
-    ImGui_TableSortSpecsBuild(table)
-  end
-
-  # arg: column(ImGuiTableColumn*)
-  # ret: uchar
-  def self.TableGetColumnNextSortDirection(column)
-    ImGui_TableGetColumnNextSortDirection(column)
-  end
-
-  # arg: table(ImGuiTable*), column(ImGuiTableColumn*)
-  # ret: void
-  def self.TableFixColumnSortDirection(table, column)
-    ImGui_TableFixColumnSortDirection(table, column)
-  end
-
-  # arg: table(ImGuiTable*), column(ImGuiTableColumn*)
-  # ret: float
-  def self.TableGetColumnWidthAuto(table, column)
-    ImGui_TableGetColumnWidthAuto(table, column)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableBeginRow(table)
-    ImGui_TableBeginRow(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableEndRow(table)
-    ImGui_TableEndRow(table)
-  end
-
-  # arg: table(ImGuiTable*), column_n(int)
-  # ret: void
-  def self.TableBeginCell(table, column_n)
-    ImGui_TableBeginCell(table, column_n)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableEndCell(table)
-    ImGui_TableEndCell(table)
-  end
-
-  # arg: table(const ImGuiTable*), column_n(int)
-  # ret: ImRect.by_value
-  def self.TableGetCellBgRect(table, column_n)
-    ImGui_TableGetCellBgRect(table, column_n)
-  end
-
-  # arg: table(const ImGuiTable*), column_n(int)
-  # ret: float
-  def self.TableCalcMaxColumnWidth(table, column_n)
-    ImGui_TableCalcMaxColumnWidth(table, column_n)
-  end
-
-  # arg: table(ImGuiTable*), column_n(int)
-  # ret: void
-  def self.TableSetColumnWidthAutoSingle(table, column_n)
-    ImGui_TableSetColumnWidthAutoSingle(table, column_n)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableSetColumnWidthAutoAll(table)
-    ImGui_TableSetColumnWidthAutoAll(table)
-  end
-
-  # arg: table(ImGuiTable*), column_n(int), dst_order(int)
-  # ret: void
-  def self.TableSetColumnDisplayOrder(table, column_n, dst_order)
-    ImGui_TableSetColumnDisplayOrder(table, column_n, dst_order)
-  end
-
-  # arg: table(ImGuiTable*), column_n(int), dst_order(int)
-  # ret: void
-  def self.TableQueueSetColumnDisplayOrder(table, column_n, dst_order)
-    ImGui_TableQueueSetColumnDisplayOrder(table, column_n, dst_order)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableRemove(table)
-    ImGui_TableRemove(table)
-  end
-
-  # ret: void
-  def self.TableGcCompactSettings()
-    ImGui_TableGcCompactSettings()
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableLoadSettings(table)
-    ImGui_TableLoadSettings(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableSaveSettings(table)
-    ImGui_TableSaveSettings(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: void
-  def self.TableResetSettings(table)
-    ImGui_TableResetSettings(table)
-  end
-
-  # arg: table(ImGuiTable*)
-  # ret: pointer
-  def self.TableGetBoundSettings(table)
-    ImGui_TableGetBoundSettings(table)
-  end
-
-  # ret: void
-  def self.TableSettingsAddSettingsHandler()
-    ImGui_TableSettingsAddSettingsHandler()
-  end
-
-  # arg: id(ImGuiID), columns_count(int)
-  # ret: pointer
-  def self.TableSettingsCreate(id, columns_count)
-    ImGui_TableSettingsCreate(id, columns_count)
-  end
-
-  # arg: id(ImGuiID)
-  # ret: pointer
-  def self.TableSettingsFindByID(id)
-    ImGui_TableSettingsFindByID(id)
   end
 
   # ret: pointer
@@ -11178,10 +11307,10 @@ module ImGui
     ImGui_DebugNodeTable(table)
   end
 
-  # arg: settings(ImGuiTableSettings*)
+  # arg: settings(ImGuiTableSettings*), table(ImGuiTable*)
   # ret: void
-  def self.DebugNodeTableSettings(settings)
-    ImGui_DebugNodeTableSettings(settings)
+  def self.DebugNodeTableSettings(settings, table)
+    ImGui_DebugNodeTableSettings(settings, table)
   end
 
   # arg: state(ImGuiInputTextState*)
@@ -12372,11 +12501,11 @@ module ImGui
 
   def self.OpenPopup(*arg)
     # arg: 0:str_id(const char*), 1:popup_flags(ImGuiPopupFlags)
-    # ret: void
+    # ret: bool
     return ImGui_OpenPopup(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_OpenPopup(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
     # arg: 0:id(ImGuiID), 1:popup_flags(ImGuiPopupFlags)
-    # ret: void
+    # ret: bool
     return ImGui_OpenPopupID(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_OpenPopupID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::OpenPopup : No matching functions found (#{arg})")
@@ -12460,7 +12589,7 @@ module ImGui
     # ret: void
     return ImGui_TableSetupColumn(arg[0], 0) if arg.length == 1 && (arg[0].kind_of?(String))
     return ImGui_TableSetupColumn(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
-    # arg: 0:label(const char*), 1:flags(ImGuiTableColumnFlags), 2:init_width_or_weight(float), 3:user_id(ImGuiID)
+    # arg: 0:label(const char*), 1:flags(ImGuiTableColumnFlags), 2:init_width_or_weight(float), 3:user_data(ImGuiID)
     # ret: void
     return ImGui_TableSetupColumnEx(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Float))
     return ImGui_TableSetupColumnEx(arg[0], arg[1], 0.0, 0) if arg.length == 2 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer))
@@ -12540,6 +12669,18 @@ module ImGui
     return ImGui_IsItemClickedEx(0) if arg.length == 0 && (true)
     return ImGui_IsItemClickedEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::IsItemClicked : No matching functions found (#{arg})")
+  end
+
+  def self.GetItemClickedCountWithSingleClickDelay(*arg)
+    # arg: 
+    # ret: int
+    return ImGui_GetItemClickedCountWithSingleClickDelay() if arg.empty?
+    # arg: 0:mouse_button(ImGuiMouseButton), 1:delay(float)
+    # ret: int
+    return ImGui_GetItemClickedCountWithSingleClickDelayEx(arg[0], -1.0) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    return ImGui_GetItemClickedCountWithSingleClickDelayEx(0, -1.0) if arg.length == 0 && (true)
+    return ImGui_GetItemClickedCountWithSingleClickDelayEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
+    $stderr.puts("[Warning] ImGui::GetItemClickedCountWithSingleClickDelay : No matching functions found (#{arg})")
   end
 
   def self.GetBackgroundDrawList(*arg)
@@ -12711,6 +12852,17 @@ module ImGui
     $stderr.puts("[Warning] ImGui::IsMouseDoubleClicked : No matching functions found (#{arg})")
   end
 
+  def self.IsMouseReleasedWithDelay(*arg)
+    # arg: 0:button(ImGuiMouseButton)
+    # ret: bool
+    return ImGui_IsMouseReleasedWithDelay(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    # arg: 0:button(ImGuiMouseButton), 1:delay(float)
+    # ret: bool
+    return ImGui_IsMouseReleasedWithDelayEx(arg[0], -1.f) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    return ImGui_IsMouseReleasedWithDelayEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Float))
+    $stderr.puts("[Warning] ImGui::IsMouseReleasedWithDelay : No matching functions found (#{arg})")
+  end
+
   def self.IsMouseHoveringRect(*arg)
     # arg: 0:r_min(ImVec2), 1:r_max(ImVec2)
     # ret: bool
@@ -12743,6 +12895,52 @@ module ImGui
     return ImGui_RenderPlatformWindowsDefaultEx(nil, nil) if arg.length == 0 && (true)
     return ImGui_RenderPlatformWindowsDefaultEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(FFI::Pointer))
     $stderr.puts("[Warning] ImGui::RenderPlatformWindowsDefault : No matching functions found (#{arg})")
+  end
+
+  def self.TableOpenContextMenu(*arg)
+    # arg: 
+    # ret: void
+    return ImGui_TableOpenContextMenu() if arg.empty?
+    # arg: 0:column_n(int)
+    # ret: void
+    return ImGui_TableOpenContextMenuEx(-1) if arg.length == 0 && (true)
+    return ImGui_TableOpenContextMenuEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
+    $stderr.puts("[Warning] ImGui::TableOpenContextMenu : No matching functions found (#{arg})")
+  end
+
+  def self.BeginTableEx(*arg)
+    # arg: 0:name(const char*), 1:id(ImGuiID), 2:columns_count(int), 3:flags(ImGuiTableFlags)
+    # ret: bool
+    return ImGui_BeginTableWithID(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
+    return ImGui_BeginTableWithID(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    # arg: 0:name(const char*), 1:id(ImGuiID), 2:columns_count(int), 3:flags(ImGuiTableFlags), 4:outer_size(ImVec2), 5:inner_width(float)
+    # ret: bool
+    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0.0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2))
+    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], ImVec2.create(0,0), 0.0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
+    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], 0, ImVec2.create(0,0), 0.0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
+    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Float))
+    $stderr.puts("[Warning] ImGui::BeginTableEx : No matching functions found (#{arg})")
+  end
+
+  def self.TableGetColumnResizeID(*arg)
+    # arg: 0:table(ImGuiTable*), 1:column_n(int)
+    # ret: uint
+    return ImGui_TableGetColumnResizeID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
+    # arg: 0:table(ImGuiTable*), 1:column_n(int), 2:instance_no(int)
+    # ret: uint
+    return ImGui_TableGetColumnResizeIDEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
+    return ImGui_TableGetColumnResizeIDEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
+    $stderr.puts("[Warning] ImGui::TableGetColumnResizeID : No matching functions found (#{arg})")
+  end
+
+  def self.TableGcCompactTransientBuffers(*arg)
+    # arg: 0:table(ImGuiTable*)
+    # ret: void
+    return ImGui_TableGcCompactTransientBuffers(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    # arg: 0:table(ImGuiTableTempData*)
+    # ret: void
+    return ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
+    $stderr.puts("[Warning] ImGui::TableGcCompactTransientBuffers : No matching functions found (#{arg})")
   end
 
   def self.MarkIniSettingsDirty(*arg)
@@ -12819,10 +13017,10 @@ module ImGui
 
   def self.OpenPopupEx(*arg)
     # arg: 0:id(ImGuiID)
-    # ret: void
+    # ret: bool
     return ImGui_OpenPopupEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
     # arg: 0:id(ImGuiID), 1:popup_flags(ImGuiPopupFlags)
-    # ret: void
+    # ret: bool
     return ImGui_OpenPopupExEx(arg[0], ImGuiPopupFlags_None) if arg.length == 1 && (arg[0].kind_of?(Integer))
     return ImGui_OpenPopupExEx(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(Integer))
     $stderr.puts("[Warning] ImGui::OpenPopupEx : No matching functions found (#{arg})")
@@ -12929,50 +13127,15 @@ module ImGui
     $stderr.puts("[Warning] ImGui::GetTypingSelectRequest : No matching functions found (#{arg})")
   end
 
-  def self.TableOpenContextMenu(*arg)
-    # arg: 
+  def self.MultiSelectItemFooter(*arg)
+    # arg: 0:id(ImGuiID), 1:p_selected(bool*), 2:p_pressed(bool*)
     # ret: void
-    return ImGui_TableOpenContextMenu() if arg.empty?
-    # arg: 0:column_n(int)
+    return ImGui_MultiSelectItemFooter(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer))
+    # arg: 0:id(ImGuiID), 1:p_selected(bool*), 2:p_pressed(bool*), 3:extra_flags(ImGuiMultiSelectFlags)
     # ret: void
-    return ImGui_TableOpenContextMenuEx(-1) if arg.length == 0 && (true)
-    return ImGui_TableOpenContextMenuEx(arg[0]) if arg.length == 1 && (arg[0].kind_of?(Integer))
-    $stderr.puts("[Warning] ImGui::TableOpenContextMenu : No matching functions found (#{arg})")
-  end
-
-  def self.BeginTableEx(*arg)
-    # arg: 0:name(const char*), 1:id(ImGuiID), 2:columns_count(int), 3:flags(ImGuiTableFlags)
-    # ret: bool
-    return ImGui_BeginTableWithID(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
-    return ImGui_BeginTableWithID(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
-    # arg: 0:name(const char*), 1:id(ImGuiID), 2:columns_count(int), 3:flags(ImGuiTableFlags), 4:outer_size(ImVec2), 5:inner_width(float)
-    # ret: bool
-    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], arg[4], 0.0) if arg.length == 5 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2))
-    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], ImVec2.create(0,0), 0.0) if arg.length == 4 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer))
-    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], 0, ImVec2.create(0,0), 0.0) if arg.length == 3 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
-    return ImGui_BeginTableWithIDEx(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]) if arg.length == 6 && (arg[0].kind_of?(String) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Integer) && arg[4].kind_of?(ImVec2) && arg[5].kind_of?(Float))
-    $stderr.puts("[Warning] ImGui::BeginTableEx : No matching functions found (#{arg})")
-  end
-
-  def self.TableGetColumnResizeID(*arg)
-    # arg: 0:table(ImGuiTable*), 1:column_n(int)
-    # ret: uint
-    return ImGui_TableGetColumnResizeID(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
-    # arg: 0:table(ImGuiTable*), 1:column_n(int), 2:instance_no(int)
-    # ret: uint
-    return ImGui_TableGetColumnResizeIDEx(arg[0], arg[1], 0) if arg.length == 2 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer))
-    return ImGui_TableGetColumnResizeIDEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(FFI::Pointer) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
-    $stderr.puts("[Warning] ImGui::TableGetColumnResizeID : No matching functions found (#{arg})")
-  end
-
-  def self.TableGcCompactTransientBuffers(*arg)
-    # arg: 0:table(ImGuiTable*)
-    # ret: void
-    return ImGui_TableGcCompactTransientBuffers(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    # arg: 0:table(ImGuiTableTempData*)
-    # ret: void
-    return ImGui_TableGcCompactTransientBuffersImGuiTableTempDataPtr(arg[0]) if arg.length == 1 && (arg[0].kind_of?(FFI::Pointer))
-    $stderr.puts("[Warning] ImGui::TableGcCompactTransientBuffers : No matching functions found (#{arg})")
+    return ImGui_MultiSelectItemFooterEx(arg[0], arg[1], arg[2], 0) if arg.length == 3 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer))
+    return ImGui_MultiSelectItemFooterEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(Integer) && arg[1].kind_of?(FFI::Pointer) && arg[2].kind_of?(FFI::Pointer) && arg[3].kind_of?(Integer))
+    $stderr.puts("[Warning] ImGui::MultiSelectItemFooter : No matching functions found (#{arg})")
   end
 
   def self.TabBarQueueFocus(*arg)
@@ -13070,10 +13233,11 @@ module ImGui
     # arg: 0:bb(ImRect), 1:id(ImGuiID)
     # ret: void
     return ImGui_RenderNavCursor(arg[0], arg[1]) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
-    # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:flags(ImGuiNavRenderCursorFlags)
+    # arg: 0:bb(ImRect), 1:id(ImGuiID), 2:flags(ImGuiNavRenderCursorFlags), 3:rounding(float)
     # ret: void
-    return ImGui_RenderNavCursorEx(arg[0], arg[1], ImGuiNavRenderCursorFlags_None) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
-    return ImGui_RenderNavCursorEx(arg[0], arg[1], arg[2]) if arg.length == 3 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
+    return ImGui_RenderNavCursorEx(arg[0], arg[1], arg[2], -1.0) if arg.length == 3 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer))
+    return ImGui_RenderNavCursorEx(arg[0], arg[1], ImGuiNavRenderCursorFlags_None, -1.0) if arg.length == 2 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer))
+    return ImGui_RenderNavCursorEx(arg[0], arg[1], arg[2], arg[3]) if arg.length == 4 && (arg[0].kind_of?(ImRect) && arg[1].kind_of?(Integer) && arg[2].kind_of?(Integer) && arg[3].kind_of?(Float))
     $stderr.puts("[Warning] ImGui::RenderNavCursor : No matching functions found (#{arg})")
   end
 
