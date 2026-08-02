@@ -3,7 +3,7 @@
 # Yet another ImGui wrapper for Ruby #
 
 *   Created : 2019-01-05
-*   Last modified : 2026-05-16
+*   Last modified : 2026-08-02
 
 <img src="https://raw.githubusercontent.com/vaiorabbit/ruby-imgui/master/doc/jpfont_test.png" width="250">
 
@@ -12,18 +12,20 @@
 *   Ruby interpreter
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
-            *   ruby 4.0.2 (2026-03-17 revision d3da9fec82) +PRISM [x64-mingw-ucrt]
+            *   ruby 4.0.6 (2026-07-14 revision 03b6d3f889) +PRISM [x64-mingw-ucrt]
 
 *   Ruby Gems
     *   opengl-bindings2
         *   gem install opengl-bindings2
     *   sdl3-bindings
         *   gem install sdl3-bindings
+    *   raylib-bindings
+        *   gem install raylib-bindings
     *   ffi
         *   gem install ffi
 *   Compiler
     *   Tested on:
-        *   [Windows] gcc (Rev13, Built by MSYS2 project) 15.2.0
+        *   [Windows] gcc (Rev5, Built by MSYS2 project) 16.1.0
 *   CMake https://cmake.org/download/
 
 <details>
@@ -32,6 +34,7 @@
 *   Ruby interpreter
     *   Tested on:
         *   [Windows] https://rubyinstaller.org/downloads/ Ruby+Devkit
+            *   ruby 4.0.2 (2026-03-17 revision d3da9fec82) +PRISM [x64-mingw-ucrt]
             *   ruby 3.4.1 (2024-12-25 revision 48d4efcb85) +PRISM [x64-mingw-ucrt]
             *   ruby 3.2.0 (2022-12-25 revision a528908271) [x64-mingw-ucrt]
             *   ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x64-mingw-ucrt]
@@ -56,6 +59,7 @@
 
 *   Compiler
     *   Tested on:
+        *   [Windows] gcc (Rev13, Built by MSYS2 project) 15.2.0
         *   [Windows] gcc (Rev2, Built by MSYS2 project) 14.2.0
         *   [Windows] gcc (Rev7, Built by MSYS2 project) 12.2.0
         *   [Windows] gcc (Rev10, Built by MSYS2 project) 11.2.0
